@@ -38,7 +38,7 @@ def main():
         '-i', '--indir', required=True,
         help='Path to the folder containing all required input files.')
     parser.add_argument(
-        '-o', '--outdir', required=True,
+        '-o', '--outdir', default=None,
         help='Folder in which the output will be saved.')
     parser.add_argument(
         '-v', '--verbose', default=False,
@@ -60,7 +60,10 @@ def main():
     fawm = args.fawm
     verbose = args.verbose
     indir = args.indir
-    outdir = args.outdir
+    if not args.outdir:
+        outdir = args.indir
+    else:
+        outdir = args.outdir
 
     # Load fractional anisotropy
     dti_fa = nib.load(os.path.join(indir, "dti_FA.nii.gz"))
