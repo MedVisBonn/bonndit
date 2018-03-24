@@ -28,7 +28,7 @@ def main():
         description='This script computes fiber orientation distribution functions (fODFs) as described in "Versatile, Robust and Efficient Tractography With Constrained Higher Order Tensor fODFs" by Ankele et al. (2017)')
     
     parser.add_argument('-i', '--indir', required=True, help='Path to the folder containing all required input files.')
-    parser.add_argument('-o', '--outdir', required=True, help='Folder in which the output will be saved.')
+    parser.add_argument('-o', '--outdir', default=None, help='Folder in which the output will be saved.')
     parser.add_argument('-v', '--verbose', default=False, help='Set to "True" to show a progress bar')
     parser.add_argument('-r', '--order', default=4, help='Order of the shore basis')
     parser.add_argument('-z', '--zeta', default=700, help='Radial scaling factor')
@@ -42,7 +42,10 @@ def main():
     fawm = args.fawm
     verbose = args.verbose
     indir = args.indir
-    outdir = args.outdir    
+    if not args.outdir:
+        outdir = args.indir
+    else:
+        outdir = args.outdir
     
     # Load fractional anisotropy    
     dti_fa = nib.load(os.path.join(indir, "dti_FA.nii.gz"))
