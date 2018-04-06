@@ -1,11 +1,16 @@
 from __future__ import division
+import os, errno
 import numpy as np
 import numpy.linalg as la
 from dipy.reconst.shore import shore_matrix
 from dipy.core.geometry import vec2vec_rotmat
 from dipy.core.gradients import gradient_table
+import cvxopt
 from tqdm import tqdm
+import pickle
 
+from bonndit.constants import LOTS_OF_DIRECTIONS
+from bonndit.michi import shore, esh, tensor, fields
 
 class ShoreModel:
     def __init__(self, gtab, order=4, zeta=700, tau=1 / (4 * np.pi ** 2)):
@@ -142,15 +147,137 @@ class ShoreFit:
         self.gtab = model.gtab
         self.order = model.order
         self.zeta = model.zeta
+        self.tau = model.tau
 
-    def save(self, outdir):
+    @classmethod
+    def load(cls, input):
+        with open(input, 'rb') as in_file:
+            return pickle.load(in_file)
+
+    def save(self, output):
+        with open(output, 'wb') as out_file:
+            pickle.dump(self, out_file, -1)
+
+    def old_save(self, outdir):
+        try:
+            os.makedirs(outdir)
+        except OSError as e:
+            if e.errno != errno.EEXIST:
+                raise
+
         np.savez(outdir + 'response.npz', csf=self.signal_csf, gm=self.signal_gm, wm=self.signal_wm,
-                 zeta=self.model.zeta, tau=self.model.tau)
+                 zeta=self.zeta, tau=self.tau)
 
-    def fiber_orientation_distribution_functions(self):
+    def fiber_orientation_distribution_functions(self, data, outdir, pos='hpsd', verbose=False):
         # Deconvolve the signal with the 3 response functions
-        pass
 
+        space = data.shape[:3]
+
+        mask = np.ones(space)
+        # TODO: Add possibility to add mask
+
+        # Kernel_ln
+        kernel_csf = shore.signal_to_kernel(self.signal_csf, self.order, self.order)
+        kernel_gm = shore.signal_to_kernel(self.signal_gm, self.order, self.order)
+        kernel_wm = shore.signal_to_kernel(self.signal_wm, self.order, self.order)
+
+        # Build matrix that maps ODF+volume fractions to signal
+        # in two steps: First, SHORE matrix
+        M_shore = shore_matrix(self.order, self.zeta, self.gtab, self.tau)
+
+        # then, convolution
+        M_wm = shore.matrix_kernel(kernel_wm, self.order, self.order)
+        M_gm = shore.matrix_kernel(kernel_gm, self.order, self.order)
+        M_csf = shore.matrix_kernel(kernel_csf, self.order, self.order)
+        M = np.hstack((M_wm, M_gm[:, :1], M_csf[:, :1]))
+
+        # now, multiply them together
+        M = np.dot(M_shore, M)
+
+        print('Condition number of M:', np.linalg.cond(M))
+
+        NN = ESH_LENGTH[self.order]
+
+        # positivity constraints
+        if pos in ['nonneg', 'hpsd']:
+            cvxopt.solvers.options['show_progress'] = False
+            # set up QP problem from normal equations
+            P = cvxopt.matrix(np.ascontiguousarray(np.dot(M.T, M)))
+            # TODO: consider additional Tikhonov regularization
+
+            if pos == 'nonneg':
+                # set up non-negativity constraints
+                NC = LOTS_OF_DIRECTIONS.shape[0]
+                G = np.zeros((NC + 2, NN + 2))
+                G = esh.matrix(self.order, LOTS_OF_DIRECTIONS)
+                # also constrain GM/CSF VFs to be non-negative
+                G[NC, NN] = -1
+                G[NC + 1, NN + 1] = -1
+                h = np.zeros(NC + 2)
+            else:
+
+                # positive definiteness constraint on ODF
+                ind = tensor.H_index_matrix(self.order).reshape(-1)
+                N = len(ind)
+
+                # set up positive definiteness constraints
+                G = np.zeros((N + 2, NN + 2))
+                # constrain GM/CSF VFs to be non-negative: orthant constraints
+                G[0, NN] = -1
+                G[1, NN + 1] = -1
+                esh2sym = esh.esh_to_sym_matrix(self.order)
+                for i in range(N):
+                    G[i + 2, :NN] = -esh2sym[ind[i], :]
+                h = np.zeros(N + 2)
+                # initialize with partly GM, CSF, and isotropic ODF
+                init = np.zeros(NN + 2)
+                init[0] = 0.3
+                init[1] = 0.3
+                init[2] = 0.3 * self.signal_csf[0] / kernel_csf[0][0]
+                init = cvxopt.matrix(np.ascontiguousarray(init))
+            G = cvxopt.matrix(np.ascontiguousarray(G))
+            h = cvxopt.matrix(np.ascontiguousarray(h))
+
+        # deconvolution
+        out = np.zeros(space + (NN,))
+        gmout = np.zeros(space)
+        wmout = np.zeros(space)
+        csfout = np.zeros(space)
+
+        for i in tqdm(np.ndindex(*data.shape[:3]),
+                      total=np.prod(data.shape[:3]),
+                      disable=not verbose,
+                      desc='Optimization'):
+            if mask[i] == 0:
+                continue
+
+            S = data[i]
+            if pos in ['nonneg', 'hpsd']:
+                q = cvxopt.matrix(np.ascontiguousarray(-1 * np.dot(M.T, S)))
+                if pos == 'nonneg':
+                    sol = cvxopt.solvers.qp(P, q, G, h)
+                    if sol['status'] != 'optimal':
+                        print('Optimization unsuccessful.')
+                    c = np.array(sol['x'])[:, 0]
+                else:
+                    c = deconvolve_hpsd(P, q, G, h, init, self.order)
+            else:
+                c = la.lstsq(M, S)[0]
+            out[i] = esh.esh_to_sym(c[:NN])
+            f = kernel_csf[0][0] / max(self.signal_csf[0], 1e-10)
+            wmout[i] = c[0] * f
+            gmout[i] = c[NN] * f
+        csfout[i] = c[NN + 1] * f
+
+        meta = None
+        fields.save_tensor(outdir + 'odf.nrrd', out, mask=mask, meta=meta)
+
+        # output meta data (WM/GM/CSF volume fractions)
+        fields.save_scalar(outdir + 'wm.nrrd', wmout, meta)
+        fields.save_scalar(outdir + 'gm.nrrd', gmout, meta)
+        fields.save_scalar(outdir + 'csf.nrrd', csfout, meta)
+
+        return out, wmout, gmout, csfout
 
 def gtab_rotate(gtab, rot_matrix):
     N = len(gtab.bvals)
@@ -186,3 +313,35 @@ def get_kernel_size(order):
         return KERNEL_SIZES[order]
     except IndexError:
         raise ValueError('Please specify an order <= 12')
+
+
+ESH_LENGTH = [1, 0, 6, 0, 15, 0, 28, 0, 45, 0, 66, 0, 91]
+
+
+# now uses a Quadratic Cone Program to do it in one shot
+def deconvolve_hpsd(P, q, G, h, init, order):
+    # NS = len(np.array(T{4,6,8}.TT).reshape(-1))
+    NS = tensor.LENGTH[order // 2]
+
+    # first two are orthant constraints, rest positive definiteness
+    dims = {'l': 2, 'q': [], 's': [NS]}
+
+    # This init stuff is a HACK. It empirically removes some isolated failure cases
+    # first, allow it to use its own initialization
+    try:
+        sol = cvxopt.solvers.coneqp(P, q, G, h, dims)
+    except Exception as e:
+        print("error-----------", e)
+        return np.zeros(NN + 2)
+    if sol['status'] != 'optimal':
+        # try again with our initialization
+        try:
+            sol = cvxopt.solvers.coneqp(P, q, G, h, dims, initvals={'x': init})
+        except Exception as e:
+            print("error-----------", e)
+            return np.zeros(NN + 2)
+        if sol['status'] != 'optimal':
+            print('Optimization unsuccessful.', sol)
+    c = np.array(sol['x'])[:, 0]
+
+    return c

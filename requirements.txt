@@ -1,0 +1,7 @@
+nibabel
+numpy
+dipy
+scipy
+tqdm
+cvxopt
+pytest

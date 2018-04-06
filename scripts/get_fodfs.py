@@ -9,11 +9,13 @@ Compute fiber orientation distribution functions for diffusion weighted MRI data
 
 import argparse
 import os
+import sys
 import numpy as np
 from dipy.io import read_bvals_bvecs
 from dipy.core.gradients import gradient_table
 from bonndit.shore import ShoreModel
 import nibabel as nib
+
 
 # To Do: Add option to first compute the diffustion tensors which are needed to estimate the response functions.
 
@@ -26,16 +28,22 @@ import nibabel as nib
 def main():
     parser = argparse.ArgumentParser(
         description='This script computes fiber orientation distribution functions (fODFs) as described in "Versatile, Robust and Efficient Tractography With Constrained Higher Order Tensor fODFs" by Ankele et al. (2017)')
-    
+
     parser.add_argument('-i', '--indir', required=True, help='Path to the folder containing all required input files.')
     parser.add_argument('-o', '--outdir', default=None, help='Folder in which the output will be saved.')
-    parser.add_argument('-v', '--verbose', default=False, help='Set to "True" to show a progress bar')
+    parser.add_argument('-v', '--verbose', action='store_true', help='Set to show a progress bar')
     parser.add_argument('-r', '--order', default=4, help='Order of the shore basis')
     parser.add_argument('-z', '--zeta', default=700, help='Radial scaling factor')
     parser.add_argument('-t', '--tau', default=1 / (4 * np.pi ** 2), help='q-scaling')
     parser.add_argument('-f', '--fawm', default=0.7, help='The WM FA threshold')
 
-    args = parser.parse_args()
+    # Print help if not called correctly
+    try:
+        args = parser.parse_args()
+    except:
+        parser.print_help()
+        sys.exit(0)
+
     order = args.order
     zeta = args.zeta
     tau = args.tau
@@ -46,7 +54,7 @@ def main():
         outdir = args.indir
     else:
         outdir = args.outdir
-    
+
     # Load fractional anisotropy    
     dti_fa = nib.load(os.path.join(indir, "dti_FA.nii.gz"))
 
@@ -69,11 +77,15 @@ def main():
     gtab = gradient_table(bvals, bvecs)
 
     model = ShoreModel(gtab, order, zeta, tau, )
-    fit = model.fit(data, wm_mask, gm_mask, csf_mask, dti_mask, 
+    fit = model.fit(data, wm_mask, gm_mask, csf_mask, dti_mask,
                     dti_fa, dti_vecs, fawm, verbose=verbose)
-    #fODFs = fit.fiber_orientation_distribution_functions()
-    #fODFs.save(outdir)
-    
-    
+
+    fit.old_save(outdir)
+    out, wmout, gmout, csfout = fit.fiber_orientation_distribution_functions(data, outdir, verbose=verbose)
+
+
+
+
+
 if __name__ == "__main__":
     main()

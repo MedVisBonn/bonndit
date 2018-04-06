@@ -17,12 +17,12 @@ DESCRIPTION = 'The bonndit package contains the latest diffusion imaging tools d
 URL = 'https://github.com/me/myproject'
 EMAIL = 'me@example.com'
 AUTHOR = 'Awesome Soul'
-REQUIRES_PYTHON = '>=3.0.0'
+REQUIRES_PYTHON = '>=2.7.0'
 VERSION = 0.1
 
 # What packages are required for this module to be executed?
 REQUIRED = [
-    'nibabel', 'numpy', 'dipy', 'scipy', 'tqdm'
+    'nibabel', 'numpy', 'dipy', 'scipy', 'tqdm', 'cvxopt'
 ]
 
 # The rest you shouldn't have to touch too much :)
@@ -94,7 +94,7 @@ setup(
     python_requires=REQUIRES_PYTHON,
     url=URL,
     packages=find_packages('src', exclude=('tests',)),
-    package_dir={'':'src'},
+    package_dir={'': 'src'},
     scripts=['scripts/get_fodfs.py'],
     # If your package is a single module, use this instead of 'packages':
     # py_modules=['mypackage'],
