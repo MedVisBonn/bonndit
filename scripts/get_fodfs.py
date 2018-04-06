@@ -9,11 +9,13 @@ Compute fiber orientation distribution functions for diffusion weighted MRI data
 
 import argparse
 import os
+import sys
 import numpy as np
 from dipy.io import read_bvals_bvecs
 from dipy.core.gradients import gradient_table
 from bonndit.shore import ShoreModel
 import nibabel as nib
+
 
 # To Do: Add option to first compute the diffustion tensors which are needed to
 # estimate the response functions.
@@ -23,7 +25,6 @@ import nibabel as nib
 # To Do: Handle nrrd as well as nii input
 
 # To Do: Enable specification of output format
-
 
 def main():
     parser = argparse.ArgumentParser(
@@ -41,8 +42,8 @@ def main():
         '-o', '--outdir', default=None,
         help='Folder in which the output will be saved.')
     parser.add_argument(
-        '-v', '--verbose', default=False,
-        help='Set to "True" to show a progress bar')
+        '-v', '--verbose', action='store_true',
+        help='Set to show a progress bar')
     parser.add_argument('-r', '--order', default=4,
                         help='Order of the shore basis')
     parser.add_argument('-z', '--zeta', default=700,
@@ -53,7 +54,13 @@ def main():
     parser.add_argument('-f', '--fawm', default=0.7,
                         help='The WM FA threshold')
 
-    args = parser.parse_args()
+    # Print help if not called correctly
+    try:
+        args = parser.parse_args()
+    except:
+        parser.print_help()
+        sys.exit(0)
+
     order = args.order
     zeta = args.zeta
     tau = args.tau
@@ -90,8 +97,12 @@ def main():
     fit = model.fit(
         data, wm_mask, gm_mask, csf_mask, dti_mask,
         dti_fa, dti_vecs, fawm, verbose=verbose)
-    # fODFs = fit.fiber_orientation_distribution_functions()
-    # fODFs.save(outdir)
+
+    fit.old_save(outdir)
+    out, wmout, gmout, csfout = fit.fiber_orientation_distribution_functions(
+        data,
+        outdir,
+        verbose=verbose)
 
 
 if __name__ == "__main__":

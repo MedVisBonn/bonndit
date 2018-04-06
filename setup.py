@@ -20,12 +20,12 @@ DESCRIPTION = (
 URL = 'https://github.com/me/myproject'
 EMAIL = 'me@example.com'
 AUTHOR = 'Awesome Soul'
-REQUIRES_PYTHON = '>=3.0.0'
+REQUIRES_PYTHON = '>=2.7.0'
 VERSION = 0.1
 
 # What packages are required for this module to be executed?
 REQUIRED = [
-    'nibabel', 'numpy', 'dipy', 'scipy', 'tqdm'
+    'nibabel', 'numpy', 'dipy', 'scipy', 'tqdm', 'cvxopt'
 ]
 
 # The rest you shouldn't have to touch too much :)
