@@ -90,7 +90,7 @@ def main():
     dti_vecs = nib.load(os.path.join(indir, "dti_V1.nii.gz"))
 
     # Load the data
-    data = nib.load(os.path.join(indir, "data.nii"))
+    data = nib.load(os.path.join(indir, "data.nii.gz"))
 
     bvals, bvecs = read_bvals_bvecs(os.path.join(indir, "bvals"),
                                     os.path.join(indir, "bvecs"))
