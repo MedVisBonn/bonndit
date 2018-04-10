@@ -1,16 +1,19 @@
 from __future__ import division
-import os, errno
-import numpy as np
-import numpy.linalg as la
-from dipy.reconst.shore import shore_matrix
-from dipy.core.geometry import vec2vec_rotmat
-from dipy.core.gradients import gradient_table
-import cvxopt
-from tqdm import tqdm
+
+import errno
+import os
 import pickle
 
+import cvxopt
+import numpy as np
+import numpy.linalg as la
 from bonndit.constants import LOTS_OF_DIRECTIONS
-from bonndit.michi import shore, esh, tensor, fields
+from bonndit.michi import shore, esh, tensor
+from dipy.core.geometry import vec2vec_rotmat
+from dipy.core.gradients import gradient_table, reorient_bvecs
+from dipy.reconst.shore import shore_matrix
+from tqdm import tqdm
+
 
 class ShoreModel:
     def __init__(self, gtab, order=4, zeta=700, tau=1 / (4 * np.pi ** 2)):
@@ -150,13 +153,21 @@ class ShoreFit:
         self.tau = model.tau
 
     @classmethod
-    def load(cls, input):
-        with open(input, 'rb') as in_file:
+    def load(cls, filepath):
+        with open(filepath, 'rb') as in_file:
             return pickle.load(in_file)
 
     def save(self, output):
         with open(output, 'wb') as out_file:
             pickle.dump(self, out_file, -1)
+
+    @classmethod
+    def old_load(cls, filepath):
+        response = np.load(filepath)
+
+        gtab = gradient_table(response['bvals'], response['bvecs'])
+        model = ShoreModel(gtab, response['order'], response['zeta'], response['tau'])
+        return cls(model, (response['csf'], response['gm'], response['wm']))
 
     def old_save(self, outdir):
         try:
@@ -166,10 +177,22 @@ class ShoreFit:
                 raise
 
         np.savez(outdir + 'response.npz', csf=self.signal_csf, gm=self.signal_gm, wm=self.signal_wm,
-                 zeta=self.zeta, tau=self.tau)
+                 zeta=self.zeta, tau=self.tau, order=self.order, bvals=self.gtab.bvals, bvecs=self.gtab.bvecs)
 
-    def fiber_orientation_distribution_functions(self, data, outdir, pos='hpsd', verbose=False):
-        # Deconvolve the signal with the 3 response functions
+    def fodf(self, img, pos='hpsd', verbose=False):
+        """ Deconvolve the signal with the 3 response functions
+
+        :param img:
+        :param pos:
+        :param verbose:
+        :return:
+        """
+
+        #data = img.get_data().astype('float32')
+        #gtab = reorient_bvecs(self.gtab, [img.affine for x in self.gtab.bvals if x > 0])
+        from bonndit.michi import dwmri
+        data, gtab, meta = dwmri.load(img)
+
 
         space = data.shape[:3]
 
@@ -183,7 +206,7 @@ class ShoreFit:
 
         # Build matrix that maps ODF+volume fractions to signal
         # in two steps: First, SHORE matrix
-        M_shore = shore_matrix(self.order, self.zeta, self.gtab, self.tau)
+        M_shore = shore.matrix(self.order, self.order, self.zeta, gtab, self.tau)
 
         # then, convolution
         M_wm = shore.matrix_kernel(kernel_wm, self.order, self.order)
@@ -193,10 +216,9 @@ class ShoreFit:
 
         # now, multiply them together
         M = np.dot(M_shore, M)
-
         print('Condition number of M:', np.linalg.cond(M))
 
-        NN = ESH_LENGTH[self.order]
+        NN = esh.LENGTH[self.order]
 
         # positivity constraints
         if pos in ['nonneg', 'hpsd']:
@@ -209,7 +231,7 @@ class ShoreFit:
                 # set up non-negativity constraints
                 NC = LOTS_OF_DIRECTIONS.shape[0]
                 G = np.zeros((NC + 2, NN + 2))
-                G = esh.matrix(self.order, LOTS_OF_DIRECTIONS)
+                G[:NC, :NN] = esh.matrix(angular_order, LOTS_OF_DIRECTIONS)
                 # also constrain GM/CSF VFs to be non-negative
                 G[NC, NN] = -1
                 G[NC + 1, NN + 1] = -1
@@ -260,7 +282,7 @@ class ShoreFit:
                         print('Optimization unsuccessful.')
                     c = np.array(sol['x'])[:, 0]
                 else:
-                    c = deconvolve_hpsd(P, q, G, h, init, self.order)
+                    c = deconvolve_hpsd(P, q, G, h, init, self.order, NN)
             else:
                 c = la.lstsq(M, S)[0]
             out[i] = esh.esh_to_sym(c[:NN])
@@ -269,15 +291,8 @@ class ShoreFit:
             gmout[i] = c[NN] * f
         csfout[i] = c[NN + 1] * f
 
-        meta = None
-        fields.save_tensor(outdir + 'odf.nrrd', out, mask=mask, meta=meta)
-
-        # output meta data (WM/GM/CSF volume fractions)
-        fields.save_scalar(outdir + 'wm.nrrd', wmout, meta)
-        fields.save_scalar(outdir + 'gm.nrrd', gmout, meta)
-        fields.save_scalar(outdir + 'csf.nrrd', csfout, meta)
-
         return out, wmout, gmout, csfout
+
 
 def gtab_rotate(gtab, rot_matrix):
     N = len(gtab.bvals)
@@ -319,7 +334,7 @@ ESH_LENGTH = [1, 0, 6, 0, 15, 0, 28, 0, 45, 0, 66, 0, 91]
 
 
 # now uses a Quadratic Cone Program to do it in one shot
-def deconvolve_hpsd(P, q, G, h, init, order):
+def deconvolve_hpsd(P, q, G, h, init, order, NN):
     # NS = len(np.array(T{4,6,8}.TT).reshape(-1))
     NS = tensor.LENGTH[order // 2]
 

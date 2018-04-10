@@ -13,7 +13,7 @@ import sys
 import numpy as np
 from dipy.io import read_bvals_bvecs
 from dipy.core.gradients import gradient_table
-from bonndit.shore import ShoreModel
+from bonndit.shore import ShoreModel, ShoreFit
 import nibabel as nib
 
 
@@ -36,6 +36,7 @@ def main():
     parser.add_argument('-z', '--zeta', default=700, help='Radial scaling factor')
     parser.add_argument('-t', '--tau', default=1 / (4 * np.pi ** 2), help='q-scaling')
     parser.add_argument('-f', '--fawm', default=0.7, help='The WM FA threshold')
+    parser.add_argument('-R', '--responseonly', action='store_true', help='Calculate and save only the response functions.')
 
     # Print help if not called correctly
     try:
@@ -76,12 +77,20 @@ def main():
                                     os.path.join(indir, "bvecs"))
     gtab = gradient_table(bvals, bvecs)
 
-    model = ShoreModel(gtab, order, zeta, tau, )
-    fit = model.fit(data, wm_mask, gm_mask, csf_mask, dti_mask,
+    # Check if response functions already exist.
+    if os.path.exists(os.path.join(outdir, 'response.npz')):
+        fit = ShoreFit.old_load(os.path.join(outdir, 'response.npz'))
+        if verbose:
+            print('Loaded existing response functions.')
+    else:
+        model = ShoreModel(gtab, order, zeta, tau)
+        fit = model.fit(data, wm_mask, gm_mask, csf_mask, dti_mask,
                     dti_fa, dti_vecs, fawm, verbose=verbose)
+        fit.old_save(outdir)
 
-    fit.old_save(outdir)
-    out, wmout, gmout, csfout = fit.fiber_orientation_distribution_functions(data, outdir, verbose=verbose)
+    # Check if the response only flag is set.
+    if not args.responseonly:
+        out, wmout, gmout, csfout = fit.fodf(data, verbose=verbose)
 
 
 
