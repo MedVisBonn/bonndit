@@ -63,6 +63,8 @@ Optional:
 
 If you want to see a list of parameters type the following:
 
+.. code-block:: console
+
     $ get_fodfs.py -h
 
 
