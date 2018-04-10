@@ -182,11 +182,12 @@ class ShoreFit:
     def fodf(self, filename, pos='hpsd', verbose=False):
         """ Deconvolve the signal with the 3 response functions
 
-        :param img:
+        :param filename:
         :param pos:
         :param verbose:
         :return:
         """
+        # Load nrrd or nifti with the corresponding transformations
         data, gtab, meta = dwmri.load(filename)
 
 
