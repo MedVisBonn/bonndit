@@ -8,7 +8,7 @@ import cvxopt
 import numpy as np
 import numpy.linalg as la
 from bonndit.constants import LOTS_OF_DIRECTIONS
-from bonndit.michi import shore, esh, tensor
+from bonndit.michi import shore, esh, tensor, dwmri
 from dipy.core.geometry import vec2vec_rotmat
 from dipy.core.gradients import gradient_table, reorient_bvecs
 from dipy.reconst.shore import shore_matrix
@@ -179,7 +179,7 @@ class ShoreFit:
         np.savez(outdir + 'response.npz', csf=self.signal_csf, gm=self.signal_gm, wm=self.signal_wm,
                  zeta=self.zeta, tau=self.tau, order=self.order, bvals=self.gtab.bvals, bvecs=self.gtab.bvecs)
 
-    def fodf(self, img, pos='hpsd', verbose=False):
+    def fodf(self, filename, pos='hpsd', verbose=False):
         """ Deconvolve the signal with the 3 response functions
 
         :param img:
@@ -187,11 +187,7 @@ class ShoreFit:
         :param verbose:
         :return:
         """
-
-        #data = img.get_data().astype('float32')
-        #gtab = reorient_bvecs(self.gtab, [img.affine for x in self.gtab.bvals if x > 0])
-        from bonndit.michi import dwmri
-        data, gtab, meta = dwmri.load(img)
+        data, gtab, meta = dwmri.load(filename)
 
 
         space = data.shape[:3]

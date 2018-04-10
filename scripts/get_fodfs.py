@@ -56,7 +56,7 @@ def main():
     else:
         outdir = args.outdir
 
-    # Load fractional anisotropy    
+    # Load fractional anisotropy
     dti_fa = nib.load(os.path.join(indir, "dti_FA.nii.gz"))
 
     # Load DTI mask
@@ -71,7 +71,7 @@ def main():
     dti_vecs = nib.load(os.path.join(indir, "dti_V1.nii.gz"))
 
     # Load the data
-    data = nib.load(os.path.join(indir, "data.nii"))
+    data = nib.load(os.path.join(indir, "data.nii.gz"))
 
     bvals, bvecs = read_bvals_bvecs(os.path.join(indir, "bvals"),
                                     os.path.join(indir, "bvecs"))
