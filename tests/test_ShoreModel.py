@@ -45,6 +45,10 @@ def test_gtab_reorient2():
         gtab_reorient(gtab, old_vec, new_vec).gradients == np.array(
             [[0, 0, -2500], [0, 2500, 0], [2500, 0, 0], [0, 0, 0]])).all()
 
+
+# Test the deconvolution
+
+
 # class test_ShoreModel:
 #
 # def __init__(self):
