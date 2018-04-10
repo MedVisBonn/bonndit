@@ -6,9 +6,6 @@
 import pytest
 
 
-from bonndit import bonndit
-
-
 @pytest.fixture
 def response():
     """Sample pytest fixture.
