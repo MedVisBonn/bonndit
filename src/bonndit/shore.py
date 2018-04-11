@@ -15,7 +15,7 @@ from dipy.reconst.shore import shore_matrix
 from tqdm import tqdm
 
 
-class ShoreModel:
+class ShoreModel(object):
     def __init__(self, gtab, order=4, zeta=700, tau=1 / (4 * np.pi ** 2)):
         self.gtab = gtab
         self.order = order
@@ -141,7 +141,7 @@ class ShoreModel:
         return self._accumulate_shore(shore_coeff, mask)
 
 
-class ShoreFit:
+class ShoreFit(object):
     def __init__(self, model, shore_coef):
         self.model = model
         self.signal_csf = shore_coef[0]
@@ -159,7 +159,7 @@ class ShoreFit:
 
     def save(self, output):
         with open(output, 'wb') as out_file:
-            pickle.dump(self, out_file, -1)
+            pickle.dump(self, out_file, 2)
 
     @classmethod
     def old_load(cls, filepath):

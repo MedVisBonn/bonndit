@@ -5,7 +5,7 @@ from math import sin, cos, pi, exp, sqrt
 import numpy as np
 import numpy.linalg as la
 from . import tensor as T
-from .math import binom, multinom, cos_n, sin_n
+from .mmath import binom, multinom, cos_n, sin_n
 
 MAX_ORDER = 12
 

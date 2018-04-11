@@ -8,7 +8,7 @@
 #   200,110,101,020,011,002
 
 from math import factorial
-from .math import binom, multinom
+from .mmath import binom, multinom
 from .vector import project
 from itertools import product
 import numpy as np

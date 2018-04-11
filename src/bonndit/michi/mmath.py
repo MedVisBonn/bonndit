@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+
 # hmmm, python2 doesn't like this
 # from math import factorial
 import numpy as np

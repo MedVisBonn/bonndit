@@ -1,6 +1,6 @@
 import nibabel as nib
 import bonndit.shore as bs
-from tests.constants import SHORE_FIT_FILE, \
+from .constants import SHORE_FIT_FILE, \
     DWMRI_DUMMY_DATA, ODF_RESULT_HPSD, ODF_RESULT_NO_CONSTRAINT, ODF_RESULT_HPSD_WORLDC
 
 """
@@ -52,4 +52,4 @@ def test_ShoreModel_deconvolution_hpsd_worldc():
     out, wmout, gmout, csfout = fit.fodf(DWMRI_DUMMY_DATA, pos='hpsd')
     reference_output = nib.load(ODF_RESULT_HPSD_WORLDC).get_data().astype('float32')
     #assert (out == reference_output).all()
-    assert (((out - reference_output) / reference_output) < 1e-8).all()
+    assert (((out - reference_output) / reference_output) < 1e-7).all()
