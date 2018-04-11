@@ -1,3 +1,4 @@
+import numpy as np
 import nibabel as nib
 import bonndit.shore as bs
 from .constants import SHORE_FIT_FILE, \
