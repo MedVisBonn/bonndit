@@ -10,7 +10,7 @@ import numpy.linalg as la
 from bonndit.constants import LOTS_OF_DIRECTIONS
 from bonndit.michi import shore, esh, tensor, dwmri
 from dipy.core.geometry import vec2vec_rotmat
-from dipy.core.gradients import gradient_table, reorient_bvecs
+from dipy.core.gradients import gradient_table
 from dipy.reconst.shore import shore_matrix
 from tqdm import tqdm
 
@@ -117,6 +117,7 @@ class ShoreModel(object):
             if mask[i] == 0:
                 continue
 
+            #TODO: Decide if rcond=None would be better
             r = la.lstsq(M, data[i], rcond=-1)
             shore_coeff[i] = r[0]
 
@@ -192,7 +193,6 @@ class ShoreFit(object):
         # Load nrrd or nifti with the corresponding transformations
         data, gtab, meta = dwmri.load(filename)
 
-
         space = data.shape[:3]
 
         mask = np.ones(space)
@@ -232,7 +232,7 @@ class ShoreFit(object):
                 # set up non-negativity constraints
                 NC = LOTS_OF_DIRECTIONS.shape[0]
                 G = np.zeros((NC + 2, NN + 2))
-                G[:NC, :NN] = esh.matrix(angular_order, LOTS_OF_DIRECTIONS)
+                G[:NC, :NN] = esh.matrix(self.order, LOTS_OF_DIRECTIONS)
                 # also constrain GM/CSF VFs to be non-negative
                 G[NC, NN] = -1
                 G[NC + 1, NN + 1] = -1
@@ -285,14 +285,14 @@ class ShoreFit(object):
                 else:
                     c = deconvolve_hpsd(P, q, G, h, init, self.order, NN)
             else:
-                c = la.lstsq(M, S)[0]
+                c = la.lstsq(M, S, rcond=-1)[0]
             out[i] = esh.esh_to_sym(c[:NN])
             f = kernel_csf[0][0] / max(self.signal_csf[0], 1e-10)
             wmout[i] = c[0] * f
             gmout[i] = c[NN] * f
         csfout[i] = c[NN + 1] * f
 
-        return out, wmout, gmout, csfout
+        return out, wmout, gmout, csfout, mask, meta
 
 
 def gtab_rotate(gtab, rot_matrix):

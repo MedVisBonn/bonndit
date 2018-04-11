@@ -224,7 +224,7 @@ def load_tensor(filename, dtype='d'):
     return tensors, mask, meta
 
 
-def save_tensor(filename, data, mask=None, meta=default_meta, dtype='f'):
+def save_tensor(filename, data, mask=None, meta=default_meta, dtype='d'):
     assert (len(data.shape) == 4)
     assert (data.shape[3] in [6, 15, 28, 45, 66, 91])
     if mask is not None:

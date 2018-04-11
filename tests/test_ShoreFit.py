@@ -1,56 +1,35 @@
-import numpy as np
-import nibabel as nib
+from bonndit.michi import fields
 import bonndit.shore as bs
-from .constants import SHORE_FIT_FILE, \
-    DWMRI_DUMMY_DATA, ODF_RESULT_HPSD, ODF_RESULT_NO_CONSTRAINT, ODF_RESULT_HPSD_WORLDC
-
-"""
-def test_ShoreModel_deconvolution_hpsd():
-    ''' Here we test the deconvolution with the hpsd constraint.
-
-    '''
-    fit = bs.ShoreFit.load(SHORE_FIT_FILE)
-
-    data = nib.load(DWMRI_DUMMY_DATA)
-    out, wmout, gmout, csfout = fit.fodf(data, pos='hpsd')
+from .constants import SHORE_FIT_NPZ, DWMRI_DUMMY_DATA, \
+    ODF_RESULT_HPSD, ODF_RESULT_NONNEG, ODF_RESULT_NO_CONSTRAINT
 
 
-    assert (out == nib.load(ODF_RESULT_HPSD).get_data()).all()
+def test_ShoreFit_deconvolution_hpsd():
+    """ Here we test the deconvolution with the hpsd constraint calculated in world coordinates
 
-def test_ShoreModel_deconvolution_nonneg():
-    ''' Here we test the deconvolution with the nonneg constraint.
+    """
+    fit = bs.ShoreFit.old_load(SHORE_FIT_NPZ)
+    out, wmout, gmout, csfout, mask, meta = fit.fodf(DWMRI_DUMMY_DATA, pos='hpsd')
+    tensors, mask, meta = fields.load_tensor(ODF_RESULT_HPSD)
 
-    '''
-    fit = bs.ShoreFit.load(SHORE_FIT_FILE)
+    assert (out == tensors).all()
 
-    data = nib.load(DWMRI_DUMMY_DATA)
-    out, wmout, gmout, csfout = fit.fodf(data, pos='nonneg')
+def test_ShoreFit_deconvolution_nonneg():
+    """ Here we test the deconvolution with the hpsd constraint calculated in world coordinates
 
+    """
+    fit = bs.ShoreFit.old_load(SHORE_FIT_NPZ)
+    out, wmout, gmout, csfout, mask, meta = fit.fodf(DWMRI_DUMMY_DATA, pos='nonneg')
+    tensors, mask, meta = fields.load_tensor(ODF_RESULT_NONNEG)
 
-    assert (out == nib.load(ODF_RESULT_NONNEG).get_data()).all()
+    assert (out == tensors).all()
 
-def test_ShoreModel_deconvolution_no_constraint():
-    ''' Here we test the deconvolution without any constraint.
+def test_ShoreFit_deconvolution_no_constraint():
+    """ Here we test the deconvolution with the hpsd constraint calculated in world coordinates
 
-    '''
-    fit = bs.ShoreFit.load(SHORE_FIT_FILE)
+    """
+    fit = bs.ShoreFit.old_load(SHORE_FIT_NPZ)
+    out, wmout, gmout, csfout, mask, meta = fit.fodf(DWMRI_DUMMY_DATA, pos='none')
+    tensors, mask, meta = fields.load_tensor(ODF_RESULT_NO_CONSTRAINT)
 
-    data = nib.load(DWMRI_DUMMY_DATA)
-    out, wmout, gmout, csfout = fit.fodf(data, pos='none')
-
-
-    assert (out == nib.load(ODF_RESULT_NO_CONSTRAINT).get_data()).all()
-"""
-
-def test_ShoreModel_deconvolution_hpsd_worldc():
-    ''' Here we test the deconvolution with the hpsd constraint calculated in world coordinates
-
-    '''
-    fit = bs.ShoreFit.load(SHORE_FIT_FILE)
-    import os
-    #data = nib.load(DWMRI_DUMMY_DATA)
-    #out, wmout, gmout, csfout = fit.fodf(data, pos='hpsd')
-    out, wmout, gmout, csfout = fit.fodf(DWMRI_DUMMY_DATA, pos='hpsd')
-    reference_output = nib.load(ODF_RESULT_HPSD_WORLDC).get_data().astype('float32')
-    #assert (out == reference_output).all()
-    assert (((out - reference_output) / reference_output) < 1e-7).all()
+    assert (out == tensors).all()

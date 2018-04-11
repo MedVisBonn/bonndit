@@ -7,7 +7,7 @@ bonndit
         :target: https://pypi.python.org/pypi/bonndit
 
 .. image:: https://img.shields.io/travis/Oli4/bonndit.svg
-        :target: https://travis-ci.org/Oli4/bonndit
+        :target: https://travis-ci.org/MedVisBonn/bonndit
 
 .. image:: https://readthedocs.org/projects/bonndit/badge/?version=latest
         :target: https://bonndit.readthedocs.io/en/latest/?badge=latest
@@ -28,7 +28,7 @@ Installation
 To install bonndit, run the following commands. As long as the package is not public you need to provide your github credentials for cloning.
 
 .. code-block:: console
-    
+
     $ git clone git@github.com:MedVisBonn/bonndit.git
     $ pip install -e bonndit
 
@@ -41,10 +41,10 @@ Features
 
 Getting Started
 ---------------
-For calculating the response functions and the fODFs from the given data run the following command: 
+For calculating the response functions and the fODFs from the given data run the following command:
 
 .. code-block:: console
-    
+
     $ get_fodfs.py -i /path/to/your/data --verbose True
 
 The specified folder should contain the following files:
