@@ -7,7 +7,7 @@ bonndit
         :target: https://pypi.python.org/pypi/bonndit
 
 .. image:: https://img.shields.io/travis/Oli4/bonndit.svg
-        :target: https://travis-ci.org/MedVisBonn/bonndit
+        :target: https://travis-ci.com/MedVisBonn/bonndit
 
 .. image:: https://readthedocs.org/projects/bonndit/badge/?version=latest
         :target: https://bonndit.readthedocs.io/en/latest/?badge=latest
