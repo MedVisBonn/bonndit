@@ -59,9 +59,6 @@ class ShoreModel(object):
         # Load data
         data = data.get_data()
 
-        # Do not show divide by zero warnings
-        np.seterr(divide='ignore', invalid='ignore')
-
         # Calculate csf response
         shore_coeff = self._get_response(data, mask_csf, verbose)
         signal_csf = self._shore_compress(shore_coeff)
@@ -108,7 +105,10 @@ class ShoreModel(object):
                 accum_count += 1
         if accum_count == 0:
             return shore_accum
-        return shore_accum / accum_count
+
+        # Do not show divide by zero warnings
+        with np.errstate(divide='ignore', invalid='ignore'):
+            return shore_accum / accum_count
 
     def _get_response(self, data, mask, verbose=False):
         """
@@ -233,7 +233,9 @@ class ShoreFit(object):
 
         # now, multiply them together
         M = np.dot(M_shore, M)
-        print('Condition number of M:', np.linalg.cond(M))
+
+        with np.errstate(divide='ignore', invalid='ignore'):
+            print('Condition number of M:', la.cond(M))
 
         NN = esh.LENGTH[self.order]
 
