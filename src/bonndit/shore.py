@@ -290,7 +290,7 @@ class ShoreFit(object):
             f = kernel_csf[0][0] / max(self.signal_csf[0], 1e-10)
             wmout[i] = c[0] * f
             gmout[i] = c[NN] * f
-        csfout[i] = c[NN + 1] * f
+            csfout[i] = c[NN + 1] * f
 
         return out, wmout, gmout, csfout, mask, meta
 
