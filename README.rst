@@ -6,8 +6,8 @@ bonndit
 .. image:: https://img.shields.io/pypi/v/bonndit.svg
         :target: https://pypi.python.org/pypi/bonndit
 
-.. image:: https://img.shields.io/travis/Oli4/bonndit.svg
-        :target: https://travis-ci.com/MedVisBonn/bonndit
+.. image:: https://travis-ci.com/MedVisBonn/bonndit.svg?token=FqhWHkwE6EPeAZDNegqx&branch=master
+    :target: https://travis-ci.com/MedVisBonn/bonndit
 
 .. image:: https://readthedocs.org/projects/bonndit/badge/?version=latest
         :target: https://bonndit.readthedocs.io/en/latest/?badge=latest
