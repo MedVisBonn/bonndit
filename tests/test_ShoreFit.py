@@ -7,8 +7,8 @@ import os
 
 
 def test_ShoreFit_deconvolution_hpsd():
-    """ Here we test the deconvolution with the hpsd constraint calculated in world coordinates
-
+    """ Here we test the deconvolution with the hpsd constraint.
+    The result calculated with bonndit are compared to results from the old code
     """
     fit = bs.ShoreFit.old_load(SHORE_FIT_NPZ)
     out, wmout, gmout, csfout, mask, meta = fit.fodf(
@@ -23,8 +23,8 @@ def test_ShoreFit_deconvolution_hpsd():
 
 
 def test_ShoreFit_deconvolution_nonneg():
-    """ Here we test the deconvolution with the hpsd constraint calculated in world coordinates
-
+    """ Here we test the deconvolution with the hpsd constraint.
+    The result calculated with bonndit are compared to results from the old code
     """
     fit = bs.ShoreFit.old_load(SHORE_FIT_NPZ)
     out, wmout, gmout, csfout, mask, meta = fit.fodf(
@@ -39,8 +39,8 @@ def test_ShoreFit_deconvolution_nonneg():
 
 
 def test_ShoreFit_deconvolution_no_constraint():
-    """ Here we test the deconvolution with the hpsd constraint calculated in world coordinates
-
+    """ Here we test the deconvolution with the hpsd constraint.
+    The result calculated with bonndit are compared to results from the old code
     """
     fit = bs.ShoreFit.old_load(SHORE_FIT_NPZ)
     out, wmout, gmout, csfout, mask, meta = fit.fodf(
