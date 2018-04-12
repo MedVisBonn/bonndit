@@ -6,8 +6,8 @@ from .constants import DECONVOLUTION_VOLUMES_DIR as DVD
 import os
 
 def test_ShoreFit_deconvolution_hpsd():
-    """ Here we test the deconvolution with the hpsd constraint calculated in world coordinates
-
+    """ Here we test the deconvolution with the hpsd constraint.
+    The result calculated with bonndit are compared to results from the old code
     """
     fit = bs.ShoreFit.old_load(SHORE_FIT_NPZ)
     out, wmout, gmout, csfout, mask, meta = fit.fodf(DWMRI_DUMMY_DATA, pos='hpsd')
@@ -20,8 +20,8 @@ def test_ShoreFit_deconvolution_hpsd():
 
 
 def test_ShoreFit_deconvolution_nonneg():
-    """ Here we test the deconvolution with the hpsd constraint calculated in world coordinates
-
+    """ Here we test the deconvolution with the hpsd constraint.
+    The result calculated with bonndit are compared to results from the old code
     """
     fit = bs.ShoreFit.old_load(SHORE_FIT_NPZ)
     out, wmout, gmout, csfout, mask, meta = fit.fodf(DWMRI_DUMMY_DATA, pos='nonneg')
@@ -33,8 +33,8 @@ def test_ShoreFit_deconvolution_nonneg():
     and (csfout == fields.load_scalar(os.path.join(DVD, 'csfnonneg.nrrd'))[0]).all()
 
 def test_ShoreFit_deconvolution_no_constraint():
-    """ Here we test the deconvolution with the hpsd constraint calculated in world coordinates
-
+    """ Here we test the deconvolution with the hpsd constraint.
+    The result calculated with bonndit are compared to results from the old code
     """
     fit = bs.ShoreFit.old_load(SHORE_FIT_NPZ)
     out, wmout, gmout, csfout, mask, meta = fit.fodf(DWMRI_DUMMY_DATA, pos='none')

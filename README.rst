@@ -14,9 +14,6 @@ bonndit
         :alt: Documentation Status
 
 
-file:///home/olivier/Devel/bonndit/docs/installation.rst
-
-
 The bonndit package contains the latest diffusion imaging tools developed at the University of Bonn.
 
 

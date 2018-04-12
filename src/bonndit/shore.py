@@ -9,13 +9,16 @@ import numpy as np
 import numpy.linalg as la
 from bonndit.constants import LOTS_OF_DIRECTIONS
 from bonndit.michi import shore, esh, tensor, dwmri
-from dipy.core.geometry import vec2vec_rotmat
+
 from dipy.core.gradients import gradient_table
 from dipy.reconst.shore import shore_matrix
 from tqdm import tqdm
 
+from .gradients import gtab_reorient
 
 class ShoreModel(object):
+    """ Fit WM, GM and CSF response functions to the given DW data.
+    """
     def __init__(self, gtab, order=4, zeta=700, tau=1 / (4 * np.pi ** 2)):
         self.gtab = gtab
         self.order = order
@@ -23,6 +26,19 @@ class ShoreModel(object):
         self.tau = tau
 
     def fit(self, data, wm_mask, gm_mask, csf_mask, dti_mask, dti_fa, dti_vecs, fawm=0.7, verbose=False):
+        """ Fit the response functions and return the shore coefficients
+
+        :param data:
+        :param wm_mask:
+        :param gm_mask:
+        :param csf_mask:
+        :param dti_mask:
+        :param dti_fa:
+        :param dti_vecs:
+        :param fawm:
+        :param verbose:
+        :return:
+        """
         # Load DTI fa map
         fa = dti_fa.get_data()
 
@@ -72,7 +88,7 @@ class ShoreModel(object):
         :param s:
         :return:
         """
-        r = np.zeros(get_kernel_size(self.order))
+        r = np.zeros(shore.get_kernel_size(self.order, self.order))
         counter = 0
         ccounter = 0
         for l in range(0, self.order + 1, 2):
@@ -83,10 +99,14 @@ class ShoreModel(object):
         return r
 
     def _accumulate_shore(self, shore_coeff, mask):
-        """Average over all shore coefficients
+        """ Average over all shore coefficients
+
+        :param shore_coeff:
+        :param mask:
+        :return:
         """
 
-        shore_accum = np.zeros(shore_get_size(self.order))
+        shore_accum = np.zeros(shore.get_size(self.order, self.order))
         accum_count = 0
 
         # Iterate over the data indices
@@ -106,8 +126,12 @@ class ShoreModel(object):
     def _get_response(self, data, mask, verbose=False):
         """
 
+        :param data:
+        :param mask:
+        :param verbose:
+        :return:
         """
-        shore_coeff = np.zeros(data.shape[:3] + (shore_get_size(self.order),))
+        shore_coeff = np.zeros(data.shape[:3] + (shore.get_size(self.order, self.order),))
         M = shore_matrix(self.order, self.zeta, self.gtab, self.tau)
 
         # Iterate over the data indices; show progress with tqdm
@@ -125,9 +149,15 @@ class ShoreModel(object):
 
     def _get_response_reorient(self, data, mask, vecs, verbose=False):
         """
-        vecs: the first principal direction of diffusion for every voxel
+
+        :param data:
+        :param mask:
+        :param vecs: First principal direction of diffusion for every voxel
+        :param verbose:
+        :return:
         """
-        shore_coeff = np.zeros(data.shape[:3] + (shore_get_size(self.order),))
+
+        shore_coeff = np.zeros(data.shape[:3] + (shore.get_size(self.order, self.order),))
 
         # Iterate over the data indices; show progress with tqdm
         for i in tqdm(np.ndindex(*data.shape[:3]),
@@ -157,15 +187,30 @@ class ShoreFit(object):
 
     @classmethod
     def load(cls, filepath):
+        """
+
+        :param filepath:
+        :return:
+        """
         with open(filepath, 'rb') as in_file:
             return pickle.load(in_file)
 
     def save(self, output):
+        """
+
+        :param output:
+        :return:
+        """
         with open(output, 'wb') as out_file:
             pickle.dump(self, out_file, 2)
 
     @classmethod
     def old_load(cls, filepath):
+        """
+
+        :param filepath:
+        :return:
+        """
         response = np.load(filepath)
 
         gtab = gradient_table(response['bvals'], response['bvecs'])
@@ -173,6 +218,11 @@ class ShoreFit(object):
         return cls(model, (response['csf'], response['gm'], response['wm']))
 
     def old_save(self, outdir):
+        """
+
+        :param outdir:
+        :return:
+        """
         try:
             os.makedirs(outdir)
         except OSError as e:
@@ -283,7 +333,7 @@ class ShoreFit(object):
                         print('Optimization unsuccessful.')
                     c = np.array(sol['x'])[:, 0]
                 else:
-                    c = deconvolve_hpsd(P, q, G, h, init, self.order, NN)
+                    c = self.deconvolve_hpsd(P, q, G, h, init, NN)
             else:
                 c = la.lstsq(M, S, rcond=-1)[0]
             out[i] = esh.esh_to_sym(c[:NN])
@@ -294,70 +344,40 @@ class ShoreFit(object):
 
         return out, wmout, gmout, csfout, mask, meta
 
+    def deconvolve_hpsd(self, P, q, G, h, init, NN):
+        """ Use Quadratic Cone Program for one shot deconvolution
 
-def gtab_rotate(gtab, rot_matrix):
-    N = len(gtab.bvals)
-    rot_bvecs = np.zeros((N, 3))
-    for i in range(N):
-        rot_bvecs[i, :] = np.dot(rot_matrix, gtab.bvecs[i, :])
-    return gradient_table(gtab.bvals, rot_bvecs)
+        :param P:
+        :param q:
+        :param G:
+        :param h:
+        :param init:
+        :param order:
+        :param NN:
+        :return:
+        """
+        # NS = len(np.array(T{4,6,8}.TT).reshape(-1))
+        NS = tensor.LENGTH[self.order // 2]
 
+        # first two are orthant constraints, rest positive definiteness
+        dims = {'l': 2, 'q': [], 's': [NS]}
 
-def gtab_reorient(gtab, old_vec, new_vec=np.array((0, 0, 1))):
-    # rotate gradients to align 1st eigenvector specified direction - default is (0,0,1)
-    rot_matrix = vec2vec_rotmat(old_vec, new_vec)
-    return gtab_rotate(gtab, rot_matrix)
-
-
-MAX_ORDER = 12
-
-SIZES = [1, 0, 7, 0, 22, 0, 50, 0, 95, 0, 161, 0, 252]
-
-
-def shore_get_size(order):
-    try:
-        return SIZES[order]
-    except IndexError:
-        raise ValueError('Please specify an order <= 12')
-
-
-KERNEL_SIZES = [1, 0, 3, 0, 6, 0, 10, 0, 15, 0, 21, 0, 28]
-
-
-def get_kernel_size(order):
-    try:
-        return KERNEL_SIZES[order]
-    except IndexError:
-        raise ValueError('Please specify an order <= 12')
-
-
-ESH_LENGTH = [1, 0, 6, 0, 15, 0, 28, 0, 45, 0, 66, 0, 91]
-
-
-# now uses a Quadratic Cone Program to do it in one shot
-def deconvolve_hpsd(P, q, G, h, init, order, NN):
-    # NS = len(np.array(T{4,6,8}.TT).reshape(-1))
-    NS = tensor.LENGTH[order // 2]
-
-    # first two are orthant constraints, rest positive definiteness
-    dims = {'l': 2, 'q': [], 's': [NS]}
-
-    # This init stuff is a HACK. It empirically removes some isolated failure cases
-    # first, allow it to use its own initialization
-    try:
-        sol = cvxopt.solvers.coneqp(P, q, G, h, dims)
-    except Exception as e:
-        print("error-----------", e)
-        return np.zeros(NN + 2)
-    if sol['status'] != 'optimal':
-        # try again with our initialization
+        # This init stuff is a HACK. It empirically removes some isolated failure cases
+        # first, allow it to use its own initialization
         try:
-            sol = cvxopt.solvers.coneqp(P, q, G, h, dims, initvals={'x': init})
+            sol = cvxopt.solvers.coneqp(P, q, G, h, dims)
         except Exception as e:
             print("error-----------", e)
             return np.zeros(NN + 2)
         if sol['status'] != 'optimal':
-            print('Optimization unsuccessful.', sol)
-    c = np.array(sol['x'])[:, 0]
+            # try again with our initialization
+            try:
+                sol = cvxopt.solvers.coneqp(P, q, G, h, dims, initvals={'x': init})
+            except Exception as e:
+                print("error-----------", e)
+                return np.zeros(NN + 2)
+            if sol['status'] != 'optimal':
+                print('Optimization unsuccessful.', sol)
+        c = np.array(sol['x'])[:, 0]
 
-    return c
+        return c
