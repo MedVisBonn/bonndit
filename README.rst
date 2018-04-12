@@ -45,6 +45,7 @@ For calculating the response functions and the fODFs from the given data run the
     $ get_fodfs.py -i /path/to/your/data --verbose True
 
 The specified folder should contain the following files:
+
 * `bvecs`: b-vectors
 * `bvals`: b-values
 * `data.nii.gz`: The diffusion weighted data
@@ -55,6 +56,7 @@ The specified folder should contain the following files:
 * `dti_V1.nii.gz`: The first eigenvector of the diffusion tensor
 
 Optional:
+
 * `mask.nii.gz`: DTI mask
 
 
