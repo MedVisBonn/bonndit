@@ -46,18 +46,18 @@ For calculating the response functions and the fODFs from the given data run the
 
 The specified folder should contain the following files:
 
-* `bvecs`: b-vectors
-* `bvals`: b-values
-* `data.nii.gz`: The diffusion weighted data
-* `dti_FA.nii.gz`: Diffusion tensor fractional anisotropy map
-* `fast_pve_0.nii.gz`: CSF mask
-* `fast_pve_1.nii.gz`: GM mask
-* `fast_pve_2.nii.gz`: WM mask
-* `dti_V1.nii.gz`: The first eigenvector of the diffusion tensor
+* :code:`bvecs`: b-vectors
+* :code:`bvals`: b-values
+* :code:`data.nii.gz`: The diffusion weighted data
+* :code:`dti_FA.nii.gz`: Diffusion tensor fractional anisotropy map
+* :code:`fast_pve_0.nii.gz`: CSF mask
+* :code:`fast_pve_1.nii.gz`: GM mask
+* :code:`fast_pve_2.nii.gz`: WM mask
+* :code:`dti_V1.nii.gz`: The first eigenvector of the diffusion tensor
 
 Optional:
 
-* `mask.nii.gz`: DTI mask
+* :code:`mask.nii.gz`: DTI mask
 
 
 If you want to see a list of parameters type the following:

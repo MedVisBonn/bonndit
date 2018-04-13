@@ -157,7 +157,7 @@ def load(filename, dtype='f'):
     else:
         raise Exception("unknown file type: " + filename)
 
-    assert data.shape[3] == gtab.n()
+    assert data.shape[-1] == gtab.n()
 
     return data, gtab, meta
 
@@ -183,7 +183,7 @@ def save(filename, data, gtab, meta, dtype='f'):
 
 def _nrrd_parse_gtab(data, meta):
 
-    N = data.shape[3]
+    N = data.shape[-1]
     bmax = float(meta.key_value_pairs['DWMRI_b-value'])
     B = np.zeros(N)
     G = np.zeros((N, 3))
@@ -240,7 +240,7 @@ def meta_set_gtab(meta, gtab):
 
 
 def get_s0(data, gtab):
-    s0 = np.zeros(data.shape[:3])
+    s0 = np.zeros(data.shape[:-1])
     n = 0
     for i, b in enumerate(gtab.bvals):
         if b > 20:

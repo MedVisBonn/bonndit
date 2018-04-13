@@ -44,6 +44,7 @@ class ShoreModel(object):
         :param verbose:
         :return:
         """
+
         # Load DTI fa map
         fa = dti_fa.get_data()
 
@@ -73,9 +74,8 @@ class ShoreModel(object):
         mask_wm = np.logical_and(
             mask, np.logical_and(
                 wm > 0.95, fa > float(fawm))).astype('int')
-
         # Load data
-        data = data.get_data()
+        # data = data.get_data()
 
         # Calculate csf response
         shore_coeff = self._get_response(data, mask_csf, verbose)
@@ -141,13 +141,14 @@ class ShoreModel(object):
         :return:
         """
         shore_coeff = np.zeros(
-            data.shape[: 3] + (shore.get_size(self.order, self.order),))
-        M = shore_matrix(self.order, self.zeta, self.gtab, self.tau)
+            data.shape[: -1] + (shore.get_size(self.order, self.order),))
+        with np.errstate(divide='ignore', invalid='ignore'):
+            M = shore_matrix(self.order, self.zeta, self.gtab, self.tau)
 
         # Iterate over the data indices; show progress with tqdm
         for i in tqdm(
-                np.ndindex(*data.shape[:3]),
-                total=np.prod(data.shape[:3]),
+                np.ndindex(*data.shape[:-1]),
+                total=np.prod(data.shape[:-1]),
                 disable=not verbose):
             if mask[i] == 0:
                 continue
@@ -169,18 +170,17 @@ class ShoreModel(object):
         """
 
         shore_coeff = np.zeros(
-            data.shape[: 3] + (shore.get_size(self.order, self.order),))
-
+            data.shape[: -1] + (shore.get_size(self.order, self.order),))
         # Iterate over the data indices; show progress with tqdm
         for i in tqdm(
-                np.ndindex(*data.shape[:3]),
-                total=np.prod(data.shape[:3]),
+                np.ndindex(*data.shape[:-1]),
+                total=np.prod(data.shape[:-1]),
                 disable=not verbose):
             if mask[i] == 0:
                 continue
-
             gtab2 = gtab_reorient(self.gtab, vecs[i])
-            M = shore_matrix(self.order, self.zeta, gtab2, self.tau)
+            with np.errstate(divide='ignore', invalid='ignore'):
+                M = shore_matrix(self.order, self.zeta, gtab2, self.tau)
             r = la.lstsq(M, data[i], rcond=-1)
             shore_coeff[i] = r[0]
 
@@ -245,10 +245,10 @@ class ShoreFit(object):
             if e.errno != errno.EEXIST:
                 raise
 
-        np.savez(
-            outdir + 'response.npz', csf=self.signal_csf, gm=self.signal_gm,
-            wm=self.signal_wm, zeta=self.zeta, tau=self.tau, order=self.order,
-            bvals=self.gtab.bvals, bvecs=self.gtab.bvecs)
+        np.savez(os.path.join(outdir, 'response.npz'),
+                 csf=self.signal_csf, gm=self.signal_gm, wm=self.signal_wm,
+                 zeta=self.zeta, tau=self.tau, order=self.order,
+                 bvals=self.gtab.bvals, bvecs=self.gtab.bvecs)
 
     def fodf(self, filename, pos='hpsd', verbose=False):
         """ Deconvolve the signal with the 3 response functions
@@ -261,7 +261,7 @@ class ShoreFit(object):
         # Load nrrd or nifti with the corresponding transformations
         data, gtab, meta = dwmri.load(filename)
 
-        space = data.shape[:3]
+        space = data.shape[:-1]
 
         mask = np.ones(space)
         # TODO: Add possibility to add mask
@@ -341,8 +341,8 @@ class ShoreFit(object):
         csfout = np.zeros(space)
 
         for i in tqdm(
-                np.ndindex(*data.shape[:3]),
-                total=np.prod(data.shape[:3]),
+                np.ndindex(*data.shape[:-1]),
+                total=np.prod(data.shape[:-1]),
                 disable=not verbose,
                 desc='Optimization'):
             if mask[i] == 0:
@@ -391,7 +391,7 @@ class ShoreFit(object):
         # first, allow it to use its own initialization
         try:
             sol = cvxopt.solvers.coneqp(P, q, G, h, dims)
-        except Exception as e:
+        except ValueError as e:
             print("error-----------", e)
             return np.zeros(NN + 2)
         if sol['status'] != 'optimal':
@@ -399,7 +399,7 @@ class ShoreFit(object):
             try:
                 sol = cvxopt.solvers.coneqp(
                     P, q, G, h, dims, initvals={'x': init})
-            except Exception as e:
+            except ValueError as e:
                 print("error-----------", e)
                 return np.zeros(NN + 2)
             if sol['status'] != 'optimal':
