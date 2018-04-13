@@ -226,10 +226,10 @@ def load_tensor(filename, dtype='d'):
 
 def save_tensor(filename, data, mask=None, meta=default_meta, dtype='d'):
     assert (len(data.shape) == 4)
-    assert (data.shape[3] in [6, 15, 28, 45, 66, 91])
+    assert (data.shape[-1] in [6, 15, 28, 45, 66, 91])
     if mask is not None:
         assert (len(mask.shape) == 3)
-        assert (mask.shape == data.shape[:3])
+        assert (mask.shape == data.shape[:-1])
     order = T.get_order(data)
 
     if is_nrrd(filename):

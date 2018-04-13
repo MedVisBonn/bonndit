@@ -2,7 +2,6 @@ from dipy.core.geometry import vec2vec_rotmat
 import numpy as np
 from dipy.core.gradients import gradient_table
 
-
 def gtab_rotate(gtab, rot_matrix):
     """ Rotate gradients with a rotation matrix (3,3)
 
