@@ -41,10 +41,10 @@ class ShoreModel(object):
         """
 
         # Load DTI fa map
-        fa = dti_fa.get_data()
+        fa = dti_fa#.get_data()
 
         # Load DTI vecs
-        vecs = dti_vecs.get_data()
+        vecs = dti_vecs#.get_data()
 
 
         # Load DTI mask if available
@@ -52,17 +52,17 @@ class ShoreModel(object):
             NX, NY, NZ = fa.shape
             mask = np.ones((NX, NY, NZ))
         else:
-            mask = dti_mask.get_data()
+            mask = dti_mask#.get_data()
 
         # Create masks
         # CSF
-        csf = csf_mask.get_data()
+        csf = csf_mask#.get_data()
         mask_csf = np.logical_and(mask, np.logical_and(csf > 0.95, fa < 0.2)).astype('int')
         # GM
-        gm = gm_mask.get_data()
+        gm = gm_mask#.get_data()
         mask_gm = np.logical_and(mask, np.logical_and(gm > 0.95, fa < 0.2)).astype('int')
         # WM
-        wm = wm_mask.get_data()
+        wm = wm_mask#.get_data()
         mask_wm = np.logical_and(mask, np.logical_and(wm > 0.95, fa > float(fawm))).astype('int')
         # Load data
         #data = data.get_data()
@@ -133,7 +133,7 @@ class ShoreModel(object):
         """
         shore_coeff = np.zeros(data.shape[:-1] + (shore.get_size(self.order, self.order),))
         with np.errstate(divide='ignore', invalid='ignore'):
-            M = shore_matrix(self.order, self.zeta, self.gtab, self.tau)
+            M = shore.matrix(self.order, self.order, self.zeta, self.gtab, self.tau)
 
         # Iterate over the data indices; show progress with tqdm
         for i in tqdm(np.ndindex(*data.shape[:-1]),
@@ -167,7 +167,7 @@ class ShoreModel(object):
                 continue
             gtab2 = gtab_reorient(self.gtab, vecs[i])
             with np.errstate(divide='ignore', invalid='ignore'):
-                M = shore_matrix(self.order, self.zeta, gtab2, self.tau)
+                M = shore.matrix(self.order, self.order, self.zeta, gtab2, self.tau)
             r = la.lstsq(M, data[i], rcond=-1)
             shore_coeff[i] = r[0]
 
