@@ -5,3 +5,5 @@
 __author__ = """Olivier Morelle"""
 __email__ = 'morelle@uni-bonn.de'
 __version__ = '0.1.0'
+
+from .shore import ShoreFit, ShoreModel
