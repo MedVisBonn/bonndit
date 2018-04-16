@@ -1,12 +1,17 @@
 import os
-import nibabel as nib
-from dipy.io import read_bvals_bvecs
+
+from bonndit import ShoreModel, ShoreFit
+from bonndit.michi import dwmri, fields
 from dipy.core.gradients import gradient_table
 
-from bonndit.michi import dwmri, fields
+from .constants import DECONVOLUTION_DIR, SHORE_FIT_TEST
 
-from bonndit.shore import ShoreModel, ShoreFit
-from .constants import DECONVOLUTION_DIR, DECONVOLUTION_RESULTS_DIR, SHORE_FIT
+"""
+I would prefer to load the data and do all the transformation explicitly using a 
+class written for this purpose. - Explicit is better than implicit.
+For now we use the old loading procedure which does all the transformation 
+implicitly. 
+"""
 
 # Load fractional anisotropy
 #dti_fa = nib.load(os.path.join(DECONVOLUTION_DIR, "dti_FA.nii.gz"))
@@ -44,12 +49,14 @@ def test_ShoreModel():
     fit = model.fit(data, wm_mask, gm_mask, csf_mask, dti_mask,
                     dti_fa, dti_vecs)
 
-    reference_fit = ShoreFit.old_load(SHORE_FIT)
+    reference_fit = ShoreFit.old_load(SHORE_FIT_TEST)
 
-    print((reference_fit.signal_wm - fit.signal_wm) )#/reference_fit.signal_wm)
-    print((reference_fit.signal_gm - fit.signal_gm) )#/ reference_fit.signal_gm)
-    print((reference_fit.signal_csf - fit.signal_csf))  # / reference_fit.signal_csf)
-    assert (reference_fit.signal_csf == fit.signal_csf).all() \
-    and (reference_fit.signal_gm == fit.signal_gm).all() \
-    and (reference_fit.signal_wm == fit.signal_wm).all()
+    # print((reference_fit.signal_wm - fit.signal_wm) )#/reference_fit.signal_wm)
+    # print((reference_fit.signal_gm - fit.signal_gm) )#/ reference_fit.signal_gm)
+    # print((reference_fit.signal_csf - fit.signal_csf))  # / reference_fit.signal_csf)
 
+    # A small difference to the original result is introduced by using
+    # dipy shore_matrix instead of shore.matrix
+    assert ((reference_fit.signal_csf - fit.signal_csf) < 1e-9).all() \
+           and ((reference_fit.signal_gm - fit.signal_gm) < 1e-9).all() \
+           and ((reference_fit.signal_wm - fit.signal_wm) < 1e-9).all()

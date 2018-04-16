@@ -9,12 +9,12 @@ import numpy as np
 import numpy.linalg as la
 from bonndit.constants import LOTS_OF_DIRECTIONS
 from bonndit.michi import shore, esh, tensor, dwmri
-
 from dipy.core.gradients import gradient_table
 from dipy.reconst.shore import shore_matrix
 from tqdm import tqdm
 
 from .gradients import gtab_reorient
+
 
 class ShoreModel(object):
     """ Fit WM, GM and CSF response functions to the given DW data.
@@ -41,10 +41,10 @@ class ShoreModel(object):
         """
 
         # Load DTI fa map
-        fa = dti_fa#.get_data()
+        fa = dti_fa  # .get_data()
 
         # Load DTI vecs
-        vecs = dti_vecs#.get_data()
+        vecs = dti_vecs  # .get_data()
 
 
         # Load DTI mask if available
@@ -52,17 +52,17 @@ class ShoreModel(object):
             NX, NY, NZ = fa.shape
             mask = np.ones((NX, NY, NZ))
         else:
-            mask = dti_mask#.get_data()
+            mask = dti_mask  # .get_data()
 
         # Create masks
         # CSF
-        csf = csf_mask#.get_data()
+        csf = csf_mask  #.get_data()
         mask_csf = np.logical_and(mask, np.logical_and(csf > 0.95, fa < 0.2)).astype('int')
         # GM
-        gm = gm_mask#.get_data()
+        gm = gm_mask  #.get_data()
         mask_gm = np.logical_and(mask, np.logical_and(gm > 0.95, fa < 0.2)).astype('int')
         # WM
-        wm = wm_mask#.get_data()
+        wm = wm_mask  #.get_data()
         mask_wm = np.logical_and(mask, np.logical_and(wm > 0.95, fa > float(fawm))).astype('int')
         # Load data
         #data = data.get_data()
@@ -133,7 +133,7 @@ class ShoreModel(object):
         """
         shore_coeff = np.zeros(data.shape[:-1] + (shore.get_size(self.order, self.order),))
         with np.errstate(divide='ignore', invalid='ignore'):
-            M = shore.matrix(self.order, self.order, self.zeta, self.gtab, self.tau)
+            shore_m = shore_matrix(self.order, self.zeta, self.gtab, self.tau)
 
         # Iterate over the data indices; show progress with tqdm
         for i in tqdm(np.ndindex(*data.shape[:-1]),
@@ -142,8 +142,8 @@ class ShoreModel(object):
             if mask[i] == 0:
                 continue
 
-            #TODO: Decide if rcond=None would be better
-            r = la.lstsq(M, data[i], rcond=-1)
+            # TODO: Decide if rcond=None would be better
+            r = la.lstsq(shore_m, data[i], rcond=-1)
             shore_coeff[i] = r[0]
 
         return self._accumulate_shore(shore_coeff, mask)
@@ -167,10 +167,9 @@ class ShoreModel(object):
                 continue
             gtab2 = gtab_reorient(self.gtab, vecs[i])
             with np.errstate(divide='ignore', invalid='ignore'):
-                M = shore.matrix(self.order, self.order, self.zeta, gtab2, self.tau)
-            r = la.lstsq(M, data[i], rcond=-1)
+                shore_m = shore_matrix(self.order, self.zeta, gtab2, self.tau)
+            r = la.lstsq(shore_m, data[i], rcond=-1)
             shore_coeff[i] = r[0]
-
 
         return self._accumulate_shore(shore_coeff, mask)
 
@@ -234,7 +233,7 @@ class ShoreFit(object):
                  zeta=self.zeta, tau=self.tau, order=self.order, bvals=self.gtab.bvals, bvecs=self.gtab.bvecs)
 
     def fodf(self, filename, pos='hpsd', verbose=False):
-        """ Deconvolve the signal with the 3 response functions
+        """Deconvolve the signal with the 3 response functions
 
         :param filename:
         :param pos:
@@ -256,7 +255,7 @@ class ShoreFit(object):
 
         # Build matrix that maps ODF+volume fractions to signal
         # in two steps: First, SHORE matrix
-        M_shore = shore.matrix(self.order, self.order, self.zeta, gtab, self.tau)
+        shore_m = shore.matrix(self.order, self.order, self.zeta, gtab, self.tau)
 
         # then, convolution
         M_wm = shore.matrix_kernel(kernel_wm, self.order, self.order)
@@ -265,7 +264,7 @@ class ShoreFit(object):
         M = np.hstack((M_wm, M_gm[:, :1], M_csf[:, :1]))
 
         # now, multiply them together
-        M = np.dot(M_shore, M)
+        M = np.dot(shore_m, M)
 
         with np.errstate(divide='ignore', invalid='ignore'):
             print('Condition number of M:', la.cond(M))
@@ -353,7 +352,6 @@ class ShoreFit(object):
         :param G:
         :param h:
         :param init:
-        :param order:
         :param NN:
         :return:
         """

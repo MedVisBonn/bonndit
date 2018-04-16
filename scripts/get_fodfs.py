@@ -10,12 +10,15 @@ Compute fiber orientation distribution functions for diffusion weighted MRI data
 import argparse
 import os
 import sys
+
 import numpy as np
-from dipy.io import read_bvals_bvecs
-from dipy.core.gradients import gradient_table
+from bonndit.michi import fields, dwmri
 from bonndit.shore import ShoreModel, ShoreFit
-from bonndit.michi import fields
-import nibabel as nib
+# from dipy.io import read_bvals_bvecs
+from dipy.core.gradients import gradient_table
+
+
+# import nibabel as nib
 
 
 # To Do: Add option to first compute the diffustion tensors which are needed to estimate the response functions.
@@ -76,25 +79,32 @@ def main():
         outdir = args.outdir
 
     # Load fractional anisotropy
-    dti_fa = nib.load(os.path.join(indir, "dti_FA.nii.gz"))
+    # dti_fa = nib.load(os.path.join(indir, "dti_FA.nii.gz"))
+    dti_fa, meta = fields.load_scalar(os.path.join(indir, "dti_FA.nii.gz"))
 
     # Load DTI mask
-    dti_mask = nib.load(os.path.join(indir, "mask.nii.gz"))
+    # dti_mask = nib.load(os.path.join(indir, "mask.nii.gz"))
+    dti_mask, _ = fields.load_scalar(os.path.join(indir, "mask.nii.gz"))
 
     # Load and adjust tissue segmentation masks
-    csf_mask = nib.load(os.path.join(indir, "fast_pve_0.nii.gz"))
-    gm_mask = nib.load(os.path.join(indir, "fast_pve_1.nii.gz"))
-    wm_mask = nib.load(os.path.join(indir, "fast_pve_2.nii.gz"))
+    # csf_mask = nib.load(os.path.join(indir, "fast_pve_0.nii.gz"))
+    csf_mask, _ = fields.load_scalar(os.path.join(indir, "fast_pve_0.nii.gz"))
+    # gm_mask = nib.load(os.path.join(indir, "fast_pve_1.nii.gz"))
+    gm_mask, _ = fields.load_scalar(os.path.join(indir, "fast_pve_1.nii.gz"))
+    # wm_mask = nib.load(os.path.join(indir, "fast_pve_2.nii.gz"))
+    wm_mask, _ = fields.load_scalar(os.path.join(indir, "fast_pve_2.nii.gz"))
 
-    # Load DTI first eigenvectors
-    dti_vecs = nib.load(os.path.join(indir, "dti_V1.nii.gz"))
+    # dti_vecs = nib.load(os.path.join(indir, "dti_V1.nii.gz"))
+    dti_vecs, _ = fields.load_vector(os.path.join(indir, "dti_V1.nii.gz"))
 
-    # Load the data
-    data = nib.load(os.path.join(indir, "data.nii.gz"))
+    # data = nib.load(os.path.join(indir, "data.nii.gz"))
 
-    bvals, bvecs = read_bvals_bvecs(os.path.join(indir, "bvals"),
-                                    os.path.join(indir, "bvecs"))
-    gtab = gradient_table(bvals, bvecs)
+    # bvals, bvecs = read_bvals_bvecs(os.path.join(indir, "bvals"),
+    #                                os.path.join(indir, "bvecs"))
+    # gtab = gradient_table(bvals, bvecs)
+    data, gtabm, meta = dwmri.load(os.path.join(indir, "data.nii.gz"))
+
+    gtab = gradient_table(gtabm.bvals, gtabm.bvecs)
 
     # If not only the response has to be computed
     if not args.responseonly:
@@ -112,8 +122,7 @@ def main():
 
     # Check if the response only flag is set.
     if not args.responseonly:
-        out, wmout, gmout, csfout, mask, meta = fit.fodf(os.path.join(indir, 'data.nii.gz'),
-                                                         verbose=verbose, pos='nonneg')
+        out, wmout, gmout, csfout, mask = fit.fodf(data, verbose=verbose, pos='nonneg')
 
         fields.save_tensor(os.path.join(args.outdir, 'odf.nrrd'), out, mask=mask, meta=meta)
 

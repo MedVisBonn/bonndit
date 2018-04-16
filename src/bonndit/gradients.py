@@ -1,7 +1,7 @@
-from dipy.core.geometry import vec2vec_rotmat
 import numpy as np
+from dipy.core.geometry import vec2vec_rotmat
 from dipy.core.gradients import gradient_table
-from bonndit.michi.vector import rotation_onto
+
 
 def gtab_rotate(gtab, rot_matrix):
     """ Rotate gradients with a rotation matrix (3,3)
@@ -27,5 +27,4 @@ def gtab_reorient(gtab, old_vec, new_vec=np.array((0, 0, 1))):
     """
 
     rot_matrix = vec2vec_rotmat(old_vec, new_vec)
-    #rot_matrix = rotation_onto(old_vec, new_vec)
     return gtab_rotate(gtab, rot_matrix)
