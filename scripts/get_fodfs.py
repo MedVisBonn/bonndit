@@ -9,7 +9,6 @@ Compute fiber orientation distribution functions for diffusion weighted MRI data
 
 import argparse
 import os
-import sys
 
 import numpy as np
 from bonndit.michi import fields, dwmri
@@ -27,46 +26,57 @@ from dipy.core.gradients import gradient_table
 
 # To Do: Handle nrrd as well as nii input
 
-# To Do: Enable specification of output format
+# To Do: Enable saving in different output formats
 
 def main():
     parser = argparse.ArgumentParser(
         description='This script computes fiber orientation distribution functions (fODFs) \
         as described in "Versatile, Robust and Efficient Tractography With Constrained Higher \
-        Order Tensor fODFs" by Ankele et al. (2017)')
+        Order Tensor fODFs" by Ankele et al. (2017)', add_help=False)
 
-    parser.add_argument('-i', '--indir', required=True,
-                        help='Path to the folder containing all required input files.')
-    parser.add_argument('-o', '--outdir', default=None,
-                        help='Folder in which the output will be saved.')
-    parser.add_argument('-v', '--verbose', action='store_true',
-                        help='Set to show a progress bar')
-    parser.add_argument('-r', '--order', default=4,
+    parser.add_argument('indir',
+                        help='Folder containing all required input files.')
+
+    optional = parser.add_argument_group('optional')
+    optional.add_argument("-h", "--help", action="help", help="show this help message and exit")
+    optional.add_argument('-o', '--outdir',
+                          help='folder in which the output will be saved')
+
+    flags = parser.add_argument_group('flags (optional)', '')
+    flags.add_argument('-v', '--verbose', action='store_true',
+                       help='show a progress bars for calculation of the response function and the deconvolution')
+    flags.add_argument('-R', '--responseonly', action='store_true',
+                       help='calculate and save only the response functions')
+    flags.add_argument('-V', '--volumes', action='store_true',
+                       help='output the volume fractions (csf/gm/wm) after deconvolution')
+
+    shoreopts = parser.add_argument_group('shore options (optional)', '')
+    shoreopts.add_argument('-r', '--order', default=4, type=int,
                         help='Order of the shore basis')
-    parser.add_argument('-z', '--zeta', default=700,
-                        help='Radial scaling factor')
-    parser.add_argument('-t', '--tau', default=1 / (4 * np.pi ** 2),
-                        help='q-scaling')
-    parser.add_argument('-f', '--fawm', default=0.7,
-                        help='The WM FA threshold')
-    parser.add_argument('-R', '--responseonly', action='store_true',
-                        help='Calculate and save only the response functions.')
-    parser.add_argument('-V', '--volumes', action='store_true',
-                        help='Set this flag if you want to output the volume fractions.')
-    parser.add_argument('-w', '--whitematter', default='wmvolume.nrrd',
-                        help='Specify wm volume name and filetype (.nrrd / .nii / .nii.gz)')
-    parser.add_argument('-g', '--graymatter', default='gmvolume.nrrd',
-                        help='Specify gm volume name and filetype (.nrrd / .nii / .nii.gz)')
-    parser.add_argument('-c', '--cerebrospinalfluid', default='csfvolume.nrrd',
-                        help='Specify csf volume name and filetype (.nrrd / .nii / .nii.gz)')
+    shoreopts.add_argument('-z', '--zeta', default=700, type=float,
+                           help='Radial scaling factor')
+    shoreopts.add_argument('-t', '--tau', default=1 / (4 * np.pi ** 2), type=float,
+                           help='q-scaling')
+    shoreopts.add_argument('-f', '--fawm', default=0.7, type=float,
+                           help='The WM FA threshold')
 
-    # Print help if not called correctly
-    try:
-        args = parser.parse_args()
-    except:
-        parser.print_help()
-        sys.exit(0)
+    deconvopts = parser.add_argument_group('deconvolution options (optional)', '')
+    deconvopts.add_argument('-c', '--constraint', choices=['hpsd', 'nonneg', 'none'], default='hpsd',
+                            help='constraint for the fODFs')
 
+    filenaming = parser.add_argument_group('file naming (optional)', 'Specify custom names for output files')
+    filenaming.add_argument('-S', '--responseout', default='response.npz',
+                            help='response function output name - filetype: .npz')
+    filenaming.add_argument('-O', '--fodfout', default='fodf.nrrd',
+                            help='fODF filename - filetype: .nrrd / .nii / .nii.gz')
+    filenaming.add_argument('-W', '--whitematter', default='wmvolume.nrrd',
+                            help='wm volume filename - filetype: .nrrd / .nii / .nii.gz')
+    filenaming.add_argument('-G', '--graymatter', default='gmvolume.nrrd',
+                            help='gm volume filename - filetype: .nrrd / .nii / .nii.gz')
+    filenaming.add_argument('-C', '--cerebrospinalfluid', default='csfvolume.nrrd',
+                            help='csf volume filename - filetype: .nrrd / .nii / .nii.gz')
+
+    args = parser.parse_args()
     order = args.order
     zeta = args.zeta
     tau = args.tau
@@ -74,7 +84,7 @@ def main():
     verbose = args.verbose
     indir = args.indir
     if not args.outdir:
-        outdir = args.indir
+        outdir = indir
     else:
         outdir = args.outdir
 
@@ -109,8 +119,8 @@ def main():
     # If not only the response has to be computed
     if not args.responseonly:
         # Check if response functions already exist.
-        if os.path.exists(os.path.join(outdir, 'response.npz')):
-            fit = ShoreFit.old_load(os.path.join(outdir, 'response.npz'))
+        if os.path.exists(os.path.join(outdir, args.responseout)):
+            fit = ShoreFit.old_load(os.path.join(outdir, args.responseout))
             if verbose:
                 print('Loaded existing response functions.')
     # Force recalculate the response if response only is specified
@@ -118,13 +128,13 @@ def main():
         model = ShoreModel(gtab, order, zeta, tau)
         fit = model.fit(data, wm_mask, gm_mask, csf_mask, dti_mask,
                         dti_fa, dti_vecs, fawm, verbose=verbose)
-        fit.old_save(outdir)
+        fit.old_save(os.path.join(outdir, args.responseout))
 
     # Check if the response only flag is set.
     if not args.responseonly:
-        out, wmout, gmout, csfout, mask = fit.fodf(data, verbose=verbose, pos='nonneg')
+        out, wmout, gmout, csfout, mask = fit.fodf(data, verbose=verbose, pos=args.constraint)
 
-        fields.save_tensor(os.path.join(args.outdir, 'odf.nrrd'), out, mask=mask, meta=meta)
+        fields.save_tensor(os.path.join(args.outdir, args.fodfout), out, mask=mask, meta=meta)
 
         # Check if the volumes flag is set.
         if args.volumes:

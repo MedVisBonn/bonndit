@@ -69,15 +69,15 @@ class ShoreModel(object):
 
 
         # Calculate csf response
-        shore_coeff = self._get_response(data, mask_csf, verbose)
+        shore_coeff = self._get_response(data, mask_csf, verbose, desc='CSF response')
         signal_csf = self._shore_compress(shore_coeff)
 
         # Calculate gm response
-        shore_coeff = self._get_response(data, mask_gm, verbose)
+        shore_coeff = self._get_response(data, mask_gm, verbose, desc='GM response')
         signal_gm = self._shore_compress(shore_coeff)
 
         # Calculate wm response
-        shore_coeff = self._get_response_reorient(data, mask_wm, vecs, verbose)
+        shore_coeff = self._get_response_reorient(data, mask_wm, vecs, verbose, desc='WM response')
         signal_wm = self._shore_compress(shore_coeff)
 
         return ShoreFit(self, [signal_csf, signal_gm, signal_wm])
@@ -123,7 +123,7 @@ class ShoreModel(object):
         with np.errstate(divide='ignore', invalid='ignore'):
             return shore_accum / accum_count
 
-    def _get_response(self, data, mask, verbose=False):
+    def _get_response(self, data, mask, verbose=False, desc=''):
         """
 
         :param data:
@@ -138,7 +138,7 @@ class ShoreModel(object):
         # Iterate over the data indices; show progress with tqdm
         for i in tqdm(np.ndindex(*data.shape[:-1]),
                       total=np.prod(data.shape[:-1]),
-                      disable=not verbose):
+                      disable=not verbose, desc=desc):
             if mask[i] == 0:
                 continue
 
@@ -148,7 +148,7 @@ class ShoreModel(object):
 
         return self._accumulate_shore(shore_coeff, mask)
 
-    def _get_response_reorient(self, data, mask, vecs, verbose=False):
+    def _get_response_reorient(self, data, mask, vecs, verbose=False, desc=''):
         """
 
         :param data:
@@ -162,7 +162,7 @@ class ShoreModel(object):
         # Iterate over the data indices; show progress with tqdm
         for i in tqdm(np.ndindex(*data.shape[:-1]),
                       total=np.prod(data.shape[:-1]),
-                      disable=not verbose):
+                      disable=not verbose, desc=desc):
             if mask[i] == 0:
                 continue
             gtab2 = gtab_reorient(self.gtab, vecs[i])
@@ -217,19 +217,19 @@ class ShoreFit(object):
         model = ShoreModel(gtab, response['order'], response['zeta'], response['tau'])
         return cls(model, (response['csf'], response['gm'], response['wm']))
 
-    def old_save(self, outdir):
+    def old_save(self, filepath):
         """
 
-        :param outdir:
+        :param filepath:
         :return:
         """
         try:
-            os.makedirs(outdir)
+            os.makedirs(os.path.dirname(filepath))
         except OSError as e:
             if e.errno != errno.EEXIST:
                 raise
 
-        np.savez(os.path.join(outdir, 'response.npz'), csf=self.signal_csf, gm=self.signal_gm, wm=self.signal_wm,
+        np.savez(filepath, csf=self.signal_csf, gm=self.signal_gm, wm=self.signal_wm,
                  zeta=self.zeta, tau=self.tau, order=self.order, bvals=self.gtab.bvals, bvecs=self.gtab.bvecs)
 
     def fodf(self, filename, pos='hpsd', verbose=False):
