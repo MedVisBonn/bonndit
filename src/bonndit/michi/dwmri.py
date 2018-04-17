@@ -1,16 +1,17 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import math
+import os
+
 # from __future__ import print_function
 import numpy as np
 import numpy.linalg as la
-import math
 # import nibabel as nib
 from dipy.io import read_bvals_bvecs
-import os
 
-from . import storage
 from . import fields
+from . import storage
 from . import vector
 from .storage import is_nrrd, is_nifti
 
@@ -182,7 +183,6 @@ def save(filename, data, gtab, meta, dtype='f'):
 
 
 def _nrrd_parse_gtab(data, meta):
-
     N = data.shape[-1]
     bmax = float(meta.key_value_pairs['DWMRI_b-value'])
     B = np.zeros(N)
@@ -194,7 +194,7 @@ def _nrrd_parse_gtab(data, meta):
         try:
             g = meta.key_value_pairs[key]
             g = np.array([float(x) for x in g.split(' ')])
-            l2 = g[0]**2 + g[1]**2 + g[2]**2
+            l2 = g[0] ** 2 + g[1] ** 2 + g[2] ** 2
             B[i] = bmax * l2
             if l2 > 0:
                 G[i, :] = g / math.sqrt(l2)
@@ -209,7 +209,7 @@ def _nrrd_parse_gtab(data, meta):
 def meta_del_gtab(meta):
     meta = meta.copy()
 
-# del(meta.key_value_pairs['DWMRI_b-value'])
+    # del(meta.key_value_pairs['DWMRI_b-value'])
 
     # remove old gradients
     to_del = []
@@ -223,7 +223,6 @@ def meta_del_gtab(meta):
 
 
 def meta_set_gtab(meta, gtab):
-
     meta = meta_del_gtab(meta)
 
     bmax = max(gtab.bvals)
@@ -288,7 +287,7 @@ def compute_response(order, bval, md, delta):
     response[0] = math.pi / math.sqrt(3.0) * exp1 * erf1 / sqrtbd
     if order < 2:
         return response
-    response[1] = -0.186338998125 * math.sqrt(math.pi) *\
+    response[1] = -0.186338998125 * math.sqrt(math.pi) * \
         (
         2.0 * math.sqrt(3.0 * math.pi) * exp1 * erf1 / sqrtbd +
         (-math.sqrt(math.pi) * exp2 * erf1 + 2.0 * sqrtbd * math.sqrt(3.0))
@@ -326,7 +325,7 @@ def compute_response(order, bval, md, delta):
         (sqrtbd * bval * delta * bval * delta * bval * delta))
     if order < 8:
         return response
-    response[4] = 0.000223692796529 * math.sqrt(math.pi) *\
+    response[4] = 0.000223692796529 * math.sqrt(math.pi) * \
         (
         1680.0 * math.sqrt(3.0 * math.pi) * exp1 * erf1 / sqrtbd -
         10080.0
@@ -351,12 +350,12 @@ def compute_response(order, bval, md, delta):
                 70.0 * bval * delta + 35.0) * sqrtbd * math.sqrt(3.0))
         * math.sqrt(3.0) * exp3
         / (sqrtbd * bval * delta * bval * delta * bval * delta * bval * delta))
-#  if (!AIR_EXISTS(response[1])) {
-# fprintf(stderr, "WARNING: "
-# "bval=%f md=%f delta=%f\n"
-# "exp1=%f exp2=%f exp3=%f erf1=%f sqrtbd=%f\n",
-# bval, md, delta,
-# exp1, exp2, exp3, erf1, sqrtbd)
-# }
-# }
+    #  if (!AIR_EXISTS(response[1])) {
+    # fprintf(stderr, "WARNING: "
+    # "bval=%f md=%f delta=%f\n"
+    # "exp1=%f exp2=%f exp3=%f erf1=%f sqrtbd=%f\n",
+    # bval, md, delta,
+    # exp1, exp2, exp3, erf1, sqrtbd)
+    # }
+    # }
     return response
