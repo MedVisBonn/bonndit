@@ -55,6 +55,8 @@ def test_ShoreModel():
     # print((reference_fit.signal_gm - fit.signal_gm) )#/ reference_fit.signal_gm)
     # print((reference_fit.signal_csf - fit.signal_csf))  # / reference_fit.signal_csf)
 
+    print(reference_fit.signal_csf)
+    print(fit.signal_csf)
     # A small difference to the original result is introduced by using
     # dipy shore_matrix instead of shore.matrix
     assert ((reference_fit.signal_csf - fit.signal_csf) < 1e-9).all() \
