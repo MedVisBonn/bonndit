@@ -7,12 +7,12 @@ import pickle
 import cvxopt
 import numpy as np
 import numpy.linalg as la
-from bonndit.constants import LOTS_OF_DIRECTIONS
-from bonndit.michi import shore, esh, tensor, dwmri
 from dipy.core.gradients import gradient_table
 from dipy.reconst.shore import shore_matrix
 from tqdm import tqdm
 
+from bonndit.constants import LOTS_OF_DIRECTIONS
+from bonndit.michi import shore, esh, tensor, dwmri
 from .gradients import gtab_reorient
 
 
@@ -92,7 +92,7 @@ class ShoreModel(object):
         counter = 0
         ccounter = 0
         for l in range(0, self.order + 1, 2):
-            for n in range(l, (self.order - l) // 2 + 1):
+            for n in range((self.order - l) // 2 + 1):
                 r[ccounter] = s[counter + l]
                 counter += 2 * l + 1
                 ccounter += 1

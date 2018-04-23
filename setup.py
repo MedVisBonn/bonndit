@@ -39,11 +39,11 @@ setup(
     include_package_data=True,
     keywords='bonndit',
     name='bonndit',
-    
+
     packages=find_packages('src', exclude=('tests',)),
     package_dir={'': 'src'},
-    scripts=['scripts/get_fodfs.py'],
-    
+    scripts=['scripts/mtdeconv.py'],
+
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
