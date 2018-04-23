@@ -11,10 +11,11 @@ import argparse
 import os
 
 import numpy as np
-from bonndit.michi import fields, dwmri
-from bonndit.shore import ShoreModel, ShoreFit
 # from dipy.io import read_bvals_bvecs
 from dipy.core.gradients import gradient_table
+
+from bonndit.michi import fields, dwmri
+from bonndit.shore import ShoreModel, ShoreFit
 
 
 # import nibabel as nib
