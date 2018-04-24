@@ -34,7 +34,7 @@ In future an installation with :code:`pip` directly from PyPI will be also avail
 Features
 --------
 
-* :code:`get_fodfs.py`: Script to calculate response functions and fiber orientation distribution functions(fODFs) from the diffusion signal.
+* :code:`mtdeconv`: Script to calculate response functions and fiber orientation distribution functions(fODFs) from the diffusion signal.
 
 Getting Started
 ---------------
@@ -42,7 +42,7 @@ For calculating the response functions and the fODFs from the given data run the
 
 .. code-block:: console
 
-    $ get_fodfs.py -i /path/to/your/data --verbose True
+    $ mtdeconv -i /path/to/your/data --verbose True
 
 The specified folder should contain the following files:
 
@@ -64,7 +64,7 @@ If you want to see a list of parameters type the following:
 
 .. code-block:: console
 
-    $ get_fodfs.py -h
+    $ mtdeconv -h
 
 
 Credits

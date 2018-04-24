@@ -13,11 +13,11 @@ def test_ShoreFit_deconvolution_hpsd():
     out, wmout, gmout, csfout, mask, meta = fit.fodf(DWMRI_DUMMY_DATA, pos='hpsd')
     tensors, mask, meta = fields.load_tensor(ODF_RESULT_HPSD)
 
+    print(out-tensors)
     assert (out == tensors).all() \
     and (wmout == fields.load_scalar(os.path.join(DRD, 'wmhpsd.nrrd'))[0]).all() \
     and (gmout == fields.load_scalar(os.path.join(DRD, 'gmhpsd.nrrd'))[0]).all() \
-    and (csfout == fields.load_scalar(os.path.join(DRD, 'csfhpsd.nrrd'))[0]).all()
-
+    and (csfout == fields.load_scalar(os.path.join(DRD, 'csfhpsd.nrrd'))[0]).all() \
 
 def test_ShoreFit_deconvolution_nonneg():
     """ Here we test the deconvolution with the hpsd constraint.

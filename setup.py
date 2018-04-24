@@ -42,7 +42,7 @@ setup(
 
     packages=find_packages('src', exclude=('tests',)),
     package_dir={'': 'src'},
-    scripts=['scripts/mtdeconv.py'],
+    scripts=['scripts/mtdeconv'],
 
     setup_requires=setup_requirements,
     test_suite='tests',
