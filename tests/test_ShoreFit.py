@@ -15,6 +15,7 @@ def test_ShoreFit_deconvolution_hpsd():
         DWMRI_DUMMY_DATA, pos='hpsd')
     tensors, mask, meta = fields.load_tensor(ODF_RESULT_HPSD)
 
+    print(out - tensors)
     assert (out == tensors).all() and (
         wmout == fields.load_scalar(
             os.path.join(DRD, 'wmhpsd.nrrd'))[0]).all() and (gmout == fields.
