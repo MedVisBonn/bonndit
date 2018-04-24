@@ -11,7 +11,7 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = ['nibabel', 'numpy', 'dipy', 'scipy', 'tqdm', 'cvxopt']
+requirements = ['nibabel', 'numpy', 'dipy', 'scipy', 'tqdm', 'cvxopt', 'h5py==2.8.0rc1']
 
 setup_requirements = ['pytest-runner', ]
 

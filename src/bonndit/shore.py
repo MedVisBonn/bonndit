@@ -146,6 +146,7 @@ class ShoreModel(object):
             r = la.lstsq(shore_m, data[i], rcond=-1)
             shore_coeff[i] = r[0]
 
+        print(self._accumulate_shore(shore_coeff, mask))
         return self._accumulate_shore(shore_coeff, mask)
 
     def _get_response_reorient(self, data, mask, vecs, verbose=False, desc=''):

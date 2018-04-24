@@ -36,36 +36,36 @@ def main():
         Order Tensor fODFs" by Ankele et al. (2017)', add_help=False)
 
     parser.add_argument('indir',
-                        help='Folder containing all required input files.')
+                        help='folder containing all required input files')
 
-    optional = parser.add_argument_group('optional')
-    optional.add_argument("-h", "--help", action="help", help="show this help message and exit")
-    optional.add_argument('-o', '--outdir',
-                          help='folder in which the output will be saved')
+    parser.add_argument('-o', '--outdir',
+                          help='folder in which the output will be saved (default: indir)')
 
     flags = parser.add_argument_group('flags (optional)', '')
+    flags.add_argument("-h", "--help", action="help", help="show this help message and exit")
     flags.add_argument('-v', '--verbose', action='store_true',
-                       help='show a progress bars for calculation of the response function and the deconvolution')
+                       help='show progress bars for calculation of the response function and the deconvolution')
     flags.add_argument('-R', '--responseonly', action='store_true',
                        help='calculate and save only the response functions')
     flags.add_argument('-V', '--volumes', action='store_true',
                        help='output the volume fractions (csf/gm/wm) after deconvolution')
 
-    shoreopts = parser.add_argument_group('shore options (optional)', '')
+    shoreopts = parser.add_argument_group('shore options (optional)', 'Optional arguments for the computation of \
+    the shore response functions')
     shoreopts.add_argument('-r', '--order', default=4, type=int,
-                        help='Order of the shore basis')
+                        help='order of the shore basis')
     shoreopts.add_argument('-z', '--zeta', default=700, type=float,
-                           help='Radial scaling factor')
+                           help='radial scaling factor')
     shoreopts.add_argument('-t', '--tau', default=1 / (4 * np.pi ** 2), type=float,
                            help='q-scaling')
     shoreopts.add_argument('-f', '--fawm', default=0.7, type=float,
-                           help='The WM FA threshold')
+                           help='white matter fractional anisotropy threshold')
 
     deconvopts = parser.add_argument_group('deconvolution options (optional)', '')
     deconvopts.add_argument('-c', '--constraint', choices=['hpsd', 'nonneg', 'none'], default='hpsd',
                             help='constraint for the fODFs')
 
-    filenaming = parser.add_argument_group('file naming (optional)', 'Specify custom names for output files')
+    filenaming = parser.add_argument_group('file naming (optional)', 'Specify custom names for output files.')
     filenaming.add_argument('-S', '--responseout', default='response.npz',
                             help='response function output name - filetype: .npz')
     filenaming.add_argument('-O', '--fodfout', default='fodf.nrrd',
@@ -88,6 +88,12 @@ def main():
         outdir = indir
     else:
         outdir = args.outdir
+
+    if args.whitematter != 'wmvolume.nrrd' or \
+            args.graymatter != 'gmvolume.nrrd' or \
+            args.cerebrospinalfluid != 'csfvolume.nrrd':
+        if not args.volumes:
+            parser.error('-V (--volumes) required for the output of volume fractions.')
 
     # Load fractional anisotropy
     # dti_fa = nib.load(os.path.join(indir, "dti_FA.nii.gz"))
@@ -124,6 +130,11 @@ def main():
             fit = ShoreFit.old_load(os.path.join(outdir, args.responseout))
             if verbose:
                 print('Loaded existing response functions.')
+        else:
+            model = ShoreModel(gtab, order, zeta, tau)
+            fit = model.fit(data, wm_mask, gm_mask, csf_mask, dti_mask,
+                            dti_fa, dti_vecs, fawm, verbose=verbose)
+            fit.old_save(os.path.join(outdir, args.responseout))
     # Force recalculate the response if response only is specified
     else:
         model = ShoreModel(gtab, order, zeta, tau)
@@ -133,7 +144,7 @@ def main():
 
     # Check if the response only flag is set.
     if not args.responseonly:
-        out, wmout, gmout, csfout, mask = fit.fodf(data, verbose=verbose, pos=args.constraint)
+        out, wmout, gmout, csfout, mask, meta = fit.fodf(os.path.join(indir, "data.nii.gz"), verbose=verbose, pos=args.constraint)
 
         fields.save_tensor(os.path.join(args.outdir, args.fodfout), out, mask=mask, meta=meta)
 
