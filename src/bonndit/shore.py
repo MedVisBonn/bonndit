@@ -69,15 +69,18 @@ class ShoreModel(object):
 
 
         # Calculate csf response
-        shore_coeff = self._get_response(data, mask_csf, verbose, desc='CSF response')
+        shore_coeffs = self._get_response(data, mask_csf, verbose, desc='CSF response')
+        shore_coeff = self._accumulate_shore(shore_coeffs, mask_csf)
         signal_csf = self._shore_compress(shore_coeff)
 
         # Calculate gm response
-        shore_coeff = self._get_response(data, mask_gm, verbose, desc='GM response')
+        shore_coeffs = self._get_response(data, mask_gm, verbose, desc='GM response')
+        shore_coeff = self._accumulate_shore(shore_coeffs, mask_gm)
         signal_gm = self._shore_compress(shore_coeff)
 
         # Calculate wm response
-        shore_coeff = self._get_response_reorient(data, mask_wm, vecs, verbose, desc='WM response')
+        shore_coeffs = self._get_response_reorient(data, mask_wm, vecs, verbose, desc='WM response')
+        shore_coeff = self._accumulate_shore(shore_coeffs, mask_wm)
         signal_wm = self._shore_compress(shore_coeff)
 
         return ShoreFit(self, [signal_csf, signal_gm, signal_wm])
@@ -146,8 +149,7 @@ class ShoreModel(object):
             r = la.lstsq(shore_m, data[i], rcond=-1)
             shore_coeff[i] = r[0]
 
-        print(self._accumulate_shore(shore_coeff, mask))
-        return self._accumulate_shore(shore_coeff, mask)
+        return shore_coeff
 
     def _get_response_reorient(self, data, mask, vecs, verbose=False, desc=''):
         """
@@ -172,7 +174,7 @@ class ShoreModel(object):
             r = la.lstsq(shore_m, data[i], rcond=-1)
             shore_coeff[i] = r[0]
 
-        return self._accumulate_shore(shore_coeff, mask)
+        return shore_coeff
 
 
 class ShoreFit(object):

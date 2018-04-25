@@ -11,7 +11,8 @@ import argparse
 import os
 
 import numpy as np
-# from dipy.io import read_bvals_bvecs
+import nibabel as nib
+from dipy.io import read_bvals_bvecs
 from dipy.core.gradients import gradient_table
 
 from bonndit.michi import fields, dwmri
@@ -111,17 +112,17 @@ def main():
     # wm_mask = nib.load(os.path.join(indir, "fast_pve_2.nii.gz"))
     wm_mask, _ = fields.load_scalar(os.path.join(indir, "fast_pve_2.nii.gz"))
 
-    # dti_vecs = nib.load(os.path.join(indir, "dti_V1.nii.gz"))
-    dti_vecs, _ = fields.load_vector(os.path.join(indir, "dti_V1.nii.gz"))
+    dti_vecs = nib.load(os.path.join(indir, "dti_V1.nii.gz")).get_data()
+    #dti_vecs, _ = fields.load_vector(os.path.join(indir, "dti_V1.nii.gz"))
 
-    # data = nib.load(os.path.join(indir, "data.nii.gz"))
+    data = nib.load(os.path.join(indir, "data.nii.gz")).get_data()
 
-    # bvals, bvecs = read_bvals_bvecs(os.path.join(indir, "bvals"),
-    #                                os.path.join(indir, "bvecs"))
-    # gtab = gradient_table(bvals, bvecs)
-    data, gtabm, meta = dwmri.load(os.path.join(indir, "data.nii.gz"))
+    bvals, bvecs = read_bvals_bvecs(os.path.join(indir, "bvals"),
+                                   os.path.join(indir, "bvecs"))
+    gtab = gradient_table(bvals, bvecs)
+    _, _, meta = dwmri.load(os.path.join(indir, "data.nii.gz"))
 
-    gtab = gradient_table(gtabm.bvals, gtabm.bvecs)
+    #gtab = gradient_table(gtabm.bvals, gtabm.bvecs)
 
     # If not only the response has to be computed
     if not args.responseonly:

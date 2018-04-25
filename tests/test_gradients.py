@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""Tests for `bonndit.gradients` module."""
+
 from bonndit.gradients import gtab_reorient, gtab_rotate
 from dipy.core.gradients import GradientTable
 import numpy as np
