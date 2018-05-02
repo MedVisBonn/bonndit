@@ -5,35 +5,33 @@
 
 import os
 from bonndit import ShoreModel, ShoreFit
+import bonndit.shore as bdshore
+from bonndit.io import fsl_flip_signs_vec, fsl_to_worldspace
 from dipy.core.gradients import gradient_table
 import nibabel as nib
 from dipy.io import read_bvals_bvecs
 
 from .constants import DECONVOLUTION_DIR, SHORE_FIT_TEST
 
-"""
-I would prefer to load the data and do all the transformation explicitly using a 
-class written for this purpose. - Explicit is better than implicit.
-For now we use the old loading procedure which does all the transformation 
-implicitly. 
-"""
-
 # Load fractional anisotropy
-dti_fa = nib.load(os.path.join(DECONVOLUTION_DIR, "dti_FA.nii.gz")).get_data()
+dti_fa = nib.load(os.path.join(DECONVOLUTION_DIR, "dti_FA.nii.gz"))
 
 # Load DTI mask
-dti_mask = nib.load(os.path.join(DECONVOLUTION_DIR, "mask.nii.gz")).get_data()
+dti_mask = nib.load(os.path.join(DECONVOLUTION_DIR, "mask.nii.gz"))
 
 # Load and adjust tissue segmentation masks
-csf_mask = nib.load(os.path.join(DECONVOLUTION_DIR, "fast_pve_0.nii.gz")).get_data()
-gm_mask = nib.load(os.path.join(DECONVOLUTION_DIR, "fast_pve_1.nii.gz")).get_data()
-wm_mask = nib.load(os.path.join(DECONVOLUTION_DIR, "fast_pve_2.nii.gz")).get_data()
+csf_mask = nib.load(os.path.join(DECONVOLUTION_DIR, "fast_pve_0.nii.gz"))
+gm_mask = nib.load(os.path.join(DECONVOLUTION_DIR, "fast_pve_1.nii.gz"))
+wm_mask = nib.load(os.path.join(DECONVOLUTION_DIR, "fast_pve_2.nii.gz"))
+
+wm_mask, gm_mask, csf_mask = bdshore.dti_masks(wm_mask, gm_mask, csf_mask,
+                                                   dti_fa, dti_mask, fawm=0.7)
 
 # Load DTI first eigenvector
-dti_vecs = nib.load(os.path.join(DECONVOLUTION_DIR, "dti_V1.nii.gz")).get_data()
+dti_vecs = nib.load(os.path.join(DECONVOLUTION_DIR, "dti_V1.nii.gz"))
 
 # Load DW-MRI data
-data = nib.load(os.path.join(DECONVOLUTION_DIR, "data.nii.gz")).get_data()
+data = nib.load(os.path.join(DECONVOLUTION_DIR, "data.nii.gz"))
 
 # Load bvals and bvecs
 bvals, bvecs = read_bvals_bvecs(os.path.join(DECONVOLUTION_DIR, "bvals"),
@@ -41,11 +39,15 @@ bvals, bvecs = read_bvals_bvecs(os.path.join(DECONVOLUTION_DIR, "bvals"),
 gtab = gradient_table(bvals, bvecs)
 
 
-model = ShoreModel(gtab)
-fit = model.fit(data, wm_mask, gm_mask, csf_mask, dti_mask,
-                dti_fa, dti_vecs)
+# Rotation to worldspace and sign flip according to fsl documentation
+gtab = fsl_to_worldspace(data, gtab)
+dti_vecs = fsl_flip_signs_vec(dti_vecs)
 
-reference_fit = ShoreFit.old_load(SHORE_FIT_TEST)
+model = ShoreModel(gtab)
+fit = model.fit(data, dti_vecs, wm_mask, gm_mask, csf_mask)
+
+reference_fit = ShoreFit.load(SHORE_FIT_TEST)
+
 
 
 def test_ShoreModel_signal_csf():
