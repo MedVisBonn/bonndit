@@ -103,3 +103,7 @@ ENV/
 
 # PyCharme
 .idea
+
+# notebook experiments
+notebooks/experiments
+notebooks/experiments/*
