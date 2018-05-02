@@ -191,12 +191,6 @@ class ShoreFit(object):
         :param verbose:
         :return:
         """
-        # Load nrrd or nifti with the corresponding transformations
-        #data, gtab, meta = dwmri.load(filename)
-
-        #nonzero_bvals = self.gtab.bvals[self.gtab.bvals != 0]
-        #affines = np.tile(data.affine, (len(nonzero_bvals),1,1))
-        #self.gtab = reorient_bvecs(self.gtab, affines)
 
         data = data.get_data()
         space = data.shape[:-1]
