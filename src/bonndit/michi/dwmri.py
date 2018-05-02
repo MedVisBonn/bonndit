@@ -122,6 +122,20 @@ def _nifti_bvecs_to_worldspace(bvecs, meta):
     bvecs[norm == 0] = np.array((0, 0, 1))
     return bvecs
 
+
+def _nifti_bvecs_to_worldspace_new(bvecs, meta):
+    from scipy.linalg import polar
+    from scipy.linalg import inv
+    R, S = polar(meta.frame)
+    for i in range(len(bvecs)):
+        bvecs[i] = np.dot(inv(R), bvecs[i])
+    #norm = la.norm(bvecs, axis=1)
+    #norm[norm == 0] = 1.0
+    #bvecs = bvecs / norm[:, None]
+    #bvecs[norm == 0] = np.array((0, 0, 1))
+    return bvecs
+
+
 def _nifti_bvecs_to_filespace(bvecs, meta):
     bvecs = np.dot(bvecs, meta.frame)
     norm = la.norm(bvecs, axis=1)

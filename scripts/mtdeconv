@@ -9,6 +9,7 @@ Compute fiber orientation distribution functions for diffusion weighted MRI data
 
 import argparse
 import os
+import errno
 
 import numpy as np
 import nibabel as nib
@@ -16,8 +17,11 @@ from dipy.io import read_bvals_bvecs
 from dipy.core.gradients import gradient_table
 
 from bonndit.michi import fields, dwmri
-from bonndit.shore import ShoreModel, ShoreFit
+from bonndit import ShoreModel, ShoreFit
 
+import bonndit as bd
+import bonndit.shore as bdshore
+from bonndit.io import fsl_flip_signs_vec, fsl_to_worldspace
 
 # import nibabel as nib
 
@@ -50,6 +54,8 @@ def main():
                        help='calculate and save only the response functions')
     flags.add_argument('-V', '--volumes', action='store_true',
                        help='output the volume fractions (csf/gm/wm) after deconvolution')
+    flags.add_argument('-M', '--tissuemasks', action='store_true',
+                       help='output the DTI improved tissue masks (csf/gm/wm)')
 
     shoreopts = parser.add_argument_group('shore options (optional)', 'Optional arguments for the computation of \
     the shore response functions')
@@ -90,6 +96,12 @@ def main():
     else:
         outdir = args.outdir
 
+    try:
+        os.makedirs(outdir)
+    except OSError as e:
+        if e.errno != errno.EEXIST:
+            raise
+
     if args.whitematter != 'wmvolume.nrrd' or \
             args.graymatter != 'gmvolume.nrrd' or \
             args.cerebrospinalfluid != 'csfvolume.nrrd':
@@ -97,59 +109,64 @@ def main():
             parser.error('-V (--volumes) required for the output of volume fractions.')
 
     # Load fractional anisotropy
-    # dti_fa = nib.load(os.path.join(indir, "dti_FA.nii.gz"))
-    dti_fa, meta = fields.load_scalar(os.path.join(indir, "dti_FA.nii.gz"))
+    dti_fa = nib.load(os.path.join(indir, "dti_FA.nii.gz"))
 
     # Load DTI mask
-    # dti_mask = nib.load(os.path.join(indir, "mask.nii.gz"))
-    dti_mask, _ = fields.load_scalar(os.path.join(indir, "mask.nii.gz"))
+    dti_mask = nib.load(os.path.join(indir, "mask.nii.gz"))
 
     # Load and adjust tissue segmentation masks
-    # csf_mask = nib.load(os.path.join(indir, "fast_pve_0.nii.gz"))
-    csf_mask, _ = fields.load_scalar(os.path.join(indir, "fast_pve_0.nii.gz"))
-    # gm_mask = nib.load(os.path.join(indir, "fast_pve_1.nii.gz"))
-    gm_mask, _ = fields.load_scalar(os.path.join(indir, "fast_pve_1.nii.gz"))
-    # wm_mask = nib.load(os.path.join(indir, "fast_pve_2.nii.gz"))
-    wm_mask, _ = fields.load_scalar(os.path.join(indir, "fast_pve_2.nii.gz"))
+    csf_mask = nib.load(os.path.join(indir, "fast_pve_0.nii.gz"))
+    gm_mask = nib.load(os.path.join(indir, "fast_pve_1.nii.gz"))
+    wm_mask = nib.load(os.path.join(indir, "fast_pve_2.nii.gz"))
 
-    dti_vecs = nib.load(os.path.join(indir, "dti_V1.nii.gz")).get_data()
-    #dti_vecs, _ = fields.load_vector(os.path.join(indir, "dti_V1.nii.gz"))
+    wm_mask, gm_mask, csf_mask = bdshore.dti_masks(wm_mask, gm_mask, csf_mask,
+                                                   dti_fa, dti_mask, fawm)
+    if args.tissuemasks:
+        nib.save(wm_mask, os.path.join(args.outdir, 'wm_mask.nii.gz'))
+        nib.save(gm_mask, os.path.join(args.outdir, 'gm_mask.nii.gz'))
+        nib.save(csf_mask, os.path.join(args.outdir, 'csf_mask.nii.gz'))
 
-    data = nib.load(os.path.join(indir, "data.nii.gz")).get_data()
+    dti_vecs = nib.load(os.path.join(indir, "dti_V1.nii.gz"))
+
+    data = nib.load(os.path.join(indir, "data.nii.gz"))
 
     bvals, bvecs = read_bvals_bvecs(os.path.join(indir, "bvals"),
                                    os.path.join(indir, "bvecs"))
+
     gtab = gradient_table(bvals, bvecs)
+
+    # Flip sign of x-coordinate if affine determinant is positive and rotate to worldspace
+    gtab = fsl_to_worldspace(data, gtab)
+    dti_vecs = fsl_flip_signs_vec(dti_vecs)
+
+    # We need this Meta object for saving later
     _, _, meta = dwmri.load(os.path.join(indir, "data.nii.gz"))
 
-    #gtab = gradient_table(gtabm.bvals, gtabm.bvecs)
-
-    # If not only the response has to be computed
+    # Check if response is already in the output folder
     if not args.responseonly:
-        # Check if response functions already exist.
         if os.path.exists(os.path.join(outdir, args.responseout)):
-            fit = ShoreFit.old_load(os.path.join(outdir, args.responseout))
+            fit = ShoreFit.load(os.path.join(outdir, args.responseout))
             if verbose:
                 print('Loaded existing response functions.')
+
         else:
             model = ShoreModel(gtab, order, zeta, tau)
-            fit = model.fit(data, wm_mask, gm_mask, csf_mask, dti_mask,
-                            dti_fa, dti_vecs, fawm, verbose=verbose)
-            fit.old_save(os.path.join(outdir, args.responseout))
+            fit = model.fit(data, dti_vecs, wm_mask, gm_mask, csf_mask, verbose=verbose)
+            fit.save(os.path.join(outdir, args.responseout))
+
     # Force recalculate the response if response only is specified
     else:
         model = ShoreModel(gtab, order, zeta, tau)
-        fit = model.fit(data, wm_mask, gm_mask, csf_mask, dti_mask,
-                        dti_fa, dti_vecs, fawm, verbose=verbose)
-        fit.old_save(os.path.join(outdir, args.responseout))
+        fit = model.fit(data, dti_vecs, wm_mask, gm_mask, csf_mask, verbose=verbose)
+        fit.save(os.path.join(outdir, args.responseout))
 
-    # Check if the response only flag is set.
+    # Deconvolution if 'responseonly' is not set
     if not args.responseonly:
-        out, wmout, gmout, csfout, mask, meta = fit.fodf(os.path.join(indir, "data.nii.gz"), verbose=verbose, pos=args.constraint)
+        out, wmout, gmout, csfout, mask = fit.fodf(data, verbose=verbose, pos=args.constraint)
 
         fields.save_tensor(os.path.join(args.outdir, args.fodfout), out, mask=mask, meta=meta)
 
-        # Check if the volumes flag is set.
+        # Save volumes if 'volumes' is set
         if args.volumes:
             fields.save_scalar(os.path.join(args.outdir, args.whitematter), wmout, meta)
             fields.save_scalar(os.path.join(args.outdir, args.graymatter), gmout, meta)

@@ -2,13 +2,13 @@ from __future__ import division
 
 import errno
 import os
-import pickle
 
 import cvxopt
 import numpy as np
 import numpy.linalg as la
-from dipy.core.gradients import gradient_table
+from dipy.core.gradients import gradient_table, reorient_bvecs
 from dipy.reconst.shore import shore_matrix
+import nibabel as nib
 from tqdm import tqdm
 
 from bonndit.constants import LOTS_OF_DIRECTIONS
@@ -25,63 +25,30 @@ class ShoreModel(object):
         self.zeta = zeta
         self.tau = tau
 
-    def fit(self, data, wm_mask, gm_mask, csf_mask, dti_mask, dti_fa, dti_vecs, fawm=0.7, verbose=False):
+    def fit(self, data, dti_vecs, wm_mask, gm_mask, csf_mask, verbose=False):
         """ Fit the response functions and return the shore coefficients
 
         :param data:
-        :param wm_mask:
-        :param gm_mask:
-        :param csf_mask:
-        :param dti_mask:
-        :param dti_fa:
         :param dti_vecs:
-        :param fawm:
         :param verbose:
         :return:
         """
 
-        # Load DTI fa map
-        fa = dti_fa  # .get_data()
-
-        # Load DTI vecs
-        vecs = dti_vecs  # .get_data()
-
-
-        # Load DTI mask if available
-        if dti_mask is None:
-            NX, NY, NZ = fa.shape
-            mask = np.ones((NX, NY, NZ))
-        else:
-            mask = dti_mask  # .get_data()
-
-        # Create masks
-        # CSF
-        csf = csf_mask  #.get_data()
-        mask_csf = np.logical_and(mask, np.logical_and(csf > 0.95, fa < 0.2)).astype('int')
-        # GM
-        gm = gm_mask  #.get_data()
-        mask_gm = np.logical_and(mask, np.logical_and(gm > 0.95, fa < 0.2)).astype('int')
-        # WM
-        wm = wm_mask  #.get_data()
-        mask_wm = np.logical_and(mask, np.logical_and(wm > 0.95, fa > float(fawm))).astype('int')
-        # Load data
-        #data = data.get_data()
-
-
-        # Calculate csf response
-        shore_coeffs = self._get_response(data, mask_csf, verbose, desc='CSF response')
-        shore_coeff = self._accumulate_shore(shore_coeffs, mask_csf)
-        signal_csf = self._shore_compress(shore_coeff)
+        # Calculate wm response
+        shore_coeffs = self._get_response_reorient(data.get_data(), wm_mask.get_data(), dti_vecs.get_data(),
+                                                   verbose, desc='WM response')
+        shore_coeff = self._accumulate_shore(shore_coeffs, wm_mask.get_data())
+        signal_wm = self._shore_compress(shore_coeff)
 
         # Calculate gm response
-        shore_coeffs = self._get_response(data, mask_gm, verbose, desc='GM response')
-        shore_coeff = self._accumulate_shore(shore_coeffs, mask_gm)
+        shore_coeffs = self._get_response(data.get_data(), gm_mask.get_data(), verbose, desc='GM response')
+        shore_coeff = self._accumulate_shore(shore_coeffs, gm_mask.get_data())
         signal_gm = self._shore_compress(shore_coeff)
 
-        # Calculate wm response
-        shore_coeffs = self._get_response_reorient(data, mask_wm, vecs, verbose, desc='WM response')
-        shore_coeff = self._accumulate_shore(shore_coeffs, mask_wm)
-        signal_wm = self._shore_compress(shore_coeff)
+        # Calculate csf response
+        shore_coeffs = self._get_response(data.get_data(), csf_mask.get_data(), verbose, desc='CSF response')
+        shore_coeff = self._accumulate_shore(shore_coeffs, csf_mask.get_data())
+        signal_csf = self._shore_compress(shore_coeff)
 
         return ShoreFit(self, [signal_csf, signal_gm, signal_wm])
 
@@ -195,32 +162,13 @@ class ShoreFit(object):
         :param filepath:
         :return:
         """
-        with open(filepath, 'rb') as in_file:
-            return pickle.load(in_file)
-
-    def save(self, output):
-        """
-
-        :param output:
-        :return:
-        """
-        with open(output, 'wb') as out_file:
-            pickle.dump(self, out_file, 2)
-
-    @classmethod
-    def old_load(cls, filepath):
-        """
-
-        :param filepath:
-        :return:
-        """
         response = np.load(filepath)
 
         gtab = gradient_table(response['bvals'], response['bvecs'])
         model = ShoreModel(gtab, response['order'], response['zeta'], response['tau'])
         return cls(model, (response['csf'], response['gm'], response['wm']))
 
-    def old_save(self, filepath):
+    def save(self, filepath):
         """
 
         :param filepath:
@@ -235,7 +183,7 @@ class ShoreFit(object):
         np.savez(filepath, csf=self.signal_csf, gm=self.signal_gm, wm=self.signal_wm,
                  zeta=self.zeta, tau=self.tau, order=self.order, bvals=self.gtab.bvals, bvecs=self.gtab.bvecs)
 
-    def fodf(self, filename, pos='hpsd', verbose=False):
+    def fodf(self, data, pos='hpsd', verbose=False):
         """Deconvolve the signal with the 3 response functions
 
         :param filename:
@@ -244,8 +192,13 @@ class ShoreFit(object):
         :return:
         """
         # Load nrrd or nifti with the corresponding transformations
-        data, gtab, meta = dwmri.load(filename)
+        #data, gtab, meta = dwmri.load(filename)
 
+        #nonzero_bvals = self.gtab.bvals[self.gtab.bvals != 0]
+        #affines = np.tile(data.affine, (len(nonzero_bvals),1,1))
+        #self.gtab = reorient_bvecs(self.gtab, affines)
+
+        data = data.get_data()
         space = data.shape[:-1]
 
         mask = np.ones(space)
@@ -258,7 +211,7 @@ class ShoreFit(object):
 
         # Build matrix that maps ODF+volume fractions to signal
         # in two steps: First, SHORE matrix
-        shore_m = shore.matrix(self.order, self.order, self.zeta, gtab, self.tau)
+        shore_m = shore.matrix(self.order, self.order, self.zeta, self.gtab, self.tau)
 
         # then, convolution
         M_wm = shore.matrix_kernel(kernel_wm, self.order, self.order)
@@ -345,7 +298,7 @@ class ShoreFit(object):
             gmout[i] = c[NN] * f
             csfout[i] = c[NN + 1] * f
 
-        return out, wmout, gmout, csfout, mask, meta
+        return out, wmout, gmout, csfout, mask
 
     def deconvolve_hpsd(self, P, q, G, h, init, NN):
         """ Use Quadratic Cone Program for one shot deconvolution
@@ -383,3 +336,39 @@ class ShoreFit(object):
         c = np.array(sol['x'])[:, 0]
 
         return c
+
+def dti_masks(wm_mask, gm_mask, csf_mask, dti_fa, dti_mask, fawm=0.7):
+    """ Use the fractional anisotropy calculated using a DTI approach to improve the tissue masks
+
+    :param wm_mask:
+    :param gm_mask:
+    :param csf_mask:
+    :param dti_mask:
+    :param dti_fa:
+    :param fawm:
+    :return:
+    """
+    # Load DTI fa map
+    fa = dti_fa.get_data()
+
+    # Load DTI mask if available
+    if dti_mask is None:
+        dti_mask = np.ones(fa.shape)
+    else:
+        dti_mask = dti_mask.get_data()
+
+    # Create masks
+    # WM
+    wm = wm_mask.get_data()
+    dti_wm = np.logical_and(dti_mask, np.logical_and(wm > 0.95, fa > float(fawm))).astype('int')
+    # GM
+    gm = gm_mask.get_data()
+    dti_gm = np.logical_and(dti_mask, np.logical_and(gm > 0.95, fa < 0.2)).astype('int')
+    # CSF
+    csf = csf_mask.get_data()
+    dti_csf = np.logical_and(dti_mask, np.logical_and(csf > 0.95, fa < 0.2)).astype('int')
+
+    wm_img = nib.Nifti1Image(dti_wm, wm_mask.affine)
+    gm_img = nib.Nifti1Image(dti_gm, gm_mask.affine)
+    csf_img = nib.Nifti1Image(dti_csf, csf_mask.affine)
+    return wm_img, gm_img, csf_img
