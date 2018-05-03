@@ -22,7 +22,6 @@ def test_ShoreFit_deconvolution_hpsd():
     out, wmout, gmout, csfout, mask = fit.fodf(data, pos='hpsd')
     tensors, mask, meta = fields.load_tensor(ODF_RESULT_HPSD)
 
-    print((out - tensors) / tensors)
     assert (out == tensors).all() \
     and (wmout == fields.load_scalar(os.path.join(DRD, 'wmhpsd.nrrd'))[0]).all() \
     and (gmout == fields.load_scalar(os.path.join(DRD, 'gmhpsd.nrrd'))[0]).all() \
@@ -37,7 +36,6 @@ def test_ShoreFit_deconvolution_nonneg():
     out, wmout, gmout, csfout, mask = fit.fodf(data, pos='nonneg')
     tensors, mask, meta = fields.load_tensor(ODF_RESULT_NONNEG)
 
-    print((out - tensors) / tensors)
     assert (out == tensors).all() \
     and (wmout == fields.load_scalar(os.path.join(DRD, 'wmnonneg.nrrd'))[0]).all() \
     and (gmout == fields.load_scalar(os.path.join(DRD, 'gmnonneg.nrrd'))[0]).all() \
@@ -52,7 +50,6 @@ def test_ShoreFit_deconvolution_no_constraint():
     out, wmout, gmout, csfout, mask = fit.fodf(data, pos='none')
     tensors, mask, meta = fields.load_tensor(ODF_RESULT_NO_CONSTRAINT)
 
-    print((out-tensors)/tensors)
     assert (out == tensors).all() \
     and (wmout == fields.load_scalar(os.path.join(DRD, 'wmnone.nrrd'))[0]).all() \
     and (gmout == fields.load_scalar(os.path.join(DRD, 'gmnone.nrrd'))[0]).all() \
