@@ -1,6 +1,6 @@
 import numpy as np
 
-# spherical angles
+# spherical angles needed for deconvolution with nonneg constraint
 LOTS_OF_DIRECTIONS = np.array(
     [
         2.2772071646, -0.6482608862,
