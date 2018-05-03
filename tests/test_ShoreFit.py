@@ -19,7 +19,7 @@ def test_ShoreFit_deconvolution_hpsd():
     The result calculated with bonndit are compared to results from the old code
     """
     fit = bs.ShoreFit.load(SHORE_FIT_PRECOMPUTED)
-    out, wmout, gmout, csfout, mask = fit.fodf(data, pos='hpsd')
+    out, wmout, gmout, csfout = fit.fodf(data, pos='hpsd')
     tensors, mask, meta = fields.load_tensor(ODF_RESULT_HPSD)
 
     assert ((out - tensors) < 1e-10).all() \
@@ -33,7 +33,7 @@ def test_ShoreFit_deconvolution_nonneg():
     The result calculated with bonndit are compared to results from the old code
     """
     fit = bs.ShoreFit.load(SHORE_FIT_PRECOMPUTED)
-    out, wmout, gmout, csfout, mask = fit.fodf(data, pos='nonneg')
+    out, wmout, gmout, csfout = fit.fodf(data, pos='nonneg')
     tensors, mask, meta = fields.load_tensor(ODF_RESULT_NONNEG)
 
     assert ((out - tensors) < 1e-10).all() \
@@ -47,7 +47,7 @@ def test_ShoreFit_deconvolution_no_constraint():
     The result calculated with bonndit are compared to results from the old code
     """
     fit = bs.ShoreFit.load(SHORE_FIT_PRECOMPUTED)
-    out, wmout, gmout, csfout, mask = fit.fodf(data, pos='none')
+    out, wmout, gmout, csfout = fit.fodf(data, pos='none')
     tensors, mask, meta = fields.load_tensor(ODF_RESULT_NO_CONSTRAINT)
 
     assert ((out - tensors) < 1e-10).all() \

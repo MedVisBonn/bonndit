@@ -40,7 +40,7 @@ gtab = gradient_table(bvals, bvecs)
 
 
 # Rotation to worldspace and sign flip according to fsl documentation
-gtab = fsl_to_worldspace(data, gtab)
+gtab = fsl_to_worldspace(data.affine, gtab)
 dti_vecs = fsl_flip_signs_vec(dti_vecs)
 
 model = ShoreModel(gtab)

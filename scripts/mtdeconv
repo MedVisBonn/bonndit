@@ -38,7 +38,8 @@ def main():
     parser = argparse.ArgumentParser(
         description='This script computes fiber orientation distribution functions (fODFs) \
         as described in "Versatile, Robust and Efficient Tractography With Constrained Higher \
-        Order Tensor fODFs" by Ankele et al. (2017)', add_help=False)
+        Order Tensor fODFs" by Ankele et al. (2017). It is assumed that the input data is saved \
+        using FSL.', add_help=False)
 
     parser.add_argument('indir',
                         help='folder containing all required input files')
@@ -136,7 +137,7 @@ def main():
     gtab = gradient_table(bvals, bvecs)
 
     # Flip sign of x-coordinate if affine determinant is positive and rotate to worldspace
-    gtab = fsl_to_worldspace(data, gtab)
+    gtab = fsl_to_worldspace(data.affine, gtab)
     dti_vecs = fsl_flip_signs_vec(dti_vecs)
 
     # We need this Meta object for saving later
@@ -162,7 +163,7 @@ def main():
 
     # Deconvolution if 'responseonly' is not set
     if not args.responseonly:
-        out, wmout, gmout, csfout, mask = fit.fodf(data, verbose=verbose, pos=args.constraint)
+        out, wmout, gmout, csfout = fit.fodf(data, verbose=verbose, pos=args.constraint)
 
         fields.save_tensor(os.path.join(args.outdir, args.fodfout), out, mask=mask, meta=meta)
 

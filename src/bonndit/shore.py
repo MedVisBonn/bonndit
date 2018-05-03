@@ -17,7 +17,7 @@ from .gradients import gtab_reorient
 
 
 class ShoreModel(object):
-    """ Fit WM, GM and CSF response functions to the given DW data.
+    """ Fit WM, GM and CSF response functions to the given diffusion weighted data.
     """
     def __init__(self, gtab, order=4, zeta=700, tau=1 / (4 * np.pi ** 2)):
         self.gtab = gtab
@@ -28,64 +28,67 @@ class ShoreModel(object):
     def fit(self, data, dti_vecs, wm_mask, gm_mask, csf_mask, verbose=False):
         """ Fit the response functions and return the shore coefficients
 
-        :param data:
-        :param dti_vecs:
-        :param verbose:
-        :return:
+        :param data: diffusion weighted data
+        :param dti_vecs: first eigenvector of a precalculated diffusion tensor
+        :param wm_mask: white Matter Mask (0/1)
+        :param gm_mask: gray Matter Mask (0/1)
+        :param csf_mask: cerebrospinal fluid mask (0/1)
+        :param verbose: Set to True for a progress bar
+        :return: Fitted response functions in a ShoreFit object
         """
 
+
         # Calculate wm response
-        shore_coeffs = self._get_response_reorient(data.get_data(), wm_mask.get_data(), dti_vecs.get_data(),
-                                                   verbose, desc='WM response')
-        shore_coeff = self._accumulate_shore(shore_coeffs, wm_mask.get_data())
+        wm_voxels = data.get_data()[wm_mask.get_data()==1]
+        wm_vecs = dti_vecs.get_data()[wm_mask.get_data()==1]
+        shore_coeffs = self._get_response_reorient(wm_voxels, wm_vecs, verbose, desc='WM response')
+        shore_coeff = self._accumulate_shore(shore_coeffs)
         signal_wm = self._shore_compress(shore_coeff)
 
         # Calculate gm response
-        shore_coeffs = self._get_response(data.get_data(), gm_mask.get_data(), verbose, desc='GM response')
-        shore_coeff = self._accumulate_shore(shore_coeffs, gm_mask.get_data())
+        gm_voxels = data.get_data()[gm_mask.get_data()==1]
+        shore_coeffs = self._get_response(gm_voxels, verbose, desc='GM response')
+        shore_coeff = self._accumulate_shore(shore_coeffs)
         signal_gm = self._shore_compress(shore_coeff)
 
         # Calculate csf response
-        shore_coeffs = self._get_response(data.get_data(), csf_mask.get_data(), verbose, desc='CSF response')
-        shore_coeff = self._accumulate_shore(shore_coeffs, csf_mask.get_data())
+        csf_voxels = data.get_data()[csf_mask.get_data()==1]
+        shore_coeffs = self._get_response(csf_voxels, verbose, desc='CSF response')
+        shore_coeff = self._accumulate_shore(shore_coeffs)
         signal_csf = self._shore_compress(shore_coeff)
 
         return ShoreFit(self, [signal_csf, signal_gm, signal_wm])
 
-    def _shore_compress(self, s):
+    def _shore_compress(self, coefs):
         """ "kernel": only use z-rotational part
 
-        :param s:
-        :return:
+        :param coefs: shore coefficients
+        :return: z-rotational part of the shore coefficients
         """
         r = np.zeros(shore.get_kernel_size(self.order, self.order))
         counter = 0
         ccounter = 0
         for l in range(0, self.order + 1, 2):
             for n in range((self.order - l) // 2 + 1):
-                r[ccounter] = s[counter + l]
+                r[ccounter] = coefs[counter + l]
                 counter += 2 * l + 1
                 ccounter += 1
         return r
 
-    def _accumulate_shore(self, shore_coeff, mask):
-        """ Average over all shore coefficients
+    def _accumulate_shore(self, shore_coeff):
+        """ Average over shore coefficients calculated for voxels of a specific tissue
 
-        :param shore_coeff:
-        :param mask:
-        :return:
+        :param shore_coeff: array of per voxel shore coefficients
+        :return: averaged shore coefficients
         """
 
         shore_accum = np.zeros(shore.get_size(self.order, self.order))
         accum_count = 0
 
         # Iterate over the data indices
-        for i in np.ndindex(*mask.shape[:3]):
-            if mask[i] == 0:
-                continue
-            else:
-                shore_accum += shore_coeff[i]
-                accum_count += 1
+        for i in np.ndindex(*shore_coeff.shape[:-1]):
+            shore_accum += shore_coeff[i]
+            accum_count += 1
         if accum_count == 0:
             return shore_accum
 
@@ -93,13 +96,14 @@ class ShoreModel(object):
         with np.errstate(divide='ignore', invalid='ignore'):
             return shore_accum / accum_count
 
-    def _get_response(self, data, mask, verbose=False, desc=''):
-        """
 
-        :param data:
-        :param mask:
-        :param verbose:
-        :return:
+    def _get_response(self, data, verbose=False, desc=''):
+        """ Calculate response function for isotropic regions such as gray matter or cerebrospinal fluid.
+
+        :param data: array of voxels for which to calculate shore coefficients
+        :param verbose: set to true to show a progress bar
+        :param desc: description for the progress bar
+        :return: array of per voxel shore coefficients
         """
         shore_coeff = np.zeros(data.shape[:-1] + (shore.get_size(self.order, self.order),))
         with np.errstate(divide='ignore', invalid='ignore'):
@@ -109,8 +113,6 @@ class ShoreModel(object):
         for i in tqdm(np.ndindex(*data.shape[:-1]),
                       total=np.prod(data.shape[:-1]),
                       disable=not verbose, desc=desc):
-            if mask[i] == 0:
-                continue
 
             # TODO: Decide if rcond=None would be better
             r = la.lstsq(shore_m, data[i], rcond=-1)
@@ -118,14 +120,18 @@ class ShoreModel(object):
 
         return shore_coeff
 
-    def _get_response_reorient(self, data, mask, vecs, verbose=False, desc=''):
-        """
+    def _get_response_reorient(self, data, vecs, verbose=False, desc=''):
+        """ Calculate white matter response function. Diffusion in white matter is anisotropic. Averaging shore
+        coefficients of different voxels can only result in a meaningful response function if fibers in the
+        respective voxels are oriented in the same direction (no crossing fibers). Such voxels can be selected by
+        filtering for high fractional anisotropy. Gradients for every considered voxel are rotated such that the
+        the first eigenvector of a pre calculated diffusion tensor is aligned to the z-axis.
 
-        :param data:
-        :param mask:
-        :param vecs: First principal direction of diffusion for every voxel
-        :param verbose:
-        :return:
+        :param data: array of white matter voxels for which to calculate shore coefficients
+        :param vecs: First principal direction of diffusion for every given data voxel
+        :param verbose: set to true to show a progress bar
+        :param desc: description for the progress bar
+        :return: array of per white matter voxel shore coefficients
         """
 
         shore_coeff = np.zeros(data.shape[:-1] + (shore.get_size(self.order, self.order),))
@@ -133,8 +139,7 @@ class ShoreModel(object):
         for i in tqdm(np.ndindex(*data.shape[:-1]),
                       total=np.prod(data.shape[:-1]),
                       disable=not verbose, desc=desc):
-            if mask[i] == 0:
-                continue
+
             gtab2 = gtab_reorient(self.gtab, vecs[i])
             with np.errstate(divide='ignore', invalid='ignore'):
                 shore_m = shore_matrix(self.order, self.zeta, gtab2, self.tau)
@@ -157,10 +162,10 @@ class ShoreFit(object):
 
     @classmethod
     def load(cls, filepath):
-        """
+        """ Load a precalculated ShoreFit object from a file.
 
-        :param filepath:
-        :return:
+        :param filepath: path to the saved ShoreFit object
+        :return: ShoreFit object which contains response functions for wm, gm and csf
         """
         response = np.load(filepath)
 
@@ -169,10 +174,9 @@ class ShoreFit(object):
         return cls(model, (response['csf'], response['gm'], response['wm']))
 
     def save(self, filepath):
-        """
+        """ Save a ShoreFit object to a file.
 
-        :param filepath:
-        :return:
+        :param filepath: path to the file
         """
         try:
             os.makedirs(os.path.dirname(filepath))
@@ -186,10 +190,10 @@ class ShoreFit(object):
     def fodf(self, data, pos='hpsd', verbose=False):
         """Deconvolve the signal with the 3 response functions
 
-        :param filename:
-        :param pos:
-        :param verbose:
-        :return:
+        :param data: diffusion weighted data
+        :param pos: constraint choose between hpsd, nonneg and none
+        :param verbose: set to true to show a progress bar
+        :return: fodfs, wm volume fraction, gm volume fraction and csf volume fraction
         """
 
         data = data.get_data()
@@ -292,7 +296,7 @@ class ShoreFit(object):
             gmout[i] = c[NN] * f
             csfout[i] = c[NN + 1] * f
 
-        return out, wmout, gmout, csfout, mask
+        return out, wmout, gmout, csfout
 
     def deconvolve_hpsd(self, P, q, G, h, init, NN):
         """ Use Quadratic Cone Program for one shot deconvolution
@@ -332,15 +336,15 @@ class ShoreFit(object):
         return c
 
 def dti_masks(wm_mask, gm_mask, csf_mask, dti_fa, dti_mask, fawm=0.7):
-    """ Use the fractional anisotropy calculated using a DTI approach to improve the tissue masks
+    """ Use precalculated fractional anisotropy values for example from DTI to improve the tissue masks.
 
-    :param wm_mask:
-    :param gm_mask:
-    :param csf_mask:
-    :param dti_mask:
-    :param dti_fa:
-    :param fawm:
-    :return:
+    :param wm_mask: white matter mask
+    :param gm_mask: gray matter mask
+    :param csf_mask: cerebrospinal fluid mask
+    :param dti_mask: brain mask
+    :param dti_fa: precalculated fractional anisotropy values
+    :param fawm: fractional anisotropy threshold for white matter
+    :return: Masks for wm, gm and csf
     """
     # Load DTI fa map
     fa = dti_fa.get_data()

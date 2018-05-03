@@ -6,9 +6,9 @@ from dipy.core.gradients import gradient_table
 def gtab_rotate(gtab, rot_matrix):
     """ Rotate gradients with a rotation matrix (3,3)
 
-    :param gtab:
-    :param rot_matrix:
-    :return:
+    :param gtab: dipy GradientTable
+    :param rot_matrix: 3x3 rotation matrix
+    :return: rotated dipy GradientTable
     """
     length = len(gtab.bvals)
     rot_bvecs = np.zeros((length, 3))
@@ -18,13 +18,12 @@ def gtab_rotate(gtab, rot_matrix):
 
 
 def gtab_reorient(gtab, old_vec, new_vec=np.array((0, 0, 1))):
-    """ Rotate gradients to align the 1st eigenvector to the specified direction
+    """ Rotate gradients such that a given vector will be mapped to another given vector, by default the z-axis
 
-    :param gtab:
-    :param old_vec:
-    :param new_vec:
-    :return:
+    :param gtab: dipy GradientTable
+    :param old_vec: vector before rotation
+    :param new_vec: vector after rotation
+    :return: rotated dipy GradientTable
     """
-
     rot_matrix = vec2vec_rotmat(old_vec, new_vec)
     return gtab_rotate(gtab, rot_matrix)
