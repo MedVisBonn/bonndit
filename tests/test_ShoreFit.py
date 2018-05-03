@@ -22,10 +22,10 @@ def test_ShoreFit_deconvolution_hpsd():
     out, wmout, gmout, csfout, mask = fit.fodf(data, pos='hpsd')
     tensors, mask, meta = fields.load_tensor(ODF_RESULT_HPSD)
 
-    assert (out == tensors).all() \
-    and (wmout == fields.load_scalar(os.path.join(DRD, 'wmhpsd.nrrd'))[0]).all() \
-    and (gmout == fields.load_scalar(os.path.join(DRD, 'gmhpsd.nrrd'))[0]).all() \
-    and (csfout == fields.load_scalar(os.path.join(DRD, 'csfhpsd.nrrd'))[0]).all() \
+    assert ((out - tensors) < 1e-10).all() \
+    and ((wmout - fields.load_scalar(os.path.join(DRD, 'wmhpsd.nrrd'))[0]) < 1e-10).all() \
+    and ((gmout - fields.load_scalar(os.path.join(DRD, 'gmhpsd.nrrd'))[0]) < 1e-10).all() \
+    and ((csfout - fields.load_scalar(os.path.join(DRD, 'csfhpsd.nrrd'))[0]) < 1e-10).all() \
 
 
 def test_ShoreFit_deconvolution_nonneg():
@@ -36,10 +36,10 @@ def test_ShoreFit_deconvolution_nonneg():
     out, wmout, gmout, csfout, mask = fit.fodf(data, pos='nonneg')
     tensors, mask, meta = fields.load_tensor(ODF_RESULT_NONNEG)
 
-    assert (out == tensors).all() \
-    and (wmout == fields.load_scalar(os.path.join(DRD, 'wmnonneg.nrrd'))[0]).all() \
-    and (gmout == fields.load_scalar(os.path.join(DRD, 'gmnonneg.nrrd'))[0]).all() \
-    and (csfout == fields.load_scalar(os.path.join(DRD, 'csfnonneg.nrrd'))[0]).all()
+    assert ((out - tensors) < 1e-10).all() \
+    and ((wmout - fields.load_scalar(os.path.join(DRD, 'wmnonneg.nrrd'))[0]) < 1e-10).all() \
+    and ((gmout - fields.load_scalar(os.path.join(DRD, 'gmnonneg.nrrd'))[0]) < 1e-10).all() \
+    and ((csfout - fields.load_scalar(os.path.join(DRD, 'csfnonneg.nrrd'))[0]) < 1e-10).all()
 
 
 def test_ShoreFit_deconvolution_no_constraint():
@@ -50,9 +50,9 @@ def test_ShoreFit_deconvolution_no_constraint():
     out, wmout, gmout, csfout, mask = fit.fodf(data, pos='none')
     tensors, mask, meta = fields.load_tensor(ODF_RESULT_NO_CONSTRAINT)
 
-    assert (out == tensors).all() \
-    and (wmout == fields.load_scalar(os.path.join(DRD, 'wmnone.nrrd'))[0]).all() \
-    and (gmout == fields.load_scalar(os.path.join(DRD, 'gmnone.nrrd'))[0]).all() \
-    and (csfout == fields.load_scalar(os.path.join(DRD, 'csfnone.nrrd'))[0]).all()
+    assert ((out - tensors) < 1e-10).all() \
+    and ((wmout - fields.load_scalar(os.path.join(DRD, 'wmnone.nrrd'))[0]) < 1e-10).all() \
+    and ((gmout - fields.load_scalar(os.path.join(DRD, 'gmnone.nrrd'))[0]) < 1e-10).all() \
+    and ((csfout - fields.load_scalar(os.path.join(DRD, 'csfnone.nrrd'))[0]) < 1e-10).all()
 
 
