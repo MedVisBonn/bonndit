@@ -164,7 +164,7 @@ def main():
     if not args.responseonly:
         out, wmout, gmout, csfout = fit.fodf(data, pos=args.constraint, mask=dti_mask, verbose=verbose)
 
-        fields.save_tensor(os.path.join(args.outdir, args.fodfout), out, mask=dti_mask, meta=meta)
+        fields.save_tensor(os.path.join(args.outdir, args.fodfout), out, mask=dti_mask.get_data(), meta=meta)
 
         # Save volumes if 'volumes' is set
         if args.volumes:
