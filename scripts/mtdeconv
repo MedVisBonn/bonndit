@@ -193,7 +193,8 @@ def main():
 
         fields.save_tensor(
             os.path.join(args.outdir, args.fodfout),
-            out, mask=dti_mask, meta=meta)
+            out, mask=dti_mask.get_data(),
+            meta=meta)
 
         # Save volumes if 'volumes' is set
         if args.volumes:

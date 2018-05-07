@@ -220,6 +220,8 @@ class ShoreFit(object):
 
         if not mask:
             mask = np.ones(space)
+        else:
+            mask = mask.get_data()
 
         # Kernel_ln
         kernel_csf = shore.signal_to_kernel(
