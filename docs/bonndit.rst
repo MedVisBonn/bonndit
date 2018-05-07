@@ -19,6 +19,22 @@ bonndit.constants module
     :undoc-members:
     :show-inheritance:
 
+bonndit.gradients module
+------------------------
+
+.. automodule:: bonndit.gradients
+:members:
+        :undoc-members:
+            :show-inheritance:
+
+bonndit.io module
+-----------------
+
+.. automodule:: bonndit.io
+:members:
+        :undoc-members:
+            :show-inheritance:
+
 bonndit.shore module
 --------------------
 

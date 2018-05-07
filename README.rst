@@ -67,6 +67,15 @@ If you want to see a list of parameters type the following:
     $ mtdeconv -h
 
 
+Authors
+-------
+
+* **Michael Ankele** - *Initial work* - [momentarylapse](https://github.com/momentarylapse)
+
+* **Thomas Schulz** - *Initial work* - [ThomasSchultz](https://github.com/ThomasSchultz)
+
+* **Olivier Morelle** - *Code curation, documentation and test* [Oli4](https://github.com/Oli4)
+
 Credits
 -------
 

@@ -4,15 +4,15 @@ import errno
 import os
 
 import cvxopt
+import nibabel as nib
 import numpy as np
 import numpy.linalg as la
-from dipy.core.gradients import gradient_table, reorient_bvecs
+from dipy.core.gradients import gradient_table
 from dipy.reconst.shore import shore_matrix
-import nibabel as nib
 from tqdm import tqdm
 
 from bonndit.constants import LOTS_OF_DIRECTIONS
-from bonndit.michi import shore, esh, tensor, dwmri
+from bonndit.michi import shore, esh, tensor
 from .gradients import gtab_reorient
 
 
@@ -41,25 +41,25 @@ class ShoreModel(object):
         # Calculate wm response
         wm_voxels = data.get_data()[wm_mask.get_data()==1]
         wm_vecs = dti_vecs.get_data()[wm_mask.get_data()==1]
-        shore_coeffs = self._get_response_reorient(wm_voxels, wm_vecs, verbose, desc='WM response')
-        shore_coeff = self._accumulate_shore(shore_coeffs)
-        signal_wm = self._shore_compress(shore_coeff)
+        shore_coeffs = self.get_response_reorient(wm_voxels, wm_vecs, verbose, desc='WM response')
+        shore_coeff = self.accumulate_shore(shore_coeffs)
+        signal_wm = self.shore_compress(shore_coeff)
 
         # Calculate gm response
         gm_voxels = data.get_data()[gm_mask.get_data()==1]
-        shore_coeffs = self._get_response(gm_voxels, verbose, desc='GM response')
-        shore_coeff = self._accumulate_shore(shore_coeffs)
-        signal_gm = self._shore_compress(shore_coeff)
+        shore_coeffs = self.get_response(gm_voxels, verbose, desc='GM response')
+        shore_coeff = self.accumulate_shore(shore_coeffs)
+        signal_gm = self.shore_compress(shore_coeff)
 
         # Calculate csf response
         csf_voxels = data.get_data()[csf_mask.get_data()==1]
-        shore_coeffs = self._get_response(csf_voxels, verbose, desc='CSF response')
-        shore_coeff = self._accumulate_shore(shore_coeffs)
-        signal_csf = self._shore_compress(shore_coeff)
+        shore_coeffs = self.get_response(csf_voxels, verbose, desc='CSF response')
+        shore_coeff = self.accumulate_shore(shore_coeffs)
+        signal_csf = self.shore_compress(shore_coeff)
 
         return ShoreFit(self, [signal_csf, signal_gm, signal_wm])
 
-    def _shore_compress(self, coefs):
+    def shore_compress(self, coefs):
         """ "kernel": only use z-rotational part
 
         :param coefs: shore coefficients
@@ -75,7 +75,7 @@ class ShoreModel(object):
                 ccounter += 1
         return r
 
-    def _accumulate_shore(self, shore_coeff):
+    def accumulate_shore(self, shore_coeff):
         """ Average over shore coefficients calculated for voxels of a specific tissue
 
         :param shore_coeff: array of per voxel shore coefficients
@@ -96,8 +96,7 @@ class ShoreModel(object):
         with np.errstate(divide='ignore', invalid='ignore'):
             return shore_accum / accum_count
 
-
-    def _get_response(self, data, verbose=False, desc=''):
+    def get_response(self, data, verbose=False, desc=''):
         """ Calculate response function for isotropic regions such as gray matter or cerebrospinal fluid.
 
         :param data: array of voxels for which to calculate shore coefficients
@@ -120,7 +119,7 @@ class ShoreModel(object):
 
         return shore_coeff
 
-    def _get_response_reorient(self, data, vecs, verbose=False, desc=''):
+    def get_response_reorient(self, data, vecs, verbose=False, desc=''):
         """ Calculate white matter response function. Diffusion in white matter is anisotropic. Averaging shore
         coefficients of different voxels can only result in a meaningful response function if fibers in the
         respective voxels are oriented in the same direction (no crossing fibers). Such voxels can be selected by
@@ -150,6 +149,7 @@ class ShoreModel(object):
 
 
 class ShoreFit(object):
+
     def __init__(self, model, shore_coef):
         self.model = model
         self.signal_csf = shore_coef[0]
@@ -187,20 +187,27 @@ class ShoreFit(object):
         np.savez(filepath, csf=self.signal_csf, gm=self.signal_gm, wm=self.signal_wm,
                  zeta=self.zeta, tau=self.tau, order=self.order, bvals=self.gtab.bvals, bvecs=self.gtab.bvecs)
 
-    def fodf(self, data, pos='hpsd', verbose=False):
-        """Deconvolve the signal with the 3 response functions
+    def fodf(self, data, pos='hpsd', mask=None, verbose=False):
+        """ Multi tissue deconvolution [1]_,
 
         :param data: diffusion weighted data
         :param pos: constraint choose between hpsd, nonneg and none
         :param verbose: set to true to show a progress bar
         :return: fodfs, wm volume fraction, gm volume fraction and csf volume fraction
+
+
+        References
+        ----------
+        .. [1] M. Ankele, L. Lim, S. Groeschel and T. Schultz; "Versatile, Robust and Efficient Tractography
+        With Constrained Higher-Order Tensor fODFs"; Int J Comput Assist Radiol Surg. 2017 Aug; 12(8):1257-1270;
+        doi: 10.1007/s11548-017-1593-6
         """
 
         data = data.get_data()
         space = data.shape[:-1]
 
-        mask = np.ones(space)
-        # TODO: Add possibility to add mask
+        if not mask:
+            mask = np.ones(space)
 
         # Kernel_ln
         kernel_csf = shore.signal_to_kernel(self.signal_csf, self.order, self.order)
@@ -224,6 +231,7 @@ class ShoreFit(object):
             print('Condition number of M:', la.cond(M))
 
         NN = esh.LENGTH[self.order]
+
 
         # positivity constraints
         if pos in ['nonneg', 'hpsd']:
@@ -287,7 +295,7 @@ class ShoreFit(object):
                         print('Optimization unsuccessful.')
                     c = np.array(sol['x'])[:, 0]
                 else:
-                    c = self.deconvolve_hpsd(P, q, G, h, init, NN)
+                    c = self._deconvolve_hpsd(P, q, G, h, init, NN)
             else:
                 c = la.lstsq(M, S, rcond=-1)[0]
             out[i] = esh.esh_to_sym(c[:NN])
@@ -298,7 +306,7 @@ class ShoreFit(object):
 
         return out, wmout, gmout, csfout
 
-    def deconvolve_hpsd(self, P, q, G, h, init, NN):
+    def _deconvolve_hpsd(self, P, q, G, h, init, NN):
         """ Use Quadratic Cone Program for one shot deconvolution
 
         :param P:
