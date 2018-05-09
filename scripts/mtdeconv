@@ -10,6 +10,7 @@ Compute fiber orientation distribution functions for diffusion weighted MRI data
 import argparse
 import errno
 import os
+import logging
 
 import nibabel as nib
 import numpy as np
@@ -56,6 +57,8 @@ def main():
                        help='output the volume fractions (csf/gm/wm) after deconvolution')
     flags.add_argument('-M', '--tissuemasks', action='store_true',
                        help='output the DTI improved tissue masks (csf/gm/wm)')
+    flags.add_argument('-L' '--log', action='store_true',
+                       help='enable logging, logs are saved in the output folder as "mtdeconv.log"')
 
     shoreopts = parser.add_argument_group('shore options (optional)', 'Optional arguments for the computation of \
     the shore response functions')
@@ -83,6 +86,15 @@ def main():
                             help='gm volume filename - filetype: .nrrd / .nii / .nii.gz')
     filenaming.add_argument('-C', '--cerebrospinalfluid', default='csfvolume.nrrd',
                             help='csf volume filename - filetype: .nrrd / .nii / .nii.gz')
+
+
+    # setup up for logging
+    #logging.basicConfig(filename='mtdeconv.log', filemode='a', level=logging.INFO, format='%(levelname)s:%(message)s')
+    #logging.info('{asctime}')
+    #logging.info()
+    #raise Exception
+    # improve logging, log voxels with problems, write header for log, discuss what to log, retrieve kwargs and hand it
+    # to basicConfig
 
     args = parser.parse_args()
     order = args.order

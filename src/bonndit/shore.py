@@ -2,6 +2,7 @@ from __future__ import division
 
 import errno
 import os
+import logging
 
 import cvxopt
 import nibabel as nib
@@ -15,7 +16,7 @@ from bonndit.constants import LOTS_OF_DIRECTIONS
 from bonndit.michi import shore, esh, tensor
 from .gradients import gtab_reorient
 
-
+logging.warning('Tests bla')
 class ShoreModel(object):
     """ Fit WM, GM and CSF response functions to the given diffusion weighted data.
     """
@@ -212,74 +213,106 @@ class ShoreFit(object):
             mask = mask.get_data()
 
         # Kernel_ln
-        kernel_csf = shore.signal_to_kernel(self.signal_csf, self.order, self.order)
-        kernel_gm = shore.signal_to_kernel(self.signal_gm, self.order, self.order)
-        kernel_wm = shore.signal_to_kernel(self.signal_wm, self.order, self.order)
+        self.kernel_csf = shore.signal_to_kernel(self.signal_csf, self.order, self.order)
+        self.kernel_gm = shore.signal_to_kernel(self.signal_gm, self.order, self.order)
+        self.kernel_wm = shore.signal_to_kernel(self.signal_wm, self.order, self.order)
 
-        # Build matrix that maps ODF+volume fractions to signal
-        # in two steps: First, SHORE matrix
-        shore_m = shore.matrix(self.order, self.order, self.zeta, self.gtab, self.tau)
-
-        # then, convolution
-        M_wm = shore.matrix_kernel(kernel_wm, self.order, self.order)
-        M_gm = shore.matrix_kernel(kernel_gm, self.order, self.order)
-        M_csf = shore.matrix_kernel(kernel_csf, self.order, self.order)
-        M = np.hstack((M_wm, M_gm[:, :1], M_csf[:, :1]))
-
-        # now, multiply them together
-        M = np.dot(shore_m, M)
-
+        # Create convolution matrix
+        conv_matrix = self.shore_convolution_matrix()
         with np.errstate(divide='ignore', invalid='ignore'):
-            print('Condition number of M:', la.cond(M))
+            logging.debug('Condition number of M:', la.cond(conv_matrix))
 
+        # TODO: consider additional Tikhonov regularization
+        # Deconvolve the DWI signal
+        if pos == 'none':
+            result = self.deconvolve(data, mask, conv_matrix, verbose)
+        elif pos == 'hpsd':
+            result =  self.deconvolve_hpsd(data, mask, conv_matrix, verbose)
+        elif pos == 'nonneg':
+            result = self.deconvolve_nonneg(data, mask, conv_matrix, verbose)
+        else:
+            raise ValueError(('"{}" is not supported as a constraint,' +
+                             ' please choose from [hpsd, nonneg, none]').format(pos))
+
+        # Return fODFs and Volume fractions as separate numpy.ndarray objects
+        space = data.shape[:-1]
         NN = esh.LENGTH[self.order]
-
-
-        # positivity constraints
-        if pos in ['nonneg', 'hpsd']:
-            cvxopt.solvers.options['show_progress'] = False
-            # set up QP problem from normal equations
-            P = cvxopt.matrix(np.ascontiguousarray(np.dot(M.T, M)))
-            # TODO: consider additional Tikhonov regularization
-
-            if pos == 'nonneg':
-                # set up non-negativity constraints
-                NC = LOTS_OF_DIRECTIONS.shape[0]
-                G = np.zeros((NC + 2, NN + 2))
-                G[:NC, :NN] = esh.matrix(self.order, LOTS_OF_DIRECTIONS)
-                # also constrain GM/CSF VFs to be non-negative
-                G[NC, NN] = -1
-                G[NC + 1, NN + 1] = -1
-                h = np.zeros(NC + 2)
-            else:
-
-                # positive definiteness constraint on ODF
-                ind = tensor.H_index_matrix(self.order).reshape(-1)
-                N = len(ind)
-
-                # set up positive definiteness constraints
-                G = np.zeros((N + 2, NN + 2))
-                # constrain GM/CSF VFs to be non-negative: orthant constraints
-                G[0, NN] = -1
-                G[1, NN + 1] = -1
-                esh2sym = esh.esh_to_sym_matrix(self.order)
-                for i in range(N):
-                    G[i + 2, :NN] = -esh2sym[ind[i], :]
-                h = np.zeros(N + 2)
-                # initialize with partly GM, CSF, and isotropic ODF
-                init = np.zeros(NN + 2)
-                init[0] = 0.3
-                init[1] = 0.3
-                init[2] = 0.3 * self.signal_csf[0] / kernel_csf[0][0]
-                init = cvxopt.matrix(np.ascontiguousarray(init))
-            G = cvxopt.matrix(np.ascontiguousarray(G))
-            h = cvxopt.matrix(np.ascontiguousarray(h))
-
-        # deconvolution
         out = np.zeros(space + (NN,))
         gmout = np.zeros(space)
         wmout = np.zeros(space)
         csfout = np.zeros(space)
+
+        for i in np.ndindex(*data.shape[:-1]):
+            out[i] = esh.esh_to_sym(result[i][:NN])
+            f = self.kernel_csf[0][0] / max(self.signal_csf[0], 1e-10)
+            wmout[i] = result[i][0] * f
+            gmout[i] = result[i][NN] * f
+            csfout[i] = result[i][NN+1] * f
+
+        return out, wmout, gmout, csfout
+
+
+    def deconvolve(self, data, mask, conv_matrix, verbose):
+        """
+
+        :param data:
+        :param mask:
+        :param conv_matrix:
+        :param verbose:
+        :return:
+        """
+        NN = esh.LENGTH[self.order]
+        deconvolution_result = np.zeros(data.shape[:-1] + (NN+2,))
+
+        for i in tqdm(np.ndindex(*data.shape[:-1]),
+                      total=np.prod(data.shape[:-1]),
+                      disable=not verbose,
+                      desc='Optimization'):
+            if mask[i] == 0:
+                continue
+            signal = data[i]
+            deconvolution_result[i] = la.lstsq(conv_matrix, signal, rcond=-1)[0]
+
+        return deconvolution_result
+
+    def deconvolve_hpsd(self, data, mask, conv_matrix, verbose):
+        """
+
+        :param data:
+        :param mask:
+        :param conv_matrix:
+        :param verbose:
+        :return:
+        """
+        NN = esh.LENGTH[self.order]
+        deconvolution_result = np.zeros(data.shape[:-1] + (NN + 2,))
+
+        cvxopt.solvers.options['show_progress'] = False
+        # set up QP problem from normal equations
+        P = cvxopt.matrix(np.ascontiguousarray(np.dot(conv_matrix.T, conv_matrix)))
+
+        # positive definiteness constraint on ODF
+        ind = tensor.H_index_matrix(self.order).reshape(-1)
+        N = len(ind)
+
+        # set up positive definiteness constraints
+        G = np.zeros((N + 2, NN + 2))
+        # constrain GM/CSF VFs to be non-negative: orthant constraints
+        G[0, NN] = -1
+        G[1, NN + 1] = -1
+        esh2sym = esh.esh_to_sym_matrix(self.order)
+        for i in range(N):
+            G[i + 2, :NN] = -esh2sym[ind[i], :]
+        h = np.zeros(N + 2)
+        # initialize with partly GM, CSF, and isotropic ODF
+        init = np.zeros(NN + 2)
+        init[0] = 0.3
+        init[1] = 0.3
+        init[2] = 0.3 * self.signal_csf[0] / self.kernel_csf[0][0]
+        init = cvxopt.matrix(np.ascontiguousarray(init))
+
+        G = cvxopt.matrix(np.ascontiguousarray(G))
+        h = cvxopt.matrix(np.ascontiguousarray(h))
 
         for i in tqdm(np.ndindex(*data.shape[:-1]),
                       total=np.prod(data.shape[:-1]),
@@ -288,25 +321,103 @@ class ShoreFit(object):
             if mask[i] == 0:
                 continue
 
-            S = data[i]
-            if pos in ['nonneg', 'hpsd']:
-                q = cvxopt.matrix(np.ascontiguousarray(-1 * np.dot(M.T, S)))
-                if pos == 'nonneg':
-                    sol = cvxopt.solvers.qp(P, q, G, h)
-                    if sol['status'] != 'optimal':
-                        print('Optimization unsuccessful.')
-                    c = np.array(sol['x'])[:, 0]
-                else:
-                    c = self._deconvolve_hpsd(P, q, G, h, init, NN)
-            else:
-                c = la.lstsq(M, S, rcond=-1)[0]
-            out[i] = esh.esh_to_sym(c[:NN])
-            f = kernel_csf[0][0] / max(self.signal_csf[0], 1e-10)
-            wmout[i] = c[0] * f
-            gmout[i] = c[NN] * f
-            csfout[i] = c[NN + 1] * f
+            signal = data[i]
+            q = cvxopt.matrix(np.ascontiguousarray(-1 * np.dot(conv_matrix.T, signal)))
 
-        return out, wmout, gmout, csfout
+            # NS = len(np.array(T{4,6,8}.TT).reshape(-1))
+            NS = tensor.LENGTH[self.order // 2]
+
+            # first two are orthant constraints, rest positive definiteness
+            dims = {'l': 2, 'q': [], 's': [NS]}
+
+            # This init stuff is a HACK. It empirically removes some isolated failure cases
+            # first, allow it to use its own initialization
+            try:
+                sol = cvxopt.solvers.coneqp(P, q, G, h, dims)
+            except ValueError as e:
+                logging.error("Error with cvxopt initialization: {}".format(e))
+                return np.zeros(NN + 2)
+            if sol['status'] != 'optimal':
+                # try again with our initialization
+                try:
+                    sol = cvxopt.solvers.coneqp(P, q, G, h, dims, initvals={'x': init})
+                except ValueError as e:
+                    logging.error("Error with custum initialization: {}".format(e))
+                    return np.zeros(NN + 2)
+                if sol['status'] != 'optimal':
+                    logging.debug('Optimization unsuccessful - Constraint: {}'.format('hpsd'))
+
+            deconvolution_result[i] = np.array(sol['x'])[:, 0]
+
+        return deconvolution_result
+
+    def deconvolve_nonneg(self, data, mask, conv_matrix, verbose):
+        """
+
+        :param data:
+        :param mask:
+        :param conv_matrix:
+        :param verbose:
+        :return:
+        """
+        NN = esh.LENGTH[self.order]
+        deconvolution_result = np.zeros(data.shape[:-1] + (NN + 2,))
+
+        cvxopt.solvers.options['show_progress'] = False
+        # set up QP problem from normal equations
+        P = cvxopt.matrix(np.ascontiguousarray(np.dot(conv_matrix.T, conv_matrix)))
+
+        # set up non-negativity constraints
+        NC = LOTS_OF_DIRECTIONS.shape[0]
+        G = np.zeros((NC + 2, NN + 2))
+        G[:NC, :NN] = esh.matrix(self.order, LOTS_OF_DIRECTIONS)
+        # also constrain GM/CSF VFs to be non-negative
+        G[NC, NN] = -1
+        G[NC + 1, NN + 1] = -1
+        h = np.zeros(NC + 2)
+
+        G = cvxopt.matrix(np.ascontiguousarray(G))
+        h = cvxopt.matrix(np.ascontiguousarray(h))
+
+        for i in tqdm(np.ndindex(*data.shape[:-1]),
+                      total=np.prod(data.shape[:-1]),
+                      disable=not verbose,
+                      desc='Optimization'):
+            if mask[i] == 0:
+                continue
+
+            signal = data[i]
+            q = cvxopt.matrix(np.ascontiguousarray(-1 * np.dot(conv_matrix.T, signal)))
+
+            sol = cvxopt.solvers.qp(P, q, G, h)
+            if sol['status'] != 'optimal':
+                logging.debug('Optimization unsuccessful - Voxel: {}, Constraint: {}'.format(i, 'nonneg'))
+
+            deconvolution_result[i] = np.array(sol['x'])[:, 0]
+
+        return deconvolution_result
+
+    def shore_convolution_matrix(self):
+        """
+
+        :param kernel_wm:
+        :param kernel_gm:
+        :param kernel_csf:
+        :return:
+        """
+
+        # Build matrix that maps ODF+volume fractions to signal
+        # in two steps: First, SHORE matrix
+        shore_m = shore_matrix(self.order, self.zeta, self.gtab, self.tau)
+
+        # then, convolution
+        M_wm = shore.matrix_kernel(self.kernel_wm, self.order, self.order)
+        M_gm = shore.matrix_kernel(self.kernel_gm, self.order, self.order)
+        M_csf = shore.matrix_kernel(self.kernel_csf, self.order, self.order)
+        M = np.hstack((M_wm, M_gm[:, :1], M_csf[:, :1]))
+
+        # now, multiply them together
+        return np.dot(shore_m, M)
 
     def _deconvolve_hpsd(self, P, q, G, h, init, NN):
         """ Use Quadratic Cone Program for one shot deconvolution
@@ -330,17 +441,17 @@ class ShoreFit(object):
         try:
             sol = cvxopt.solvers.coneqp(P, q, G, h, dims)
         except ValueError as e:
-            print("error-----------", e)
+            logging.error("Error with cvxopt initialization: {}".format(e))
             return np.zeros(NN + 2)
         if sol['status'] != 'optimal':
             # try again with our initialization
             try:
                 sol = cvxopt.solvers.coneqp(P, q, G, h, dims, initvals={'x': init})
             except ValueError as e:
-                print("error-----------", e)
+                logging.error("Error with custum initialization: {}".format(e))
                 return np.zeros(NN + 2)
             if sol['status'] != 'optimal':
-                print('Optimization unsuccessful.', sol)
+                logging.debug('Optimization unsuccessful - Constraint: {}'.format('hpsd'))
         c = np.array(sol['x'])[:, 0]
 
         return c
