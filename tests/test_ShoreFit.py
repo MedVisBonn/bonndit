@@ -3,14 +3,15 @@
 
 """Tests for `bonndit.shore.ShoreFit` class."""
 
-from bonndit.michi import fields
-import bonndit.shore as bs
-from .constants import SHORE_FIT_PRECOMPUTED, DWMRI_DUMMY_DATA, \
-    ODF_RESULT_HPSD, ODF_RESULT_NONNEG, ODF_RESULT_NO_CONSTRAINT
-from .constants import DECONVOLUTION_RESULTS_DIR as DRD
 import os
+
 import nibabel as nib
 
+import bonndit.mtshore as bs
+from bonndit.michi import fields
+from .constants import DECONVOLUTION_RESULTS_DIR as DRD
+from .constants import SHORE_FIT_PRECOMPUTED, DWMRI_DUMMY_DATA, \
+    ODF_RESULT_HPSD, ODF_RESULT_NONNEG, ODF_RESULT_NO_CONSTRAINT
 
 data = nib.load(DWMRI_DUMMY_DATA)
 
