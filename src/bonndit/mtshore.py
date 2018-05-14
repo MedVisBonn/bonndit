@@ -231,7 +231,7 @@ class ShoreFit(object):
 
         cpus = mp.cpu_count()
         # TODO: Optimize chunksize
-        chunksize = int(np.prod(data.shape[:-1]) / (cpus * 2))
+        chunksize = max(1, int(np.prod(data.shape[:-1]) / 100))  # 100 chunks for the progressbar to run smoother
 
         # TODO: consider additional Tikhonov regularization
         # Deconvolve the DWI signal
