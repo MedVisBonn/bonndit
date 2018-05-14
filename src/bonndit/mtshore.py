@@ -229,7 +229,7 @@ class ShoreFit(object):
         mask = np.ma.make_mask(mask)
 
         cpus = mp.cpu_count()
-        chunksize = int(np.prod(data.shape[:-1]) / (cpus * 2))
+        chunksize = 1  # int(np.prod(data.shape[:-1]) / (cpus * 2))
 
         # TODO: consider additional Tikhonov regularization
         # Deconvolve the DWI signal
