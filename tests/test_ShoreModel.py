@@ -4,13 +4,14 @@
 """Tests for `bonndit.shore.ShoreModel` class."""
 
 import os
-from bonndit import ShoreModel, ShoreFit
-import bonndit.shore as bdshore
-from bonndit.io import fsl_flip_signs_vec, fsl_to_worldspace
-from dipy.core.gradients import gradient_table
+
 import nibabel as nib
+from dipy.core.gradients import gradient_table
 from dipy.io import read_bvals_bvecs
 
+import bonndit.mtshore as bdshore
+from bonndit import ShoreModel, ShoreFit
+from bonndit.io import fsl_flip_signs_vec, fsl_to_worldspace
 from .constants import DECONVOLUTION_DIR, SHORE_FIT_TEST
 
 # Load fractional anisotropy

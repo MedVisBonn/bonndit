@@ -241,11 +241,11 @@ class ShoreFit(object):
                                    disable=not verbose,
                                    desc='Optimization'))
             else:
-                p = mp.Pool(cpus)
-                result = list(tqdm(p.imap(self.deconvolve, data, chunksize=chunksize),
-                                   total=np.prod(data.shape[:-1]),
-                                   disable=not verbose,
-                                   desc='Optimization'))
+                with mp.Pool(cpus) as p:
+                    result = list(tqdm(p.imap(self.deconvolve, data, chunksize=chunksize),
+                                       total=np.prod(data.shape[:-1]),
+                                       disable=not verbose,
+                                       desc='Optimization'))
         elif pos == 'hpsd':
             if sys.version_info[0] < 3:
                 result = list(tqdm(it.imap(self.deconvolve_hpsd, data),
@@ -253,11 +253,11 @@ class ShoreFit(object):
                                    disable=not verbose,
                                    desc='Optimization'))
             else:
-                p = mp.Pool(cpus)
-                result = list(tqdm(p.imap(self.deconvolve_hpsd, data, chunksize=chunksize),
-                                   total=np.prod(data.shape[:-1]),
-                                   disable=not verbose,
-                                   desc='Optimization'))
+                with mp.Pool(cpus) as p:
+                    result = list(tqdm(p.imap(self.deconvolve_hpsd, data, chunksize=chunksize),
+                                       total=np.prod(data.shape[:-1]),
+                                       disable=not verbose,
+                                       desc='Optimization'))
         elif pos == 'nonneg':
             if sys.version_info[0] < 3:
                 result = list(tqdm(it.imap(self.deconvolve_nonneg, data),
@@ -265,11 +265,11 @@ class ShoreFit(object):
                                    disable=not verbose,
                                    desc='Optimization'))
             else:
-                p = mp.Pool(cpus)
-                result = list(tqdm(p.imap(self.deconvolve_nonneg, data, chunksize=chunksize),
-                                   total=np.prod(data.shape[:-1]),
-                                   disable=not verbose,
-                                   desc='Optimization'))
+                with mp.Pool(cpus) as p:
+                    result = list(tqdm(p.imap(self.deconvolve_nonneg, data, chunksize=chunksize),
+                                       total=np.prod(data.shape[:-1]),
+                                       disable=not verbose,
+                                       desc='Optimization'))
         else:
             raise ValueError(('"{}" is not supported as a constraint,' +
                              ' please choose from [hpsd, nonneg, none]').format(pos))

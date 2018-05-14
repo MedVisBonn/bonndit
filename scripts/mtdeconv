@@ -10,14 +10,13 @@ Compute fiber orientation distribution functions for diffusion weighted MRI data
 import argparse
 import errno
 import os
-import logging
 
 import nibabel as nib
 import numpy as np
 from dipy.core.gradients import gradient_table
 from dipy.io import read_bvals_bvecs
 
-import bonndit.shore as bdshore
+import bonndit.mtshore as bdshore
 from bonndit import ShoreModel, ShoreFit
 from bonndit.io import fsl_flip_signs_vec, fsl_to_worldspace
 from bonndit.michi import fields, dwmri
@@ -87,6 +86,10 @@ def main():
     filenaming.add_argument('-C', '--cerebrospinalfluid', default='csfvolume.nrrd',
                             help='csf volume filename - filetype: .nrrd / .nii / .nii.gz')
 
+    multiprocessing = parser.add_argument_group('multiprocessing (optional)', 'Configure the multiprocessing behaviour \
+    (only supported for Python 3)')
+    multiprocessing.add_argument('-w', '--workers', default=None,
+                                 help='number of cpus, the default is to use all available cpus')
 
     # setup up for logging
     #logging.basicConfig(filename='mtdeconv.log', filemode='a', level=logging.INFO, format='%(levelname)s:%(message)s')
