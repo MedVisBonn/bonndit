@@ -6,6 +6,7 @@ import logging
 import multiprocessing as mp
 import os
 import sys
+from functools import partial
 
 import cvxopt
 import nibabel as nib
@@ -168,11 +169,6 @@ class ShoreFit(object):
         self.kernel_gm = shore.signal_to_kernel(self.signal_gm, self.order, self.order)
         self.kernel_wm = shore.signal_to_kernel(self.signal_wm, self.order, self.order)
 
-        # Create convolution matrix
-        self.conv_matrix = self.shore_convolution_matrix()
-        with np.errstate(divide='ignore', invalid='ignore'):
-            logging.debug('Condition number of M:', la.cond(self.conv_matrix))
-
     @classmethod
     def load(cls, filepath):
         """ Load a precalculated ShoreFit object from a file.
@@ -228,49 +224,34 @@ class ShoreFit(object):
         # Convert integer to boolean mask
         mask = np.ma.make_mask(mask)
 
+        # Create convolution matrix
+        conv_matrix = self.shore_convolution_matrix()
+        with np.errstate(divide='ignore', invalid='ignore'):
+            logging.debug('Condition number of M:', la.cond(conv_matrix))
+
         cpus = mp.cpu_count()
-        chunksize = 1  # int(np.prod(data.shape[:-1]) / (cpus * 2))
+        # TODO: Optimize chunksize
+        chunksize = int(np.prod(data.shape[:-1]) / (cpus * 2))
 
         # TODO: consider additional Tikhonov regularization
         # Deconvolve the DWI signal
+        deconv = {'none': self.deconvolve, 'hpsd': self.deconvolve_hpsd, 'nonneg': self.deconvolve_nonneg}
         data = data[mask, :]
-        if pos == 'none':
+        try:
+            func = deconv[pos]
             if sys.version_info[0] < 3:
-                result = list(tqdm(it.imap(self.deconvolve, data),
+                result = list(tqdm(it.imap(partial(func, conv_matrix=conv_matrix), data),
                                    total=np.prod(data.shape[:-1]),
                                    disable=not verbose,
                                    desc='Optimization'))
             else:
                 with mp.Pool(cpus) as p:
-                    result = list(tqdm(p.imap(self.deconvolve, data, chunksize=chunksize),
+                    result = list(tqdm(p.imap(partial(func, conv_matrix=conv_matrix),
+                                              data, chunksize=chunksize),
                                        total=np.prod(data.shape[:-1]),
                                        disable=not verbose,
                                        desc='Optimization'))
-        elif pos == 'hpsd':
-            if sys.version_info[0] < 3:
-                result = list(tqdm(it.imap(self.deconvolve_hpsd, data),
-                                   total=np.prod(data.shape[:-1]),
-                                   disable=not verbose,
-                                   desc='Optimization'))
-            else:
-                with mp.Pool(cpus) as p:
-                    result = list(tqdm(p.imap(self.deconvolve_hpsd, data, chunksize=chunksize),
-                                       total=np.prod(data.shape[:-1]),
-                                       disable=not verbose,
-                                       desc='Optimization'))
-        elif pos == 'nonneg':
-            if sys.version_info[0] < 3:
-                result = list(tqdm(it.imap(self.deconvolve_nonneg, data),
-                                   total=np.prod(data.shape[:-1]),
-                                   disable=not verbose,
-                                   desc='Optimization'))
-            else:
-                with mp.Pool(cpus) as p:
-                    result = list(tqdm(p.imap(self.deconvolve_nonneg, data, chunksize=chunksize),
-                                       total=np.prod(data.shape[:-1]),
-                                       disable=not verbose,
-                                       desc='Optimization'))
-        else:
+        except KeyError:
             raise ValueError(('"{}" is not supported as a constraint,' +
                              ' please choose from [hpsd, nonneg, none]').format(pos))
 
@@ -289,10 +270,11 @@ class ShoreFit(object):
 
         return out, wmout, gmout, csfout
 
-    def deconvolve(self, data):
+    def deconvolve(self, data, conv_matrix):
         """
 
         :param data:
+        :param conv_matrix:
         :return:
         """
         NN = esh.LENGTH[self.order]
@@ -300,14 +282,15 @@ class ShoreFit(object):
 
         for i in np.ndindex(*data.shape[:-1]):
             signal = data[i]
-            deconvolution_result[i] = la.lstsq(self.conv_matrix, signal, rcond=-1)[0]
+            deconvolution_result[i] = la.lstsq(conv_matrix, signal, rcond=-1)[0]
 
         return deconvolution_result
 
-    def deconvolve_hpsd(self, data):
+    def deconvolve_hpsd(self, data, conv_matrix):
         """
 
         :param data:
+        :param conv_matrix:
         :return:
         """
         NN = esh.LENGTH[self.order]
@@ -315,7 +298,7 @@ class ShoreFit(object):
 
         cvxopt.solvers.options['show_progress'] = False
         # set up QP problem from normal equations
-        P = cvxopt.matrix(np.ascontiguousarray(np.dot(self.conv_matrix.T, self.conv_matrix)))
+        P = cvxopt.matrix(np.ascontiguousarray(np.dot(conv_matrix.T, conv_matrix)))
 
         # positive definiteness constraint on ODF
         ind = tensor.H_index_matrix(self.order).reshape(-1)
@@ -343,7 +326,7 @@ class ShoreFit(object):
 
         for i in np.ndindex(*data.shape[:-1]):
             signal = data[i]
-            q = cvxopt.matrix(np.ascontiguousarray(-1 * np.dot(self.conv_matrix.T, signal)))
+            q = cvxopt.matrix(np.ascontiguousarray(-1 * np.dot(conv_matrix.T, signal)))
 
             # NS = len(np.array(T{4,6,8}.TT).reshape(-1))
             NS = tensor.LENGTH[self.order // 2]
@@ -372,10 +355,11 @@ class ShoreFit(object):
 
         return deconvolution_result
 
-    def deconvolve_nonneg(self, data):
+    def deconvolve_nonneg(self, data, conv_matrix):
         """
 
         :param data:
+        :param conv_matrix:
         :return:
         """
         NN = esh.LENGTH[self.order]
@@ -383,7 +367,7 @@ class ShoreFit(object):
 
         cvxopt.solvers.options['show_progress'] = False
         # set up QP problem from normal equations
-        P = cvxopt.matrix(np.ascontiguousarray(np.dot(self.conv_matrix.T, self.conv_matrix)))
+        P = cvxopt.matrix(np.ascontiguousarray(np.dot(conv_matrix.T, conv_matrix)))
 
         # set up non-negativity constraints
         NC = LOTS_OF_DIRECTIONS.shape[0]
@@ -399,7 +383,7 @@ class ShoreFit(object):
 
         for i in np.ndindex(*data.shape[:-1]):
             signal = data[i]
-            q = cvxopt.matrix(np.ascontiguousarray(-1 * np.dot(self.conv_matrix.T, signal)))
+            q = cvxopt.matrix(np.ascontiguousarray(-1 * np.dot(conv_matrix.T, signal)))
 
             sol = cvxopt.solvers.qp(P, q, G, h)
             if sol['status'] != 'optimal':
