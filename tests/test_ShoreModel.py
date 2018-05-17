@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Tests for `bonndit.shore.ShoreModel` class."""
+"""Tests for `bonndit.shore.mtShoreModel` class."""
 
 import os
 
@@ -10,7 +10,7 @@ from dipy.core.gradients import gradient_table
 from dipy.io import read_bvals_bvecs
 
 import bonndit.mtshore as bdshore
-from bonndit import ShoreModel, ShoreFit
+from bonndit import mtShoreModel, mtShoreFit
 from bonndit.io import fsl_flip_signs_vec, fsl_to_worldspace
 from .constants import DECONVOLUTION_DIR, SHORE_FIT_TEST
 
@@ -44,10 +44,10 @@ gtab = gradient_table(bvals, bvecs)
 gtab = fsl_to_worldspace(data.affine, gtab)
 dti_vecs = fsl_flip_signs_vec(dti_vecs)
 
-model = ShoreModel(gtab)
+model = mtShoreModel(gtab)
 fit = model.fit(data, dti_vecs, wm_mask, gm_mask, csf_mask)
 
-reference_fit = ShoreFit.load(SHORE_FIT_TEST)
+reference_fit = mtShoreFit.load(SHORE_FIT_TEST)
 
 
 

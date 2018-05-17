@@ -21,7 +21,7 @@ from bonndit.michi import shore, esh, tensor
 from .gradients import gtab_reorient
 
 
-class ShoreModel(object):
+class mtShoreModel(object):
     """ Fit WM, GM and CSF response functions to the given diffusion weighted data.
     """
     def __init__(self, gtab, order=4, zeta=700, tau=1 / (4 * np.pi ** 2)):
@@ -39,7 +39,7 @@ class ShoreModel(object):
         :param gm_mask: gray Matter Mask (0/1)
         :param csf_mask: cerebrospinal fluid mask (0/1)
         :param verbose: Set to True for a progress bar
-        :return: Fitted response functions in a ShoreFit object
+        :return: Fitted response functions in a mtShoreFit object
         """
 
         # Calculate wm response
@@ -61,7 +61,7 @@ class ShoreModel(object):
         shore_coeff = self.accumulate_shore(shore_coeffs)
         signal_csf = self.shore_compress(shore_coeff)
 
-        return ShoreFit(self, [signal_csf, signal_gm, signal_wm])
+        return mtShoreFit(self, [signal_csf, signal_gm, signal_wm])
 
     def shore_compress(self, coefs):
         """ "kernel": only use z-rotational part
@@ -109,6 +109,7 @@ class ShoreModel(object):
         :return: array of per voxel shore coefficients
         """
         shore_coeff = np.zeros(data.shape[:-1] + (shore.get_size(self.order, self.order),))
+        # Ignore division by zero warning dipy.core.geometry.cart2sphere -> theta = np.arccos(z / r)
         with np.errstate(divide='ignore', invalid='ignore'):
             shore_m = shore_matrix(self.order, self.zeta, self.gtab, self.tau)
 
@@ -144,6 +145,7 @@ class ShoreModel(object):
                       disable=not verbose, desc=desc):
 
             gtab2 = gtab_reorient(self.gtab, vecs[i])
+            # Ignore division by zero warning dipy.core.geometry.cart2sphere -> theta = np.arccos(z / r)
             with np.errstate(divide='ignore', invalid='ignore'):
                 shore_m = shore_matrix(self.order, self.zeta, gtab2, self.tau)
             r = la.lstsq(shore_m, data[i], rcond=-1)
@@ -152,7 +154,7 @@ class ShoreModel(object):
         return shore_coeff
 
 
-class ShoreFit(object):
+class mtShoreFit(object):
 
     def __init__(self, model, shore_coef):
         self.model = model
@@ -164,26 +166,26 @@ class ShoreFit(object):
         self.zeta = model.zeta
         self.tau = model.tau
 
-        # Kernel_ln
+        # Get deconvolution kernels (Kernel_ln)
         self.kernel_csf = shore.signal_to_kernel(self.signal_csf, self.order, self.order)
         self.kernel_gm = shore.signal_to_kernel(self.signal_gm, self.order, self.order)
         self.kernel_wm = shore.signal_to_kernel(self.signal_wm, self.order, self.order)
 
     @classmethod
     def load(cls, filepath):
-        """ Load a precalculated ShoreFit object from a file.
+        """ Load a precalculated mtShoreFit object from a file.
 
-        :param filepath: path to the saved ShoreFit object
-        :return: ShoreFit object which contains response functions for wm, gm and csf
+        :param filepath: path to the saved mtShoreFit object
+        :return: mtShoreFit object which contains response functions for wm, gm and csf
         """
         response = np.load(filepath)
 
         gtab = gradient_table(response['bvals'], response['bvecs'])
-        model = ShoreModel(gtab, response['order'], response['zeta'], response['tau'])
+        model = mtShoreModel(gtab, response['order'], response['zeta'], response['tau'])
         return cls(model, (response['csf'], response['gm'], response['wm']))
 
     def save(self, filepath):
-        """ Save a ShoreFit object to a file.
+        """ Save a mtShoreFit object to a file.
 
         :param filepath: path to the file
         """
@@ -196,7 +198,7 @@ class ShoreFit(object):
         np.savez(filepath, csf=self.signal_csf, gm=self.signal_gm, wm=self.signal_wm,
                  zeta=self.zeta, tau=self.tau, order=self.order, bvals=self.gtab.bvals, bvecs=self.gtab.bvecs)
 
-    def fodf(self, data, pos='hpsd', mask=None, verbose=False):
+    def fodf(self, data, pos='hpsd', mask=None, verbose=False, cpus=None):
         """ Multi tissue deconvolution [1]_,
 
 
@@ -204,6 +206,7 @@ class ShoreFit(object):
         :param pos: constraint choose between hpsd, nonneg and none
         :param mask: specify for which voxel fODFs and volume fractions are calculated
         :param verbose: set to true to show a progress bar
+        :param cpus: number of cpus to use (if None use value from os.cpu_count())
         :return: fodfs, wm volume fraction, gm volume fraction and csf volume fraction
 
 
@@ -229,7 +232,6 @@ class ShoreFit(object):
         with np.errstate(divide='ignore', invalid='ignore'):
             logging.debug('Condition number of M:', la.cond(conv_matrix))
 
-        cpus = mp.cpu_count()
         # TODO: Optimize chunksize
         chunksize = max(1, int(np.prod(data.shape[:-1]) / 100))  # 100 chunks for the progressbar to run smoother
 
@@ -248,7 +250,7 @@ class ShoreFit(object):
                 with mp.Pool(cpus) as p:
                     result = list(tqdm(p.imap(partial(func, conv_matrix=conv_matrix),
                                               data, chunksize=chunksize),
-                                       total=np.prod(data.shape[:-1]),
+                                       total=100,
                                        disable=not verbose,
                                        desc='Optimization'))
         except KeyError:
@@ -401,7 +403,9 @@ class ShoreFit(object):
 
         # Build matrix that maps ODF+volume fractions to signal
         # in two steps: First, SHORE matrix
-        shore_m = shore_matrix(self.order, self.zeta, self.gtab, self.tau)
+        # Ignore division by zero warning dipy.core.geometry.cart2sphere -> theta = np.arccos(z / r)
+        with np.errstate(divide='ignore', invalid='ignore'):
+            shore_m = shore_matrix(self.order, self.zeta, self.gtab, self.tau)
 
         # then, convolution
         M_wm = shore.matrix_kernel(self.kernel_wm, self.order, self.order)

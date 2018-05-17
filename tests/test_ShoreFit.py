@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Tests for `bonndit.shore.ShoreFit` class."""
+"""Tests for `bonndit.shore.mtShoreFit` class."""
 
 import os
 
@@ -19,7 +19,7 @@ def test_ShoreFit_deconvolution_hpsd():
     """ Here we test the deconvolution with the hpsd constraint.
     The result calculated with bonndit are compared to results from the old code
     """
-    fit = bs.ShoreFit.load(SHORE_FIT_PRECOMPUTED)
+    fit = bs.mtShoreFit.load(SHORE_FIT_PRECOMPUTED)
     out, wmout, gmout, csfout = fit.fodf(data, pos='hpsd')
     tensors, mask, meta = fields.load_tensor(ODF_RESULT_HPSD)
 
@@ -33,7 +33,7 @@ def test_ShoreFit_deconvolution_nonneg():
     """ Here we test the deconvolution with the hpsd constraint.
     The result calculated with bonndit are compared to results from the old code
     """
-    fit = bs.ShoreFit.load(SHORE_FIT_PRECOMPUTED)
+    fit = bs.mtShoreFit.load(SHORE_FIT_PRECOMPUTED)
     out, wmout, gmout, csfout = fit.fodf(data, pos='nonneg')
     tensors, mask, meta = fields.load_tensor(ODF_RESULT_NONNEG)
 
@@ -47,7 +47,7 @@ def test_ShoreFit_deconvolution_no_constraint():
     """ Here we test the deconvolution with the hpsd constraint.
     The result calculated with bonndit are compared to results from the old code
     """
-    fit = bs.ShoreFit.load(SHORE_FIT_PRECOMPUTED)
+    fit = bs.mtShoreFit.load(SHORE_FIT_PRECOMPUTED)
     out, wmout, gmout, csfout = fit.fodf(data, pos='none')
     tensors, mask, meta = fields.load_tensor(ODF_RESULT_NO_CONSTRAINT)
 
