@@ -35,6 +35,7 @@ Features
 --------
 
 * :code:`mtdeconv`: Script to calculate response functions and fiber orientation distribution functions(fODFs) from the diffusion signal.
+* Multiprocessing support for Python 3 only
 
 Getting Started
 ---------------
