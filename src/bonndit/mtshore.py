@@ -30,7 +30,7 @@ class mtShoreModel(object):
         self.zeta = zeta
         self.tau = tau
 
-    def fit(self, data, dti_vecs, wm_mask, gm_mask, csf_mask, verbose=False):
+    def fit(self, data, dti_vecs, wm_mask, gm_mask, csf_mask, verbose=False, cpus=None):
         """ Fit the response functions and return the shore coefficients
 
         :param data: diffusion weighted data
@@ -41,25 +41,35 @@ class mtShoreModel(object):
         :param verbose: Set to True for a progress bar
         :return: Fitted response functions in a mtShoreFit object
         """
+        # Check if tissue masks give at least a single voxel
+        if np.sum(wm_mask.get_data()) < 1:
+            raise ValueError('No white matter voxels specified by wm_mask. '
+                             'A corresponding response can not be computed.')
+        if np.sum(gm_mask.get_data()) < 1:
+            raise ValueError('No gray matter voxels specified by gm_mask. '
+                             'A corresponding response can not be computed.')
+        if np.sum(csf_mask.get_data()) < 1:
+            raise ValueError('No cerebrospinal fluid voxels specified by csf_mask. '
+                             'A corresponding response can not be computed.')
 
         # Calculate wm response
         wm_voxels = data.get_data()[wm_mask.get_data() == 1]
         wm_vecs = dti_vecs.get_data()[wm_mask.get_data() == 1]
-        shore_coeffs = self.get_response_reorient(wm_voxels, wm_vecs, verbose, desc='WM response')
-        shore_coeff = self.accumulate_shore(shore_coeffs)
-        signal_wm = self.shore_compress(shore_coeff)
+        wmshore_coeffs = self.get_response_reorient(wm_voxels, wm_vecs, verbose, cpus, desc='WM response')
+        wmshore_coeff = self.accumulate_shore(wmshore_coeffs)
+        signal_wm = self.shore_compress(wmshore_coeff)
 
         # Calculate gm response
         gm_voxels = data.get_data()[gm_mask.get_data() == 1]
-        shore_coeffs = self.get_response(gm_voxels, verbose, desc='GM response')
-        shore_coeff = self.accumulate_shore(shore_coeffs)
-        signal_gm = self.shore_compress(shore_coeff)
+        gmshore_coeffs = self.get_response(gm_voxels, verbose, cpus, desc='GM response')
+        gmshore_coeff = self.accumulate_shore(gmshore_coeffs)
+        signal_gm = self.shore_compress(gmshore_coeff)
 
         # Calculate csf response
         csf_voxels = data.get_data()[csf_mask.get_data() == 1]
-        shore_coeffs = self.get_response(csf_voxels, verbose, desc='CSF response')
-        shore_coeff = self.accumulate_shore(shore_coeffs)
-        signal_csf = self.shore_compress(shore_coeff)
+        csfshore_coeffs = self.get_response(csf_voxels, verbose, cpus, desc='CSF response')
+        csfshore_coeff = self.accumulate_shore(csfshore_coeffs)
+        signal_csf = self.shore_compress(csfshore_coeff)
 
         return mtShoreFit(self, [signal_csf, signal_gm, signal_wm])
 
@@ -100,7 +110,20 @@ class mtShoreModel(object):
         with np.errstate(divide='ignore', invalid='ignore'):
             return shore_accum / accum_count
 
-    def get_response(self, data, verbose=False, desc=''):
+    def _response_helper(self, b, a, rcond):
+        """ This is a helper function for parallelizing the numpy.linalg.lstsq which is needed by
+        the get_response. All we do here is to swap the parameters
+        a and b to be able to give b as a positional argument even if a is specified as kwarg. We also
+        return only the least square solution.
+
+        :param b:
+        :param a:
+        :param rcond:
+        :return:
+        """
+        return la.lstsq(a, b, rcond)[0]
+
+    def get_response(self, data, verbose=False, cpus=None, desc=''):
         """ Calculate response function for isotropic regions such as gray matter or cerebrospinal fluid.
 
         :param data: array of voxels for which to calculate shore coefficients
@@ -108,23 +131,39 @@ class mtShoreModel(object):
         :param desc: description for the progress bar
         :return: array of per voxel shore coefficients
         """
-        shore_coeff = np.zeros(data.shape[:-1] + (shore.get_size(self.order, self.order),))
+        chunksize = max(1, int(np.prod(data.shape[:-1]) / 1000))  # 1000 chunks for the progressbar to run smoother
+
         # Ignore division by zero warning dipy.core.geometry.cart2sphere -> theta = np.arccos(z / r)
         with np.errstate(divide='ignore', invalid='ignore'):
             shore_m = shore_matrix(self.order, self.zeta, self.gtab, self.tau)
 
-        # Iterate over the data indices; show progress with tqdm
-        for i in tqdm(np.ndindex(*data.shape[:-1]),
-                      total=np.prod(data.shape[:-1]),
-                      disable=not verbose, desc=desc):
+        # Iterate over the data indices; show progress with tqdm; multiple processes for python > 3
+        if sys.version_info[0] < 3:
+            shore_coeff = list(tqdm(it.imap(partial(self._response_helper, a=shore_m, rcond=-1), data),
+                                    total=np.prod(data.shape[:-1]),
+                                    disable=not verbose,
+                                    desc=desc))
+        else:
+            with mp.Pool(cpus) as p:
+                shore_coeff = list(tqdm(p.imap(partial(self._response_helper, a=shore_m, rcond=-1), data, chunksize),
+                                        total=np.prod(data.shape[:-1]),
+                                        disable=not verbose,
+                                        desc=desc))
+        return np.array(shore_coeff)
 
-            # TODO: Decide if rcond=None would be better
-            r = la.lstsq(shore_m, data[i], rcond=-1)
-            shore_coeff[i] = r[0]
+    def _reorient_response_helper(self, data_vecs):
+        """
 
-        return shore_coeff
+        :param data:
+        :param vecs:
+        :return:
+        """
+        data, vecs = data_vecs[0], data_vecs[1]
+        with np.errstate(divide='ignore', invalid='ignore'):
+            shore_m = shore_matrix(self.order, self.zeta, gtab_reorient(self.gtab, vecs), self.tau)
+        return la.lstsq(shore_m, data, rcond=-1)[0]
 
-    def get_response_reorient(self, data, vecs, verbose=False, desc=''):
+    def get_response_reorient(self, data, vecs, verbose=False, cpus=None, desc=''):
         """ Calculate white matter response function. Diffusion in white matter is anisotropic. Averaging shore
         coefficients of different voxels can only result in a meaningful response function if fibers in the
         respective voxels are oriented in the same direction (no crossing fibers). Such voxels can be selected by
@@ -137,21 +176,20 @@ class mtShoreModel(object):
         :param desc: description for the progress bar
         :return: array of per white matter voxel shore coefficients
         """
+        chunksize = max(1, int(np.prod(data.shape[:-1]) / 1000))  # 1000 chunks for the progressbar to run smoother
 
-        shore_coeff = np.zeros(data.shape[:-1] + (shore.get_size(self.order, self.order),))
-        # Iterate over the data indices; show progress with tqdm
-        for i in tqdm(np.ndindex(*data.shape[:-1]),
-                      total=np.prod(data.shape[:-1]),
-                      disable=not verbose, desc=desc):
-
-            gtab2 = gtab_reorient(self.gtab, vecs[i])
-            # Ignore division by zero warning dipy.core.geometry.cart2sphere -> theta = np.arccos(z / r)
-            with np.errstate(divide='ignore', invalid='ignore'):
-                shore_m = shore_matrix(self.order, self.zeta, gtab2, self.tau)
-            r = la.lstsq(shore_m, data[i], rcond=-1)
-            shore_coeff[i] = r[0]
-
-        return shore_coeff
+        if sys.version_info[0] < 3:
+            shore_coeff = list(tqdm(it.imap(self._reorient_response_helper, zip(list(data), list(vecs))),
+                                    total=np.prod(data.shape[:-1]),
+                                    disable=not verbose,
+                                    desc=desc))
+        else:
+            with mp.Pool(cpus) as p:
+                shore_coeff = list(tqdm(p.imap(self._reorient_response_helper, zip(list(data), list(vecs)), chunksize),
+                                        total=np.prod(data.shape[:-1]),
+                                        disable=not verbose,
+                                        desc=desc))
+        return np.array(shore_coeff)
 
 
 class mtShoreFit(object):
@@ -233,7 +271,7 @@ class mtShoreFit(object):
             logging.debug('Condition number of M:', la.cond(conv_matrix))
 
         # TODO: Optimize chunksize
-        chunksize = max(1, int(np.prod(data.shape[:-1]) / 100))  # 100 chunks for the progressbar to run smoother
+        chunksize = max(1, int(np.prod(data.shape[:-1]) / 1000))  # 1000 chunks for the progressbar to run smoother
 
         # TODO: consider additional Tikhonov regularization
         # Deconvolve the DWI signal
@@ -249,8 +287,8 @@ class mtShoreFit(object):
             else:
                 with mp.Pool(cpus) as p:
                     result = list(tqdm(p.imap(partial(func, conv_matrix=conv_matrix),
-                                              data, chunksize=chunksize),
-                                       total=100,
+                                             data, chunksize=chunksize),
+                                       total=np.prod(data.shape[:-1]),
                                        disable=not verbose,
                                        desc='Optimization'))
         except KeyError:
