@@ -22,16 +22,11 @@ from bonndit.io import fsl_flip_signs_vec, fsl_to_worldspace
 from bonndit.michi import fields, dwmri
 
 
-# import nibabel as nib
-
-
-# To Do: Add option to first compute the diffustion tensors which are needed to estimate the response functions.
-
-# To Do: Add option to automatically build masks for csf gm wm.
-
-# To Do: Handle nrrd as well as nii input
-
-# To Do: Enable saving in different output formats
+# TODO: Add option to first compute the diffustion tensors which are needed to estimate the response functions.
+# TODO: Add option to automatically build masks for csf gm wm.
+# TODO: Handle nrrd as well as nii input
+# TODO: Save in different output formats
+# TODO: Add logging and make it default
 
 def main():
     parser = argparse.ArgumentParser(
@@ -91,14 +86,6 @@ def main():
     multiprocessing.add_argument('-w', '--workers', default=None,
                                  help='number of cpus, the default is to use all available cpus')
 
-    # setup up for logging
-    #logging.basicConfig(filename='mtdeconv.log', filemode='a', level=logging.INFO, format='%(levelname)s:%(message)s')
-    #logging.info('{asctime}')
-    #logging.info()
-    #raise Exception
-    # improve logging, log voxels with problems, write header for log, discuss what to log, retrieve kwargs and hand it
-    # to basicConfig
-
     args = parser.parse_args()
     order = args.order
     zeta = args.zeta
@@ -141,13 +128,15 @@ def main():
         nib.save(gm_mask, os.path.join(args.outdir, 'gm_mask.nii.gz'))
         nib.save(csf_mask, os.path.join(args.outdir, 'csf_mask.nii.gz'))
 
+    # Load first eigenvectors of a precalculated diffusion tensor
     dti_vecs = nib.load(os.path.join(indir, "dti_V1.nii.gz"))
 
+    # Load diffusion weighted data
     data = nib.load(os.path.join(indir, "data.nii.gz"))
 
+    # Load bvals and bvecs and initialize a GradientTable object
     bvals, bvecs = read_bvals_bvecs(os.path.join(indir, "bvals"),
                                    os.path.join(indir, "bvecs"))
-
     gtab = gradient_table(bvals, bvecs)
 
     # Flip sign of x-coordinate if affine determinant is positive and rotate to worldspace
@@ -166,7 +155,7 @@ def main():
 
         else:
             model = mtShoreModel(gtab, order, zeta, tau)
-            fit = model.fit(data, dti_vecs, wm_mask, gm_mask, csf_mask, verbose=verbose)
+            fit = model.fit(data, dti_vecs, wm_mask, gm_mask, csf_mask, verbose=verbose, cpus=args.workers)
             fit.save(os.path.join(outdir, args.responseout))
 
     # Force recalculate the response if response only is specified
@@ -187,9 +176,6 @@ def main():
             fields.save_scalar(os.path.join(args.outdir, args.whitematter), wmout, meta)
             fields.save_scalar(os.path.join(args.outdir, args.graymatter), gmout, meta)
             fields.save_scalar(os.path.join(args.outdir, args.cerebrospinalfluid), csfout, meta)
-
-
-
 
 if __name__ == "__main__":
     main()
