@@ -268,10 +268,9 @@ class mtShoreFit(object):
         # Create convolution matrix
         conv_matrix = self.shore_convolution_matrix()
         with np.errstate(divide='ignore', invalid='ignore'):
-            logging.debug('Condition number of M:', la.cond(conv_matrix))
+            logging.debug('Condition number of convolution matrtix:', la.cond(conv_matrix))
 
-        # TODO: Optimize chunksize
-        chunksize = max(1, int(np.prod(data.shape[:-1]) / 1000))  # 1000 chunks for the progressbar to run smoother
+        chunksize = max(1, int(np.prod(data.shape[:-1]) / 100))  # 100 chunks for the progressbar to run smoother
 
         # TODO: consider additional Tikhonov regularization
         # Deconvolve the DWI signal
@@ -386,7 +385,7 @@ class mtShoreFit(object):
                 try:
                     sol = cvxopt.solvers.coneqp(P, q, G, h, dims, initvals={'x': init})
                 except ValueError as e:
-                    logging.error("Error with custum initialization: {}".format(e))
+                    logging.error("Error with custom initialization: {}".format(e))
                     return np.zeros(NN + 2)
                 if sol['status'] != 'optimal':
                     logging.debug('Optimization unsuccessful - Constraint: {}'.format('hpsd'))
@@ -455,7 +454,7 @@ class mtShoreFit(object):
         return np.dot(shore_m, M)
 
 def dti_masks(wm_mask, gm_mask, csf_mask, dti_fa, dti_mask, fawm=0.7):
-    """ Use precalculated fractional anisotropy values for example from DTI to improve the tissue masks.
+    """ Use precalculated fractional anisotropy values for example from DTI to create tissue masks.
 
     :param wm_mask: white matter mask
     :param gm_mask: gray matter mask

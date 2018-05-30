@@ -8,8 +8,8 @@ Compute fiber orientation distribution functions for diffusion weighted MRI data
 """
 
 import argparse
-import errno
 import os
+import logging
 
 import nibabel as nib
 import numpy as np
@@ -39,9 +39,10 @@ def main():
                         help='Folder containing all required input files')
 
     parser.add_argument('-o', '--outdir',
-                          help='Folder in which the output will be saved (default: same as indir)')
+                        help='Folder in which the output will be saved (default: same as indir)')
 
-    inputfiles = parser.add_argument_group('Custom input filenames', 'It is not recommended to specify a Specify custom names for input files.')
+    inputfiles = parser.add_argument_group('Custom input filenames', 'It is not recommended to specify \
+    a Specify custom names for input files.')
     inputfiles.add_argument('-d', '--data', default='data.nii.gz',
                             help='Diffusion weighted data (default: data.nii.gz)')
     inputfiles.add_argument('-e', '--dtivecs', default='dti_V1.nii.gz',
@@ -57,22 +58,19 @@ def main():
     inputfiles.add_argument('-F', '--csfmask', default='fast_pve_0.nii.gz',
                             help='Cerebrospinal fluid mask (default: fast_pve_0.nii.gz)')
 
-
     flags = parser.add_argument_group('flags (optional)', '')
     flags.add_argument("-h", "--help", action="help", help="Show this help message and exit")
     flags.add_argument('-v', '--verbose', action='store_true',
-                       help='Show progress bars for calculation of the response function and the deconvolution')
+                       help='Activate progress bars and console logging')
     flags.add_argument('-R', '--responseonly', action='store_true',
                        help='Calculate and save only the response functions')
     flags.add_argument('-M', '--tissuemasks', action='store_true',
                        help='Output the DTI improved tissue masks (csf/gm/wm)')
-    flags.add_argument('-L' '--log', action='store_true',
-                       help='Enable logging, logs are saved in the output folder as "mtdeconv.log"')
 
     shoreopts = parser.add_argument_group('shore options (optional)', 'Optional arguments for the computation of \
     the shore response functions')
     shoreopts.add_argument('-r', '--order', default=4, type=int,
-                        help='Order of the shore basis (default: 4)')
+                           help='Order of the shore basis (default: 4)')
     shoreopts.add_argument('-z', '--zeta', default=700, type=float,
                            help='Radial scaling factor (default: 700)')
     shoreopts.add_argument('-t', '--tau', default=1 / (4 * np.pi ** 2), type=float,
@@ -84,22 +82,53 @@ def main():
     deconvopts.add_argument('-C', '--constraint', choices=['hpsd', 'nonneg', 'none'], default='hpsd',
                             help='Constraint for the fODFs (default: hpsd)')
 
-    filenaming = parser.add_argument_group('file naming (optional)', 'Specify custom names for output files.')
-    filenaming.add_argument('-S', '--responseout', default='response.npz',
-                            help='Response function output name - filetype: .npz')
-
     multiprocessing = parser.add_argument_group('multiprocessing (optional)', 'Configure the multiprocessing behaviour \
     (only supported for Python 3)')
     multiprocessing.add_argument('-w', '--workers', default=None,
                                  help='Number of cpus (default: all available cpus)')
 
+    log = parser.add_argument_group('logging (optional)', 'Configure the logging behaviour')
+    log.add_argument('-L' '--loglevel', choices=['INFO', 'WARNING', 'ERROR'],
+                     default='WARNING', help='Specify the logging level for the console')
+
     args = parser.parse_args()
-    order = args.order
-    zeta = args.zeta
-    tau = args.tau
-    fawm = args.fawm
-    verbose = args.verbose
+
+    # Create outdir if it does not exists
     indir = args.indir
+    if not args.outdir:
+        outdir = indir
+    else:
+        outdir = args.outdir
+
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
+
+    # Logging setup for file
+    logging.basicConfig(filename=os.path.join(args.outdir, 'mtdeconv.log'),
+                        format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                        datefmt='%y-%m-%d %H:%M',
+                        level=logging.INFO,
+                        filemode='w')
+
+    # Console logging if verbose flag is set
+    if args.verbose:
+        levels = {'INFO': logging.INFO,
+                  'WARNING': logging.WARNING,
+                  'ERROR': logging.ERROR}
+        # define a Handler which writes INFO messages or higher to the sys.stderr
+        console = logging.StreamHandler()
+        console.setLevel(levels[args.loglevel])
+        # set a format which is simpler for console use
+        formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
+        # tell the handler to use this format
+        console.setFormatter(formatter)
+        # add the handler to the root logger
+        logging.getLogger('').addHandler(console)
+
+    logging.info('mtdeconv has been called with:')
+    param_string = 'Order: {} Zeta: {}, Tau: {}, FAWM: {}, Constraint: {}'
+    logging.info(param_string.format(args.order, args.zeta, args.tau,
+                                     args.fawm, args.constraint))
 
     # Load fractional anisotropy
     dti_fa = nib.load(os.path.join(indir, args.dtifa))
@@ -112,13 +141,6 @@ def main():
     gm_mask = nib.load(os.path.join(indir, args.gmmask))
     wm_mask = nib.load(os.path.join(indir, args.csfmask))
 
-    wm_mask, gm_mask, csf_mask = bdshore.dti_masks(wm_mask, gm_mask, csf_mask,
-                                                   dti_fa, dti_mask, fawm)
-    if args.tissuemasks:
-        nib.save(wm_mask, os.path.join(args.outdir, 'wm_mask.nii.gz'))
-        nib.save(gm_mask, os.path.join(args.outdir, 'gm_mask.nii.gz'))
-        nib.save(csf_mask, os.path.join(args.outdir, 'csf_mask.nii.gz'))
-
     # Load first eigenvectors of a precalculated diffusion tensor
     dti_vecs = nib.load(os.path.join(indir, args.dtivecs))
 
@@ -127,54 +149,63 @@ def main():
 
     # Load bvals and bvecs and initialize a GradientTable object
     bvals, bvecs = read_bvals_bvecs(os.path.join(indir, "bvals"),
-                                   os.path.join(indir, "bvecs"))
+                                    os.path.join(indir, "bvecs"))
     gtab = gradient_table(bvals, bvecs)
+
+    logging.info('Input loaded.')
 
     # Flip sign of x-coordinate if affine determinant is positive and rotate to worldspace
     gtab = fsl_to_worldspace(data.affine, gtab)
     dti_vecs = fsl_flip_signs_vec(dti_vecs)
+    logging.info('Rotation to worldspace finished')
 
     # We need this Meta object for saving later
     _, _, meta = dwmri.load(os.path.join(indir, args.data))
 
-    # Create outdir if it does not exists
-    if not args.outdir:
-        outdir = indir
-    else:
-        outdir = args.outdir
-
-    if not os.path.exists(outdir):
-        os.makedirs(outdir)
+    wm_mask, gm_mask, csf_mask = bdshore.dti_masks(wm_mask, gm_mask, csf_mask,
+                                                   dti_fa, dti_mask, args.fawm)
+    logging.info('Fractional anisotropy based tissue masks created.')
+    if args.tissuemasks:
+        nib.save(wm_mask, os.path.join(args.outdir, 'wm_mask.nii.gz'))
+        nib.save(gm_mask, os.path.join(args.outdir, 'gm_mask.nii.gz'))
+        nib.save(csf_mask, os.path.join(args.outdir, 'csf_mask.nii.gz'))
 
     # Check if response is already in the output folder
     if not args.responseonly:
-        if os.path.exists(os.path.join(outdir, args.responseout)):
-            fit = mtShoreFit.load(os.path.join(outdir, args.responseout))
-            if verbose:
-                print('Loaded existing response functions.')
+        if os.path.exists(os.path.join(outdir, "response.npz")):
+            fit = mtShoreFit.load(os.path.join(outdir, "response.npz"))
+            logging.info('Existing response functions loaded.')
 
         else:
-            model = mtShoreModel(gtab, order, zeta, tau)
-            fit = model.fit(data, dti_vecs, wm_mask, gm_mask, csf_mask, verbose=verbose, cpus=args.workers)
-            fit.save(os.path.join(outdir, args.responseout))
+            model = mtShoreModel(gtab, args.order, args.zeta, args.tau)
+            fit = model.fit(data, dti_vecs, wm_mask, gm_mask, csf_mask, verbose=args.verbose, cpus=args.workers)
+            fit.save(os.path.join(outdir, "response.npz"))
+            logging.info('Response functions estimated and saved.')
 
     # Force recalculate the response if response only is specified
     else:
-        model = mtShoreModel(gtab, order, zeta, tau)
-        fit = model.fit(data, dti_vecs, wm_mask, gm_mask, csf_mask, verbose=verbose)
-        fit.save(os.path.join(outdir, args.responseout))
+        model = mtShoreModel(gtab, args.order, args.zeta, args.tau)
+        fit = model.fit(data, dti_vecs, wm_mask, gm_mask, csf_mask, verbose=args.verbose)
+        fit.save(os.path.join(outdir, "response.npz"))
+        logging.info('Response functions recalculated and saved.')
 
     # Deconvolution if 'responseonly' is not set
     if not args.responseonly:
         out, wmout, gmout, csfout = fit.fodf(data, pos=args.constraint, mask=dti_mask,
-                                             verbose=verbose, cpus=args.workers)
+                                             verbose=args.verbose, cpus=args.workers)
+        logging.info('Signal deconvolved with multiple tissue response functions.')
 
         fields.save_tensor(os.path.join(args.outdir, "fodf.nrrd"), out, mask=dti_mask.get_data(), meta=meta)
+        logging.info('fODFs saved.')
 
         # Save volumes
         fields.save_scalar(os.path.join(args.outdir, "wmvolume.nrrd"), wmout, meta)
         fields.save_scalar(os.path.join(args.outdir, "gmvolume.nrrd"), gmout, meta)
         fields.save_scalar(os.path.join(args.outdir, "csfvolume.nrrd"), csfout, meta)
+        logging.info('Volume fractions saved.')
+
+    logging.info('Success!')
+
 
 if __name__ == "__main__":
     main()
