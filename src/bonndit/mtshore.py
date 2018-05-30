@@ -96,7 +96,7 @@ class mtShoreModel(object):
         :return: averaged shore coefficients
         """
 
-        shore_accum = np.zeros(shore.get_size(self.order, self.order))
+        shore_accum = np.zeros_like(shore_coeff[0])
         accum_count = 0
 
         # Iterate over the data indices

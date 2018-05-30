@@ -36,55 +36,62 @@ def main():
         using FSL.', add_help=False)
 
     parser.add_argument('indir',
-                        help='folder containing all required input files')
+                        help='Folder containing all required input files')
 
     parser.add_argument('-o', '--outdir',
-                          help='folder in which the output will be saved (default: indir)')
+                          help='Folder in which the output will be saved (default: same as indir)')
+
+    inputfiles = parser.add_argument_group('Custom input filenames', 'It is not recommended to specify a Specify custom names for input files.')
+    inputfiles.add_argument('-d', '--data', default='data.nii.gz',
+                            help='Diffusion weighted data (default: data.nii.gz)')
+    inputfiles.add_argument('-e', '--dtivecs', default='dti_V1.nii.gz',
+                            help='First eigenvectors of a DTI model (default: dti_V1.nii.gz)')
+    inputfiles.add_argument('-a', '--dtifa', default='dti_FA.nii.gz',
+                            help='Fractional anisotropy values from a DTI model (default: dti_FA.nii.gz)')
+    inputfiles.add_argument('-m', '--brainmask', default='mask.nii.gz',
+                            help='Brain mask (default: mask.nii.gz)')
+    inputfiles.add_argument('-W', '--wmmask', default='fast_pve_2.nii.gz',
+                            help='White matter mask (default: fast_pve_2.nii.gz)')
+    inputfiles.add_argument('-G', '--gmmask', default='fast_pve_1.nii.gz',
+                            help='Gray matter mask (default: fast_pve_1.nii.gz)')
+    inputfiles.add_argument('-F', '--csfmask', default='fast_pve_0.nii.gz',
+                            help='Cerebrospinal fluid mask (default: fast_pve_0.nii.gz)')
+
 
     flags = parser.add_argument_group('flags (optional)', '')
-    flags.add_argument("-h", "--help", action="help", help="show this help message and exit")
+    flags.add_argument("-h", "--help", action="help", help="Show this help message and exit")
     flags.add_argument('-v', '--verbose', action='store_true',
-                       help='show progress bars for calculation of the response function and the deconvolution')
+                       help='Show progress bars for calculation of the response function and the deconvolution')
     flags.add_argument('-R', '--responseonly', action='store_true',
-                       help='calculate and save only the response functions')
-    flags.add_argument('-V', '--volumes', action='store_true',
-                       help='output the volume fractions (csf/gm/wm) after deconvolution')
+                       help='Calculate and save only the response functions')
     flags.add_argument('-M', '--tissuemasks', action='store_true',
-                       help='output the DTI improved tissue masks (csf/gm/wm)')
+                       help='Output the DTI improved tissue masks (csf/gm/wm)')
     flags.add_argument('-L' '--log', action='store_true',
-                       help='enable logging, logs are saved in the output folder as "mtdeconv.log"')
+                       help='Enable logging, logs are saved in the output folder as "mtdeconv.log"')
 
     shoreopts = parser.add_argument_group('shore options (optional)', 'Optional arguments for the computation of \
     the shore response functions')
     shoreopts.add_argument('-r', '--order', default=4, type=int,
-                        help='order of the shore basis')
+                        help='Order of the shore basis (default: 4)')
     shoreopts.add_argument('-z', '--zeta', default=700, type=float,
-                           help='radial scaling factor')
+                           help='Radial scaling factor (default: 700)')
     shoreopts.add_argument('-t', '--tau', default=1 / (4 * np.pi ** 2), type=float,
                            help='q-scaling')
     shoreopts.add_argument('-f', '--fawm', default=0.7, type=float,
-                           help='white matter fractional anisotropy threshold')
+                           help='White matter fractional anisotropy threshold (default: 0.7)')
 
     deconvopts = parser.add_argument_group('deconvolution options (optional)', '')
-    deconvopts.add_argument('-c', '--constraint', choices=['hpsd', 'nonneg', 'none'], default='hpsd',
-                            help='constraint for the fODFs')
+    deconvopts.add_argument('-C', '--constraint', choices=['hpsd', 'nonneg', 'none'], default='hpsd',
+                            help='Constraint for the fODFs (default: hpsd)')
 
     filenaming = parser.add_argument_group('file naming (optional)', 'Specify custom names for output files.')
     filenaming.add_argument('-S', '--responseout', default='response.npz',
-                            help='response function output name - filetype: .npz')
-    filenaming.add_argument('-O', '--fodfout', default='fodf.nrrd',
-                            help='fODF filename - filetype: .nrrd / .nii / .nii.gz')
-    filenaming.add_argument('-W', '--whitematter', default='wmvolume.nrrd',
-                            help='wm volume filename - filetype: .nrrd / .nii / .nii.gz')
-    filenaming.add_argument('-G', '--graymatter', default='gmvolume.nrrd',
-                            help='gm volume filename - filetype: .nrrd / .nii / .nii.gz')
-    filenaming.add_argument('-C', '--cerebrospinalfluid', default='csfvolume.nrrd',
-                            help='csf volume filename - filetype: .nrrd / .nii / .nii.gz')
+                            help='Response function output name - filetype: .npz')
 
     multiprocessing = parser.add_argument_group('multiprocessing (optional)', 'Configure the multiprocessing behaviour \
     (only supported for Python 3)')
     multiprocessing.add_argument('-w', '--workers', default=None,
-                                 help='number of cpus, the default is to use all available cpus')
+                                 help='Number of cpus (default: all available cpus)')
 
     args = parser.parse_args()
     order = args.order
@@ -93,33 +100,17 @@ def main():
     fawm = args.fawm
     verbose = args.verbose
     indir = args.indir
-    if not args.outdir:
-        outdir = indir
-    else:
-        outdir = args.outdir
-
-    try:
-        os.makedirs(outdir)
-    except OSError as e:
-        if e.errno != errno.EEXIST:
-            raise
-
-    if args.whitematter != 'wmvolume.nrrd' or \
-            args.graymatter != 'gmvolume.nrrd' or \
-            args.cerebrospinalfluid != 'csfvolume.nrrd':
-        if not args.volumes:
-            parser.error('-V (--volumes) required for the output of volume fractions.')
 
     # Load fractional anisotropy
-    dti_fa = nib.load(os.path.join(indir, "dti_FA.nii.gz"))
+    dti_fa = nib.load(os.path.join(indir, args.dtifa))
 
     # Load DTI mask
-    dti_mask = nib.load(os.path.join(indir, "mask.nii.gz"))
+    dti_mask = nib.load(os.path.join(indir, args.brainmask))
 
     # Load and adjust tissue segmentation masks
-    csf_mask = nib.load(os.path.join(indir, "fast_pve_0.nii.gz"))
-    gm_mask = nib.load(os.path.join(indir, "fast_pve_1.nii.gz"))
-    wm_mask = nib.load(os.path.join(indir, "fast_pve_2.nii.gz"))
+    csf_mask = nib.load(os.path.join(indir, args.csfmask))
+    gm_mask = nib.load(os.path.join(indir, args.gmmask))
+    wm_mask = nib.load(os.path.join(indir, args.csfmask))
 
     wm_mask, gm_mask, csf_mask = bdshore.dti_masks(wm_mask, gm_mask, csf_mask,
                                                    dti_fa, dti_mask, fawm)
@@ -129,10 +120,10 @@ def main():
         nib.save(csf_mask, os.path.join(args.outdir, 'csf_mask.nii.gz'))
 
     # Load first eigenvectors of a precalculated diffusion tensor
-    dti_vecs = nib.load(os.path.join(indir, "dti_V1.nii.gz"))
+    dti_vecs = nib.load(os.path.join(indir, args.dtivecs))
 
     # Load diffusion weighted data
-    data = nib.load(os.path.join(indir, "data.nii.gz"))
+    data = nib.load(os.path.join(indir, args.data))
 
     # Load bvals and bvecs and initialize a GradientTable object
     bvals, bvecs = read_bvals_bvecs(os.path.join(indir, "bvals"),
@@ -144,7 +135,16 @@ def main():
     dti_vecs = fsl_flip_signs_vec(dti_vecs)
 
     # We need this Meta object for saving later
-    _, _, meta = dwmri.load(os.path.join(indir, "data.nii.gz"))
+    _, _, meta = dwmri.load(os.path.join(indir, args.data))
+
+    # Create outdir if it does not exists
+    if not args.outdir:
+        outdir = indir
+    else:
+        outdir = args.outdir
+
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
 
     # Check if response is already in the output folder
     if not args.responseonly:
@@ -169,13 +169,12 @@ def main():
         out, wmout, gmout, csfout = fit.fodf(data, pos=args.constraint, mask=dti_mask,
                                              verbose=verbose, cpus=args.workers)
 
-        fields.save_tensor(os.path.join(args.outdir, args.fodfout), out, mask=dti_mask.get_data(), meta=meta)
+        fields.save_tensor(os.path.join(args.outdir, "fodf.nrrd"), out, mask=dti_mask.get_data(), meta=meta)
 
-        # Save volumes if 'volumes' is set
-        if args.volumes:
-            fields.save_scalar(os.path.join(args.outdir, args.whitematter), wmout, meta)
-            fields.save_scalar(os.path.join(args.outdir, args.graymatter), gmout, meta)
-            fields.save_scalar(os.path.join(args.outdir, args.cerebrospinalfluid), csfout, meta)
+        # Save volumes
+        fields.save_scalar(os.path.join(args.outdir, "wmvolume.nrrd"), wmout, meta)
+        fields.save_scalar(os.path.join(args.outdir, "gmvolume.nrrd"), gmout, meta)
+        fields.save_scalar(os.path.join(args.outdir, "csfvolume.nrrd"), csfout, meta)
 
 if __name__ == "__main__":
     main()
