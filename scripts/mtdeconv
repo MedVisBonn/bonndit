@@ -88,7 +88,7 @@ def main():
                                  help='Number of cpus (default: all available cpus)')
 
     log = parser.add_argument_group('logging (optional)', 'Configure the logging behaviour')
-    log.add_argument('-L' '--loglevel', choices=['INFO', 'WARNING', 'ERROR'],
+    log.add_argument('-L', '--loglevel', choices=['INFO', 'WARNING', 'ERROR'],
                      default='WARNING', help='Specify the logging level for the console')
 
     args = parser.parse_args()

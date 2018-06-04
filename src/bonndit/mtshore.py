@@ -39,6 +39,7 @@ class mtShoreModel(object):
         :param gm_mask: gray Matter Mask (0/1)
         :param csf_mask: cerebrospinal fluid mask (0/1)
         :param verbose: Set to True for a progress bar
+        :param cpus: Number of cpu workers to use
         :return: Fitted response functions in a mtShoreFit object
         """
         # Check if tissue masks give at least a single voxel
@@ -128,6 +129,7 @@ class mtShoreModel(object):
 
         :param data: array of voxels for which to calculate shore coefficients
         :param verbose: set to true to show a progress bar
+        :param cpus: Number of cpu workers to use
         :param desc: description for the progress bar
         :return: array of per voxel shore coefficients
         """
@@ -154,8 +156,7 @@ class mtShoreModel(object):
     def _reorient_response_helper(self, data_vecs):
         """
 
-        :param data:
-        :param vecs:
+        :param data_vecs:
         :return:
         """
         data, vecs = data_vecs[0], data_vecs[1]
@@ -173,6 +174,7 @@ class mtShoreModel(object):
         :param data: array of white matter voxels for which to calculate shore coefficients
         :param vecs: First principal direction of diffusion for every given data voxel
         :param verbose: set to true to show a progress bar
+        :param cpus: Number of cpu workers to use
         :param desc: description for the progress bar
         :return: array of per white matter voxel shore coefficients
         """
@@ -270,7 +272,7 @@ class mtShoreFit(object):
         with np.errstate(divide='ignore', invalid='ignore'):
             logging.debug('Condition number of convolution matrtix:', la.cond(conv_matrix))
 
-        chunksize = max(1, int(np.prod(data.shape[:-1]) / 100))  # 100 chunks for the progressbar to run smoother
+        chunksize = max(1, int(np.prod(data.shape[:-1]) / 1000))  # 100 chunks for the progressbar to run smoother
 
         # TODO: consider additional Tikhonov regularization
         # Deconvolve the DWI signal
@@ -286,7 +288,7 @@ class mtShoreFit(object):
             else:
                 with mp.Pool(cpus) as p:
                     result = list(tqdm(p.imap(partial(func, conv_matrix=conv_matrix),
-                                             data, chunksize=chunksize),
+                                              data, chunksize=chunksize),
                                        total=np.prod(data.shape[:-1]),
                                        disable=not verbose,
                                        desc='Optimization'))
@@ -452,6 +454,7 @@ class mtShoreFit(object):
 
         # now, multiply them together
         return np.dot(shore_m, M)
+
 
 def dti_masks(wm_mask, gm_mask, csf_mask, dti_fa, dti_mask, fawm=0.7):
     """ Use precalculated fractional anisotropy values for example from DTI to create tissue masks.
