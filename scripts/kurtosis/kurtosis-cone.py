@@ -11,6 +11,7 @@ from dipy.io import read_bvals_bvecs
 import numpy as np
 import cvxopt
 from os import sys
+import os
 import argparse
 
 parser = argparse.ArgumentParser(description='Fit DKI model to input data.')
@@ -18,7 +19,7 @@ parser.add_argument('infile', help='Path to the DWI data')
 parser.add_argument('bval', help='Path to the b-values')
 parser.add_argument(
     'bvec', help='Path to the normalized gradient directions (b-vectors)')
-parser.add_argument('outfile', help='Path of the output')
+parser.add_argument('outdir', help='Path of the output')
 parser.add_argument('-m', '--mask', help='Path to the brain mask')
 parser.add_argument('-v', '--verbose', action='store_true',
                     help='Flag for verbose output')
@@ -42,7 +43,6 @@ data = img.get_data()
 data = data.astype(float)
 affine = img.affine
 NX, NY, NZ = data.shape[0:3]
-
 
 # re-scale b values to more natural units
 bvals = bvals / 1000.0
@@ -83,49 +83,49 @@ for i in range(nk):
     A[i, 3] = -dwibvals[i] * grads[i, 1] * grads[i, 1]
     A[i, 4] = -dwibvals[i] * 2 * grads[i, 1] * grads[i, 2]
     A[i, 5] = -dwibvals[i] * grads[i, 2] * grads[i, 2]
-    A[i, 6] = dwibvals[i]**2 / 6.0 * grads[
+    A[i, 6] = dwibvals[i] ** 2 / 6.0 * grads[
         i,
         0] * grads[i, 0] * grads[i, 0] * grads[i, 0]
-    A[i, 7] = dwibvals[i]**2 / 6.0 * 4 * grads[
+    A[i, 7] = dwibvals[i] ** 2 / 6.0 * 4 * grads[
         i,
         0] * grads[i, 0] * grads[i, 0] * grads[i, 1]
-    A[i, 8] = dwibvals[i]**2 / 6.0 * 4 * grads[
+    A[i, 8] = dwibvals[i] ** 2 / 6.0 * 4 * grads[
         i,
         0] * grads[i, 0] * grads[i, 0] * grads[i, 2]
-    A[i, 9] = dwibvals[i]**2 / 6.0 * 6 * grads[
+    A[i, 9] = dwibvals[i] ** 2 / 6.0 * 6 * grads[
         i,
         0] * grads[i, 0] * grads[i, 1] * grads[i, 1]
-    A[i, 10] = dwibvals[i]**2 / 6.0 * 12 * grads[
+    A[i, 10] = dwibvals[i] ** 2 / 6.0 * 12 * grads[
         i,
         0] * grads[i, 0] * grads[i, 1] * grads[i, 2]
-    A[i, 11] = dwibvals[i]**2 / 6.0 * 6 * grads[
+    A[i, 11] = dwibvals[i] ** 2 / 6.0 * 6 * grads[
         i,
         0] * grads[i, 0] * grads[i, 2] * grads[i, 2]
-    A[i, 12] = dwibvals[i]**2 / 6.0 * 4 * grads[
+    A[i, 12] = dwibvals[i] ** 2 / 6.0 * 4 * grads[
         i,
         0] * grads[i, 1] * grads[i, 1] * grads[i, 1]
-    A[i, 13] = dwibvals[i]**2 / 6.0 * 12 * grads[
+    A[i, 13] = dwibvals[i] ** 2 / 6.0 * 12 * grads[
         i,
         0] * grads[i, 1] * grads[i, 1] * grads[i, 2]
-    A[i, 14] = dwibvals[i]**2 / 6.0 * 12 * grads[
+    A[i, 14] = dwibvals[i] ** 2 / 6.0 * 12 * grads[
         i,
         0] * grads[i, 1] * grads[i, 2] * grads[i, 2]
-    A[i, 15] = dwibvals[i]**2 / 6.0 * 4 * grads[
+    A[i, 15] = dwibvals[i] ** 2 / 6.0 * 4 * grads[
         i,
         0] * grads[i, 2] * grads[i, 2] * grads[i, 2]
-    A[i, 16] = dwibvals[i]**2 / 6.0 * grads[
+    A[i, 16] = dwibvals[i] ** 2 / 6.0 * grads[
         i,
         1] * grads[i, 1] * grads[i, 1] * grads[i, 1]
-    A[i, 17] = dwibvals[i]**2 / 6.0 * 4 * grads[
+    A[i, 17] = dwibvals[i] ** 2 / 6.0 * 4 * grads[
         i,
         1] * grads[i, 1] * grads[i, 1] * grads[i, 2]
-    A[i, 18] = dwibvals[i]**2 / 6.0 * 6 * grads[
+    A[i, 18] = dwibvals[i] ** 2 / 6.0 * 6 * grads[
         i,
         1] * grads[i, 1] * grads[i, 2] * grads[i, 2]
-    A[i, 19] = dwibvals[i]**2 / 6.0 * 4 * grads[
+    A[i, 19] = dwibvals[i] ** 2 / 6.0 * 4 * grads[
         i,
         1] * grads[i, 2] * grads[i, 2] * grads[i, 2]
-    A[i, 20] = dwibvals[i]**2 / 6.0 * grads[
+    A[i, 20] = dwibvals[i] ** 2 / 6.0 * grads[
         i,
         2] * grads[i, 2] * grads[i, 2] * grads[i, 2]
 
@@ -229,7 +229,9 @@ for x in range(NX):
             out[x, y, z, 1:7] = c[:6]
             # divide out d-bar-square to get kurtosis tensor
             Dbar = (c[0] + c[3] + c[5]) / 3.0
-            out[x, y, z, 7:] = c[6:] / Dbar**2
+            out[x, y, z, 7:] = c[6:] / Dbar ** 2
 
+if not os.path.exists(args.outdir):
+    os.makedirs(args.outdir)
 img = nib.Nifti1Image(out, affine)
-nib.save(img, args.outfile)
+nib.save(img, os.path.join(args.outdir, 'kurtosis_fit.nii'))

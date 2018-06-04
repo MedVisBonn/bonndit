@@ -6,20 +6,22 @@
 
 from __future__ import print_function, division
 import nibabel as nib
-from dipy.io import read_bvals_bvecs
 import numpy as np
-import cvxopt
-from os import sys
 import argparse
 import math
 import mpmath as mp
+import os
 
 parser = argparse.ArgumentParser(
     description='Compute invariants of DKI model.')
 parser.add_argument('infile', help='Path to DKI parameter file')
-parser.add_argument('prefix', help='Path and prefix for the output files')
+parser.add_argument('out', help='Path for the output files')
 parser.add_argument('-v', '--verbose', action='store_true',
                     help='Flag for verbose output')
+
+parser.add_argument(
+    '-k', '--kappa', action='store_true',
+    help='Additionally compute axial, radial and diamond kappa')
 args = parser.parse_args()
 
 
@@ -33,7 +35,7 @@ def alpha(x):
 def H(a, c):
     if a == c:
         return 1.0 / 15.0
-    return (a + 2 * c)**2 / (144 * c * c * (a - c)**2) \
+    return (a + 2 * c) ** 2 / (144 * c * c * (a - c) ** 2) \
         * (c * (a + 2 * c) + a * (a - 4 * c) * alpha(1 - a / c))
 
 
@@ -42,47 +44,43 @@ def F1(a, b, c):
         return 3 * H(c, a)
     if a == c:
         return 3 * H(b, a)
-    return (a + b + c)**2 / (18 * (a - b) * (a - c)) \
-        * (
+    return (a + b + c) ** 2 / (18 * (a - b) * (a - c)) * (
         math.sqrt(b * c) / a * float(
             mp.elliprf(
                 a / b, a / c,
-                1)) + (3 * a**2 - a * b - a * c - b * c) / (3 * a * math.sqrt(b * c))
-        * float(mp.elliprd(a / b, a / c, 1)) - 1)
+                1)) + (3 * a ** 2 - a * b - a * c - b * c) / (
+            3 * a * math.sqrt(b * c)) * float(mp.elliprd(a / b, a / c, 1)) - 1)
 
 
 def F2(a, b, c):
     if b == c:
         return 6 * H(a, c)
-    return (a + b + c)**2 / (3 * (b - c)**2) \
-        * (
+    return (a + b + c) ** 2 / (3 * (b - c) ** 2) * (
         (b + c) / (math.sqrt(b * c)) * float(
             mp.elliprf(
                 a / b, a / c,
-                1)) + (2 * a - b - c) / (3 * math.sqrt(b * c)) * float(
-            mp.elliprd(
-                a / b,
-                a / c, 1)) - 2)
+                1)) + (2 * a - b - c) / (
+            3 * math.sqrt(b * c)) * float(mp.elliprd(a / b, a / c, 1)) - 2)
 
 
 def G1(a, b, c):
     if b == c:
-        return (a + 2 * b)**2 / (24 * b * b)
-    return (a + b + c)**2 / (18 * b * (b - c)**2) \
+        return (a + 2 * b) ** 2 / (24 * b * b)
+    return (a + b + c) ** 2 / (18 * b * (b - c) ** 2) \
         * (2 * b + c * (c - 3 * b) / (math.sqrt(b * c)))
 
 
 def G2(a, b, c):
     if b == c:
-        return (a + 2 * b)**2 / (12 * b * b)
-    return (a + b + c)**2 / (3 * (b - c)**2) \
+        return (a + 2 * b) ** 2 / (12 * b * b)
+    return (a + b + c) ** 2 / (3 * (b - c) ** 2) \
         * ((b + c) / (math.sqrt(b * c)) - 2)
 
 
 def axialKurtosis(lambdas, W):
     return (
-        (lambdas[0] + lambdas[1] + lambdas[2])**2
-        / (9 * lambdas[2]**2)) * W[14]
+        (lambdas[0] + lambdas[1] + lambdas[2]) ** 2
+        / (9 * lambdas[2] ** 2)) * W[14]
 
 
 def radialKurtosis(lambdas, W):
@@ -98,7 +96,37 @@ def radialKurtosis(lambdas, W):
         lambdas[0]) * W[3]
 
 
-def meanKurtosis(D, W):
+def radial_kappa(lambda_mean, W):
+    """
+
+    :param lambda_mean:
+    :param W:
+    :return:
+    """
+    return lambda_mean ** 2 * (W[0] + W[10] + 3 * W[3]) / 3
+
+
+def axial_kappa(lambda_mean, W):
+    """
+
+    :param lambda_mean:
+    :param W:
+    :return:
+    """
+    return lambda_mean ** 2 * W[14]
+
+
+def diamond_kappa(lambda_mean, W):
+    """
+
+    :param lamda_mean:
+    :param W:
+    :return:
+    """
+    return 6 * lambda_mean ** 2 * (W[5] + W[12]) / 2
+
+
+def meanKurtosis(lambdas, W):
     r = F1(lambdas[0], lambdas[1], lambdas[2]) * W[0]
     r += F1(lambdas[1], lambdas[2], lambdas[0]) * W[10]
     r += F1(lambdas[2], lambdas[1], lambdas[0]) * W[14]
@@ -109,9 +137,21 @@ def meanKurtosis(D, W):
 
 
 ix4 = [
-    [0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 0, 2], [0, 0, 1, 1], [0, 0, 1, 2],
-    [0, 0, 2, 2], [0, 1, 1, 1], [0, 1, 1, 2], [0, 1, 2, 2], [0, 2, 2, 2],
-    [1, 1, 1, 1], [1, 1, 1, 2], [1, 1, 2, 2], [1, 2, 2, 2], [2, 2, 2, 2]]
+    [0, 0, 0, 0],
+    [0, 0, 0, 1],
+    [0, 0, 0, 2],
+    [0, 0, 1, 1],
+    [0, 0, 1, 2],
+    [0, 0, 2, 2],
+    [0, 1, 1, 1],
+    [0, 1, 1, 2],
+    [0, 1, 2, 2],
+    [0, 2, 2, 2],
+    [1, 1, 1, 1],
+    [1, 1, 1, 2],
+    [1, 1, 2, 2],
+    [1, 2, 2, 2],
+    [2, 2, 2, 2]]
 
 invix4 = np.zeros((3, 3, 3, 3), dtype=np.int)
 for i in range(3):
@@ -122,9 +162,8 @@ for i in range(3):
                 s.sort()
                 invix4[i, j, k, l] = ix4.index(s)
 
+
 # L are the eigenvectors such that L[:,i] is ith normalized eigenvector
-
-
 def rotT4Sym(W, L):
     # build and apply rotation matrix
     rotmat = np.zeros((15, 15))
@@ -154,6 +193,12 @@ fa = np.zeros((NX, NY, NZ))
 ka = np.zeros((NX, NY, NZ))
 km = np.zeros((NX, NY, NZ))
 kr = np.zeros((NX, NY, NZ))
+
+if args.kappa:
+    kappa_radial = np.zeros((NX, NY, NZ))
+    kappa_axial = np.zeros((NX, NY, NZ))
+    kappa_diamond = np.zeros((NX, NY, NZ))
+
 for x in range(NX):
     if args.verbose:
         print('x=', x)
@@ -198,23 +243,38 @@ for x in range(NX):
             km[x, y, z] = meanKurtosis(lambdas, W)
             kr[x, y, z] = radialKurtosis(lambdas, W)
 
+            if args.kappa:
+                kappa_radial[x, y, z] = radial_kappa(dm[x, y, z], W)
+                kappa_axial[x, y, z] = axial_kappa(dm[x, y, z], W)
+                kappa_diamond[x, y, z] = diamond_kappa(dm[x, y, z], W)
+
 img = nib.Nifti1Image(da, affine)
-nib.save(img, args.prefix + '_DA.nii')
+nib.save(img, os.path.join(args.out, 'da.nii'))
 
 img = nib.Nifti1Image(dr, affine)
-nib.save(img, args.prefix + '_DR.nii')
+nib.save(img, os.path.join(args.out, 'dr.nii'))
 
 img = nib.Nifti1Image(dm, affine)
-nib.save(img, args.prefix + '_DM.nii')
+nib.save(img, os.path.join(args.out, 'dm.nii'))
 
 img = nib.Nifti1Image(fa, affine)
-nib.save(img, args.prefix + '_FA.nii')
+nib.save(img, os.path.join(args.out, 'fa.nii'))
 
 img = nib.Nifti1Image(ka, affine)
-nib.save(img, args.prefix + '_KA.nii')
+nib.save(img, os.path.join(args.out, 'ka.nii'))
 
 img = nib.Nifti1Image(kr, affine)
-nib.save(img, args.prefix + '_KR.nii')
+nib.save(img, os.path.join(args.out, 'kr.nii'))
 
 img = nib.Nifti1Image(km, affine)
-nib.save(img, args.prefix + '_KM.nii')
+nib.save(img, os.path.join(args.out, 'km.nii'))
+
+if args.kappa:
+    img = nib.Nifti1Image(kappa_radial, affine)
+    nib.save(img, os.path.join(args.out, 'kappaRadial.nii'))
+
+    img = nib.Nifti1Image(kappa_axial, affine)
+    nib.save(img, os.path.join(args.out, 'kappaAxial.nii'))
+
+    img = nib.Nifti1Image(kappa_diamond, affine)
+    nib.save(img, os.path.join(args.out, 'kappaDiamond.nii'))
