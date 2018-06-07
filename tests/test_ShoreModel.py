@@ -12,31 +12,31 @@ from dipy.io import read_bvals_bvecs
 import bonndit.mtshore as bdshore
 from bonndit import mtShoreModel, mtShoreFit
 from bonndit.io import fsl_flip_signs_vec, fsl_to_worldspace
-from .constants import DECONVOLUTION_DIR, SHORE_FIT_TEST
+from .constants import DATA_DIR, SHORE_FIT_TEST
 
 # Load fractional anisotropy
-dti_fa = nib.load(os.path.join(DECONVOLUTION_DIR, "dti_FA.nii.gz"))
+dti_fa = nib.load(os.path.join(DATA_DIR, "dti_FA.nii.gz"))
 
 # Load DTI mask
-dti_mask = nib.load(os.path.join(DECONVOLUTION_DIR, "mask.nii.gz"))
+dti_mask = nib.load(os.path.join(DATA_DIR, "mask.nii.gz"))
 
 # Load and adjust tissue segmentation masks
-csf_mask = nib.load(os.path.join(DECONVOLUTION_DIR, "fast_pve_0.nii.gz"))
-gm_mask = nib.load(os.path.join(DECONVOLUTION_DIR, "fast_pve_1.nii.gz"))
-wm_mask = nib.load(os.path.join(DECONVOLUTION_DIR, "fast_pve_2.nii.gz"))
+csf_mask = nib.load(os.path.join(DATA_DIR, "fast_pve_0.nii.gz"))
+gm_mask = nib.load(os.path.join(DATA_DIR, "fast_pve_1.nii.gz"))
+wm_mask = nib.load(os.path.join(DATA_DIR, "fast_pve_2.nii.gz"))
 
 wm_mask, gm_mask, csf_mask = bdshore.dti_masks(wm_mask, gm_mask, csf_mask,
                                                    dti_fa, dti_mask, fawm=0.7)
 
 # Load DTI first eigenvector
-dti_vecs = nib.load(os.path.join(DECONVOLUTION_DIR, "dti_V1.nii.gz"))
+dti_vecs = nib.load(os.path.join(DATA_DIR, "dti_V1.nii.gz"))
 
 # Load DW-MRI data
-data = nib.load(os.path.join(DECONVOLUTION_DIR, "data.nii.gz"))
+data = nib.load(os.path.join(DATA_DIR, "data.nii.gz"))
 
 # Load bvals and bvecs
-bvals, bvecs = read_bvals_bvecs(os.path.join(DECONVOLUTION_DIR, "bvals"),
-                                os.path.join(DECONVOLUTION_DIR, "bvecs"))
+bvals, bvecs = read_bvals_bvecs(os.path.join(DATA_DIR, "bvals"),
+                                os.path.join(DATA_DIR, "bvecs"))
 gtab = gradient_table(bvals, bvecs)
 
 

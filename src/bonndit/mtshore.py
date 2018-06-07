@@ -456,7 +456,7 @@ class mtShoreFit(object):
         return np.dot(shore_m, M)
 
 
-def dti_masks(wm_mask, gm_mask, csf_mask, dti_fa, dti_mask, fawm=0.7):
+def dti_masks(wm_mask, gm_mask, csf_mask, dti_fa, dti_mask=None, fawm=0.7):
     """ Use precalculated fractional anisotropy values for example from DTI to create tissue masks.
 
     :param wm_mask: white matter mask
