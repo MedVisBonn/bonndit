@@ -22,7 +22,7 @@ from .gradients import gtab_reorient
 
 
 class mtShoreModel(object):
-    """ Fit WM, GM and CSF response functions to the given diffusion weighted data.
+    """ Model the diffusion imaging signal using the shore basis functions.
     """
     def __init__(self, gtab, order=4, zeta=700, tau=1 / (4 * np.pi ** 2)):
         self.gtab = gtab
@@ -30,8 +30,13 @@ class mtShoreModel(object):
         self.zeta = zeta
         self.tau = tau
 
-    def fit(self, data, dti_vecs, wm_mask, gm_mask, csf_mask, verbose=False, cpus=None):
-        """ Fit the response functions and return the shore coefficients
+        # Ignore division by zero warning dipy.core.geometry.cart2sphere -> theta = np.arccos(z / r)
+        with np.errstate(divide='ignore', invalid='ignore'):
+            self.shore_m = shore_matrix(self.order, self.zeta, self.gtab, self.tau)
+
+    def fit_tissue_responses(self, data, dti_vecs, wm_mask, gm_mask, csf_mask, verbose=False, cpus=None):
+        """ Compute tissue response functions. Shore coefficients are fitted for white matter, gray matter and
+        cerebrospinal fluid separately. The averaged and compressed coefficients are returned in a mtShoreFit object.
 
         :param data: diffusion weighted data
         :param dti_vecs: first eigenvector of a precalculated diffusion tensor
@@ -56,20 +61,20 @@ class mtShoreModel(object):
         # Calculate wm response
         wm_voxels = data.get_data()[wm_mask.get_data() == 1]
         wm_vecs = dti_vecs.get_data()[wm_mask.get_data() == 1]
-        wmshore_coeffs = self.get_response_reorient(wm_voxels, wm_vecs, verbose, cpus, desc='WM response')
-        wmshore_coeff = self.accumulate_shore(wmshore_coeffs)
+        wmshore_coeffs = self.fit_shore(wm_voxels, wm_vecs, verbose=verbose, cpus=cpus, desc='WM response')
+        wmshore_coeff = self.shore_accumulate(wmshore_coeffs)
         signal_wm = self.shore_compress(wmshore_coeff)
 
         # Calculate gm response
         gm_voxels = data.get_data()[gm_mask.get_data() == 1]
-        gmshore_coeffs = self.get_response(gm_voxels, verbose, cpus, desc='GM response')
-        gmshore_coeff = self.accumulate_shore(gmshore_coeffs)
+        gmshore_coeffs = self.fit_shore(gm_voxels, verbose=verbose, cpus=cpus, desc='GM response')
+        gmshore_coeff = self.shore_accumulate(gmshore_coeffs)
         signal_gm = self.shore_compress(gmshore_coeff)
 
         # Calculate csf response
         csf_voxels = data.get_data()[csf_mask.get_data() == 1]
-        csfshore_coeffs = self.get_response(csf_voxels, verbose, cpus, desc='CSF response')
-        csfshore_coeff = self.accumulate_shore(csfshore_coeffs)
+        csfshore_coeffs = self.fit_shore(csf_voxels, verbose=verbose, cpus=cpus, desc='CSF response')
+        csfshore_coeff = self.shore_accumulate(csfshore_coeffs)
         signal_csf = self.shore_compress(csfshore_coeff)
 
         return mtShoreFit(self, [signal_csf, signal_gm, signal_wm])
@@ -90,8 +95,9 @@ class mtShoreModel(object):
                 ccounter += 1
         return r
 
-    def accumulate_shore(self, shore_coeff):
-        """ Average over shore coefficients calculated for voxels of a specific tissue
+    def shore_accumulate(self, shore_coeff):
+        """ Average over array of shore coefficients. This is used to determine the average response of a
+        specific tissue.
 
         :param shore_coeff: array of per voxel shore coefficients
         :return: averaged shore coefficients
@@ -111,83 +117,56 @@ class mtShoreModel(object):
         with np.errstate(divide='ignore', invalid='ignore'):
             return shore_accum / accum_count
 
-    def _response_helper(self, b, a, rcond):
-        """ This is a helper function for parallelizing the numpy.linalg.lstsq which is needed by
-        the get_response. All we do here is to swap the parameters
-        a and b to be able to give b as a positional argument even if a is specified as kwarg. We also
-        return only the least square solution.
+    def _fit_shore_helper(self, data_vecs, kwargs):
+        """ This is a helper function for parallelizing the fitting of shore coefficients. First it checks whether the
+        default shore matrix can be use or if a vector is specified to first rotate the gradient table and compute a
+        custom shore matrix for the voxel.
 
-        :param b:
-        :param a:
-        :param rcond:
-        :return:
+        :param data_vecs: tuple with DWI signal as first entry and a vector or None as second entry
+        :param kwargs: keyword arguments passed to numpy.linalg.lstsq
+        :return: fitted shore coefficients
         """
-        return la.lstsq(a, b, rcond)[0]
 
-    def get_response(self, data, verbose=False, cpus=None, desc=''):
-        """ Calculate response function for isotropic regions such as gray matter or cerebrospinal fluid.
+        signal, vec = data_vecs[0], data_vecs[1]
 
-        :param data: array of voxels for which to calculate shore coefficients
+        if vec is not None:
+            with np.errstate(divide='ignore', invalid='ignore'):
+                shore_m = shore_matrix(self.order, self.zeta, gtab_reorient(self.gtab, vec), self.tau)
+
+        else:
+            shore_m = self.shore_m
+
+        return la.lstsq(shore_m, signal, **kwargs)[0]
+
+    def fit_shore(self, data, vecs=None, verbose=False, cpus=None, desc=''):
+        """ Fit coefficients of a shore model to diffusion weighted imaging data. If an array of vectors is specified
+        (vecs), the gradient table is rotated such that the vector lands on the z-axis. This can be used to compute
+        comparable shore coefficients for white matter regions of different orientation. Therefor use the first
+        eigenvectors of precomputed diffusion tensors as vectors and use only regions with high fractional anisotropy to
+        ensure working only with single fiber voxels.
+
+        :param data: ndarray with DWI data
+        :param vecs: array which specifies for every data point a vector which is rotated on the z-axis
         :param verbose: set to true to show a progress bar
         :param cpus: Number of cpu workers to use
         :param desc: description for the progress bar
-        :return: array of per voxel shore coefficients
+        :return:  array of per voxel shore coefficients
         """
         chunksize = max(1, int(np.prod(data.shape[:-1]) / 1000))  # 1000 chunks for the progressbar to run smoother
 
-        # Ignore division by zero warning dipy.core.geometry.cart2sphere -> theta = np.arccos(z / r)
-        with np.errstate(divide='ignore', invalid='ignore'):
-            shore_m = shore_matrix(self.order, self.zeta, self.gtab, self.tau)
+        # If no vectors are specified create array of Nones for use in the iteration.
+        if type(vecs) != np.ndarray and vecs is None:
+            vecs = np.full(data.shape[:-1], None)
 
         # Iterate over the data indices; show progress with tqdm; multiple processes for python > 3
         if sys.version_info[0] < 3:
-            shore_coeff = list(tqdm(it.imap(partial(self._response_helper, a=shore_m, rcond=-1), data),
+            shore_coeff = list(tqdm(it.imap(self._fit_shore_helper, zip(list(data), list(vecs))),
                                     total=np.prod(data.shape[:-1]),
                                     disable=not verbose,
                                     desc=desc))
         else:
             with mp.Pool(cpus) as p:
-                shore_coeff = list(tqdm(p.imap(partial(self._response_helper, a=shore_m, rcond=-1), data, chunksize),
-                                        total=np.prod(data.shape[:-1]),
-                                        disable=not verbose,
-                                        desc=desc))
-        return np.array(shore_coeff)
-
-    def _reorient_response_helper(self, data_vecs):
-        """
-
-        :param data_vecs:
-        :return:
-        """
-        data, vecs = data_vecs[0], data_vecs[1]
-        with np.errstate(divide='ignore', invalid='ignore'):
-            shore_m = shore_matrix(self.order, self.zeta, gtab_reorient(self.gtab, vecs), self.tau)
-        return la.lstsq(shore_m, data, rcond=-1)[0]
-
-    def get_response_reorient(self, data, vecs, verbose=False, cpus=None, desc=''):
-        """ Calculate white matter response function. Diffusion in white matter is anisotropic. Averaging shore
-        coefficients of different voxels can only result in a meaningful response function if fibers in the
-        respective voxels are oriented in the same direction (no crossing fibers). Such voxels can be selected by
-        filtering for high fractional anisotropy. Gradients for every considered voxel are rotated such that the
-        the first eigenvector of a pre calculated diffusion tensor is aligned to the z-axis.
-
-        :param data: array of white matter voxels for which to calculate shore coefficients
-        :param vecs: First principal direction of diffusion for every given data voxel
-        :param verbose: set to true to show a progress bar
-        :param cpus: Number of cpu workers to use
-        :param desc: description for the progress bar
-        :return: array of per white matter voxel shore coefficients
-        """
-        chunksize = max(1, int(np.prod(data.shape[:-1]) / 1000))  # 1000 chunks for the progressbar to run smoother
-
-        if sys.version_info[0] < 3:
-            shore_coeff = list(tqdm(it.imap(self._reorient_response_helper, zip(list(data), list(vecs))),
-                                    total=np.prod(data.shape[:-1]),
-                                    disable=not verbose,
-                                    desc=desc))
-        else:
-            with mp.Pool(cpus) as p:
-                shore_coeff = list(tqdm(p.imap(self._reorient_response_helper, zip(list(data), list(vecs)), chunksize),
+                shore_coeff = list(tqdm(p.imap(self._fit_shore_helper, zip(list(data), list(vecs)), chunksize),
                                         total=np.prod(data.shape[:-1]),
                                         disable=not verbose,
                                         desc=desc))
