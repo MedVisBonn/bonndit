@@ -46,7 +46,7 @@ gtab = fsl_to_worldspace(data.affine, gtab)
 dti_vecs = fsl_flip_signs_vec(dti_vecs)
 
 model = mtShoreModel(gtab)
-fit = model.fit(data, dti_vecs, wm_mask, gm_mask, csf_mask)
+fit = model.fit_tissue_responses(data, dti_vecs, wm_mask, gm_mask, csf_mask)
 
 reference_fit = mtShoreFit.load(SHORE_FIT_TEST)
 
@@ -80,7 +80,8 @@ def test_ShoreModel_signal_wm():
     """
 
     model = mtShoreModel(gtab)
-    fit = model.fit(data, dti_vecs, wm_mask, gm_mask, csf_mask)
+    fit = model.fit_tissue_responses(
+        data, dti_vecs, wm_mask, gm_mask, csf_mask)
     assert (
         (reference_fit.signal_wm - fit.signal_wm) / reference_fit.signal_wm <
         ALLOWED_ERROR).all()
