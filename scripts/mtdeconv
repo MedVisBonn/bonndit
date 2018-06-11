@@ -178,14 +178,14 @@ def main():
 
         else:
             model = mtShoreModel(gtab, args.order, args.zeta, args.tau)
-            fit = model.fit(data, dti_vecs, wm_mask, gm_mask, csf_mask, verbose=args.verbose, cpus=args.workers)
+            fit = model.fit_tissue_responses(data, dti_vecs, wm_mask, gm_mask, csf_mask, verbose=args.verbose, cpus=args.workers)
             fit.save(os.path.join(outdir, "response.npz"))
             logging.info('Response functions estimated and saved.')
 
     # Force recalculate the response if response only is specified
     else:
         model = mtShoreModel(gtab, args.order, args.zeta, args.tau)
-        fit = model.fit(data, dti_vecs, wm_mask, gm_mask, csf_mask, verbose=args.verbose)
+        fit = model.fit_tissue_responses(data, dti_vecs, wm_mask, gm_mask, csf_mask, verbose=args.verbose)
         fit.save(os.path.join(outdir, "response.npz"))
         logging.info('Response functions recalculated and saved.')
 

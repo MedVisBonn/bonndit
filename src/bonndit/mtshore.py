@@ -117,7 +117,7 @@ class mtShoreModel(object):
         with np.errstate(divide='ignore', invalid='ignore'):
             return shore_accum / accum_count
 
-    def _fit_shore_helper(self, data_vecs, kwargs):
+    def _fit_shore_helper(self, data_vecs, kwargs={}):
         """ This is a helper function for parallelizing the fitting of shore coefficients. First it checks whether the
         default shore matrix can be use or if a vector is specified to first rotate the gradient table and compute a
         custom shore matrix for the voxel.
