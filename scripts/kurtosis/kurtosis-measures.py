@@ -5,12 +5,14 @@
 # Authors: Thomas Schultz, Michael Ankele
 
 from __future__ import print_function, division
-import nibabel as nib
-import numpy as np
+
 import argparse
 import math
-import mpmath as mp
 import os
+
+import mpmath as mp
+import nibabel as nib
+import numpy as np
 
 parser = argparse.ArgumentParser(description='Compute invariants of DKI model.')
 parser.add_argument('infile', help='Path to DKI parameter file')
@@ -192,6 +194,9 @@ for x in range(NX):
             kr[x, y, z] = radialKurtosis(lambdas, W)
 
             if args.kappa:
+                # The given formulas need the the fiber to be oriented along the z-axis. Therefore we need to rotate the
+                # kurtosis tensor
+                W =
                 kappa_radial[x, y, z] = radial_kappa(dm[x, y, z], W)
                 kappa_axial[x, y, z] = axial_kappa(dm[x, y, z], W)
                 kappa_diamond[x, y, z] = diamond_kappa(dm[x, y, z], W)

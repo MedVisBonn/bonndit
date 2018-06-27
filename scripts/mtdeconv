@@ -8,17 +8,16 @@ Compute fiber orientation distribution functions for diffusion weighted MRI data
 """
 
 import argparse
-import os
 import logging
+import os
 
 import nibabel as nib
 import numpy as np
 from dipy.core.gradients import gradient_table
 from dipy.io import read_bvals_bvecs
 
-import bonndit.mtshore as bdshore
-from bonndit import mtShoreModel, mtShoreFit
-from bonndit.io import fsl_flip_signs_vec, fsl_to_worldspace
+import bonndit as bd
+from bonndit.io import fsl_vectors_to_worldspace, fsl_gtab_to_worldspace
 from bonndit.michi import fields, dwmri
 
 
@@ -136,10 +135,10 @@ def main():
     # Load DTI mask
     dti_mask = nib.load(os.path.join(indir, args.brainmask))
 
-    # Load and adjust tissue segmentation masks
+    # Load tissue segmentation masks
     csf_mask = nib.load(os.path.join(indir, args.csfmask))
     gm_mask = nib.load(os.path.join(indir, args.gmmask))
-    wm_mask = nib.load(os.path.join(indir, args.csfmask))
+    wm_mask = nib.load(os.path.join(indir, args.wmmask))
 
     # Load first eigenvectors of a precalculated diffusion tensor
     dti_vecs = nib.load(os.path.join(indir, args.dtivecs))
@@ -154,17 +153,20 @@ def main():
 
     logging.info('Input loaded.')
 
+    # Create tissue masks based on fractional anisotropy values
+    wm_mask, gm_mask, csf_mask = bd.mtshore.dti_masks(wm_mask, gm_mask, csf_mask,
+                                                      dti_fa, dti_mask, args.fawm)
+    logging.info('Fractional anisotropy based tissue masks created.')
+
     # Flip sign of x-coordinate if affine determinant is positive and rotate to worldspace
-    gtab = fsl_to_worldspace(data.affine, gtab)
-    dti_vecs = fsl_flip_signs_vec(dti_vecs)
+    gtab = fsl_gtab_to_worldspace(gtab, data.affine)
+    dti_vecs = fsl_vectors_to_worldspace(dti_vecs)
     logging.info('Rotation to worldspace finished')
 
     # We need this Meta object for saving later
     _, _, meta = dwmri.load(os.path.join(indir, args.data))
 
-    wm_mask, gm_mask, csf_mask = bdshore.dti_masks(wm_mask, gm_mask, csf_mask,
-                                                   dti_fa, dti_mask, args.fawm)
-    logging.info('Fractional anisotropy based tissue masks created.')
+
     if args.tissuemasks:
         nib.save(wm_mask, os.path.join(args.outdir, 'wm_mask.nii.gz'))
         nib.save(gm_mask, os.path.join(args.outdir, 'gm_mask.nii.gz'))
@@ -173,19 +175,20 @@ def main():
     # Check if response is already in the output folder
     if not args.responseonly:
         if os.path.exists(os.path.join(outdir, "response.npz")):
-            fit = mtShoreFit.load(os.path.join(outdir, "response.npz"))
+            fit = bd.mtShoreFit.load(os.path.join(outdir, "response.npz"))
             logging.info('Existing response functions loaded.')
 
         else:
-            model = mtShoreModel(gtab, args.order, args.zeta, args.tau)
+            model = bd.mtShoreModel(gtab, args.order, args.zeta, args.tau)
             fit = model.fit_tissue_responses(data, dti_vecs, wm_mask, gm_mask, csf_mask, verbose=args.verbose, cpus=args.workers)
             fit.save(os.path.join(outdir, "response.npz"))
             logging.info('Response functions estimated and saved.')
 
     # Force recalculate the response if response only is specified
     else:
-        model = mtShoreModel(gtab, args.order, args.zeta, args.tau)
-        fit = model.fit_tissue_responses(data, dti_vecs, wm_mask, gm_mask, csf_mask, verbose=args.verbose)
+        model = bd.mtShoreModel(gtab, args.order, args.zeta, args.tau)
+        fit = model.fit_tissue_responses(data, dti_vecs, wm_mask, gm_mask, csf_mask, verbose=args.verbose,
+                                         cpus=args.workers)
         fit.save(os.path.join(outdir, "response.npz"))
         logging.info('Response functions recalculated and saved.')
 

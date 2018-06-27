@@ -11,7 +11,7 @@ from dipy.io import read_bvals_bvecs
 
 import bonndit.mtshore as bdshore
 from bonndit import mtShoreModel, mtShoreFit
-from bonndit.io import fsl_flip_signs_vec, fsl_to_worldspace
+from bonndit.io import fsl_gtab_to_worldspace, fsl_vectors_to_worldspace
 from .constants import DATA_DIR, SHORE_FIT_TEST
 
 # Load fractional anisotropy
@@ -41,15 +41,15 @@ gtab = gradient_table(bvals, bvecs)
 
 
 # Rotation to worldspace and sign flip according to fsl documentation
-gtab = fsl_to_worldspace(data.affine, gtab)
-dti_vecs = fsl_flip_signs_vec(dti_vecs)
+gtab = fsl_gtab_to_worldspace(gtab, data.affine)
+dti_vecs = fsl_vectors_to_worldspace(dti_vecs)
 
 model = mtShoreModel(gtab)
 fit = model.fit_tissue_responses(data, dti_vecs, wm_mask, gm_mask, csf_mask)
 
 reference_fit = mtShoreFit.load(SHORE_FIT_TEST)
 
-ALLOWED_ERROR = 1e-9
+ALLOWED_ERROR = 1e-7
 def test_ShoreModel_signal_csf():
     """ Here we test the calculation of the response functions
     The result calculated with bonndit are compared to results from the old code

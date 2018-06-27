@@ -117,13 +117,12 @@ class mtShoreModel(object):
         with np.errstate(divide='ignore', invalid='ignore'):
             return shore_accum / accum_count
 
-    def _fit_shore_helper(self, data_vecs, kwargs={}):
+    def _fit_shore_helper(self, data_vecs, rcond=None):
         """ This is a helper function for parallelizing the fitting of shore coefficients. First it checks whether the
         default shore matrix can be use or if a vector is specified to first rotate the gradient table and compute a
         custom shore matrix for the voxel.
 
         :param data_vecs: tuple with DWI signal as first entry and a vector or None as second entry
-        :param kwargs: keyword arguments passed to numpy.linalg.lstsq
         :return: fitted shore coefficients
         """
 
@@ -136,7 +135,7 @@ class mtShoreModel(object):
         else:
             shore_m = self.shore_m
 
-        return la.lstsq(shore_m, signal, **kwargs)[0]
+        return la.lstsq(shore_m, signal, rcond)[0]
 
     def fit_shore(self, data, vecs=None, verbose=False, cpus=None, desc=''):
         """ Fit coefficients of a shore model to diffusion weighted imaging data. If an array of vectors is specified
@@ -156,7 +155,7 @@ class mtShoreModel(object):
 
         # If no vectors are specified create array of Nones for use in the iteration.
         if type(vecs) != np.ndarray and vecs is None:
-            vecs = np.full(data.shape[:-1], None)
+            vecs = np.empty(data.shape[:-1], dtype=object)
 
         # Iterate over the data indices; show progress with tqdm; multiple processes for python > 3
         if sys.version_info[0] < 3:
@@ -302,7 +301,7 @@ class mtShoreFit(object):
 
         for i in np.ndindex(*data.shape[:-1]):
             signal = data[i]
-            deconvolution_result[i] = la.lstsq(conv_matrix, signal, rcond=-1)[0]
+            deconvolution_result[i] = la.lstsq(conv_matrix, signal, rcond=None)[0]
 
         return deconvolution_result
 
