@@ -5,23 +5,23 @@
 # Authors: Thomas Schultz, Michael Ankele
 
 from __future__ import print_function, division
-import nibabel as nib
-import numpy as np
+
 import argparse
 import math
-import mpmath as mp
 import os
 
-parser = argparse.ArgumentParser(
-    description='Compute invariants of DKI model.')
+import mpmath as mp
+import nibabel as nib
+import numpy as np
+
+parser = argparse.ArgumentParser(description='Compute invariants of DKI model.')
 parser.add_argument('infile', help='Path to DKI parameter file')
 parser.add_argument('out', help='Path for the output files')
 parser.add_argument('-v', '--verbose', action='store_true',
                     help='Flag for verbose output')
 
-parser.add_argument(
-    '-k', '--kappa', action='store_true',
-    help='Additionally compute axial, radial and diamond kappa')
+parser.add_argument('-k', '--kappa', action='store_true',
+                    help='Additionally compute axial, radial and diamond kappa')
 args = parser.parse_args()
 
 
@@ -35,8 +35,7 @@ def alpha(x):
 def H(a, c):
     if a == c:
         return 1.0 / 15.0
-    return (a + 2 * c) ** 2 / (144 * c * c * (a - c) ** 2) \
-        * (c * (a + 2 * c) + a * (a - 4 * c) * alpha(1 - a / c))
+    return (a + 2 * c) ** 2 / (144 * c * c * (a - c) ** 2) * (c * (a + 2 * c) + a * (a - 4 * c) * alpha(1 - a / c))
 
 
 def F1(a, b, c):
@@ -45,55 +44,37 @@ def F1(a, b, c):
     if a == c:
         return 3 * H(b, a)
     return (a + b + c) ** 2 / (18 * (a - b) * (a - c)) * (
-        math.sqrt(b * c) / a * float(
-            mp.elliprf(
-                a / b, a / c,
-                1)) + (3 * a ** 2 - a * b - a * c - b * c) / (
-            3 * a * math.sqrt(b * c)) * float(mp.elliprd(a / b, a / c, 1)) - 1)
+            math.sqrt(b * c) / a * float(mp.elliprf(a / b, a / c, 1)) + (3 * a ** 2 - a * b - a * c - b * c) / (
+                3 * a * math.sqrt(b * c)) * float(mp.elliprd(a / b, a / c, 1)) - 1)
 
 
 def F2(a, b, c):
     if b == c:
         return 6 * H(a, c)
     return (a + b + c) ** 2 / (3 * (b - c) ** 2) * (
-        (b + c) / (math.sqrt(b * c)) * float(
-            mp.elliprf(
-                a / b, a / c,
-                1)) + (2 * a - b - c) / (
-            3 * math.sqrt(b * c)) * float(mp.elliprd(a / b, a / c, 1)) - 2)
+            (b + c) / (math.sqrt(b * c)) * float(mp.elliprf(a / b, a / c, 1)) + (2 * a - b - c) / (
+                3 * math.sqrt(b * c)) * float(mp.elliprd(a / b, a / c, 1)) - 2)
 
 
 def G1(a, b, c):
     if b == c:
         return (a + 2 * b) ** 2 / (24 * b * b)
-    return (a + b + c) ** 2 / (18 * b * (b - c) ** 2) \
-        * (2 * b + c * (c - 3 * b) / (math.sqrt(b * c)))
+    return (a + b + c) ** 2 / (18 * b * (b - c) ** 2) * (2 * b + c * (c - 3 * b) / (math.sqrt(b * c)))
 
 
 def G2(a, b, c):
     if b == c:
         return (a + 2 * b) ** 2 / (12 * b * b)
-    return (a + b + c) ** 2 / (3 * (b - c) ** 2) \
-        * ((b + c) / (math.sqrt(b * c)) - 2)
+    return (a + b + c) ** 2 / (3 * (b - c) ** 2) * ((b + c) / (math.sqrt(b * c)) - 2)
 
 
 def axialKurtosis(lambdas, W):
-    return (
-        (lambdas[0] + lambdas[1] + lambdas[2]) ** 2
-        / (9 * lambdas[2] ** 2)) * W[14]
+    return ((lambdas[0] + lambdas[1] + lambdas[2]) ** 2 / (9 * lambdas[2] ** 2)) * W[14]
 
 
 def radialKurtosis(lambdas, W):
-    return G1(
-        lambdas[2],
-        lambdas[1],
-        lambdas[0]) * W[10] + G1(
-        lambdas[2],
-        lambdas[0],
-        lambdas[1]) * W[0] + G2(
-        lambdas[2],
-        lambdas[1],
-        lambdas[0]) * W[3]
+    return G1(lambdas[2], lambdas[1], lambdas[0]) * W[10] + G1(lambdas[2], lambdas[0], lambdas[1]) * W[0] + G2(
+        lambdas[2], lambdas[1], lambdas[0]) * W[3]
 
 
 def radial_kappa(lambda_mean, W):
@@ -136,22 +117,8 @@ def meanKurtosis(lambdas, W):
     return r
 
 
-ix4 = [
-    [0, 0, 0, 0],
-    [0, 0, 0, 1],
-    [0, 0, 0, 2],
-    [0, 0, 1, 1],
-    [0, 0, 1, 2],
-    [0, 0, 2, 2],
-    [0, 1, 1, 1],
-    [0, 1, 1, 2],
-    [0, 1, 2, 2],
-    [0, 2, 2, 2],
-    [1, 1, 1, 1],
-    [1, 1, 1, 2],
-    [1, 1, 2, 2],
-    [1, 2, 2, 2],
-    [2, 2, 2, 2]]
+ix4 = [[0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 0, 2], [0, 0, 1, 1], [0, 0, 1, 2], [0, 0, 2, 2], [0, 1, 1, 1], [0, 1, 1, 2],
+       [0, 1, 2, 2], [0, 2, 2, 2], [1, 1, 1, 1], [1, 1, 1, 2], [1, 1, 2, 2], [1, 2, 2, 2], [2, 2, 2, 2]]
 
 invix4 = np.zeros((3, 3, 3, 3), dtype=np.int)
 for i in range(3):
@@ -172,11 +139,8 @@ def rotT4Sym(W, L):
             for jj in range(3):
                 for kk in range(3):
                     for ll in range(3):
-                        rotmat[idx, invix4[ii, jj, kk, ll]] += L[
-                            ii,
-                            ix4[idx][0]] * L[jj, ix4[idx][1]] * L[
-                            kk,
-                            ix4[idx][2]] * L[ll, ix4[idx][3]]
+                        rotmat[idx, invix4[ii, jj, kk, ll]] += L[ii, ix4[idx][0]] * L[jj, ix4[idx][1]] * L[
+                            kk, ix4[idx][2]] * L[ll, ix4[idx][3]]
     return np.dot(rotmat, W)
 
 
@@ -208,20 +172,9 @@ for x in range(NX):
                 continue
 
             # we need DTI eigensystem
-            T = np.array(
-                [
-                    [
-                        data[x, y, z, 1],
-                        data[x, y, z, 2],
-                        data[x, y, z, 3]],
-                    [
-                        data[x, y, z, 2],
-                        data[x, y, z, 4],
-                        data[x, y, z, 5]],
-                    [
-                        data[x, y, z, 3],
-                        data[x, y, z, 5],
-                        data[x, y, z, 6]]])
+            T = np.array([[data[x, y, z, 1], data[x, y, z, 2], data[x, y, z, 3]],
+                          [data[x, y, z, 2], data[x, y, z, 4], data[x, y, z, 5]],
+                          [data[x, y, z, 3], data[x, y, z, 5], data[x, y, z, 6]]])
             # lambdas are in *ascending* order
             (lambdas, vs) = np.linalg.eigh(T)
             # clamp lambdas to avoid numerical trouble
@@ -231,11 +184,8 @@ for x in range(NX):
             dr[x, y, z] = 0.5 * (lambdas[0] + lambdas[1])
             dm[x, y, z] = np.mean(lambdas)
             fa[x, y, z] = math.sqrt(
-                (
-                    (lambdas[0] - lambdas[1]) ** 2 +
-                    (lambdas[1] - lambdas[2]) ** 2
-                    + (lambdas[2] - lambdas[0]) ** 2) /
-                (lambdas[0] ** 2 + lambdas[1] ** 2 + lambdas[2] ** 2) / 2)
+                ((lambdas[0] - lambdas[1]) ** 2 + (lambdas[1] - lambdas[2]) ** 2 + (lambdas[2] - lambdas[0]) ** 2) / (
+                        lambdas[0] ** 2 + lambdas[1] ** 2 + lambdas[2] ** 2) / 2)
             # rotate kurtosis tensor into eigensystem
             W = rotT4Sym(data[x, y, z, 7:], vs)
 
@@ -244,6 +194,9 @@ for x in range(NX):
             kr[x, y, z] = radialKurtosis(lambdas, W)
 
             if args.kappa:
+                # The given formulas need the the fiber to be oriented along the z-axis. Therefore we need to rotate the
+                # kurtosis tensor
+                W =
                 kappa_radial[x, y, z] = radial_kappa(dm[x, y, z], W)
                 kappa_axial[x, y, z] = axial_kappa(dm[x, y, z], W)
                 kappa_diamond[x, y, z] = diamond_kappa(dm[x, y, z], W)
