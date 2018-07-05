@@ -22,21 +22,54 @@ from .gradients import gtab_reorient
 
 
 class mtShoreModel(object):
+
     """ Model the diffusion imaging signal using the shore basis functions.
+
+    The main purpose of this class is to estimate tissue response functions
+    for white matter, gray matter and cerebrospinal fluid which are returned
+    as a mtShoreFit object which enables multi-tissue multi-shell
+    deconvolution as described in [1]_.
+
+    The method for fitting arbitrary data to a shore model is also exposed to
+    the user and returns a np.ndarray object holding the estimated shore
+    coefficients. We want to make your computations fast by default, hence if
+    you use python >= 3, by default all CPUs are used for the computations of
+    response functions.
+
+    References
+    ----------
+    .. [1] M. Ankele, L. Lim, S. Groeschel and T. Schultz; "Versatile, Robust
+    and Efficient Tractography With Constrained Higher-Order Tensor fODFs";
+    Int J Comput Assist Radiol Surg. 2017 Aug; 12(8):1257-1270;
+    doi: 10.1007/s11548-017-1593-6
     """
+
     def __init__(self, gtab, order=4, zeta=700, tau=1 / (4 * np.pi ** 2)):
+        """
+
+        :param gtab:
+        :param order:
+        :param zeta:
+        :param tau:
+        """
         self.gtab = gtab
         self.order = order
         self.zeta = zeta
         self.tau = tau
 
-        # Ignore division by zero warning dipy.core.geometry.cart2sphere -> theta = np.arccos(z / r)
+        # Ignore division by zero warning
+        # dipy.core.geometry.cart2sphere -> theta = np.arccos(z / r)
         with np.errstate(divide='ignore', invalid='ignore'):
-            self.shore_m = shore_matrix(self.order, self.zeta, self.gtab, self.tau)
+            self.shore_m = shore_matrix(self.order, self.zeta, self.gtab,
+                                        self.tau)
 
-    def fit_tissue_responses(self, data, dti_vecs, wm_mask, gm_mask, csf_mask, verbose=False, cpus=None):
-        """ Compute tissue response functions. Shore coefficients are fitted for white matter, gray matter and
-        cerebrospinal fluid separately. The averaged and compressed coefficients are returned in a mtShoreFit object.
+    def fit_tissue_responses(self, data, dti_vecs, wm_mask, gm_mask, csf_mask,
+                             verbose=False, cpus=None):
+        """ Compute tissue response functions.
+
+        Shore coefficients are fitted for white matter, gray matter and
+        cerebrospinal fluid separately. The averaged and compressed
+        coefficients are returned in a mtShoreFit object.
 
         :param data: diffusion weighted data
         :param dti_vecs: first eigenvector of a precalculated diffusion tensor
@@ -55,32 +88,39 @@ class mtShoreModel(object):
             raise ValueError('No gray matter voxels specified by gm_mask. '
                              'A corresponding response can not be computed.')
         if np.sum(csf_mask.get_data()) < 1:
-            raise ValueError('No cerebrospinal fluid voxels specified by csf_mask. '
+            raise ValueError('No CSF voxels specified by csf_mask. '
                              'A corresponding response can not be computed.')
 
         # Calculate wm response
         wm_voxels = data.get_data()[wm_mask.get_data() == 1]
         wm_vecs = dti_vecs.get_data()[wm_mask.get_data() == 1]
-        wmshore_coeffs = self.fit_shore(wm_voxels, wm_vecs, verbose=verbose, cpus=cpus, desc='WM response')
+        wmshore_coeffs = self.fit_shore(wm_voxels, wm_vecs, verbose=verbose,
+                                        cpus=cpus, desc='WM response')
         wmshore_coeff = self.shore_accumulate(wmshore_coeffs)
         signal_wm = self.shore_compress(wmshore_coeff)
 
         # Calculate gm response
         gm_voxels = data.get_data()[gm_mask.get_data() == 1]
-        gmshore_coeffs = self.fit_shore(gm_voxels, verbose=verbose, cpus=cpus, desc='GM response')
+        gmshore_coeffs = self.fit_shore(gm_voxels, verbose=verbose,
+                                        cpus=cpus, desc='GM response')
         gmshore_coeff = self.shore_accumulate(gmshore_coeffs)
         signal_gm = self.shore_compress(gmshore_coeff)
 
         # Calculate csf response
         csf_voxels = data.get_data()[csf_mask.get_data() == 1]
-        csfshore_coeffs = self.fit_shore(csf_voxels, verbose=verbose, cpus=cpus, desc='CSF response')
+        csfshore_coeffs = self.fit_shore(csf_voxels, verbose=verbose,
+                                         cpus=cpus, desc='CSF response')
         csfshore_coeff = self.shore_accumulate(csfshore_coeffs)
         signal_csf = self.shore_compress(csfshore_coeff)
 
         return mtShoreFit(self, [signal_csf, signal_gm, signal_wm])
 
     def shore_compress(self, coefs):
-        """ "kernel": only use z-rotational part
+        """ Compress the shore coefficients
+
+        An axial symetric response function aligned to the z-axis can be
+        described fully using only the z-rotational part of the shore
+        coefficients.
 
         :param coefs: shore coefficients
         :return: z-rotational part of the shore coefficients
@@ -96,8 +136,9 @@ class mtShoreModel(object):
         return r
 
     def shore_accumulate(self, shore_coeff):
-        """ Average over array of shore coefficients. This is used to determine the average response of a
-        specific tissue.
+        """ Average over array of shore coefficients.
+
+        This is used to determine the average response of a specific tissue.
 
         :param shore_coeff: array of per voxel shore coefficients
         :return: averaged shore coefficients
@@ -118,11 +159,15 @@ class mtShoreModel(object):
             return shore_accum / accum_count
 
     def _fit_shore_helper(self, data_vecs, rcond=None):
-        """ This is a helper function for parallelizing the fitting of shore coefficients. First it checks whether the
-        default shore matrix can be use or if a vector is specified to first rotate the gradient table and compute a
-        custom shore matrix for the voxel.
+        """ Fit shore coefficients to diffusion weighted imaging data.
 
-        :param data_vecs: tuple with DWI signal as first entry and a vector or None as second entry
+        This is a helper function for parallelizing the fitting of shore
+        coefficients. First it checks whether the default shore matrix can be
+        used or if a vector is specified to first rotate the gradient table
+        and compute a custom shore matrix for the voxel.
+
+        :param data_vecs: tuple with DWI signal as first entry and a vector or
+        None as second entry
         :return: fitted shore coefficients
         """
 
@@ -130,7 +175,9 @@ class mtShoreModel(object):
 
         if vec is not None:
             with np.errstate(divide='ignore', invalid='ignore'):
-                shore_m = shore_matrix(self.order, self.zeta, gtab_reorient(self.gtab, vec), self.tau)
+                shore_m = shore_matrix(self.order, self.zeta,
+                                       gtab_reorient(self.gtab, vec),
+                                       self.tau)
 
         else:
             shore_m = self.shore_m
@@ -138,34 +185,44 @@ class mtShoreModel(object):
         return la.lstsq(shore_m, signal, rcond)[0]
 
     def fit_shore(self, data, vecs=None, verbose=False, cpus=None, desc=''):
-        """ Fit coefficients of a shore model to diffusion weighted imaging data. If an array of vectors is specified
-        (vecs), the gradient table is rotated such that the vector lands on the z-axis. This can be used to compute
-        comparable shore coefficients for white matter regions of different orientation. Therefor use the first
-        eigenvectors of precomputed diffusion tensors as vectors and use only regions with high fractional anisotropy to
-        ensure working only with single fiber voxels.
+        """ Fit shore coefficients to diffusion weighted imaging data.
+
+        If an array of vectors is specified (vecs), the gradient table is
+        rotated with a affine matirx which would align the vector to the
+        z-axis. This can be used to compute comparable shore coefficients for
+        white matter regions of different orientation. Use the first
+        eigenvectors of precomputed diffusion tensors as vectors and use only
+        regions with high fractional anisotropy to ensure working only with
+        single fiber voxels.
 
         :param data: ndarray with DWI data
-        :param vecs: array which specifies for every data point a vector which is rotated on the z-axis
+        :param vecs: ndarray which specifies for every data point the main
+        direction of diffusion (e.g. first eigenvector of the diffusion tensor)
         :param verbose: set to true to show a progress bar
         :param cpus: Number of cpu workers to use
         :param desc: description for the progress bar
         :return:  array of per voxel shore coefficients
         """
-        chunksize = max(1, int(np.prod(data.shape[:-1]) / 1000))  # 1000 chunks for the progressbar to run smoother
+        # 1000 chunks for the progressbar to run smoother
+        chunksize = max(1, int(np.prod(data.shape[:-1]) / 1000))
 
-        # If no vectors are specified create array of Nones for use in the iteration.
+        # If no vectors are specified create array of Nones for iteration.
         if type(vecs) != np.ndarray and vecs is None:
             vecs = np.empty(data.shape[:-1], dtype=object)
 
-        # Iterate over the data indices; show progress with tqdm; multiple processes for python > 3
+        # Iterate over the data indices; show progress with tqdm
+        # multiple processes for python > 3
         if sys.version_info[0] < 3:
-            shore_coeff = list(tqdm(it.imap(self._fit_shore_helper, zip(list(data), list(vecs))),
+            shore_coeff = list(tqdm(it.imap(self._fit_shore_helper,
+                                            zip(list(data), list(vecs))),
                                     total=np.prod(data.shape[:-1]),
                                     disable=not verbose,
                                     desc=desc))
         else:
             with mp.Pool(cpus) as p:
-                shore_coeff = list(tqdm(p.imap(self._fit_shore_helper, zip(list(data), list(vecs)), chunksize),
+                shore_coeff = list(tqdm(p.imap(self._fit_shore_helper,
+                                               zip(list(data), list(vecs)),
+                                               chunksize),
                                         total=np.prod(data.shape[:-1]),
                                         disable=not verbose,
                                         desc=desc))
@@ -184,17 +241,21 @@ class mtShoreFit(object):
         self.zeta = model.zeta
         self.tau = model.tau
 
-        # Get deconvolution kernels (Kernel_ln)
-        self.kernel_csf = shore.signal_to_kernel(self.signal_csf, self.order, self.order)
-        self.kernel_gm = shore.signal_to_kernel(self.signal_gm, self.order, self.order)
-        self.kernel_wm = shore.signal_to_kernel(self.signal_wm, self.order, self.order)
+        # Get deconvolution kernels
+        self.kernel_csf = shore.signal_to_kernel(self.signal_csf, self.order,
+                                                 self.order)
+        self.kernel_gm = shore.signal_to_kernel(self.signal_gm, self.order,
+                                                self.order)
+        self.kernel_wm = shore.signal_to_kernel(self.signal_wm, self.order,
+                                                self.order)
 
     @classmethod
     def load(cls, filepath):
         """ Load a precalculated mtShoreFit object from a file.
 
         :param filepath: path to the saved mtShoreFit object
-        :return: mtShoreFit object which contains response functions for wm, gm and csf
+        :return: mtShoreFit object which contains response functions for white
+        matter, gray matter and CSF
         """
         response = np.load(filepath)
 
@@ -217,8 +278,7 @@ class mtShoreFit(object):
                  zeta=self.zeta, tau=self.tau, order=self.order, bvals=self.gtab.bvals, bvecs=self.gtab.bvecs)
 
     def fodf(self, data, pos='hpsd', mask=None, verbose=False, cpus=None):
-        """ Multi tissue deconvolution [1]_,
-
+        """ Multi tissue multi shell deconvolution [1]_.
 
         :param data: diffusion weighted data
         :param pos: constraint choose between hpsd, nonneg and none
@@ -230,8 +290,9 @@ class mtShoreFit(object):
 
         References
         ----------
-        .. [1] M. Ankele, L. Lim, S. Groeschel and T. Schultz; "Versatile, Robust and Efficient Tractography
-        With Constrained Higher-Order Tensor fODFs"; Int J Comput Assist Radiol Surg. 2017 Aug; 12(8):1257-1270;
+        .. [1] M. Ankele, L. Lim, S. Groeschel and T. Schultz; "Versatile, Robust
+        and Efficient Tractography With Constrained Higher-Order Tensor fODFs";
+        Int J Comput Assist Radiol Surg. 2017 Aug; 12(8):1257-1270;
         doi: 10.1007/s11548-017-1593-6
         """
 
@@ -246,33 +307,38 @@ class mtShoreFit(object):
         mask = np.ma.make_mask(mask)
 
         # Create convolution matrix
-        conv_matrix = self.shore_convolution_matrix()
+        conv_mat = self.shore_convolution_matrix()
         with np.errstate(divide='ignore', invalid='ignore'):
-            logging.debug('Condition number of convolution matrtix:', la.cond(conv_matrix))
+            logging.debug('Condition number of convolution matrtix:',
+                          la.cond(conv_mat))
 
-        chunksize = max(1, int(np.prod(data.shape[:-1]) / 1000))  # 100 chunks for the progressbar to run smoother
+        # 100 chunks for the progressbar to run smoother
+        chunksize = max(1, int(np.prod(data.shape[:-1]) / 1000))
 
         # TODO: consider additional Tikhonov regularization
         # Deconvolve the DWI signal
-        deconv = {'none': self.deconvolve, 'hpsd': self.deconvolve_hpsd, 'nonneg': self.deconvolve_nonneg}
+        deconv = {'none': self.deconvolve, 'hpsd': self.deconvolve_hpsd,
+                  'nonneg': self.deconvolve_nonneg}
         data = data[mask, :]
         try:
             func = deconv[pos]
             if sys.version_info[0] < 3:
-                result = list(tqdm(it.imap(partial(func, conv_matrix=conv_matrix), data),
+                result = list(tqdm(it.imap(partial(func, conv_matrix=conv_mat),
+                                           data),
                                    total=np.prod(data.shape[:-1]),
                                    disable=not verbose,
                                    desc='Optimization'))
             else:
                 with mp.Pool(cpus) as p:
-                    result = list(tqdm(p.imap(partial(func, conv_matrix=conv_matrix),
+                    result = list(tqdm(p.imap(partial(func,
+                                                      conv_matrix=conv_mat),
                                               data, chunksize=chunksize),
                                        total=np.prod(data.shape[:-1]),
                                        disable=not verbose,
                                        desc='Optimization'))
         except KeyError:
-            raise ValueError(('"{}" is not supported as a constraint,' +
-                             ' please choose from [hpsd, nonneg, none]').format(pos))
+            raise ValueError(('"{}" is not supported as a constraint, please' +
+                              ' choose from [hpsd, nonneg, none]').format(pos))
 
         # Return fODFs and Volume fractions as separate numpy.ndarray objects
         NN = esh.LENGTH[self.order]
@@ -301,7 +367,8 @@ class mtShoreFit(object):
 
         for i in np.ndindex(*data.shape[:-1]):
             signal = data[i]
-            deconvolution_result[i] = la.lstsq(conv_matrix, signal, rcond=None)[0]
+            deconvolution_result[i] = la.lstsq(conv_matrix, signal,
+                                               rcond=None)[0]
 
         return deconvolution_result
 
@@ -317,7 +384,8 @@ class mtShoreFit(object):
 
         cvxopt.solvers.options['show_progress'] = False
         # set up QP problem from normal equations
-        P = cvxopt.matrix(np.ascontiguousarray(np.dot(conv_matrix.T, conv_matrix)))
+        P = cvxopt.matrix(np.ascontiguousarray(np.dot(conv_matrix.T,
+                                                      conv_matrix)))
 
         # positive definiteness constraint on ODF
         ind = tensor.H_index_matrix(self.order).reshape(-1)
@@ -345,7 +413,8 @@ class mtShoreFit(object):
 
         for i in np.ndindex(*data.shape[:-1]):
             signal = data[i]
-            q = cvxopt.matrix(np.ascontiguousarray(-1 * np.dot(conv_matrix.T, signal)))
+            q = cvxopt.matrix(np.ascontiguousarray(-1 * np.dot(conv_matrix.T,
+                                                               signal)))
 
             # NS = len(np.array(T{4,6,8}.TT).reshape(-1))
             NS = tensor.LENGTH[self.order // 2]
@@ -435,7 +504,11 @@ class mtShoreFit(object):
 
 
 def dti_masks(wm_mask, gm_mask, csf_mask, dti_fa, dti_mask=None, fawm=0.7):
-    """ Use precalculated fractional anisotropy values for example from DTI to create tissue masks.
+    """ Create FA guided tissue masks.
+
+    Use precalculated fractional anisotropy values for example from DTI to
+    create tissue masks which contain mainly a single tissue. These masks can
+    be used to calculate shore response functions for the individual tissues.
 
     :param wm_mask: white matter mask
     :param gm_mask: gray matter mask
@@ -457,13 +530,16 @@ def dti_masks(wm_mask, gm_mask, csf_mask, dti_fa, dti_mask=None, fawm=0.7):
     # Create masks
     # WM
     wm = wm_mask.get_data()
-    dti_wm = np.logical_and(dti_mask, np.logical_and(wm > 0.95, fa > float(fawm))).astype('int')
+    wm_by_fa = np.logical_and(wm > 0.95, fa > float(fawm))
+    dti_wm = np.logical_and(dti_mask, wm_by_fa).astype('int')
     # GM
     gm = gm_mask.get_data()
-    dti_gm = np.logical_and(dti_mask, np.logical_and(gm > 0.95, fa < 0.2)).astype('int')
+    gm_by_fa = np.logical_and(gm > 0.95, fa < 0.2)
+    dti_gm = np.logical_and(dti_mask, gm_by_fa).astype('int')
     # CSF
     csf = csf_mask.get_data()
-    dti_csf = np.logical_and(dti_mask, np.logical_and(csf > 0.95, fa < 0.2)).astype('int')
+    csf_by_fa = np.logical_and(csf > 0.95, fa < 0.2)
+    dti_csf = np.logical_and(dti_mask, csf_by_fa).astype('int')
 
     wm_img = nib.Nifti1Image(dti_wm, wm_mask.affine)
     gm_img = nib.Nifti1Image(dti_gm, gm_mask.affine)
