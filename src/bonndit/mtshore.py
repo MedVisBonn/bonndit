@@ -188,7 +188,7 @@ class mtShoreModel(object):
         """ Fit shore coefficients to diffusion weighted imaging data.
 
         If an array of vectors is specified (vecs), the gradient table is
-        rotated with a affine matirx which would align the vector to the
+        rotated with an affine matrix which would align the vector to the
         z-axis. This can be used to compute comparable shore coefficients for
         white matter regions of different orientation. Use the first
         eigenvectors of precomputed diffusion tensors as vectors and use only
@@ -260,7 +260,8 @@ class mtShoreFit(object):
         response = np.load(filepath)
 
         gtab = gradient_table(response['bvals'], response['bvecs'])
-        model = mtShoreModel(gtab, response['order'], response['zeta'], response['tau'])
+        model = mtShoreModel(gtab, response['order'], response['zeta'],
+                             response['tau'])
         return cls(model, (response['csf'], response['gm'], response['wm']))
 
     def save(self, filepath):
@@ -274,26 +275,29 @@ class mtShoreFit(object):
             if e.errno != errno.EEXIST:
                 raise
 
-        np.savez(filepath, csf=self.signal_csf, gm=self.signal_gm, wm=self.signal_wm,
-                 zeta=self.zeta, tau=self.tau, order=self.order, bvals=self.gtab.bvals, bvecs=self.gtab.bvecs)
+        np.savez(filepath, csf=self.signal_csf, gm=self.signal_gm,
+                 wm=self.signal_wm, zeta=self.zeta, tau=self.tau,
+                 order=self.order, bvals=self.gtab.bvals,
+                 bvecs=self.gtab.bvecs)
 
     def fodf(self, data, pos='hpsd', mask=None, verbose=False, cpus=None):
-        """ Multi tissue multi shell deconvolution [1]_.
+        """ Deconvolve DWI data with multiple tissue response [1]_.
 
         :param data: diffusion weighted data
         :param pos: constraint choose between hpsd, nonneg and none
-        :param mask: specify for which voxel fODFs and volume fractions are calculated
+        :param mask: voxels for which fODFs and volume fractions are calculated
         :param verbose: set to true to show a progress bar
-        :param cpus: number of cpus to use (if None use value from os.cpu_count())
-        :return: fodfs, wm volume fraction, gm volume fraction and csf volume fraction
+        :param cpus: number of cpus (if None use value from os.cpu_count())
+        :return: fodfs, wm volume fraction, gm volume fraction and
+        csf volume fraction
 
 
         References
         ----------
-        .. [1] M. Ankele, L. Lim, S. Groeschel and T. Schultz; "Versatile, Robust
-        and Efficient Tractography With Constrained Higher-Order Tensor fODFs";
-        Int J Comput Assist Radiol Surg. 2017 Aug; 12(8):1257-1270;
-        doi: 10.1007/s11548-017-1593-6
+        .. [1] M. Ankele, L. Lim, S. Groeschel and T. Schultz; "Versatile,
+        Robust        and Efficient Tractography With Constrained Higher-Order
+        Tensor fODFs"; Int J Comput Assist Radiol Surg. 2017 Aug;
+        12(8):1257-1270; doi: 10.1007/s11548-017-1593-6
         """
 
         data = data.get_data()
@@ -422,7 +426,8 @@ class mtShoreFit(object):
             # first two are orthant constraints, rest positive definiteness
             dims = {'l': 2, 'q': [], 's': [NS]}
 
-            # This init stuff is a HACK. It empirically removes some isolated failure cases
+            # This init stuff is a HACK.
+            # It empirically removes some isolated failure cases
             # first, allow it to use its own initialization
             try:
                 sol = cvxopt.solvers.coneqp(P, q, G, h, dims)
@@ -432,12 +437,15 @@ class mtShoreFit(object):
             if sol['status'] != 'optimal':
                 # try again with our initialization
                 try:
-                    sol = cvxopt.solvers.coneqp(P, q, G, h, dims, initvals={'x': init})
+                    sol = cvxopt.solvers.coneqp(P, q, G, h, dims,
+                                                initvals={'x': init})
                 except ValueError as e:
-                    logging.error("Error with custom initialization: {}".format(e))
+                    logging.error("Error with custom initialization: "
+                                  "{}".format(e))
                     return np.zeros(NN + 2)
                 if sol['status'] != 'optimal':
-                    logging.debug('Optimization unsuccessful - Constraint: {}'.format('hpsd'))
+                    logging.debug('Optimization unsuccessful - '
+                                  'Constraint: {}'.format('hpsd'))
 
             deconvolution_result[i] = np.array(sol['x'])[:, 0]
 
@@ -455,7 +463,8 @@ class mtShoreFit(object):
 
         cvxopt.solvers.options['show_progress'] = False
         # set up QP problem from normal equations
-        P = cvxopt.matrix(np.ascontiguousarray(np.dot(conv_matrix.T, conv_matrix)))
+        P = cvxopt.matrix(np.ascontiguousarray(np.dot(conv_matrix.T,
+                                                      conv_matrix)))
 
         # set up non-negativity constraints
         NC = LOTS_OF_DIRECTIONS.shape[0]
@@ -471,11 +480,13 @@ class mtShoreFit(object):
 
         for i in np.ndindex(*data.shape[:-1]):
             signal = data[i]
-            q = cvxopt.matrix(np.ascontiguousarray(-1 * np.dot(conv_matrix.T, signal)))
+            q = cvxopt.matrix(np.ascontiguousarray(-1 * np.dot(conv_matrix.T,
+                                                               signal)))
 
             sol = cvxopt.solvers.qp(P, q, G, h)
             if sol['status'] != 'optimal':
-                logging.debug('Optimization unsuccessful - Voxel: {}, Constraint: {}'.format(i, 'nonneg'))
+                logging.debug('Optimization unsuccessful - '
+                              'Voxel: {}, Constraint: {}'.format(i, 'nonneg'))
 
             deconvolution_result[i] = np.array(sol['x'])[:, 0]
 
@@ -489,7 +500,9 @@ class mtShoreFit(object):
 
         # Build matrix that maps ODF+volume fractions to signal
         # in two steps: First, SHORE matrix
-        # Ignore division by zero warning dipy.core.geometry.cart2sphere -> theta = np.arccos(z / r)
+
+        # Ignore division by zero warning
+        # dipy.core.geometry.cart2sphere -> theta = np.arccos(z / r)
         with np.errstate(divide='ignore', invalid='ignore'):
             shore_m = shore_matrix(self.order, self.zeta, self.gtab, self.tau)
 
