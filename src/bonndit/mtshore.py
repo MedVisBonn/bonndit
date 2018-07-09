@@ -280,6 +280,66 @@ class mtShoreFit(object):
                  order=self.order, bvals=self.gtab.bvals,
                  bvecs=self.gtab.bvecs)
 
+    def _predict_helper(self, fODF_volfracs):
+        """
+
+        :param fODF_volfracs:
+        :return:
+        """
+        fODF = fODF_volfracs[0]
+        vol_fraction = fODF_volfracs[1]
+        conv_matrix = self.shore_convolution_matrix()
+
+        x = np.append(esh.sym_to_esh(fODF), vol_fraction)
+        signal = (np.dot(conv_matrix, x))
+
+        return signal
+
+    def predict(self, fODFs, vol_fractions=None, S0=None, verbose=False,
+                cpus=None, desc=""):
+        """
+
+        :param fODFs:
+        :param vol_fractions:
+        :param S0:
+        :param verbose:
+        :param cpus:
+        :return:
+        """
+
+        if vol_fractions is None:
+            vol_fractions = np.array([[0, 0]] * np.prod(fODFs.shape[:-1]))
+
+        # 1000 chunks for the progressbar to run smoother
+        chunksize = max(1, int(np.prod(fODFs.shape[:-1]) / 1000))
+
+        # Iterate over the data indices; show progress with tqdm
+        # multiple processes for python > 3
+        if sys.version_info[0] < 3:
+            signals = list(tqdm(it.imap(self._predict_helper,
+                                        zip(list(fODFs),
+                                            list(vol_fractions))),
+                                total=np.prod(fODFs.shape[:-1]),
+                                disable=not verbose,
+                                desc=desc))
+        else:
+            with mp.Pool(cpus) as p:
+                signals = list(tqdm(p.imap(self._predict_helper,
+                                           zip(list(fODFs),
+                                               list(vol_fractions)),
+                                           chunksize),
+                                    total=np.prod(fODFs.shape[:-1]),
+                                    disable=not verbose,
+                                    desc=desc))
+
+        if S0:
+            signals = np.array(signals) * S0
+        else:
+            signals = np.array(signals)
+
+        return signals
+
+
     def fodf(self, data, pos='hpsd', mask=None, verbose=False, cpus=None):
         """ Deconvolve DWI data with multiple tissue response [1]_.
 
@@ -558,3 +618,7 @@ def dti_masks(wm_mask, gm_mask, csf_mask, dti_fa, dti_mask=None, fawm=0.7):
     gm_img = nib.Nifti1Image(dti_gm, gm_mask.affine)
     csf_img = nib.Nifti1Image(dti_csf, csf_mask.affine)
     return wm_img, gm_img, csf_img
+
+
+def predict_mtshore():
+    pass
