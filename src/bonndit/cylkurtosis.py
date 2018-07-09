@@ -54,8 +54,10 @@ class CylKurtosisFit(object):
 
         return np.exp(np.array(signal))
 
-    def predict(self, verbose=False, cpus=None, desc=""):
+    def predict(self, S0=None, verbose=False, cpus=None, desc=""):
         """Predict a diffusion weighted signal.
+
+        Given the parameters of a
 
         :param kurt_params:
         :param direction:
@@ -83,4 +85,10 @@ class CylKurtosisFit(object):
                                    total=np.prod(self.directions.shape[:-1]),
                                    disable=not verbose,
                                    desc=desc))
-        return np.array(signal)
+
+        if S0:
+            signal = np.array(signal) * S0
+        else:
+            signal = np.array(signal)
+
+        return signal
