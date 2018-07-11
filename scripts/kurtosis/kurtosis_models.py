@@ -1,7 +1,7 @@
 
 """
 Created on Tue Jun  5 16:36:15 2018
-
+Fitting kurtosis models to DWI data to detect signal dropout and calculate diffusion and kurtosis tensors
 @author: mahgoub
 """
 
@@ -16,35 +16,43 @@ import nibabel as nib
 from dipy.io import read_bvals_bvecs
 import configparser
 import argparse
+import os
 from dipy.reconst.shore import shore_matrix
 from dipy.core.gradients import gradient_table
 import sklearn
 from sklearn import linear_model
 
 
-
-
-parser = argparse.ArgumentParser()
-parser.add_argument('datafile', help='Path to data file')
-parser.add_argument('bvecfile', help='Path to bvec file')
-parser.add_argument('bvalfile', help='Path to bval file')
+parser = argparse.ArgumentParser(description = 'Kurtosis models to detect and impute signal outliers')
+parser.add_argument('datafile', help='Path to the DWI data file')
+parser.add_argument('bvecfile', help='Path to the b-vectors file')
+parser.add_argument('bvalfile', help='Path to the normalized gradient directions (b-values) file')
 parser.add_argument('model',choices=['REKINDLE', 'IRL1SHORE', 'relSHORE'] ,help='Choice of the kurtosis model')
-parser.add_argument('--mask', help='Path to mask file')
-parser.add_argument('--configfile', help='Config file to set all model parameters as a .ini file')
+parser.add_argument('-m', '--mask', help='Path to mask file')
+parser.add_argument('-v', '--verbose', action='store_true', help='Flag for verbose output')
+parser.add_argument('-c', '--configfile', help='Config file to set all model parameters as a .ini file')
 args = parser.parse_args()
 
 
 # Loading data
+def load_data(data_file):
+    img = nib.load(data_file)
+    data = img.get_data()
+    data = np.array(data)
+    affine = img.affine
+    return data, affine
+    
 data_file = args.datafile
-img    = nib.load(data_file)
-data   = img.get_data()
-data   = np.array(data)
-affine = img.affine
+data, affine = load_data(data_file)
 
 bvals, bvecs = dipy.io.read_bvals_bvecs(args.bvalfile,args.bvecfile)
 
-model  = args.model
-mask   = args.mask
+model   = args.model
+mask    = args.mask
+verbose = args.verbose
+
+if mask:
+    mask = load_data(mask)[0]
 
 if args.configfile == None:
     parameters_file = 'parameters.ini'
@@ -72,14 +80,12 @@ class REKINDLE(object):
                  kappa,
                  c,
                  IRLS_maxiter,
-                 REKINDLE_maxiter,
-                 verbose):
+                 REKINDLE_maxiter):
         self.regularization_constant = regularization_constant #Prevents matrix inversion from failure when inverting degenerate matrices
         self.kappa = kappa
         self.c = c
         self.IRLS_maxiter = IRLS_maxiter
         self.REKINDLE_maxiter = REKINDLE_maxiter
-        self.verbose = verbose
 
     def conv_check(self, beta1, beta2):
         return (np.abs(beta1-beta2) - self.c* np.max(np.concatenate((np.abs(beta1), np.abs(beta2)), axis= 1), axis=1)).max()        #Calculates convergence criterion (<0 is good)
@@ -106,7 +112,7 @@ class REKINDLE(object):
     #         convergence_check = (np.abs(beta_new-beta_old) - c* np.max(np.concatenate((np.abs(beta_new), np.abs(beta_old)), axis= 1), axis=1)).max()
             convergence_check = self.conv_check(beta_new, beta_old)
 
-            if self.verbose:
+            if verbose:
                 print('Iteration {:03}. Convergence criterion: {:.2e}'.format(counter+1, convergence_check))
             
             if (convergence_check>0):
@@ -114,15 +120,16 @@ class REKINDLE(object):
                 counter+=1
             else:
                 tag = False
-                if self.verbose:
+                if verbose:
                     print('Exiting due to convergence.')
 
             if counter>self.IRLS_maxiter:
                 tag = False
-                if self.verbose:
+                if verbose:
                     print('Exiting due to maximum number of iterations reached. ')        
         return beta_new
     
+    # Signal preprocessing in the logarithmized space
     def signal_preprocessing(self, y):
         assert len(y.shape) == 1
         return np.log(y)
@@ -149,18 +156,18 @@ class REKINDLE(object):
             beta_new      = self.IRLS__(X_star[inliers], s_star[inliers], beta_rescaled)
 
             convergence_check = self.conv_check(beta_new, beta_old)
-            if self.verbose:
+            if verbose:
                     print('Iteration {:03}. Convergence criterion: {:.2e}'.format(counter+1, convergence_check))
             if (convergence_check>0):
                 beta_old = beta_new.copy()
                 counter+=1
             else:
-                if self.verbose:
+                if verbose:
                     print('Exiting due to convergence.')
                 tag = False
             if counter>self.REKINDLE_maxiter:
                 tag = False
-                if self.verbose:
+                if verbose:
                     print('Exiting due to maximum number of iterations reached. ')
 
         residuals_star = s_star - X_star* beta_new
@@ -172,12 +179,13 @@ class REKINDLE(object):
         inliers = (np.array(np.abs(residuals_normalized) < self.kappa).ravel())
         outliers = ~(inliers) 
         return tuple((inliers,outliers))
-
+    
+    # Final fit without outliers
     def fit(self, X, y):
         s = self.signal_preprocessing(y)
         s = np.matrix(s).transpose()
         self.beta = self.IRLS__(X, s, LLSfit(X, s, self.regularization_constant), weighting = 'exponential')
-        return self 
+        return self.beta
     
     def predict(self, X):
         #beta = beta.reshape((22,1))
@@ -233,40 +241,43 @@ def rekindle():
     else:
         data_masked = data_reshaped
     
-    #result_betas = np.zeros((data_masked.shape[0], X.shape[1]), dtype=np.float64)
-    result_outliers = np.zeros(data_masked.shape, dtype=np.bool)
-    result_inliers = np.zeros(data_masked.shape, dtype=np.bool)
-    result_residuals = np.zeros(data_masked.shape, dtype=np.float64)
-    result_predictions = np.zeros(data_masked.shape, dtype=np.float64)
+    result_betas       = np.zeros((data_masked.shape[0], X.shape[1]), np.dtype(float))
+    result_outliers    = np.zeros(data_masked.shape, dtype=np.bool)
+    result_inliers     = np.zeros(data_masked.shape, dtype=np.bool)
+    result_residuals   = np.zeros(data_masked.shape, np.dtype(float))
+    result_predictions = np.zeros(data_masked.shape, np.dtype(float))
+    num_outliers   = 0
+    skipped_voxels = 0
     
     for i in range(data_masked.shape[0]):
         model_ = REKINDLE(parameters.getfloat('regularization_constant'),parameters.getfloat('kappa'),parameters.getfloat('c'),
-                          parameters.getint('irls_maxiter'),parameters.getint('rekindle_maxiter'),parameters.getboolean('verbose'))
+                          parameters.getint('irls_maxiter'),parameters.getint('rekindle_maxiter'))
         residuals = model_.outlier_scoring(X, data_masked[i])
         inliers = model_.outlier_detection(residuals)[0]
         outliers = model_.outlier_detection(residuals)[1]
-        model_.fit(X[inliers], data_masked[i][inliers])
+        betas = model_.fit(X[inliers], data_masked[i][inliers])
         prediction = model_.predict(X)
     
         result_residuals[i] = residuals
         result_outliers[i] = outliers
         result_inliers[i] = inliers
-        #result_betas[i] = beta
+        result_betas[i] = betas   
         result_predictions[i] = prediction
+        num_outliers += np.count_nonzero(outliers)
     
     
     if mask is not None:
-        #result_betas_unmasked     = unmask(result_betas    , mask_reshaped)
-        result_outliers_unmasked   = unmask(result_outliers  , mask_reshaped)
-        result_inliers_unmasked   = unmask(result_inliers  , mask_reshaped)
-        result_residuals_unmasked = unmask(result_residuals, mask_reshaped)
-        result_predictions =        unmask(result_predictions, mask_reshaped)
+        result_betas_unmasked       = unmask(result_betas    , mask_reshaped)
+        result_outliers_unmasked    = unmask(result_outliers  , mask_reshaped)
+        result_inliers_unmasked     = unmask(result_inliers  , mask_reshaped)
+        result_residuals_unmasked   = unmask(result_residuals, mask_reshaped)
+        result_predictions_unmasked = unmask(result_predictions, mask_reshaped)
 
     else:
-        #result_betas_unmasked     = result_betas
-        result_outliers_unmasked   = result_outliers
-        result_inliers_unmasked   = result_inliers
-        result_residuals_unmasked = result_residuals
+        result_betas_unmasked       = result_betas
+        result_outliers_unmasked    = result_outliers
+        result_inliers_unmasked     = result_inliers
+        result_residuals_unmasked   = result_residuals
         result_predictions_unmasked = result_predictions
     
     
@@ -277,14 +288,48 @@ def rekindle():
         correct_data = pd.DataFrame(data_reshaped)
         correct_data = correct_data[inliers]
         correct_data[correct_data.isnull()] = predictions
-        pd.to_pickle(correct_data, 'output_REKINDLE_' + data_file.rstrip('.nii') + '_corrected_data.pkl')
+        skipped_voxels += correct_data.isnull().sum().sum()
+        if parameters.getboolean('pickle_files'):
+            pd.to_pickle(correct_data, 'output_REKINDLE_' + data_file.rstrip('.nii') + '_corrected_data.pkl')
+        final_data = correct_data.values.reshape((data.shape[0], data.shape[1], data.shape[2], -1))
+        correct_data_image  = nib.Nifti1Image(final_data, affine)
+        nib.save(correct_data_image,'output_REKINDLE_' + data_file.rstrip('.nii') + '_corrected_data_image.nii')
        
     elif parameters['imputation'] == 'replace_all':
-        pd.to_pickle(predictions, 'output_REKINDLE_' + data_file.rstrip('.nii') + '_predictions.pkl') 
+        skipped_voxels += predictions.isnull().sum().sum()
+        final_predictions = result_predictions_unmasked.reshape((data.shape[0], data.shape[1], data.shape[2], -1))
+        predictions_image  = nib.Nifti1Image(final_predictions, affine)
+        nib.save(predictions_image,'output_REKINDLE_' + data_file.rstrip('.nii') + '_predictions_image.nii')
+        if parameters.getboolean('pickle_files'):
+            pd.to_pickle(predictions, 'output_REKINDLE_' + data_file.rstrip('.nii') + '_predictions.pkl') 
+        
+    if parameters.getboolean('beta_file'):
+        final_betas = result_betas_unmasked.reshape((data.shape[0], data.shape[1], data.shape[2], -1))
+        betas_image  = nib.Nifti1Image(final_betas, affine)
+        nib.save(betas_image,'output_REKINDLE_' + data_file.rstrip('.nii') + '_betas_image.nii')
+        if parameters.getboolean('pickle_files'):
+            betas = pd.DataFrame(result_betas_unmasked)
+            pd.to_pickle(betas, 'output_REKINDLE_' + data_file.rstrip('.nii') + '_betas.pkl')
         
     if parameters.getboolean('score_file'):
-        residuals = pd.DataFrame(result_residuals_unmasked)
-        pd.to_pickle(residuals, 'output_REKINDLE_' + data_file.rstrip('.nii') + '_residuals_score.pkl')
+        final_residuals = result_residuals_unmasked.reshape((data.shape[0], data.shape[1], data.shape[2], -1))
+        residuals_image  = nib.Nifti1Image(final_residuals,affine)
+        nib.save(residuals_image,'output_REKINDLE_' + data_file.rstrip('.nii') + '_residuals_image.nii')
+        if parameters.getboolean('pickle_files'):
+            residuals = pd.DataFrame(result_residuals_unmasked)
+            pd.to_pickle(residuals, 'output_REKINDLE_' + data_file.rstrip('.nii') + '_residuals_score.pkl')
+        
+    if parameters.getboolean('log_file'):
+        with open('output_REKINDLE_' + data_file.rstrip('.nii') + '_log_file.txt', 'w') as f:
+            f.write('Kurtosis model used to detect and impute signal outliers: ' + 'REKINDLE' + 2*'\n')
+            f.write('Algorithm parameters:\n')
+            for p in parameters:
+                f.write(p + ': ' + parameters[p] + '\n')
+            f.write('mask_file: ' + str(args.mask) + '\n')
+            f.write ('\n')
+            f.write('Number of outliers in the dataset: ' + str(num_outliers) + '\n')
+            f.write('Ratio of outliers in the dataset: ' + str(round(num_outliers / data_reshaped.size,5)) + '\n')
+            f.write('Number of skipped voxels: ' + str(skipped_voxels))
         
 
 class IRLSHORE(object):
@@ -292,7 +337,6 @@ class IRLSHORE(object):
                  Lambda,
                  max_iter,
                  residual_calculation, 
-                 verbose,
                  T_threshold,
                  power_relative, 
                  one_sided_reweighting, 
@@ -304,7 +348,6 @@ class IRLSHORE(object):
                  S0 = 0):
         self.max_iter = max_iter
         self.Lambda = Lambda
-        self.verbose = verbose
         self.S0 = S0
         self.T_threshold = T_threshold
         self.one_sided_reweighting = one_sided_reweighting
@@ -392,8 +435,9 @@ class IRLSHORE(object):
             residuals_standardized = np.clip(residuals_standardized, -np.inf, 0)
         return residuals_standardized
 
-
+    
     def outlier_scoring(self, X, y):
+
         inliers = np.ones((y.shape[0]), dtype=np.bool)
         inliers[y < 1e-10] = False
         if ~np.any(inliers):
@@ -402,14 +446,13 @@ class IRLSHORE(object):
         s = self.signal_preprocessing(y)
         self.regressor.fit(X[inliers], s[inliers])    
         beta_old = self.regressor.coef_.copy()
-
         Omega_old = np.zeros((y.shape))        
         iter_count = 0
         while(True):
             iter_count +=1
             if iter_count >= self.max_iter:
                 beta_new = self.regressor.coef_.copy()
-                if self.verbose:
+                if verbose:
                     print('Exiting due to maximum number of iterations reached')           
                 break
             s_hat = self.regressor.predict(X)
@@ -423,7 +466,7 @@ class IRLSHORE(object):
             convergence_check = np.linalg.norm(Omega - Omega_old, ord = 2)
 
             if convergence_check<self.convergence_threshold:
-                if self.verbose:
+                if verbose:
                     print('Exiting due to convergence')
                 break        
             Omega_old = Omega.copy()
@@ -439,10 +482,14 @@ class IRLSHORE(object):
         return ~(inliers)
     
     def fit(self, X, y):
+        if y.shape[0] == 0:
+            return np.nan * np.ones(X.shape[1])
         s = self.signal_preprocessing(y)
         self.regressor.fit(X, s)
-        return self
-    def predict(self, X):
+        return self.regressor.coef_.copy()
+    def predict(self, X, y):
+        if y.shape[0] == 0:
+            return np.nan * np.ones(X.shape[0])
         return self.signal_unpreprocessing(self.regressor.predict(X))  
     
 def shore_matrix(bvals, bvecs, radial_order, zeta, tau, affine = None):
@@ -468,17 +515,19 @@ def IRL1SHORE():
     else:
         data_masked = data_reshaped
         
-    result_residuals   = np.zeros(data_masked.shape, dtype=np.float64)
+    result_betas       = np.zeros((data_masked.shape[0], X.shape[1]), np.dtype(float))    
+    result_residuals   = np.zeros(data_masked.shape, np.dtype(float))
     result_outliers    = np.zeros(data_masked.shape, dtype=np.bool)
     result_inliers     = np.zeros(data_masked.shape, dtype=np.bool)
-    result_predictions = np.zeros(data_masked.shape, dtype=np.float64)
+    result_predictions = np.zeros(data_masked.shape, np.dtype(float))
+    num_outliers   = 0
+    skipped_voxels = 0
     
     for i in range(data_masked.shape[0]):
         y = data_masked[i]
-        model = IRLSHORE(parameters.getfloat('lambda'), 
+        model_ = IRLSHORE(parameters.getfloat('lambda'), 
                          parameters.getint('max_iter'), 
                          parameters['residual_calculation'],
-                         parameters.getboolean('verbose'),
                          parameters.getfloat('t_threshold'),
                          0,
                          parameters.getboolean('one_sided_reweighting'),
@@ -489,27 +538,31 @@ def IRL1SHORE():
                          tau,
                          S0 = np.mean(y[bvals ==0]))
         
-        residuals = model.outlier_scoring(X, y)
-        outliers = model.outlier_detection(residuals)
+        residuals = model_.outlier_scoring(X, y)
+        outliers = model_.outlier_detection(residuals)
         inliers = (~outliers)
-        model.fit(X[inliers], y[inliers])
-        predictions = model.predict(X)
+        betas = model_.fit(X[inliers], y[inliers])
+        predictions = model_.predict(X, y[inliers])  
     
         result_residuals[i] = residuals
         result_outliers[i] = outliers
         result_inliers[i] = inliers
+        result_betas[i] = betas
         result_predictions[i] = predictions
+        num_outliers += np.count_nonzero(outliers)
     
     if mask is not None:
-        result_residuals_unmasked = unmask(result_residuals, mask_reshaped)
-        result_outliers_unmasked = unmask(result_outliers, mask_reshaped)
-        result_inliers_unmasked = unmask(result_inliers, mask_reshaped)
+        result_residuals_unmasked   = unmask(result_residuals, mask_reshaped)
+        result_outliers_unmasked    = unmask(result_outliers, mask_reshaped)
+        result_inliers_unmasked     = unmask(result_inliers, mask_reshaped)
+        result_betas_unmasked       = unmask(result_betas, mask_reshaped)
         result_predictions_unmasked = unmask(result_predictions, mask_reshaped)
     else:
-        result_residuals_unmasked = result_residuals
-        result_outliers_unmasked  = result_outliers
-        result_inliers_unmasked  = result_inliers
-        result_predictions_unmasked  = result_predictions
+        result_residuals_unmasked   = result_residuals
+        result_outliers_unmasked    = result_outliers
+        result_inliers_unmasked     = result_inliers
+        result_betas_unmasked       = result_betas
+        result_predictions_unmasked = result_predictions
         
         
         
@@ -520,15 +573,48 @@ def IRL1SHORE():
         correct_data = pd.DataFrame(data_reshaped)
         correct_data = correct_data[inliers]
         correct_data[correct_data.isnull()] = predictions
-        pd.to_pickle(correct_data, 'output_IRL1SHORE_' + data_file.rstrip('.nii') + '_corrected_data.pkl')
+        skipped_voxels += correct_data.isnull().sum().sum()
+        if parameters.getboolean('pickle_files'):
+            pd.to_pickle(correct_data, 'output_IRL1SHORE_' + data_file.rstrip('.nii') + '_corrected_data.pkl')
+        final_data = correct_data.values.reshape((data.shape[0], data.shape[1], data.shape[2], -1))
+        correct_data_image  = nib.Nifti1Image(final_data, affine)
+        nib.save(correct_data_image,'output_IRL1SHORE_' + data_file.rstrip('.nii') + '_corrected_data_image.nii')
        
     elif parameters['imputation'] == 'replace_all':
-        pd.to_pickle(predictions, 'output_IRL1SHORE_' + data_file.rstrip('.nii') + '_predictions.pkl') 
+        skipped_voxels += predictions.isnull().sum().sum()
+        final_predictions = result_predictions_unmasked.reshape((data.shape[0], data.shape[1], data.shape[2], -1))
+        predictions_image  = nib.Nifti1Image(final_predictions, affine)
+        nib.save(predictions_image,'output_IRL1SHORE_' + data_file.rstrip('.nii') + '_predictions_image.nii')
+        if parameters.getboolean('pickle_files'):
+            pd.to_pickle(predictions, 'output_IRL1SHORE_' + data_file.rstrip('.nii') + '_predictions.pkl') 
      
-        
+    if parameters.getboolean('beta_file'):
+        final_betas = result_betas_unmasked.reshape((data.shape[0], data.shape[1], data.shape[2], -1))
+        betas_image  = nib.Nifti1Image(final_betas, affine)
+        nib.save(betas_image,'output_IRL1SHORE_' + data_file.rstrip('.nii') + '_betas_image.nii')
+        if parameters.getboolean('pickle_files'):
+            betas = pd.DataFrame(result_betas_unmasked)
+            pd.to_pickle(betas, 'output_IRL1SHORE_' + data_file.rstrip('.nii') + '_betas.pkl')
+    
     if parameters.getboolean('score_file'):
-        residuals = pd.DataFrame(result_residuals_unmasked)
-        pd.to_pickle(residuals, 'output_IRL1SHORE_' + data_file.rstrip('.nii') + '_residuals_score.pkl')
+        final_residuals = result_residuals_unmasked.reshape((data.shape[0], data.shape[1], data.shape[2], -1))
+        residuals_image  = nib.Nifti1Image(final_residuals,affine)
+        nib.save(residuals_image,'output_IRL1SHORE_' + data_file.rstrip('.nii') + '_residuals_image.nii')
+        if parameters.getboolean('pickle_files'):
+            residuals = pd.DataFrame(result_residuals_unmasked)
+            pd.to_pickle(residuals, 'output_IRL1SHORE_' + data_file.rstrip('.nii') + '_residuals_score.pkl')
+        
+    if parameters.getboolean('log_file'):
+        with open('output_IRL1SHORE_' + data_file.rstrip('.nii') + '_log_file.txt', 'w') as f:
+            f.write('Kurtosis model used to detect and impute signal outliers: ' + 'IRL1SHORE' + 2*'\n')
+            f.write('Algorithm parameters:\n')
+            for p in parameters:
+                f.write(p + ': ' + parameters[p] + '\n')
+            f.write('mask_file: ' + str(args.mask) + '\n')
+            f.write ('\n')
+            f.write('Number of outliers in the dataset: ' + str(num_outliers) + '\n')
+            f.write('Ratio of outliers in the dataset: ' + str(round(num_outliers / data_reshaped.size,5)) + '\n')
+            f.write('Number of skipped voxels: ' + str(skipped_voxels))
         
 
 
@@ -550,18 +636,20 @@ def relSHORE():
         data_masked   = data_reshaped[mask_reshaped]
     else:
         data_masked = data_reshaped
-        
-    result_residuals   = np.zeros(data_masked.shape, dtype=np.float64)
+    
+    result_betas       = np.zeros((data_masked.shape[0], X.shape[1]), np.dtype(float))
+    result_residuals   = np.zeros(data_masked.shape, np.dtype(float))
     result_outliers    = np.zeros(data_masked.shape, dtype=np.bool)
     result_inliers     = np.zeros(data_masked.shape, dtype=np.bool)
-    result_predictions = np.zeros(data_masked.shape, dtype=np.float64)
+    result_predictions = np.zeros(data_masked.shape, np.dtype(float))
+    num_outliers   = 0
+    skipped_voxels = 0
     
     for i in range(data_masked.shape[0]):
         y = data_masked[i]
-        model = IRLSHORE(parameters.getfloat('lambda'), 
+        model_ = IRLSHORE(parameters.getfloat('lambda'), 
                          0, 
                          'relative',
-                         parameters.getboolean('verbose'),
                          parameters.getfloat('t_threshold'),
                          parameters.getfloat('power_relative'),
                          False,
@@ -572,30 +660,33 @@ def relSHORE():
                          tau,
                          S0 = np.mean(y[bvals ==0]))
         
-        residuals = model.outlier_scoring(X, y)
-        outliers = model.outlier_detection(residuals)
+        residuals = model_.outlier_scoring(X, y)
+        outliers = model_.outlier_detection(residuals)
         inliers = (~outliers)
-        model.fit(X[inliers], y[inliers])
-        predictions = model.predict(X)
+        betas = model_.fit(X[inliers], y[inliers])
+        predictions = model_.predict(X, y[inliers])
     
         result_residuals[i] = residuals
         result_outliers[i] = outliers
         result_inliers[i] = inliers
+        result_betas[i] = betas
         result_predictions[i] = predictions
+        num_outliers += np.count_nonzero(outliers)
     
     if mask is not None:
-        result_residuals_unmasked = unmask(result_residuals, mask_reshaped)
-        result_outliers_unmasked = unmask(result_outliers, mask_reshaped)
-        result_inliers_unmasked = unmask(result_inliers, mask_reshaped)
+        result_residuals_unmasked   = unmask(result_residuals, mask_reshaped)
+        result_outliers_unmasked    = unmask(result_outliers, mask_reshaped)
+        result_inliers_unmasked     = unmask(result_inliers, mask_reshaped)
+        result_betas_unmasked       = unmask(result_betas, mask_reshaped)
         result_predictions_unmasked = unmask(result_predictions, mask_reshaped)
     else:
-        result_residuals_unmasked = result_residuals
-        result_outliers_unmasked  = result_outliers
-        result_inliers_unmasked  = result_inliers
-        result_predictions_unmasked  = result_predictions
+        result_residuals_unmasked   = result_residuals
+        result_outliers_unmasked    = result_outliers
+        result_inliers_unmasked     = result_inliers
+        result_betas_unmasked       = result_betas
+        result_predictions_unmasked = result_predictions
         
-        
-        
+            
     predictions = pd.DataFrame(result_predictions_unmasked)
     inliers     = pd.DataFrame(result_inliers_unmasked)
     
@@ -603,17 +694,52 @@ def relSHORE():
         correct_data = pd.DataFrame(data_reshaped)
         correct_data = correct_data[inliers]
         correct_data[correct_data.isnull()] = predictions
-        pd.to_pickle(correct_data, 'output_relSHORE_' + data_file.rstrip('.nii') + '_corrected_data.pkl')
+        skipped_voxels += correct_data.isnull().sum().sum()
+        final_data = correct_data.values.reshape((data.shape[0], data.shape[1], data.shape[2], -1))
+        correct_data_image  = nib.Nifti1Image(final_data, affine)
+        nib.save(correct_data_image,'output_relSHORE_' + data_file.rstrip('.nii') + '_corrected_data_image.nii')
+        if parameters.getboolean('pickle_files'):
+            pd.to_pickle(correct_data, 'output_relSHORE_' + data_file.rstrip('.nii') + '_corrected_data.pkl')
+        
        
     elif parameters['imputation'] == 'replace_all':
-        pd.to_pickle(predictions, 'output_relSHORE_' + data_file.rstrip('.nii') + '_predictions.pkl') 
+        skipped_voxels += predictions.isnull().sum().sum()
+        final_predictions = result_predictions_unmasked.reshape((data.shape[0], data.shape[1], data.shape[2], -1))
+        predictions_image  = nib.Nifti1Image(final_predictions, affine)
+        nib.save(predictions_image,'output_relSHORE_' + data_file.rstrip('.nii') + '_predictions_image.nii')
+        if parameters.getboolean('pickle_files'):
+            pd.to_pickle(predictions, 'output_relSHORE_' + data_file.rstrip('.nii') + '_predictions.pkl') 
      
-        
+    if parameters.getboolean('beta_file'):
+        final_betas = result_betas_unmasked.reshape((data.shape[0], data.shape[1], data.shape[2], -1))
+        betas_image  = nib.Nifti1Image(final_betas, affine)
+        nib.save(betas_image,'output_relSHORE_' + data_file.rstrip('.nii') + '_betas_image.nii')
+        if parameters.getboolean('pickle_files'):
+            betas = pd.DataFrame(result_betas_unmasked)
+            pd.to_pickle(betas, 'output_relSHORE_' + data_file.rstrip('.nii') + '_betas.pkl')
+    
     if parameters.getboolean('score_file'):
-        residuals = pd.DataFrame(result_residuals_unmasked)
-        pd.to_pickle(residuals, 'output_relSHORE_' + data_file.rstrip('.nii') + '_residuals_score.pkl')
-        
-        
+        final_residuals = result_residuals_unmasked.reshape((data.shape[0], data.shape[1], data.shape[2], -1))
+        residuals_image  = nib.Nifti1Image(final_residuals,affine)
+        nib.save(residuals_image,'output_relSHORE_' + data_file.rstrip('.nii') + '_residuals_image.nii')
+        if parameters.getboolean('pickle_files'):
+            residuals = pd.DataFrame(result_residuals_unmasked)
+            pd.to_pickle(residuals, 'output_relSHORE_' + data_file.rstrip('.nii') + '_residuals_score.pkl')
+
+    if parameters.getboolean('log_file'):
+        with open('output_relSHORE_' + data_file.rstrip('.nii') + '_log_file.txt', 'w') as f:
+            f.write('Kurtosis model used to detect and impute signal outliers: ' + 'relSHORE' + 2*'\n')
+            f.write('Algorithm parameters:\n')
+            for p in parameters:
+                f.write(p + ': ' + parameters[p] + '\n')
+            f.write('mask_file: ' + str(args.mask) + '\n')
+            f.write ('\n')
+            f.write('Number of outliers in the dataset: ' + str(num_outliers) + '\n')
+            f.write('Ratio of outliers in the dataset: ' + str(round(num_outliers / data_reshaped.size,5)) + '\n')
+            f.write('Number of skipped voxels: ' + str(skipped_voxels))
+                    
+    
+                      
         
 if model == 'REKINDLE':
     rekindle()
@@ -621,7 +747,4 @@ elif model == 'IRL1SHORE':
     IRL1SHORE()
 elif model == 'relSHORE':
     relSHORE()
-   
     
-
-   
