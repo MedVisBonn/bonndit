@@ -16,7 +16,6 @@ import nibabel as nib
 from dipy.io import read_bvals_bvecs
 import configparser
 import argparse
-import os
 from dipy.reconst.shore import shore_matrix
 from dipy.core.gradients import gradient_table
 import sklearn
@@ -25,8 +24,8 @@ from sklearn import linear_model
 
 parser = argparse.ArgumentParser(description = 'Kurtosis models to detect and impute signal outliers')
 parser.add_argument('datafile', help='Path to the DWI data file')
-parser.add_argument('bvecfile', help='Path to the b-vectors file')
-parser.add_argument('bvalfile', help='Path to the normalized gradient directions (b-values) file')
+parser.add_argument('bvecfile', help='Path to the normalized gradient directions (b-vectors) file')
+parser.add_argument('bvalfile', help='Path to the b-values file')
 parser.add_argument('model',choices=['REKINDLE', 'IRL1SHORE', 'relSHORE'] ,help='Choice of the kurtosis model')
 parser.add_argument('-m', '--mask', help='Path to mask file')
 parser.add_argument('-v', '--verbose', action='store_true', help='Flag for verbose output')
@@ -61,6 +60,8 @@ else:
 
 config = configparser.ConfigParser()
 config.read(parameters_file)
+
+data_file = data_file.replace('/','_')[1:]
 
 def unmask(array, mask):
     tmp = np.zeros((mask.shape[0], array.shape[1]), dtype=array.dtype)
@@ -249,6 +250,7 @@ def rekindle():
     num_outliers   = 0
     skipped_voxels = 0
     
+    start = time.time()
     for i in range(data_masked.shape[0]):
         model_ = REKINDLE(parameters.getfloat('regularization_constant'),parameters.getfloat('kappa'),parameters.getfloat('c'),
                           parameters.getint('irls_maxiter'),parameters.getint('rekindle_maxiter'))
@@ -257,11 +259,14 @@ def rekindle():
         outliers = model_.outlier_detection(residuals)[1]
         betas = model_.fit(X[inliers], data_masked[i][inliers])
         prediction = model_.predict(X)
+        
+        if (i % 1000)==0:
+            print('\t{:.2%} Completed, Time elapsed: {}'.format(i/data_masked.shape[0], int(time.time()-start)))
     
         result_residuals[i] = residuals
         result_outliers[i] = outliers
         result_inliers[i] = inliers
-        result_betas[i] = betas   
+        result_betas[i] = betas.flatten()   
         result_predictions[i] = prediction
         num_outliers += np.count_nonzero(outliers)
     
@@ -322,11 +327,13 @@ def rekindle():
     if parameters.getboolean('log_file'):
         with open('output_REKINDLE_' + data_file.rstrip('.nii') + '_log_file.txt', 'w') as f:
             f.write('Kurtosis model used to detect and impute signal outliers: ' + 'REKINDLE' + 2*'\n')
-            f.write('Algorithm parameters:\n')
+            f.write('Path to the DWI data file: ' + args.datafile + '\n') 
+            f.write('Path to the normalized gradient directions (b-vectors) file: ' + args.bvecfile + '\n') 
+            f.write('Path to the b-values file: ' + args.bvalfile + 2*'\n') 
+            f.write('Algorithm parameters:' + 2*'\n')
             for p in parameters:
                 f.write(p + ': ' + parameters[p] + '\n')
-            f.write('mask_file: ' + str(args.mask) + '\n')
-            f.write ('\n')
+            f.write('mask_file: ' + str(args.mask) + 2*'\n')
             f.write('Number of outliers in the dataset: ' + str(num_outliers) + '\n')
             f.write('Ratio of outliers in the dataset: ' + str(round(num_outliers / data_reshaped.size,5)) + '\n')
             f.write('Number of skipped voxels: ' + str(skipped_voxels))
@@ -523,6 +530,7 @@ def IRL1SHORE():
     num_outliers   = 0
     skipped_voxels = 0
     
+    start = time.time()
     for i in range(data_masked.shape[0]):
         y = data_masked[i]
         model_ = IRLSHORE(parameters.getfloat('lambda'), 
@@ -543,6 +551,9 @@ def IRL1SHORE():
         inliers = (~outliers)
         betas = model_.fit(X[inliers], y[inliers])
         predictions = model_.predict(X, y[inliers])  
+        
+        if (i % 1000)==0:
+            print('\t{:.2%} Completed, Time elapsed: {}'.format(i/data_masked.shape[0], int(time.time()-start)))
     
         result_residuals[i] = residuals
         result_outliers[i] = outliers
@@ -575,10 +586,10 @@ def IRL1SHORE():
         correct_data[correct_data.isnull()] = predictions
         skipped_voxels += correct_data.isnull().sum().sum()
         if parameters.getboolean('pickle_files'):
-            pd.to_pickle(correct_data, 'output_IRL1SHORE_' + data_file.rstrip('.nii') + '_corrected_data.pkl')
+            pd.to_pickle(correct_data, 'output_IRL1SHORE' + data_file.rstrip('.nii') + '_corrected_data.pkl')
         final_data = correct_data.values.reshape((data.shape[0], data.shape[1], data.shape[2], -1))
         correct_data_image  = nib.Nifti1Image(final_data, affine)
-        nib.save(correct_data_image,'output_IRL1SHORE_' + data_file.rstrip('.nii') + '_corrected_data_image.nii')
+        nib.save(correct_data_image,'output_IRL1SHORE' + data_file.rstrip('.nii') + '_corrected_data_image.nii')
        
     elif parameters['imputation'] == 'replace_all':
         skipped_voxels += predictions.isnull().sum().sum()
@@ -607,11 +618,13 @@ def IRL1SHORE():
     if parameters.getboolean('log_file'):
         with open('output_IRL1SHORE_' + data_file.rstrip('.nii') + '_log_file.txt', 'w') as f:
             f.write('Kurtosis model used to detect and impute signal outliers: ' + 'IRL1SHORE' + 2*'\n')
-            f.write('Algorithm parameters:\n')
+            f.write('Path to the DWI data file: ' + args.datafile + '\n') 
+            f.write('Path to the normalized gradient directions (b-vectors) file: ' + args.bvecfile + '\n') 
+            f.write('Path to the b-values file: ' + args.bvalfile + 2*'\n') 
+            f.write('Algorithm parameters:' + 2*'\n')
             for p in parameters:
                 f.write(p + ': ' + parameters[p] + '\n')
-            f.write('mask_file: ' + str(args.mask) + '\n')
-            f.write ('\n')
+            f.write('mask_file: ' + str(args.mask) + 2*'\n')
             f.write('Number of outliers in the dataset: ' + str(num_outliers) + '\n')
             f.write('Ratio of outliers in the dataset: ' + str(round(num_outliers / data_reshaped.size,5)) + '\n')
             f.write('Number of skipped voxels: ' + str(skipped_voxels))
@@ -645,6 +658,7 @@ def relSHORE():
     num_outliers   = 0
     skipped_voxels = 0
     
+    start = time.time()
     for i in range(data_masked.shape[0]):
         y = data_masked[i]
         model_ = IRLSHORE(parameters.getfloat('lambda'), 
@@ -665,6 +679,9 @@ def relSHORE():
         inliers = (~outliers)
         betas = model_.fit(X[inliers], y[inliers])
         predictions = model_.predict(X, y[inliers])
+        
+        if (i % 1000)==0:
+            print('\t{:.2%} Completed, Time elapsed: {}'.format(i/data_masked.shape[0], int(time.time()-start)))
     
         result_residuals[i] = residuals
         result_outliers[i] = outliers
@@ -689,6 +706,7 @@ def relSHORE():
             
     predictions = pd.DataFrame(result_predictions_unmasked)
     inliers     = pd.DataFrame(result_inliers_unmasked)
+    
     
     if parameters['imputation'] == 'replace_outliers':
         correct_data = pd.DataFrame(data_reshaped)
@@ -729,11 +747,13 @@ def relSHORE():
     if parameters.getboolean('log_file'):
         with open('output_relSHORE_' + data_file.rstrip('.nii') + '_log_file.txt', 'w') as f:
             f.write('Kurtosis model used to detect and impute signal outliers: ' + 'relSHORE' + 2*'\n')
-            f.write('Algorithm parameters:\n')
+            f.write('Path to the DWI data file: ' + args.datafile + '\n') 
+            f.write('Path to the normalized gradient directions (b-vectors) file: ' + args.bvecfile + '\n') 
+            f.write('Path to the b-values file: ' + args.bvalfile + 2*'\n') 
+            f.write('Algorithm parameters:' + 2*'\n')
             for p in parameters:
                 f.write(p + ': ' + parameters[p] + '\n')
-            f.write('mask_file: ' + str(args.mask) + '\n')
-            f.write ('\n')
+            f.write('mask_file: ' + str(args.mask) + 2*'\n')
             f.write('Number of outliers in the dataset: ' + str(num_outliers) + '\n')
             f.write('Ratio of outliers in the dataset: ' + str(round(num_outliers / data_reshaped.size,5)) + '\n')
             f.write('Number of skipped voxels: ' + str(skipped_voxels))
