@@ -1,4 +1,9 @@
-import itertools as it
+try:
+    from itertools import imap
+except ImportError:
+    # For Python 3 imap was removed as gloabl map now returns an iterator
+    imap = map
+
 import multiprocessing as mp
 import sys
 
@@ -15,22 +20,6 @@ class CylKurtosisModel(object):
         # return CylKurtosisFit()
         pass
 
-class CylKurtosisFit(object):
-
-    def __init__(self, model, kurt_params, directions=None):
-        self.model = model
-        self.gtab = self.model.gtab
-        self.kurt_params = kurt_params
-        self.n = np.prod(self.kurt_params.shape[:-1])
-
-        # If no fiber directions are given, assume that fibers have been
-        # aligned to the z-axis
-        if directions is not None:
-            self.directions = directions
-        else:
-            self.directions = np.full(self.kurt_params.shape[:-1],
-                                      np.array([0, 0, 1]))
-
     def _predict_helper(self, kurt_dir):
         """
 
@@ -39,7 +28,8 @@ class CylKurtosisFit(object):
         :return:
         """
         kurt_params, direction = kurt_dir
-        ax_dif, ra_dif, ax_kap, ra_kap, rue_kap = np.rollaxis(kurt_params, -1)
+        ax_dif, ra_dif, ax_kap, ra_kap, rue_kap = np.rollaxis(kurt_params,
+                                                              -1)
         v = direction
         signal = np.zeros((len(self.gtab.bvals),))
         for i in range(len(self.gtab.bvals)):
@@ -54,35 +44,42 @@ class CylKurtosisFit(object):
 
         return np.exp(np.array(signal))
 
-    def predict(self, S0=None, verbose=False, cpus=None, desc=""):
+    def predict(self, kurt_params, directions=None, S0=None, verbose=False,
+                cpus=None, desc=""):
         """Predict a diffusion weighted signal.
 
         Given the parameters of a
 
         :param kurt_params:
-        :param direction:
+        :param directions:
         :return:
         """
+        # If no fiber directions are given, assume that fibers have been
+        # aligned to the z-axis
+        if directions is None:
+            directions = np.full(kurt_params.shape[:-1] + (3,),
+                                 np.array([0, 0, 1]))
 
         # 1000 chunks for the progressbar to run smoother
-        chunksize = max(1, int(np.prod(self.directions.shape[:-1]) / 1000))
+        chunksize = max(1, int(np.prod(directions.shape[:-1]) / 1000))
 
         # Iterate over the data indices; show progress with tqdm
         # multiple processes for python > 3
         if sys.version_info[0] < 3:
-            signal = list(tqdm(it.imap(self._predict_helper,
-                                       zip(list(self.kurt_params),
-                                           list(self.directions))),
-                               total=np.prod(self.directions.shape[:-1]),
+            signal = list(tqdm(imap(self._predict_helper,
+                                    zip(list(kurt_params),
+                                        list(directions))),
+                               total=np.prod(directions.shape[:-1]),
                                disable=not verbose,
                                desc=desc))
         else:
             with mp.Pool(cpus) as p:
                 signal = list(tqdm(p.imap(self._predict_helper,
-                                          zip(list(self.kurt_params),
-                                              list(self.directions)),
+                                          zip(list(kurt_params),
+                                              list(directions)),
                                           chunksize),
-                                   total=np.prod(self.directions.shape[:-1]),
+                                   total=np.prod(
+                                       directions.shape[:-1]),
                                    disable=not verbose,
                                    desc=desc))
 
@@ -92,3 +89,13 @@ class CylKurtosisFit(object):
             signal = np.array(signal)
 
         return signal
+
+class CylKurtosisFit(object):
+
+    def __init__(self, model, kurt_params, directions=None):
+        self.model = model
+        self.gtab = self.model.gtab
+        self.kurt_params = kurt_params
+        self.n = np.prod(self.kurt_params.shape[:-1])
+
+

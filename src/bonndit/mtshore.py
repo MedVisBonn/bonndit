@@ -1,7 +1,13 @@
 from __future__ import division
 
 import errno
-import itertools as it
+
+try:
+    from itertools import imap
+except ImportError:
+    # For Python 3 imap was removed as gloabl map now returns an iterator
+    imap = map
+
 import logging
 import multiprocessing as mp
 import os
@@ -213,8 +219,8 @@ class mtShoreModel(object):
         # Iterate over the data indices; show progress with tqdm
         # multiple processes for python > 3
         if sys.version_info[0] < 3:
-            shore_coeff = list(tqdm(it.imap(self._fit_shore_helper,
-                                            zip(list(data), list(vecs))),
+            shore_coeff = list(tqdm(imap(self._fit_shore_helper,
+                                         zip(list(data), list(vecs))),
                                     total=np.prod(data.shape[:-1]),
                                     disable=not verbose,
                                     desc=desc))
@@ -280,7 +286,7 @@ class mtShoreFit(object):
                  order=self.order, bvals=self.gtab.bvals,
                  bvecs=self.gtab.bvecs)
 
-    def _predict_helper(self, fODF_volfracs):
+    def _convolve_helper(self, fODF_volfracs):
         """
 
         :param fODF_volfracs:
@@ -291,13 +297,19 @@ class mtShoreFit(object):
         conv_matrix = self.shore_convolution_matrix()
 
         x = np.append(esh.sym_to_esh(fODF), vol_fraction)
-        signal = (np.dot(conv_matrix, x))
+        signal = np.dot(conv_matrix, x)
 
         return signal
 
-    def predict(self, fODFs, vol_fractions=None, S0=None, verbose=False,
-                cpus=None, desc=""):
-        """
+    def convolve(self, fODFs, vol_fractions=None, S0=None, verbose=False,
+                 cpus=None, desc=""):
+        """Convolve the Shore Fit with several fODFs.
+
+        The multiprocessing for this function scales along the number of fODFs.
+        For a small number of fODFs it makes sense to specify cpus=1 to avoid
+        the overhead of spawning multiple processes. If you need to convolve a
+        large number of Shore Fits with several fODFs each better use "" which
+        scales along the number of Shore Fits.
 
         :param fODFs:
         :param vol_fractions:
@@ -315,8 +327,8 @@ class mtShoreFit(object):
 
         # Iterate over the data indices; show progress with tqdm
         # multiple processes for python > 3
-        if sys.version_info[0] < 3:
-            signals = list(tqdm(it.imap(self._predict_helper,
+        if sys.version_info[0] < 3 or cpus == 1:
+            signals = list(tqdm(imap(self._convolve_helper,
                                         zip(list(fODFs),
                                             list(vol_fractions))),
                                 total=np.prod(fODFs.shape[:-1]),
@@ -324,7 +336,7 @@ class mtShoreFit(object):
                                 desc=desc))
         else:
             with mp.Pool(cpus) as p:
-                signals = list(tqdm(p.imap(self._predict_helper,
+                signals = list(tqdm(p.imap(self._convolve_helper,
                                            zip(list(fODFs),
                                                list(vol_fractions)),
                                            chunksize),
@@ -355,7 +367,7 @@ class mtShoreFit(object):
         References
         ----------
         .. [1] M. Ankele, L. Lim, S. Groeschel and T. Schultz; "Versatile,
-        Robust        and Efficient Tractography With Constrained Higher-Order
+        Robust and Efficient Tractography With Constrained Higher-Order
         Tensor fODFs"; Int J Comput Assist Radiol Surg. 2017 Aug;
         12(8):1257-1270; doi: 10.1007/s11548-017-1593-6
         """
@@ -387,8 +399,8 @@ class mtShoreFit(object):
         try:
             func = deconv[pos]
             if sys.version_info[0] < 3:
-                result = list(tqdm(it.imap(partial(func, conv_matrix=conv_mat),
-                                           data),
+                result = list(tqdm(imap(partial(func, conv_matrix=conv_mat),
+                                        data),
                                    total=np.prod(data.shape[:-1]),
                                    disable=not verbose,
                                    desc='Optimization'))
@@ -618,7 +630,3 @@ def dti_masks(wm_mask, gm_mask, csf_mask, dti_fa, dti_mask=None, fawm=0.7):
     gm_img = nib.Nifti1Image(dti_gm, gm_mask.affine)
     csf_img = nib.Nifti1Image(dti_csf, csf_mask.affine)
     return wm_img, gm_img, csf_img
-
-
-def predict_mtshore():
-    pass
