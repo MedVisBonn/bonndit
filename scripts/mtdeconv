@@ -73,7 +73,7 @@ def main():
     shoreopts.add_argument('-z', '--zeta', default=700, type=float,
                            help='Radial scaling factor (default: 700)')
     shoreopts.add_argument('-t', '--tau', default=1 / (4 * np.pi ** 2), type=float,
-                           help='q-scaling')
+                           help='q-scaling (default: 1 / (4 * np.pi ** 2)')
     shoreopts.add_argument('-f', '--fawm', default=0.7, type=float,
                            help='White matter fractional anisotropy threshold (default: 0.7)')
 
