@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 
 import bonndit as bd
+from bonndit.michi import esh
 
 
 class SignalGenerator(object):
@@ -29,7 +30,7 @@ class SignalConvolver(object):
     def __init__(self, signals, directions, frameworkname, gtab, kwargs):
         self.signals = signals
         self.directions = directions
-        self.model = bd.conv_frameworks[frameworkname](gtab, **kwargs)
+        self.model = bd.conv_frameworks[frameworkname]
         self.gtab = gtab
         self.kwargs = kwargs
 
@@ -51,8 +52,9 @@ class SignalConvolver(object):
         """
 
         if type(combination) == np.ndarray:
+            # First column are signal indices, second column are fODF indices
             signal_indices = combination[:, 0]
-            fODf_indices = combination[:, 1]
+            fODF_indices = combination[:, 1]
 
         elif type(combination) == tuple:
             if combination == (1, 0):
@@ -130,4 +132,8 @@ class SignalConvolver(object):
         """
         signal_index, direction_index = signal_direction
         signal = self.signals[signal_index]
-        fODf = self.directions[direction_index]
+        fODF = self.directions[direction_index]
+        # Do I have to set the wm volume fraction to 1 if I set the others to 0
+
+        x = np.append(esh.sym_to_esh(fODF), [0, 0])
+        return np.dot(conv_matrix, x)

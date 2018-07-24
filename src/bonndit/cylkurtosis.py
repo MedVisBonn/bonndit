@@ -52,6 +52,10 @@ class CylKurtosisModel(object):
 
         :param kurt_params:
         :param directions:
+        :param S0:
+        :param verbose:
+        :param cpus:
+        :param desc:
         :return:
         """
         # If no fiber directions are given, assume that fibers have been
@@ -83,6 +87,7 @@ class CylKurtosisModel(object):
                                    disable=not verbose,
                                    desc=desc))
 
+        # TODO: Should there be the possibility of per signal S0 values?
         if S0:
             signal = np.array(signal) * S0
         else:
