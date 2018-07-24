@@ -1,6 +1,31 @@
+import logging
+from os.path import isfile
+
 import nibabel as nib
 import numpy as np
 from dipy.core.gradients import gradient_table
+
+
+def load(filename, kwargs={}):
+    """ This function loads NIFTI files based on the base of the filename. You
+    do not need to know wether the ending is .nii or .nii.gz.
+
+    :param filename:
+    :return:
+    """
+    base_filename = filename.rstrip(".gz").rstrip(".nii")
+
+    if isfile(base_filename + '.nii') and isfile(base_filename + '.nii.gz'):
+        logging.warning("There are two files with the same base in the "
+                        "input folder."
+                        " {} is loaded.".format(filename))
+        return nib.load(filename, **kwargs)
+
+    else:
+        try:
+            return nib.load(base_filename + '.nii', **kwargs)
+        except FileNotFoundError:
+            return nib.load(base_filename + '.nii.gz', **kwargs)
 
 
 def vector_norm(vectors):
