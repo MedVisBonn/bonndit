@@ -1,7 +1,13 @@
 from __future__ import division
 
 import errno
-import itertools as it
+
+try:
+    from itertools import imap
+except ImportError:
+    # For Python 3 imap was removed as gloabl map now returns an iterator
+    imap = map
+
 import logging
 import multiprocessing as mp
 import os
@@ -32,9 +38,12 @@ class mtShoreModel(object):
 
     The method for fitting arbitrary data to a shore model is also exposed to
     the user and returns a np.ndarray object holding the estimated shore
-    coefficients. We want to make your computations fast by default, hence if
-    you use python >= 3, by default all CPUs are used for the computations of
-    response functions.
+    coefficients. Multiprocessing is supported for python >= 3 and can speed up
+    the computation a lot. Unfortunately threads spawned by numpy interfere
+    with this multiprocessing. For optimal performance you need to set the
+    environment variable OMP_NUM_THREADS to 1. You can do this from within a
+    python script by inserting the following code before importing numpy:
+    ```os.environ["OMP_NUM_THREADS"] = "1"```
 
     References
     ----------
@@ -64,7 +73,7 @@ class mtShoreModel(object):
                                         self.tau)
 
     def fit_tissue_responses(self, data, dti_vecs, wm_mask, gm_mask, csf_mask,
-                             verbose=False, cpus=None):
+                             verbose=False, cpus=1):
         """ Compute tissue response functions.
 
         Shore coefficients are fitted for white matter, gray matter and
@@ -184,7 +193,7 @@ class mtShoreModel(object):
 
         return la.lstsq(shore_m, signal, rcond)[0]
 
-    def fit_shore(self, data, vecs=None, verbose=False, cpus=None, desc=''):
+    def fit_shore(self, data, vecs=None, verbose=False, cpus=1, desc=''):
         """ Fit shore coefficients to diffusion weighted imaging data.
 
         If an array of vectors is specified (vecs), the gradient table is
@@ -212,8 +221,8 @@ class mtShoreModel(object):
 
         # Iterate over the data indices; show progress with tqdm
         # multiple processes for python > 3
-        if sys.version_info[0] < 3:
-            shore_coeff = list(tqdm(it.imap(self._fit_shore_helper,
+        if sys.version_info[0] < 3 or cpus == 1:
+            shore_coeff = list(tqdm(imap(self._fit_shore_helper,
                                             zip(list(data), list(vecs))),
                                     total=np.prod(data.shape[:-1]),
                                     disable=not verbose,
@@ -280,7 +289,7 @@ class mtShoreFit(object):
                  order=self.order, bvals=self.gtab.bvals,
                  bvecs=self.gtab.bvecs)
 
-    def fodf(self, data, pos='hpsd', mask=None, verbose=False, cpus=None):
+    def fodf(self, data, pos='hpsd', mask=None, verbose=False, cpus=1):
         """ Deconvolve DWI data with multiple tissue response [1]_.
 
         :param data: diffusion weighted data
@@ -326,8 +335,8 @@ class mtShoreFit(object):
         data = data[mask, :]
         try:
             func = deconv[pos]
-            if sys.version_info[0] < 3:
-                result = list(tqdm(it.imap(partial(func, conv_matrix=conv_mat),
+            if sys.version_info[0] < 3 or cpus == 1:
+                result = list(tqdm(imap(partial(func, conv_matrix=conv_mat),
                                            data),
                                    total=np.prod(data.shape[:-1]),
                                    disable=not verbose,
