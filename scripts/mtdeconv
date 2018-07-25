@@ -11,8 +11,11 @@ import argparse
 import logging
 import os
 
+# Set  OMP_NUM_THREADS to 1 before importing numpy
+os.environ["OMP_NUM_THREADS"] = "1"
+
 import nibabel as nib
-import numpy as np
+from math import pi
 from dipy.core.gradients import gradient_table
 from dipy.io import read_bvals_bvecs
 
@@ -72,8 +75,9 @@ def main():
                            help='Order of the shore basis (default: 4)')
     shoreopts.add_argument('-z', '--zeta', default=700, type=float,
                            help='Radial scaling factor (default: 700)')
-    shoreopts.add_argument('-t', '--tau', default=1 / (4 * np.pi ** 2), type=float,
-                           help='q-scaling')
+    shoreopts.add_argument('-t', '--tau', default=1 / (4 * pi ** 2),
+                           type=float,
+                           help='q-scaling (default: 1 / (4 * math.pi ** 2)')
     shoreopts.add_argument('-f', '--fawm', default=0.7, type=float,
                            help='White matter fractional anisotropy threshold (default: 0.7)')
 
@@ -83,7 +87,7 @@ def main():
 
     multiprocessing = parser.add_argument_group('multiprocessing (optional)', 'Configure the multiprocessing behaviour \
     (only supported for Python 3)')
-    multiprocessing.add_argument('-w', '--workers', default=None,
+    multiprocessing.add_argument('-w', '--workers', default=None, type=int,
                                  help='Number of cpus (default: all available cpus)')
 
     log = parser.add_argument_group('logging (optional)', 'Configure the logging behaviour')
@@ -130,21 +134,21 @@ def main():
                                      args.fawm, args.constraint))
 
     # Load fractional anisotropy
-    dti_fa = nib.load(os.path.join(indir, args.dtifa))
+    dti_fa = bd.load(os.path.join(indir, args.dtifa))
 
     # Load DTI mask
-    dti_mask = nib.load(os.path.join(indir, args.brainmask))
+    dti_mask = bd.load(os.path.join(indir, args.brainmask))
 
     # Load tissue segmentation masks
-    csf_mask = nib.load(os.path.join(indir, args.csfmask))
-    gm_mask = nib.load(os.path.join(indir, args.gmmask))
-    wm_mask = nib.load(os.path.join(indir, args.wmmask))
+    csf_mask = bd.load(os.path.join(indir, args.csfmask))
+    gm_mask = bd.load(os.path.join(indir, args.gmmask))
+    wm_mask = bd.load(os.path.join(indir, args.wmmask))
 
     # Load first eigenvectors of a precalculated diffusion tensor
-    dti_vecs = nib.load(os.path.join(indir, args.dtivecs))
+    dti_vecs = bd.load(os.path.join(indir, args.dtivecs))
 
     # Load diffusion weighted data
-    data = nib.load(os.path.join(indir, args.data))
+    data = bd.load(os.path.join(indir, args.data))
 
     # Load bvals and bvecs and initialize a GradientTable object
     bvals, bvecs = read_bvals_bvecs(os.path.join(indir, "bvals"),

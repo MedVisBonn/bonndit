@@ -9,6 +9,7 @@ __version__ = '0.1.0'
 from dipy.reconst.dti import TensorModel
 
 from .cylkurtosis import CylKurtosisModel
+from .io import load
 from .mtshore import mtShoreFit, mtShoreModel
 
 # In future we want to add all models from dipy and bonndit
