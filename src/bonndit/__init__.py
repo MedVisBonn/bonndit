@@ -10,11 +10,12 @@ from dipy.reconst.dti import TensorModel
 
 from .cylkurtosis import CylKurtosisModel
 from .io import load
-from .mtshore import mtShoreFit, mtShoreModel
+from .shoremt import ShoreFitMt, ShoreModelMt
+from .shorest import ShoreModel
 
 # In future we want to add all models from dipy and bonndit
 dwi_models = {  # "mtshore": mtShoreModel,
     "cylkurtosis": CylKurtosisModel,
     "tensor": TensorModel}
 
-conv_frameworks = {"mtshore": mtShoreFit, }
+conv_frameworks = {"mtshore": ShoreFitMt, }
