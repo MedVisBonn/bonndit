@@ -1,9 +1,10 @@
-from scipy.special import genlaguerre, gamma
 from math import factorial
-import numpy as np
 
-from . import tensor
+import numpy as np
+from scipy.special import genlaguerre, gamma
+
 from . import esh
+from . import tensor
 from .vector import cart_to_sphere
 
 MAX_ORDER = esh.MAX_ORDER  # 12
@@ -241,4 +242,43 @@ def signal_to_kernel(signal, radial_order, angular_order):
             #	if len(signal) > 5:
             #		kernel[4,4] = signal[5] / sh[10]
     # print kernel
+    return kernel
+
+
+# Function from mic-tools/msmt-deconv/shore-deconvolve
+from bonndit.michi import tensor4
+
+
+def signal_to_rank1_kernel(signal):
+    # rank-1 sh
+    T = tensor4.power(np.array([0, 0, 1]))
+    sh = esh.sym_to_esh(T)
+    # print sh
+
+    # Kernel_ln
+    kernel = np.zeros((9, 9))
+    kernel[0, 0] = signal[0] / sh[0]
+    kernel[0, 1] = signal[1] / sh[0]
+    kernel[0, 2] = signal[2] / sh[0]
+    if len(signal) > 3:
+        kernel[2, 2] = signal[3] / sh[3]
+        kernel[2, 3] = signal[4] / sh[3]
+    if len(signal) > 5:
+        kernel[4, 4] = signal[5] / sh[10]
+    # print kernel
+    return kernel
+
+
+def signal_to_delta_kernel(signal, order):
+    deltash = tensor.esh.eval_basis(order, 0, 0)
+    # Kernel_ln
+    kernel = np.zeros((order + 1, order + 1))
+    counter = 0
+    ccounter = 0
+    for l in range(0, order + 1, 2):
+        for n in range(int((order - l) / 2) + 1):
+            kernel[l, l + n] = signal[counter] / deltash[ccounter]
+            counter += 1
+        ccounter += 2 * l + 3
+    #    print kernel
     return kernel

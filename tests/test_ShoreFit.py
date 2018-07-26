@@ -7,7 +7,7 @@ import os
 
 import nibabel as nib
 
-import bonndit.mtshore as bs
+import bonndit.shoremt as bs
 from bonndit.michi import fields
 from .constants import DECONVOLUTION_RESULTS_DIR as DRD
 from .constants import SHORE_FIT_PRECOMPUTED, DWMRI_DUMMY_DATA, \
@@ -20,7 +20,7 @@ def test_ShoreFit_deconvolution_hpsd():
     """ Here we test the deconvolution with the hpsd constraint.
     The result calculated with bonndit are compared to results from the old code
     """
-    fit = bs.mtShoreFit.load(SHORE_FIT_PRECOMPUTED)
+    fit = bs.ShoreFitMt.load(SHORE_FIT_PRECOMPUTED)
     out, wmout, gmout, csfout = fit.fodf(data, pos='hpsd')
     tensors, mask, meta = fields.load_tensor(ODF_RESULT_HPSD)
 
@@ -34,7 +34,7 @@ def test_ShoreFit_deconvolution_nonneg():
     """ Here we test the deconvolution with the hpsd constraint.
     The result calculated with bonndit are compared to results from the old code
     """
-    fit = bs.mtShoreFit.load(SHORE_FIT_PRECOMPUTED)
+    fit = bs.ShoreFitMt.load(SHORE_FIT_PRECOMPUTED)
     out, wmout, gmout, csfout = fit.fodf(data, pos='nonneg')
     tensors, mask, meta = fields.load_tensor(ODF_RESULT_NONNEG)
 
@@ -48,7 +48,7 @@ def test_ShoreFit_deconvolution_no_constraint():
     """ Here we test the deconvolution with the hpsd constraint.
     The result calculated with bonndit are compared to results from the old code
     """
-    fit = bs.mtShoreFit.load(SHORE_FIT_PRECOMPUTED)
+    fit = bs.ShoreFitMt.load(SHORE_FIT_PRECOMPUTED)
     out, wmout, gmout, csfout = fit.fodf(data, pos='none')
     tensors, mask, meta = fields.load_tensor(ODF_RESULT_NO_CONSTRAINT)
 

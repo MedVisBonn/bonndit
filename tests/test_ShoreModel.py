@@ -9,8 +9,8 @@ import nibabel as nib
 from dipy.core.gradients import gradient_table
 from dipy.io import read_bvals_bvecs
 
-import bonndit.mtshore as bdshore
-from bonndit import mtShoreModel, mtShoreFit
+import bonndit.shoremt as bdshore
+from bonndit import ShoreModelMt, ShoreFitMt
 from bonndit.io import fsl_gtab_to_worldspace, fsl_vectors_to_worldspace
 from .constants import DATA_DIR, SHORE_FIT_TEST
 
@@ -44,10 +44,10 @@ gtab = gradient_table(bvals, bvecs)
 gtab = fsl_gtab_to_worldspace(gtab, data.affine)
 dti_vecs = fsl_vectors_to_worldspace(dti_vecs)
 
-model = mtShoreModel(gtab)
-fit = model.fit_tissue_responses(data, dti_vecs, wm_mask, gm_mask, csf_mask)
+model = ShoreModelMt(gtab)
+fit = model.fit(data, dti_vecs, wm_mask, gm_mask, csf_mask)
 
-reference_fit = mtShoreFit.load(SHORE_FIT_TEST)
+reference_fit = ShoreFitMt.load(SHORE_FIT_TEST)
 
 ALLOWED_ERROR = 1e-7
 def test_ShoreModel_signal_csf():
@@ -70,6 +70,6 @@ def test_ShoreModel_signal_wm():
     The result calculated with bonndit are compared to results from the old code
     """
 
-    model = mtShoreModel(gtab)
-    fit = model.fit_tissue_responses(data, dti_vecs, wm_mask, gm_mask, csf_mask)
+    model = ShoreModelMt(gtab)
+    fit = model.fit(data, dti_vecs, wm_mask, gm_mask, csf_mask)
     assert ((reference_fit.signal_wm - fit.signal_wm) / reference_fit.signal_wm < ALLOWED_ERROR).all()

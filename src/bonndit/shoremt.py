@@ -22,12 +22,12 @@ from dipy.core.gradients import gradient_table
 from dipy.reconst.shore import shore_matrix
 from tqdm import tqdm
 
+import bonndit as bd
 from bonndit.constants import LOTS_OF_DIRECTIONS
 from bonndit.michi import shore, esh, tensor
-from .gradients import gtab_reorient
 
 
-class mtShoreModel(object):
+class ShoreModelMt(object):
 
     """ Model the diffusion imaging signal using the shore basis functions.
 
@@ -72,8 +72,8 @@ class mtShoreModel(object):
             self.shore_m = shore_matrix(self.order, self.zeta, self.gtab,
                                         self.tau)
 
-    def fit_tissue_responses(self, data, dti_vecs, wm_mask, gm_mask, csf_mask,
-                             verbose=False, cpus=1):
+    def fit(self, data, dti_vecs, wm_mask, gm_mask, csf_mask,
+            verbose=False, cpus=1):
         """ Compute tissue response functions.
 
         Shore coefficients are fitted for white matter, gray matter and
@@ -103,26 +103,35 @@ class mtShoreModel(object):
         # Calculate wm response
         wm_voxels = data.get_data()[wm_mask.get_data() == 1]
         wm_vecs = dti_vecs.get_data()[wm_mask.get_data() == 1]
-        wmshore_coeffs = self.fit_shore(wm_voxels, wm_vecs, verbose=verbose,
-                                        cpus=cpus, desc='WM response')
+        wmshore_coeffs = bd.ShoreModel(self.gtab, self.order, self.zeta,
+                                       self.tau).fit(wm_voxels, wm_vecs,
+                                                     verbose=verbose,
+                                                     cpus=cpus,
+                                                     desc='WM response').coefs
         wmshore_coeff = self.shore_accumulate(wmshore_coeffs)
         signal_wm = self.shore_compress(wmshore_coeff)
 
         # Calculate gm response
         gm_voxels = data.get_data()[gm_mask.get_data() == 1]
-        gmshore_coeffs = self.fit_shore(gm_voxels, verbose=verbose,
-                                        cpus=cpus, desc='GM response')
+        gmshore_coeffs = bd.ShoreModel(self.gtab, self.order, self.zeta,
+                                       self.tau).fit(gm_voxels,
+                                                     verbose=verbose,
+                                                     cpus=cpus,
+                                                     desc='GM response').coefs
         gmshore_coeff = self.shore_accumulate(gmshore_coeffs)
         signal_gm = self.shore_compress(gmshore_coeff)
 
         # Calculate csf response
         csf_voxels = data.get_data()[csf_mask.get_data() == 1]
-        csfshore_coeffs = self.fit_shore(csf_voxels, verbose=verbose,
-                                         cpus=cpus, desc='CSF response')
+        csfshore_coeffs = bd.ShoreModel(self.gtab, self.order, self.zeta,
+                                        self.tau).fit(csf_voxels,
+                                                      verbose=verbose,
+                                                      cpus=cpus,
+                                                      desc='CSF response').coefs
         csfshore_coeff = self.shore_accumulate(csfshore_coeffs)
         signal_csf = self.shore_compress(csfshore_coeff)
 
-        return mtShoreFit(self, [signal_csf, signal_gm, signal_wm])
+        return ShoreFitMt(self, [signal_csf, signal_gm, signal_wm])
 
     def shore_compress(self, coefs):
         """ Compress the shore coefficients
@@ -167,80 +176,16 @@ class mtShoreModel(object):
         with np.errstate(divide='ignore', invalid='ignore'):
             return shore_accum / accum_count
 
-    def _fit_shore_helper(self, data_vecs, rcond=None):
-        """ Fit shore coefficients to diffusion weighted imaging data.
 
-        This is a helper function for parallelizing the fitting of shore
-        coefficients. First it checks whether the default shore matrix can be
-        used or if a vector is specified to first rotate the gradient table
-        and compute a custom shore matrix for the voxel.
+class ShoreFitMt(object):
 
-        :param data_vecs: tuple with DWI signal as first entry and a vector or
-        None as second entry
-        :return: fitted shore coefficients
+    def __init__(self, model, shore_coef, kernel="rank1"):
         """
 
-        signal, vec = data_vecs[0], data_vecs[1]
-
-        if vec is not None:
-            with np.errstate(divide='ignore', invalid='ignore'):
-                shore_m = shore_matrix(self.order, self.zeta,
-                                       gtab_reorient(self.gtab, vec),
-                                       self.tau)
-
-        else:
-            shore_m = self.shore_m
-
-        return la.lstsq(shore_m, signal, rcond)[0]
-
-    def fit_shore(self, data, vecs=None, verbose=False, cpus=1, desc=''):
-        """ Fit shore coefficients to diffusion weighted imaging data.
-
-        If an array of vectors is specified (vecs), the gradient table is
-        rotated with an affine matrix which would align the vector to the
-        z-axis. This can be used to compute comparable shore coefficients for
-        white matter regions of different orientation. Use the first
-        eigenvectors of precomputed diffusion tensors as vectors and use only
-        regions with high fractional anisotropy to ensure working only with
-        single fiber voxels.
-
-        :param data: ndarray with DWI data
-        :param vecs: ndarray which specifies for every data point the main
-        direction of diffusion (e.g. first eigenvector of the diffusion tensor)
-        :param verbose: set to true to show a progress bar
-        :param cpus: Number of cpu workers to use
-        :param desc: description for the progress bar
-        :return:  array of per voxel shore coefficients
+        :param model:
+        :param shore_coef:
+        :param kernel:
         """
-        # 1000 chunks for the progressbar to run smoother
-        chunksize = max(1, int(np.prod(data.shape[:-1]) / 1000))
-
-        # If no vectors are specified create array of Nones for iteration.
-        if type(vecs) != np.ndarray and vecs is None:
-            vecs = np.empty(data.shape[:-1], dtype=object)
-
-        # Iterate over the data indices; show progress with tqdm
-        # multiple processes for python > 3
-        if sys.version_info[0] < 3 or cpus == 1:
-            shore_coeff = list(tqdm(imap(self._fit_shore_helper,
-                                         zip(list(data), list(vecs))),
-                                    total=np.prod(data.shape[:-1]),
-                                    disable=not verbose,
-                                    desc=desc))
-        else:
-            with mp.Pool(cpus) as p:
-                shore_coeff = list(tqdm(p.imap(self._fit_shore_helper,
-                                               zip(list(data), list(vecs)),
-                                               chunksize),
-                                        total=np.prod(data.shape[:-1]),
-                                        disable=not verbose,
-                                        desc=desc))
-        return np.array(shore_coeff)
-
-
-class mtShoreFit(object):
-
-    def __init__(self, model, shore_coef):
         self.model = model
         self.signal_csf = shore_coef[0]
         self.signal_gm = shore_coef[1]
@@ -251,12 +196,21 @@ class mtShoreFit(object):
         self.tau = model.tau
 
         # Get deconvolution kernels
-        self.kernel_csf = shore.signal_to_kernel(self.signal_csf, self.order,
-                                                 self.order)
-        self.kernel_gm = shore.signal_to_kernel(self.signal_gm, self.order,
-                                                self.order)
-        self.kernel_wm = shore.signal_to_kernel(self.signal_wm, self.order,
-                                                self.order)
+        if kernel == "rank1":
+            self.kernel_csf = shore.signal_to_rank1_kernel(self.signal_csf)
+            self.kernel_gm = shore.signal_to_rank1_kernel(self.signal_gm)
+            self.kernel_wm = shore.signal_to_rank1_kernel(self.signal_wm)
+        elif kernel == "delta":
+            self.kernel_csf = shore.signal_to_delta_kernel(self.signal_csf,
+                                                           self.order)
+            self.kernel_gm = shore.signal_to_delta_kernel(self.signal_gm,
+                                                          self.order)
+            self.kernel_wm = shore.signal_to_delta_kernel(self.signal_wm,
+                                                          self.order)
+        else:
+            msg = "{} is not a valid option for kernel. " \
+                  "Use 'rank1' or 'delta'.".format(kernel)
+            raise ValueError(msg)
 
     @classmethod
     def load(cls, filepath):
@@ -269,7 +223,7 @@ class mtShoreFit(object):
         response = np.load(filepath)
 
         gtab = gradient_table(response['bvals'], response['bvecs'])
-        model = mtShoreModel(gtab, response['order'], response['zeta'],
+        model = ShoreModelMt(gtab, response['order'], response['zeta'],
                              response['tau'])
         return cls(model, (response['csf'], response['gm'], response['wm']))
 

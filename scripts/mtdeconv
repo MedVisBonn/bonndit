@@ -158,7 +158,8 @@ def main():
     logging.info('Input loaded.')
 
     # Create tissue masks based on fractional anisotropy values
-    wm_mask, gm_mask, csf_mask = bd.mtshore.dti_masks(wm_mask, gm_mask, csf_mask,
+    wm_mask, gm_mask, csf_mask = bd.shoremt.dti_masks(wm_mask, gm_mask,
+                                                      csf_mask,
                                                       dti_fa, dti_mask, args.fawm)
     logging.info('Fractional anisotropy based tissue masks created.')
 
@@ -179,19 +180,21 @@ def main():
     # Check if response is already in the output folder
     if not args.responseonly:
         if os.path.exists(os.path.join(outdir, "response.npz")):
-            fit = bd.mtShoreFit.load(os.path.join(outdir, "response.npz"))
+            fit = bd.ShoreFitMt.load(os.path.join(outdir, "response.npz"))
             logging.info('Existing response functions loaded.')
 
         else:
-            model = bd.mtShoreModel(gtab, args.order, args.zeta, args.tau)
-            fit = model.fit_tissue_responses(data, dti_vecs, wm_mask, gm_mask, csf_mask, verbose=args.verbose, cpus=args.workers)
+            model = bd.ShoreModelMt(gtab, args.order, args.zeta, args.tau)
+            fit = model.fit(data, dti_vecs, wm_mask, gm_mask, csf_mask,
+                            verbose=args.verbose, cpus=args.workers)
             fit.save(os.path.join(outdir, "response.npz"))
             logging.info('Response functions estimated and saved.')
 
     # Force recalculate the response if response only is specified
     else:
-        model = bd.mtShoreModel(gtab, args.order, args.zeta, args.tau)
-        fit = model.fit_tissue_responses(data, dti_vecs, wm_mask, gm_mask, csf_mask, verbose=args.verbose,
+        model = bd.ShoreModelMt(gtab, args.order, args.zeta, args.tau)
+        fit = model.fit(data, dti_vecs, wm_mask, gm_mask, csf_mask,
+                        verbose=args.verbose,
                                          cpus=args.workers)
         fit.save(os.path.join(outdir, "response.npz"))
         logging.info('Response functions recalculated and saved.')
