@@ -197,9 +197,12 @@ class ShoreFitMt(object):
 
         # Get deconvolution kernels
         if kernel == "rank1":
-            self.kernel_csf = shore.signal_to_rank1_kernel(self.signal_csf)
-            self.kernel_gm = shore.signal_to_rank1_kernel(self.signal_gm)
-            self.kernel_wm = shore.signal_to_rank1_kernel(self.signal_wm)
+            self.kernel_csf = shore.signal_to_rank1_kernel(self.signal_csf,
+                                                           self.order)
+            self.kernel_gm = shore.signal_to_rank1_kernel(self.signal_gm,
+                                                          self.order)
+            self.kernel_wm = shore.signal_to_rank1_kernel(self.signal_wm,
+                                                          self.order)
         elif kernel == "delta":
             self.kernel_csf = shore.signal_to_delta_kernel(self.signal_csf,
                                                            self.order)
@@ -535,9 +538,9 @@ class ShoreFitMt(object):
             shore_m = shore_matrix(self.order, self.zeta, self.gtab, self.tau)
 
         # then, convolution
-        M_wm = shore.matrix_kernel(self.kernel_wm, self.order, self.order)
-        M_gm = shore.matrix_kernel(self.kernel_gm, self.order, self.order)
-        M_csf = shore.matrix_kernel(self.kernel_csf, self.order, self.order)
+        M_wm = shore.matrix_kernel(self.kernel_wm, self.order)
+        M_gm = shore.matrix_kernel(self.kernel_gm, self.order)
+        M_csf = shore.matrix_kernel(self.kernel_csf, self.order)
         M = np.hstack((M_wm, M_gm[:, :1], M_csf[:, :1]))
 
         # now, multiply them together

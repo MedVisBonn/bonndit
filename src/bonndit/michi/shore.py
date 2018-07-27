@@ -202,14 +202,13 @@ def _kappa(zeta, n, l):
 
 # deconvolution matrix into spherical harmonics
 #    M_(lnm)(l'm') = kernel_ln * delta_ll' * delta_mm'
-def matrix_kernel(kernel, radial_order, angular_order):
-    assert (radial_order >= angular_order)
-    size = get_size(radial_order, angular_order)
-    M = np.zeros((size, esh.LENGTH[angular_order]))
+def matrix_kernel(kernel, order):
+    size = get_size(order, order)
+    M = np.zeros((size, esh.LENGTH[order]))
 
     counter = 0
-    for l in range(0, angular_order + 1, 2):
-        for n in range(l, (radial_order + l) // 2 + 1):
+    for l in range(0, order + 1, 2):
+        for n in range(l, (order + l) // 2 + 1):
             for m in range(-l, l + 1):
                 # argh, dipy.reconst.shore.shore_order(n,l,m)[1] gives wrong indices!!!
                 #   -> using counter instead
@@ -218,56 +217,31 @@ def matrix_kernel(kernel, radial_order, angular_order):
     return M
 
 
-def signal_to_kernel(signal, radial_order, angular_order):
+def signal_to_rank1_kernel(signal, order):
     # rank-1 sh
-    T = tensor.power(np.array([0, 0, 1]), angular_order)
+    T = tensor.power(np.array([0, 0, 1]), order)
     sh = esh.sym_to_esh(T)
     # print sh
 
     # Kernel_ln
-    kernel = np.zeros((9, 9))
+    kernel = np.zeros((order + 1, order + 1))
 
     counter = 0
-    for l in range(0, angular_order + 1, 2):
-        for n in range(l, (radial_order + l) // 2 + 1):
+    for l in range(0, order + 1, 2):
+        for n in range(l, (order + l) // 2 + 1):
             kernel[l, n] = signal[counter] / sh[esh.INDEX_OFFSET[l]]
             counter += 1
 
-            #	kernel[0,0] = signal[0] / sh[0]
-            #	kernel[0,1] = signal[1] / sh[0]
-            #	kernel[0,2] = signal[2] / sh[0]
-            #	if len(signal) > 3:
-            #		kernel[2,2] = signal[3] / sh[3]
-            #		kernel[2,3] = signal[4] / sh[3]
-            #	if len(signal) > 5:
-            #		kernel[4,4] = signal[5] / sh[10]
-    # print kernel
+    # This is what happens
+    #	kernel[0,0] = signal[0] / sh[0]
+    #	kernel[0,1] = signal[1] / sh[0]
+    #	kernel[0,2] = signal[2] / sh[0]
+    #	if len(signal) > 3:
+    #		kernel[2,2] = signal[3] / sh[3]
+    #		kernel[2,3] = signal[4] / sh[3]
+    #	if len(signal) > 5:
+    #		kernel[4,4] = signal[5] / sh[10]
     return kernel
-
-
-# Function from mic-tools/msmt-deconv/shore-deconvolve
-from bonndit.michi import tensor4
-
-
-def signal_to_rank1_kernel(signal):
-    # rank-1 sh
-    T = tensor4.power(np.array([0, 0, 1]))
-    sh = esh.sym_to_esh(T)
-    # print sh
-
-    # Kernel_ln
-    kernel = np.zeros((9, 9))
-    kernel[0, 0] = signal[0] / sh[0]
-    kernel[0, 1] = signal[1] / sh[0]
-    kernel[0, 2] = signal[2] / sh[0]
-    if len(signal) > 3:
-        kernel[2, 2] = signal[3] / sh[3]
-        kernel[2, 3] = signal[4] / sh[3]
-    if len(signal) > 5:
-        kernel[4, 4] = signal[5] / sh[10]
-    # print kernel
-    return kernel
-
 
 def signal_to_delta_kernel(signal, order):
     deltash = tensor.esh.eval_basis(order, 0, 0)
@@ -280,5 +254,4 @@ def signal_to_delta_kernel(signal, order):
             kernel[l, l + n] = signal[counter] / deltash[ccounter]
             counter += 1
         ccounter += 2 * l + 3
-    #    print kernel
     return kernel

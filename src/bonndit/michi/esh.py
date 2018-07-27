@@ -1,9 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from math import sin, cos, pi, exp, sqrt
+from math import sin, cos, pi, sqrt
+
 import numpy as np
 import numpy.linalg as la
+
 from . import tensor as T
 from .mmath import binom, multinom, cos_n, sin_n
 
@@ -210,6 +212,8 @@ def legendre_slow(order, theta):
 
 
 def eval_basis(order, theta, phi):
+    # Evaluate spherical harmonics for given order for point on sphere
+    # defined by theta and phi
     res = legendre(order, theta)
 
     cos_m_phi = [cos(m * phi) for m in range(order + 1)]
