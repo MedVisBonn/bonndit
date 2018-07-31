@@ -24,7 +24,7 @@ def LLSfit(X, y, regularization_constant):
 
 def WLLSfit(X, y, W, regularization_constant):
     """
-    Tits Weighted Linear Least Squares given weights matrix
+    Fits Weighted Linear Least Squares given weights matrix
     :param X: Design matrix
     :param y: Preprocessed data vector
     :param W: Weights matrix
