@@ -20,8 +20,6 @@ def _get_size(a, r):
 SIZES = [
     [_get_size(a, r) if r >= a else 0 for a in range(MAX_ORDER + 1)]
     for r in range(MAX_ORDER + 1)]
-
-
 # SIZES = [[1, 0,  0, 0,  0, 0,   0, 0,   0, 0,   0, 0,   0],
 # [0, 0,  0, 0,  0, 0,   0, 0,   0, 0,   0, 0,   0],
 # [2, 0,  7, 0,  0, 0,   0, 0,   0, 0,   0, 0,   0],
@@ -36,6 +34,7 @@ SIZES = [
 # [0, 0,  0, 0,  0, 0,   0, 0,   0, 0,   0, 0,   0],
 # [7, 0, 37, 0, 82, 0, 134, 0, 185, 0, 227, 0, 252]]
 
+
 def _get_kernel_size(a, r):
     if (a % 2) == 1 or (r % 2) == 1:
         return 0
@@ -46,8 +45,6 @@ def _get_kernel_size(a, r):
 KERNEL_SIZES = [
     [_get_kernel_size(a, r) if r >= a else 0 for a in range(MAX_ORDER + 1)]
     for r in range(MAX_ORDER + 1)]
-
-
 # KERNEL_SIZES = [[1, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0],
 # [0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0],
 # [2, 0,  3, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0],
@@ -61,6 +58,7 @@ KERNEL_SIZES = [
 # [6, 0, 11, 0, 15, 0, 18, 0, 20, 0, 21, 0,  0],
 # [0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0],
 # [7, 0, 13, 0, 18, 0, 22, 0, 25, 0, 27, 0, 28]]
+
 
 def get_size(radial_order, angular_order):
     return SIZES[radial_order][angular_order]
