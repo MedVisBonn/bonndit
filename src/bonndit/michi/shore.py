@@ -17,8 +17,6 @@ def _get_size(a, r):
 
 
 SIZES = [[_get_size(a, r) if r >= a else 0 for a in range(MAX_ORDER + 1)] for r in range(MAX_ORDER + 1)]
-
-
 # SIZES = [[1, 0,  0, 0,  0, 0,   0, 0,   0, 0,   0, 0,   0],
 #         [0, 0,  0, 0,  0, 0,   0, 0,   0, 0,   0, 0,   0],
 #         [2, 0,  7, 0,  0, 0,   0, 0,   0, 0,   0, 0,   0],
@@ -41,8 +39,6 @@ def _get_kernel_size(a, r):
 
 
 KERNEL_SIZES = [[_get_kernel_size(a, r) if r >= a else 0 for a in range(MAX_ORDER + 1)] for r in range(MAX_ORDER + 1)]
-
-
 # KERNEL_SIZES = [[1, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0],
 #                [0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0],
 #                [2, 0,  3, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0],
