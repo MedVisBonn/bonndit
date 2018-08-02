@@ -1,5 +1,5 @@
 from __future__ import division
-import shorekurtosis
+from bonndit import datacorrection
 import time
 import pandas as pd
 import os
