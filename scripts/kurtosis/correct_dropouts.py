@@ -1,5 +1,5 @@
 from __future__ import division
-import models
+import shorekurtosis
 import time
 import pandas as pd
 import os
