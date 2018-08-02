@@ -14,9 +14,17 @@ SHORE_FIT_TEST = os.path.join(DECONVOLUTION_RESULTS_DIR, 'response.npz')
 SHORE_FIT_PRECOMPUTED = os.path.join(DATA_DIR, 'response_complete.npz')
 
 # fodfs calculated with michi-temp shore_deconvolve (added fsl flip sign, rotated to worldspace)
-ODF_RESULT_HPSD = os.path.join(DECONVOLUTION_RESULTS_DIR,
+ODF_RESULT_HPSD_RANK1 = os.path.join(DECONVOLUTION_RESULTS_DIR,
                                'odf_hpsd_rank1.nrrd')
-ODF_RESULT_NONNEG = os.path.join(DECONVOLUTION_RESULTS_DIR,
+ODF_RESULT_NONNEG_RANK1 = os.path.join(DECONVOLUTION_RESULTS_DIR,
                                  'odf_nonneg_rank1.nrrd')
-ODF_RESULT_NO_CONSTRAINT = os.path.join(DECONVOLUTION_RESULTS_DIR,
+ODF_RESULT_NO_CONSTRAINT_RANK1 = os.path.join(DECONVOLUTION_RESULTS_DIR,
                                         'odf_none_rank1.nrrd')
+
+# fodfs calculated with mic-tools shore-deconvolve using delta kernel
+ODF_RESULT_HPSD_DELTA = os.path.join(DECONVOLUTION_RESULTS_DIR,
+                                     'odf_hpsd_delta.nrrd')
+ODF_RESULT_NONNEG_DELTA = os.path.join(DECONVOLUTION_RESULTS_DIR,
+                                       'odf_nonneg_delta.nrrd')
+ODF_RESULT_NO_CONSTRAINT_DELTA = os.path.join(DECONVOLUTION_RESULTS_DIR,
+                                              'odf_none_delta.nrrd')

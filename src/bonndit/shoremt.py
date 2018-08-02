@@ -362,8 +362,18 @@ class ShoreFitMt(object):
         # Create convolution matrix
         conv_mat = self.shore_convolution_matrix()
         with np.errstate(divide='ignore', invalid='ignore'):
-            logging.debug('Condition number of convolution matrtix:',
-                          la.cond(conv_mat))
+            cond_number = la.cond(conv_mat)
+            # For the proposed method of kernel rank1 and order 4 the condition
+            # number of the matrix should not be larger than 1000 otherwise
+            # show a warnig
+            if kernel == "rank1" and self.order == 4 and cond_number > 1000:
+                logging.warning("For kernel=rank1 and order=4 the condition"
+                                "number of the convolution matrix should be "
+                                "smaller than 1000. The condition number is:",
+                                cond_number)
+            else:
+                logging.info('Condition number of convolution matrtix:',
+                             cond_number)
 
         # 100 chunks for the progressbar to run smoother
         chunksize = max(1, int(np.prod(data.shape[:-1]) / 1000))
@@ -526,7 +536,6 @@ class ShoreFitMt(object):
 
         G = cvxopt.matrix(np.ascontiguousarray(G))
         h = cvxopt.matrix(np.ascontiguousarray(h))
-
         for i in np.ndindex(*data.shape[:-1]):
             signal = data[i]
             q = cvxopt.matrix(np.ascontiguousarray(-1 * np.dot(conv_matrix.T,
