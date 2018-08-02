@@ -254,7 +254,7 @@ def signal_to_rank1_kernel(signal, order):
 
 
 def signal_to_delta_kernel(signal, order):
-    deltash = tensor.esh.eval_basis(order, 0, 0)
+    deltash = esh.eval_basis(order, 0, 0)
     # Kernel_ln
     kernel = np.zeros((order + 1, order + 1))
     counter = 0
