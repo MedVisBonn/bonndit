@@ -194,7 +194,19 @@ class ShoreFitMt(object):
         self.order = model.order
         self.zeta = model.zeta
         self.tau = model.tau
+        # The deconvolution kernels are computed in set_kernel
+        self.kernel_type = kernel
+        self.kernel_csf = None
+        self.kernel_gm = None
+        self.kernel_wm = None
+        self.set_kernel(kernel)
 
+    def set_kernel(self, kernel):
+        """
+
+        :param kernel:
+        :return:
+        """
         # Get deconvolution kernels
         if kernel == "rank1":
             self.kernel_csf = shore.signal_to_rank1_kernel(self.signal_csf,
@@ -228,6 +240,7 @@ class ShoreFitMt(object):
         gtab = gradient_table(response['bvals'], response['bvecs'])
         model = ShoreModelMt(gtab, response['order'], response['zeta'],
                              response['tau'])
+
         return cls(model, (response['csf'], response['gm'], response['wm']))
 
     def save(self, filepath):
@@ -261,8 +274,8 @@ class ShoreFitMt(object):
 
         return signal
 
-    def convolve(self, fODFs, vol_fractions=None, S0=None, verbose=False,
-                 cpus=None, desc=""):
+    def convolve(self, fODFs, vol_fractions=None, S0=None, kernel="rank1",
+                 verbose=False, cpus=None, desc=""):
         """Convolve the Shore Fit with several fODFs.
 
         The multiprocessing for this function scales along the number of fODFs.
@@ -278,6 +291,8 @@ class ShoreFitMt(object):
         :param cpus:
         :return:
         """
+        if self.kernel_type != kernel:
+            self.set_kernel(kernel)
 
         if vol_fractions is None:
             vol_fractions = np.array([[0, 0]] * np.prod(fODFs.shape[:-1]))
@@ -311,7 +326,8 @@ class ShoreFitMt(object):
 
         return signals
 
-    def fodf(self, data, pos='hpsd', mask=None, verbose=False, cpus=1):
+    def fodf(self, data, pos='hpsd', mask=None, kernel="rank1", verbose=False,
+             cpus=1):
         """ Deconvolve DWI data with multiple tissue response [1]_.
 
         :param data: diffusion weighted data
@@ -330,6 +346,8 @@ class ShoreFitMt(object):
         Tensor fODFs"; Int J Comput Assist Radiol Surg. 2017 Aug;
         12(8):1257-1270; doi: 10.1007/s11548-017-1593-6
         """
+        if self.kernel_type != kernel:
+            self.set_kernel(kernel)
 
         data = data.get_data()
         space = data.shape[:-1]
@@ -523,11 +541,14 @@ class ShoreFitMt(object):
 
         return deconvolution_result
 
-    def shore_convolution_matrix(self):
+    def shore_convolution_matrix(self, kernel="rank1"):
         """
 
         :return:
         """
+        if self.kernel_type != kernel:
+            self.set_kernel(kernel)
+
 
         # Build matrix that maps ODF+volume fractions to signal
         # in two steps: First, SHORE matrix

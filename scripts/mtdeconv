@@ -71,6 +71,9 @@ def main():
 
     shoreopts = parser.add_argument_group('shore options (optional)', 'Optional arguments for the computation of \
     the shore response functions')
+    shoreopts.add_argument('-k', '--kernel', choices=["rank1", "delta"],
+                           default="rank1", type=str,
+                           help='Kernel type (default: rank1)')
     shoreopts.add_argument('-r', '--order', default=4, type=int,
                            help='Order of the shore basis (default: 4)')
     shoreopts.add_argument('-z', '--zeta', default=700, type=float,
@@ -159,8 +162,8 @@ def main():
 
     # Create tissue masks based on fractional anisotropy values
     wm_mask, gm_mask, csf_mask = bd.shoremt.dti_masks(wm_mask, gm_mask,
-                                                      csf_mask,
-                                                      dti_fa, dti_mask, args.fawm)
+                                                      csf_mask, dti_fa,
+                                                      dti_mask, args.fawm)
     logging.info('Fractional anisotropy based tissue masks created.')
 
     # Flip sign of x-coordinate if affine determinant is positive and rotate to worldspace
@@ -201,17 +204,23 @@ def main():
 
     # Deconvolution if 'responseonly' is not set
     if not args.responseonly:
-        out, wmout, gmout, csfout = fit.fodf(data, pos=args.constraint, mask=dti_mask,
-                                             verbose=args.verbose, cpus=args.workers)
+        out, wmout, gmout, csfout = fit.fodf(data, pos=args.constraint,
+                                             mask=dti_mask, kernel=args.kernel,
+                                             verbose=args.verbose,
+                                             cpus=args.workers)
         logging.info('Signal deconvolved with multiple tissue response functions.')
 
-        fields.save_tensor(os.path.join(args.outdir, "fodf.nrrd"), out, mask=dti_mask.get_data(), meta=meta)
+        fields.save_tensor(os.path.join(args.outdir, "fodf.nrrd"), out,
+                           mask=dti_mask.get_data(), meta=meta)
         logging.info('fODFs saved.')
 
         # Save volumes
-        fields.save_scalar(os.path.join(args.outdir, "wmvolume.nrrd"), wmout, meta)
-        fields.save_scalar(os.path.join(args.outdir, "gmvolume.nrrd"), gmout, meta)
-        fields.save_scalar(os.path.join(args.outdir, "csfvolume.nrrd"), csfout, meta)
+        fields.save_scalar(os.path.join(args.outdir, "wmvolume.nrrd"),
+                           wmout, meta)
+        fields.save_scalar(os.path.join(args.outdir, "gmvolume.nrrd"),
+                           gmout, meta)
+        fields.save_scalar(os.path.join(args.outdir, "csfvolume.nrrd"),
+                           csfout, meta)
         logging.info('Volume fractions saved.')
 
     logging.info('Success!')
