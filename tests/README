@@ -1,0 +1,8 @@
+For testing:
+
+- 'Data' folder contains 2 reduced datasets (Test_Synth_gt_noise_outl_n5.nii and Test_Synth_gt_noise_outl_n10.nii),
+and 2 files for bvals and bvecs (Test_Synth_2b0_30b700_64b2k.bval, Test_Synth_2b0_30b700_64b2k.bvec)
+
+- 'results' folder contains a folder (correct_dropouts) which contains the results of running the 3 algorithms (REKINDLE, IRL1SHORE and relSHORE) on the 2 datasets.
+
+

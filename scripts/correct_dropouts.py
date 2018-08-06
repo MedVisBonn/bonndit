@@ -52,7 +52,7 @@ if args.configfile is None:
     if os.path.exists(dir_path + '/' + 'parameters.ini'):
         parameters_file = dir_path + '/' + 'parameters.ini'
     else:
-        models.create_parameters_file(dir_path)
+        datacorrection.create_parameters_file(dir_path)
         parameters_file = dir_path + '/' + 'parameters.ini'
 
 else:
@@ -83,7 +83,7 @@ def rekindle():
     '''
     parameters = config['REKINDLE']
 
-    X = models.design_matrix(bvals, bvecs, affine)
+    X = datacorrection.design_matrix(bvals, bvecs, affine)
     data_reshaped = data.reshape((-1, data.shape[3]))
 
     if mask is not None:
@@ -103,7 +103,7 @@ def rekindle():
 
     start = time.time()
     for i in range(data_masked.shape[0]):
-        model_ = models.REKINDLE(parameters.getfloat('regularization_constant'), parameters.getfloat('kappa'),
+        model_ = datacorrection.REKINDLE(parameters.getfloat('regularization_constant'), parameters.getfloat('kappa'),
                                  parameters.getfloat('c'), parameters.getint('irls_maxiter'),
                                  parameters.getint('rekindle_maxiter'), verbose)
         residuals = model_.outlier_scoring(X, data_masked[i])
@@ -210,7 +210,7 @@ def irl1shore(relshore=False):
     zeta = parameters.getint('zeta')
     tau = parameters.getfloat('tau')
 
-    X = models.shore_matrix(bvals, bvecs, radial_order, zeta, tau)
+    X = datacorrection.shore_matrix(bvals, bvecs, radial_order, zeta, tau)
 
     data_reshaped = data.reshape((-1, data.shape[3]))
 
@@ -232,7 +232,7 @@ def irl1shore(relshore=False):
     for i in range(data_masked.shape[0]):
         y = data_masked[i]
         if relshore:
-            model_ = models.IRLSHORE(parameters.getfloat('lambda'),
+            model_ = datacorrection.IRLSHORE(parameters.getfloat('lambda'),
                                      0,
                                      'relative',
                                      parameters.getfloat('t_threshold'),
@@ -246,7 +246,7 @@ def irl1shore(relshore=False):
                                      verbose,
                                      S0=np.mean(y[bvals == 0]))
         else:
-            model_ = models.IRLSHORE(parameters.getfloat('lambda'),
+            model_ = datacorrection.IRLSHORE(parameters.getfloat('lambda'),
                                      parameters.getint('max_iter'),
                                      parameters['residual_calculation'],
                                      parameters.getfloat('t_threshold'),
