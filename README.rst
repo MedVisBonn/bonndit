@@ -77,7 +77,7 @@ Authors
 
 * **Olivier Morelle** - *Code curation, documentation and test* [Oli4](https://github.com/Oli4)
 
-* **Mohamed MAhgoub** - *Code curation, documentation and test* (https://github.com/Mahgoub87)
+* **Mohamed Mahgoub** - *Code curation, documentation and test* (https://github.com/Mahgoub87)
 
 Credits
 -------
