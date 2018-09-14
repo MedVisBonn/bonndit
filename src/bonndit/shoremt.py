@@ -5,7 +5,7 @@ import errno
 try:
     from itertools import imap
 except ImportError:
-    # For Python 3 imap was removed as gloabl map now returns an iterator
+    # For Python 3 imap was removed as global map now returns an iterator
     imap = map
 
 import logging
