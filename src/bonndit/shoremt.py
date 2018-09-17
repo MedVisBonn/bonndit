@@ -369,11 +369,11 @@ class ShoreFitMt(object):
             if kernel == "rank1" and self.order == 4 and cond_number > 1000:
                 logging.warning("For kernel=rank1 and order=4 the condition"
                                 "number of the convolution matrix should be "
-                                "smaller than 1000. The condition number is:",
-                                cond_number)
+                                "smaller than 1000. The condition number is:" +
+                                str(cond_number))
             else:
-                logging.info('Condition number of convolution matrtix:',
-                             cond_number)
+                logging.info('Condition number of convolution matrtix:' +
+                             str(cond_number))
 
         # 100 chunks for the progressbar to run smoother
         chunksize = max(1, int(np.prod(data.shape[:-1]) / 1000))
@@ -528,7 +528,8 @@ class ShoreFitMt(object):
         # set up non-negativity constraints
         NC = LOTS_OF_DIRECTIONS.shape[0]
         G = np.zeros((NC + 2, NN + 2))
-        G[:NC, :NN] = esh.matrix(self.order, LOTS_OF_DIRECTIONS)
+        G[:NC, :NN] = -esh.matrix(self.order, LOTS_OF_DIRECTIONS)
+
         # also constrain GM/CSF VFs to be non-negative
         G[NC, NN] = -1
         G[NC + 1, NN + 1] = -1
