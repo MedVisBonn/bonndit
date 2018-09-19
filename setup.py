@@ -47,7 +47,8 @@ setup(
 
     packages=find_packages('src', exclude=('tests',)),
     package_dir={'': 'src'},
-    scripts=['scripts/mtdeconv', 'scripts/kurtosis/kurtosis-cone.py',
+    scripts=['scripts/mtdeconv', 'scripts/csdeconv',
+             'scripts/kurtosis/kurtosis-cone.py',
              'scripts/kurtosis/kurtosis-measures.py'],
 
     setup_requires=setup_requirements,

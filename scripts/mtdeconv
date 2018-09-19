@@ -191,7 +191,7 @@ def main():
     logging.info('Input loaded.')
 
     # Create tissue masks based on fractional anisotropy values
-    wm_mask, gm_mask, csf_mask = bd.shoremt.dti_masks(
+    wm_mask, gm_mask, csf_mask = bd.shoredeconv.dti_masks(
         wm_mask, gm_mask,
         csf_mask, dti_fa,
         dti_mask, args.fawm)
@@ -214,11 +214,14 @@ def main():
     # Check if response is already in the output folder
     if not args.responseonly:
         if os.path.exists(os.path.join(outdir, "response.npz")):
-            fit = bd.ShoreFitMt.load(os.path.join(outdir, "response.npz"))
+            fit = bd.ShoreMultiTissueResponse.load(
+                os.path.join(outdir, "response.npz"))
             logging.info('Existing response functions loaded.')
 
         else:
-            model = bd.ShoreModelMt(gtab, args.order, args.zeta, args.tau)
+            model = bd.ShoreMultiTissueResponseEstimator(
+                gtab, args.order,
+                args.zeta, args.tau)
             fit = model.fit(
                 data, dti_vecs, wm_mask, gm_mask, csf_mask,
                 verbose=args.verbose, cpus=args.workers)
@@ -227,7 +230,9 @@ def main():
 
     # Force recalculate the response if response only is specified
     else:
-        model = bd.ShoreModelMt(gtab, args.order, args.zeta, args.tau)
+        model = bd.ShoreMultiTissueResponseEstimator(
+            gtab, args.order,
+            args.zeta, args.tau)
         fit = model.fit(
             data, dti_vecs, wm_mask, gm_mask, csf_mask,
             verbose=args.verbose,
