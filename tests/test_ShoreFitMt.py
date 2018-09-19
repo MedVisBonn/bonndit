@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Tests for `bonndit.shore.ShoreFitMt` class."""
+"""Tests for `bonndit.shore.ShoreMultiTissueResponse` class."""
 
 import os
 
 import nibabel as nib
 
-import bonndit.shoremt as bs
+import bonndit.shoredeconv as bs
 from bonndit.michi import fields
 from .constants import DECONVOLUTION_RESULTS_DIR as DRD
 from .constants import SHORE_FIT_PRECOMPUTED, DWMRI_DUMMY_DATA, \
@@ -23,7 +23,7 @@ def test_ShoreFit_deconvolution_hpsd_rank1():
     """ Here we test the deconvolution with the hpsd constraint.
     The result calculated with bonndit are compared to results from the old code
     """
-    fit = bs.ShoreFitMt.load(SHORE_FIT_PRECOMPUTED)
+    fit = bs.ShoreMultiTissueResponse.load(SHORE_FIT_PRECOMPUTED)
     out, wmout, gmout, csfout = fit.fodf(data, pos='hpsd', kernel="rank1")
     tensors, mask, meta = fields.load_tensor(ODF_RESULT_HPSD_RANK1)
 
@@ -43,7 +43,7 @@ def test_ShoreFit_deconvolution_nonneg_rank1():
     """ Here we test the deconvolution with the hpsd constraint.
     The result calculated with bonndit are compared to results from the old code
     """
-    fit = bs.ShoreFitMt.load(SHORE_FIT_PRECOMPUTED)
+    fit = bs.ShoreMultiTissueResponse.load(SHORE_FIT_PRECOMPUTED)
     out, wmout, gmout, csfout = fit.fodf(data, pos='nonneg', kernel="rank1")
     tensors, mask, meta = fields.load_tensor(ODF_RESULT_NONNEG_RANK1)
 
@@ -63,7 +63,7 @@ def test_ShoreFit_deconvolution_no_constraint_rank1():
     """ Here we test the deconvolution with the hpsd constraint.
     The result calculated with bonndit are compared to results from the old code
     """
-    fit = bs.ShoreFitMt.load(SHORE_FIT_PRECOMPUTED)
+    fit = bs.ShoreMultiTissueResponse.load(SHORE_FIT_PRECOMPUTED)
     out, wmout, gmout, csfout = fit.fodf(data, pos='none', kernel="rank1")
     tensors, mask, meta = fields.load_tensor(ODF_RESULT_NO_CONSTRAINT_RANK1)
 
@@ -83,7 +83,7 @@ def test_ShoreFit_deconvolution_hpsd_delta():
     """ Here we test the deconvolution with the hpsd constraint.
     The result calculated with bonndit are compared to results from the old code
     """
-    fit = bs.ShoreFitMt.load(SHORE_FIT_PRECOMPUTED)
+    fit = bs.ShoreMultiTissueResponse.load(SHORE_FIT_PRECOMPUTED)
     out, wmout, gmout, csfout = fit.fodf(data, pos='hpsd', kernel="delta")
     tensors, mask, meta = fields.load_tensor(ODF_RESULT_HPSD_DELTA)
 
@@ -103,7 +103,7 @@ def test_ShoreFit_deconvolution_nonneg_delta():
     """ Here we test the deconvolution with the hpsd constraint.
     The result calculated with bonndit are compared to results from the old code
     """
-    fit = bs.ShoreFitMt.load(SHORE_FIT_PRECOMPUTED)
+    fit = bs.ShoreMultiTissueResponse.load(SHORE_FIT_PRECOMPUTED)
     out, wmout, gmout, csfout = fit.fodf(data, pos='nonneg', kernel="delta")
     tensors, mask, meta = fields.load_tensor(ODF_RESULT_NONNEG_DELTA)
 
@@ -122,7 +122,7 @@ def test_ShoreFit_deconvolution_no_constraint_delta():
     """ Here we test the deconvolution with the hpsd constraint.
     The result calculated with bonndit are compared to results from the old code
     """
-    fit = bs.ShoreFitMt.load(SHORE_FIT_PRECOMPUTED)
+    fit = bs.ShoreMultiTissueResponse.load(SHORE_FIT_PRECOMPUTED)
     out, wmout, gmout, csfout = fit.fodf(data, pos='none', kernel="delta")
     tensors, mask, meta = fields.load_tensor(ODF_RESULT_NO_CONSTRAINT_DELTA)
 

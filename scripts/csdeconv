@@ -15,7 +15,6 @@ import os
 os.environ["OMP_NUM_THREADS"] = "1"
 
 import nibabel as nib
-from math import pi
 from dipy.core.gradients import gradient_table
 from dipy.io import read_bvals_bvecs
 
@@ -32,10 +31,7 @@ from bonndit.michi import fields, dwmri
 
 def main():
     parser = argparse.ArgumentParser(
-        description='This script computes fiber orientation distribution functions (fODFs) \
-        as described in "Versatile, Robust and Efficient Tractography With Constrained Higher \
-        Order Tensor fODFs" by Ankele et al. (2017). It is assumed that the input data is saved \
-        using FSL.', add_help=False)
+        description='Constrained Spherical Deconvolution', add_help=False)
 
     parser.add_argument('indir',
                         help='Folder containing all required input files')
@@ -55,13 +51,10 @@ def main():
                             help='Brain mask (default: mask.nii.gz)')
     inputfiles.add_argument('-W', '--wmmask', default='fast_pve_2.nii.gz',
                             help='White matter mask (default: fast_pve_2.nii.gz)')
-    inputfiles.add_argument('-G', '--gmmask', default='fast_pve_1.nii.gz',
-                            help='Gray matter mask (default: fast_pve_1.nii.gz)')
-    inputfiles.add_argument('-F', '--csfmask', default='fast_pve_0.nii.gz',
-                            help='Cerebrospinal fluid mask (default: fast_pve_0.nii.gz)')
 
     flags = parser.add_argument_group('flags (optional)', '')
-    flags.add_argument("-h", "--help", action="help", help="Show this help message and exit")
+    flags.add_argument("-h", "--help", action="help",
+                       help="Show this help message and exit")
     flags.add_argument('-v', '--verbose', action='store_true',
                        help='Activate progress bars and console logging')
     flags.add_argument('-R', '--responseonly', action='store_true',
@@ -69,23 +62,20 @@ def main():
     flags.add_argument('-M', '--tissuemasks', action='store_true',
                        help='Output the DTI improved tissue masks (csf/gm/wm)')
 
-    shoreopts = parser.add_argument_group('shore options (optional)', 'Optional arguments for the computation of \
-    the shore response functions')
-    shoreopts.add_argument('-k', '--kernel', choices=["rank1", "delta"],
-                           default="rank1", type=str,
-                           help='Kernel type (default: rank1)')
-    shoreopts.add_argument('-r', '--order', default=4, type=int,
-                           help='Order of the shore basis (default: 4)')
-    shoreopts.add_argument('-z', '--zeta', default=700, type=float,
-                           help='Radial scaling factor (default: 700)')
-    shoreopts.add_argument('-t', '--tau', default=1 / (4 * pi ** 2),
-                           type=float,
-                           help='q-scaling (default: 1 / (4 * math.pi ** 2)')
-    shoreopts.add_argument('-f', '--fawm', default=0.7, type=float,
-                           help='White matter fractional anisotropy threshold (default: 0.7)')
+    shopts = parser.add_argument_group('sh options (optional)', 'Optional arguments for the computation of \
+    the spherical harmonics white matter response function')
+    shopts.add_argument('-k', '--kernel', choices=["rank1", "delta"],
+                        default="rank1", type=str,
+                        help='Kernel type (default: rank1)')
+    shopts.add_argument('-r', '--order', default=4, type=int,
+                        help='Order of the spherical harmonics basis (default: 4)')
+    shopts.add_argument('-f', '--fawm', default=0.7, type=float,
+                        help='White matter fractional anisotropy threshold (default: 0.7)')
 
-    deconvopts = parser.add_argument_group('deconvolution options (optional)', '')
-    deconvopts.add_argument('-C', '--constraint', choices=['hpsd', 'nonneg', 'none'], default='hpsd',
+    deconvopts = parser.add_argument_group('deconvolution options (optional)',
+                                           '')
+    deconvopts.add_argument('-C', '--constraint',
+                            choices=['hpsd', 'nonneg', 'none'], default='hpsd',
                             help='Constraint for the fODFs (default: hpsd)')
 
     multiprocessing = parser.add_argument_group('multiprocessing (optional)', 'Configure the multiprocessing behaviour \
@@ -93,9 +83,11 @@ def main():
     multiprocessing.add_argument('-w', '--workers', default=None, type=int,
                                  help='Number of cpus (default: all available cpus)')
 
-    log = parser.add_argument_group('logging (optional)', 'Configure the logging behaviour')
+    log = parser.add_argument_group('logging (optional)',
+                                    'Configure the logging behaviour')
     log.add_argument('-L', '--loglevel', choices=['INFO', 'WARNING', 'ERROR'],
-                     default='WARNING', help='Specify the logging level for the console')
+                     default='WARNING',
+                     help='Specify the logging level for the console')
 
     args = parser.parse_args()
 
@@ -110,7 +102,7 @@ def main():
         os.makedirs(outdir)
 
     # Logging setup for file
-    logging.basicConfig(filename=os.path.join(args.outdir, 'mtdeconv.log'),
+    logging.basicConfig(filename=os.path.join(args.outdir, 'csdeconv.log'),
                         format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                         datefmt='%y-%m-%d %H:%M',
                         level=logging.INFO,
@@ -125,16 +117,16 @@ def main():
         console = logging.StreamHandler()
         console.setLevel(levels[args.loglevel])
         # set a format which is simpler for console use
-        formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
+        formatter = logging.Formatter(
+            '%(name)-12s: %(levelname)-8s %(message)s')
         # tell the handler to use this format
         console.setFormatter(formatter)
         # add the handler to the root logger
         logging.getLogger('').addHandler(console)
 
-    logging.info('mtdeconv has been called with:')
-    param_string = 'Order: {} Zeta: {}, Tau: {}, FAWM: {}, Constraint: {}'
-    logging.info(param_string.format(args.order, args.zeta, args.tau,
-                                     args.fawm, args.constraint))
+    logging.info('csdeconv has been called with:')
+    param_string = 'Order: {}, FAWM: {}, Constraint: {}'
+    logging.info(param_string.format(args.order, args.fawm, args.constraint))
 
     # Load fractional anisotropy
     dti_fa = bd.load(os.path.join(indir, args.dtifa))
@@ -143,8 +135,6 @@ def main():
     dti_mask = bd.load(os.path.join(indir, args.brainmask))
 
     # Load tissue segmentation masks
-    csf_mask = bd.load(os.path.join(indir, args.csfmask))
-    gm_mask = bd.load(os.path.join(indir, args.gmmask))
     wm_mask = bd.load(os.path.join(indir, args.wmmask))
 
     # Load first eigenvectors of a precalculated diffusion tensor
@@ -160,11 +150,11 @@ def main():
 
     logging.info('Input loaded.')
 
+    # TODO: do not hack by using wm_mask 3 times
     # Create tissue masks based on fractional anisotropy values
-    wm_mask, gm_mask, csf_mask = bd.shoredeconv.dti_masks(wm_mask, gm_mask,
-                                                          csf_mask, dti_fa,
-                                                          dti_mask, args.fawm)
-    logging.info('Fractional anisotropy based tissue masks created.')
+    wm_mask, _, _ = bd.shoredeconv.dti_masks(wm_mask, wm_mask, wm_mask, dti_fa,
+                                             dti_mask, args.fawm)
+    logging.info('Fractional anisotropy based tissue mask created.')
 
     # Flip sign of x-coordinate if affine determinant is positive and rotate to worldspace
     gtab = fsl_gtab_to_worldspace(gtab, data.affine)
@@ -174,34 +164,27 @@ def main():
     # We need this Meta object for saving later
     _, _, meta = dwmri.load(os.path.join(indir, args.data))
 
-
     if args.tissuemasks:
         nib.save(wm_mask, os.path.join(args.outdir, 'wm_mask.nii.gz'))
-        nib.save(gm_mask, os.path.join(args.outdir, 'gm_mask.nii.gz'))
-        nib.save(csf_mask, os.path.join(args.outdir, 'csf_mask.nii.gz'))
 
     # Check if response is already in the output folder
     if not args.responseonly:
         if os.path.exists(os.path.join(outdir, "response.npz")):
-            fit = bd.ShoreMultiTissueResponse.load(
-                os.path.join(outdir, "response.npz"))
+            fit = bd.ShResponse.load(os.path.join(outdir, "response.npz"))
             logging.info('Existing response functions loaded.')
 
         else:
-            model = bd.ShoreMultiTissueResponseEstimator(gtab, args.order,
-                                                         args.zeta, args.tau)
-            fit = model.fit(data, dti_vecs, wm_mask, gm_mask, csf_mask,
-                            verbose=args.verbose, cpus=args.workers)
+            model = bd.ShResponseEstimator(gtab, args.order)
+            fit = model.fit(data, dti_vecs, wm_mask, verbose=args.verbose,
+                            cpus=args.workers)
             fit.save(os.path.join(outdir, "response.npz"))
             logging.info('Response functions estimated and saved.')
 
     # Force recalculate the response if response only is specified
     else:
-        model = bd.ShoreMultiTissueResponseEstimator(gtab, args.order,
-                                                     args.zeta, args.tau)
-        fit = model.fit(data, dti_vecs, wm_mask, gm_mask, csf_mask,
-                        verbose=args.verbose,
-                                         cpus=args.workers)
+        model = bd.ShResponseEstimator(gtab, args.order)
+        fit = model.fit(data, dti_vecs, wm_mask, verbose=args.verbose,
+                        cpus=args.workers)
         fit.save(os.path.join(outdir, "response.npz"))
         logging.info('Response functions recalculated and saved.')
 
@@ -211,7 +194,8 @@ def main():
                                              mask=dti_mask, kernel=args.kernel,
                                              verbose=args.verbose,
                                              cpus=args.workers)
-        logging.info('Signal deconvolved with multiple tissue response functions.')
+        logging.info(
+            'Signal deconvolved with multiple tissue response functions.')
 
         fields.save_tensor(os.path.join(args.outdir, "fodf.nrrd"), out,
                            mask=dti_mask.get_data(), meta=meta)

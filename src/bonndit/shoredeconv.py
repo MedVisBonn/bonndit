@@ -25,9 +25,106 @@ from tqdm import tqdm
 import bonndit as bd
 from bonndit.constants import LOTS_OF_DIRECTIONS
 from bonndit.michi import shore, esh, tensor
+from bonndit.gradients import gtab_reorient
 
 
-class ShoreModelMt(object):
+class ShoreModel(object):
+    def __init__(self, gtab, order=4, zeta=700, tau=1 / (4 * np.pi ** 2)):
+        """
+
+        :param gtab:
+        :param order:
+        :param zeta:
+        :param tau:
+        """
+        self.gtab = gtab
+        self.order = order
+        self.zeta = zeta
+        self.tau = tau
+
+        # Ignore division by zero warning
+        # dipy.core.geometry.cart2sphere -> theta = np.arccos(z / r)
+        with np.errstate(divide='ignore', invalid='ignore'):
+            self.shore_m = shore_matrix(self.order, self.zeta, self.gtab,
+                                        self.tau)
+
+    def _fit_helper(self, data_vecs, rcond=None):
+        """ Fit shore coefficients to diffusion weighted imaging data.
+
+        This is a helper function for parallelizing the fitting of shore
+        coefficients. First it checks whether the default shore matrix can be
+        used or if a vector is specified to first rotate the gradient table
+        and compute a custom shore matrix for the voxel.
+
+        :param data_vecs: tuple with DWI signal as first entry and a vector or
+        None as second entry
+        :return: fitted shore coefficients
+        """
+
+        signal, vec = data_vecs[0], data_vecs[1]
+
+        if vec is not None:
+            with np.errstate(divide='ignore', invalid='ignore'):
+                shore_m = shore_matrix(self.order, self.zeta,
+                                       gtab_reorient(self.gtab, vec), self.tau)
+
+        else:
+            shore_m = self.shore_m
+
+        return la.lstsq(shore_m, signal, rcond)[0]
+
+    def fit(self, data, vecs=None, verbose=False, cpus=1, desc=''):
+        """ Fit shore coefficients to diffusion weighted imaging data.
+
+        If an array of vectors is specified (vecs), the gradient table is
+        rotated with an affine matrix which would align the vector to the
+        z-axis. This can be used to compute comparable shore coefficients for
+        white matter regions of different orientation. Use the first
+        eigenvectors of precomputed diffusion tensors as vectors and use only
+        regions with high fractional anisotropy to ensure working only with
+        single fiber voxels.
+
+        :param data: ndarray with DWI data
+        :param vecs: ndarray which specifies for every data point the main
+        direction of diffusion (e.g. first eigenvector of the diffusion tensor)
+        :param verbose: set to true to show a progress bar
+        :param cpus: Number of cpu workers to use
+        :param desc: description for the progress bar
+        :return:  array of per voxel shore coefficients
+        """
+        # 1000 chunks for the progressbar to run smoother
+        chunksize = max(1, int(np.prod(data.shape[:-1]) / 1000))
+
+        # If no vectors are specified create array of Nones for iteration.
+        if type(vecs) != np.ndarray and vecs is None:
+            vecs = np.empty(data.shape[:-1], dtype=object)
+
+        # Iterate over the data indices; show progress with tqdm
+        # multiple processes for python > 3
+        if sys.version_info[0] < 3 or cpus == 1:
+            shore_coeff = list(tqdm(imap(self._fit_helper,
+                                         zip(list(data), list(vecs))),
+                                    total=np.prod(data.shape[:-1]),
+                                    disable=not verbose,
+                                    desc=desc))
+        else:
+            with mp.Pool(cpus) as p:
+                shore_coeff = list(tqdm(p.imap(self._fit_helper,
+                                               zip(list(data), list(vecs)),
+                                               chunksize),
+                                        total=np.prod(data.shape[:-1]),
+                                        disable=not verbose,
+                                        desc=desc))
+        return ShoreFit(self, np.array(shore_coeff))
+
+
+class ShoreFit(object):
+    def __init__(self, model, coefs):
+        self.model = model
+        self.coefs = coefs
+
+
+class ShoreMultiTissueResponseEstimator(object):
 
     """ Model the diffusion imaging signal using the shore basis functions.
 
@@ -131,27 +228,8 @@ class ShoreModelMt(object):
         csfshore_coeff = self.shore_accumulate(csfshore_coeffs)
         signal_csf = self.shore_compress(csfshore_coeff)
 
-        return ShoreFitMt(self, [signal_csf, signal_gm, signal_wm])
-
-    def shore_compress(self, coefs):
-        """ Compress the shore coefficients
-
-        An axial symetric response function aligned to the z-axis can be
-        described fully using only the z-rotational part of the shore
-        coefficients.
-
-        :param coefs: shore coefficients
-        :return: z-rotational part of the shore coefficients
-        """
-        r = np.zeros(shore.get_kernel_size(self.order, self.order))
-        counter = 0
-        ccounter = 0
-        for l in range(0, self.order + 1, 2):
-            for n in range((self.order - l) // 2 + 1):
-                r[ccounter] = coefs[counter + l]
-                counter += 2 * l + 1
-                ccounter += 1
-        return r
+        return ShoreMultiTissueResponse(self,
+                                        [signal_csf, signal_gm, signal_wm])
 
     def shore_accumulate(self, shore_coeff):
         """ Average over array of shore coefficients.
@@ -176,8 +254,28 @@ class ShoreModelMt(object):
         with np.errstate(divide='ignore', invalid='ignore'):
             return shore_accum / accum_count
 
+    def shore_compress(self, coefs):
+        """ Compress the shore coefficients
 
-class ShoreFitMt(object):
+        An axial symetric response function aligned to the z-axis can be
+        described fully using only the z-rotational part of the shore
+        coefficients.
+
+        :param coefs: shore coefficients
+        :return: z-rotational part of the shore coefficients
+        """
+        r = np.zeros(shore.get_kernel_size(self.order, self.order))
+        counter = 0
+        ccounter = 0
+        for l in range(0, self.order + 1, 2):
+            for n in range((self.order - l) // 2 + 1):
+                r[ccounter] = coefs[counter + l]
+                counter += 2 * l + 1
+                ccounter += 1
+        return r
+
+
+class ShoreMultiTissueResponse(object):
 
     def __init__(self, model, shore_coef, kernel="rank1"):
         """
@@ -187,13 +285,15 @@ class ShoreFitMt(object):
         :param kernel:
         """
         self.model = model
-        self.signal_csf = shore_coef[0]
-        self.signal_gm = shore_coef[1]
-        self.signal_wm = shore_coef[2]
         self.gtab = model.gtab
         self.order = model.order
         self.zeta = model.zeta
         self.tau = model.tau
+
+        self.signal_csf = shore_coef[0]
+        self.signal_gm = shore_coef[1]
+        self.signal_wm = shore_coef[2]
+
         # The deconvolution kernels are computed in set_kernel
         self.kernel_type = kernel
         self.kernel_csf = None
@@ -238,8 +338,9 @@ class ShoreFitMt(object):
         response = np.load(filepath)
 
         gtab = gradient_table(response['bvals'], response['bvecs'])
-        model = ShoreModelMt(gtab, response['order'], response['zeta'],
-                             response['tau'])
+        model = ShoreMultiTissueResponseEstimator(gtab, response['order'],
+                                                  response['zeta'],
+                                                  response['tau'])
 
         return cls(model, (response['csf'], response['gm'], response['wm']))
 
