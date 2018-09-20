@@ -11,7 +11,6 @@ from dipy.io import read_bvals_bvecs
 
 import bonndit.shoredeconv as bdshore
 from bonndit import ShResponseEstimator, ShResponse
-from bonndit.io import fsl_gtab_to_worldspace, fsl_vectors_to_worldspace
 from .constants import DATA_DIR, SH_RESPONSE
 
 # Load fractional anisotropy
@@ -36,18 +35,20 @@ data = nib.load(os.path.join(DATA_DIR, "data.nii.gz"))
 # Load bvals and bvecs
 bvals, bvecs = read_bvals_bvecs(os.path.join(DATA_DIR, "bvals"),
                                 os.path.join(DATA_DIR, "bvecs"))
-gtab = gradient_table(bvals, bvecs)
 
 # We want to work with a single shell
 bval_indices = bvals <= 700
 bvals = bvals[bval_indices]
 bvecs = bvecs[bval_indices, :]
+gtab = gradient_table(bvals, bvecs)
 new_data = data.get_data()[:, :, :, bval_indices]
 data = nib.Nifti1Image(new_data, data.affine)
 
 # Rotation to worldspace and sign flip according to fsl documentation
-gtab = fsl_gtab_to_worldspace(gtab, data.affine)
-dti_vecs = fsl_vectors_to_worldspace(dti_vecs)
+# This rotation introduces small differences to the test results where no
+# rotation happens.
+# gtab = fsl_gtab_to_worldspace(gtab, data.affine)
+# dti_vecs = fsl_vectors_to_worldspace(dti_vecs)
 
 model = ShResponseEstimator(gtab)
 fit = model.fit(data, dti_vecs, wm_mask)
