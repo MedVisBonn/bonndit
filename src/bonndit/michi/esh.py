@@ -292,7 +292,7 @@ def make_kernel_rank1(signal):
         if s == 0:
             raise Exception("signal has 0")
     for i in range(0, order + 1, 2):
-        kernel[i] = signal[i] / rank1sh[INDEX_OFFSET[i]]
+        kernel[i // 2] = signal[i // 2] / rank1sh[INDEX_OFFSET[i]]
     return kernel
 
 
