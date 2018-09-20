@@ -461,7 +461,7 @@ class ShoreMultiTissueResponse(object):
         mask = np.ma.make_mask(mask)
 
         # Create convolution matrix
-        conv_mat = self.shore_convolution_matrix()
+        conv_mat = self.shore_convolution_matrix(kernel)
         with np.errstate(divide='ignore', invalid='ignore'):
             cond_number = la.cond(conv_mat)
             # For the proposed method of kernel rank1 and order 4 the condition
@@ -476,7 +476,7 @@ class ShoreMultiTissueResponse(object):
                 logging.info('Condition number of convolution matrtix:' +
                              str(cond_number))
 
-        # 100 chunks for the progressbar to run smoother
+        # 1000 chunks for the progressbar to run smoother
         chunksize = max(1, int(np.prod(data.shape[:-1]) / 1000))
 
         # TODO: consider additional Tikhonov regularization
@@ -655,6 +655,7 @@ class ShoreMultiTissueResponse(object):
     def shore_convolution_matrix(self, kernel="rank1"):
         """
 
+        :param kernel:
         :return:
         """
         if self.kernel_type != kernel:
