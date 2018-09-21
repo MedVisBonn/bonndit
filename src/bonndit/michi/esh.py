@@ -27,7 +27,7 @@ def get_order(e):
     for i, l in enumerate(LENGTH):
         if l == len(e):
             return i
-    raise Exception("invalid sh size: " + len(e))
+    raise Exception("invalid sh size: " + str(len(e)))
 
 
 def get_order_from_kernel_length(l):
