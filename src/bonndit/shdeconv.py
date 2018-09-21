@@ -5,7 +5,9 @@ import logging
 import multiprocessing as mp
 import os
 import sys
+from functools import partial
 
+import cvxopt
 import numpy as np
 import numpy.linalg as la
 from dipy.core.geometry import cart2sphere
@@ -13,8 +15,9 @@ from dipy.core.gradients import gradient_table
 from dipy.reconst.shm import real_sph_harm
 from tqdm import tqdm
 
-from bonndit.michi import esh
-from .gradients import gtab_reorient
+from bonndit.constants import LOTS_OF_DIRECTIONS
+from bonndit.gradients import gtab_reorient
+from bonndit.michi import esh, tensor
 
 try:
     from itertools import imap
@@ -111,7 +114,7 @@ class SphericalHarmonicsFit(object):
 
         :param model:
         :param coefs:
-        :param kernel:
+        :param b0_avg:
         """
         self.model = model
         self.coefs = coefs
@@ -324,6 +327,8 @@ class ShResponse(object):
             self.set_kernel(kernel)
 
         data = data.get_data()
+        # Remove small bvalues, depends on b0_threshold of gtab
+        data = data[..., ~self.gtab.b0s_mask]
         space = data.shape[:-1]
 
         if not mask:
@@ -369,14 +374,16 @@ class ShResponse(object):
                 ('"{}" is not supported as a constraint, please' +
                  ' choose from [hpsd, nonneg, none]').format(pos))
 
-        # Return fODFs and Volume fractions as separate numpy.ndarray objects
+        # Return ODFs and Volume fraction as separate numpy.ndarray objects
         NN = esh.LENGTH[self.order]
         out = np.zeros(space + (NN,))
         wmout = np.zeros(space)
 
-        out[mask, :] = [esh.esh_to_sym(x[:NN]) for x in result]
-        f = self.kernel_csf[0][0] / max(self.signal_csf[0], 1e-10)
+        f = self.kernel_wm[0] / self.wm_response[0]
         wmout[mask] = [x[0] * f for x in result]
+
+        out[mask, 0] = 1
+        out[mask, :] = [esh.esh_to_sym(x) for x in result]
 
         return out, wmout
 
@@ -388,7 +395,7 @@ class ShResponse(object):
         :return:
         """
         NN = esh.LENGTH[self.order]
-        deconvolution_result = np.zeros(data.shape[:-1] + (NN + 2,))
+        deconvolution_result = np.zeros(data.shape[:-1] + (NN,))
 
         for i in np.ndindex(*data.shape[:-1]):
             signal = data[i]
@@ -405,7 +412,7 @@ class ShResponse(object):
         :return:
         """
         NN = esh.LENGTH[self.order]
-        deconvolution_result = np.zeros(data.shape[:-1] + (NN + 2,))
+        deconvolution_result = np.zeros(data.shape[:-1] + (NN,))
 
         cvxopt.solvers.options['show_progress'] = False
         # set up QP problem from normal equations
@@ -417,20 +424,17 @@ class ShResponse(object):
         N = len(ind)
 
         # set up positive definiteness constraints
-        G = np.zeros((N + 2, NN + 2))
+        G = np.zeros((N, NN))
+
         # constrain GM/CSF VFs to be non-negative: orthant constraints
-        G[0, NN] = -1
-        G[1, NN + 1] = -1
         esh2sym = esh.esh_to_sym_matrix(self.order)
         for i in range(N):
-            G[i + 2, :NN] = -esh2sym[ind[i], :]
-        h = np.zeros(N + 2)
+            G[i, :] = -esh2sym[ind[i], :]
+        h = np.zeros(N)
 
         # initialize with partly GM, CSF, and isotropic ODF
-        init = np.zeros(NN + 2)
-        init[0] = 0.3
-        init[1] = 0.3
-        init[2] = 0.3 * self.signal_csf[0] / self.kernel_csf[0][0]
+        init = np.zeros(NN)
+        init[0] = self.wm_response[0] / self.kernel_wm[0]
         init = cvxopt.matrix(np.ascontiguousarray(init))
 
         G = cvxopt.matrix(np.ascontiguousarray(G))
@@ -445,7 +449,7 @@ class ShResponse(object):
             NS = tensor.LENGTH[self.order // 2]
 
             # first two are orthant constraints, rest positive definiteness
-            dims = {'l': 2, 'q': [], 's': [NS]}
+            dims = {'l': 0, 'q': [], 's': [NS]}
 
             # This init stuff is a HACK.
             # It empirically removes some isolated failure cases
@@ -454,7 +458,7 @@ class ShResponse(object):
                 sol = cvxopt.solvers.coneqp(P, q, G, h, dims)
             except ValueError as e:
                 logging.error("Error with cvxopt initialization: {}".format(e))
-                return np.zeros(NN + 2)
+                return np.zeros(NN)
             if sol['status'] != 'optimal':
                 # try again with our initialization
                 try:
@@ -463,7 +467,7 @@ class ShResponse(object):
                 except ValueError as e:
                     logging.error("Error with custom initialization: "
                                   "{}".format(e))
-                    return np.zeros(NN + 2)
+                    return np.zeros(NN)
                 if sol['status'] != 'optimal':
                     logging.debug('Optimization unsuccessful - '
                                   'Constraint: {}'.format('hpsd'))
@@ -480,7 +484,7 @@ class ShResponse(object):
         :return:
         """
         NN = esh.LENGTH[self.order]
-        deconvolution_result = np.zeros(data.shape[:-1] + (NN + 2,))
+        deconvolution_result = np.zeros(data.shape[:-1] + (NN,))
 
         cvxopt.solvers.options['show_progress'] = False
         # set up QP problem from normal equations
@@ -489,13 +493,10 @@ class ShResponse(object):
 
         # set up non-negativity constraints
         NC = LOTS_OF_DIRECTIONS.shape[0]
-        G = np.zeros((NC + 2, NN + 2))
+        G = np.zeros((NC, NN))
         G[:NC, :NN] = -esh.matrix(self.order, LOTS_OF_DIRECTIONS)
 
-        # also constrain GM/CSF VFs to be non-negative
-        G[NC, NN] = -1
-        G[NC + 1, NN + 1] = -1
-        h = np.zeros(NC + 2)
+        h = np.zeros(NC)
 
         G = cvxopt.matrix(np.ascontiguousarray(G))
         h = cvxopt.matrix(np.ascontiguousarray(h))
@@ -519,21 +520,21 @@ class ShResponse(object):
         :param kernel:
         :return:
         """
-        # TODO: Improve this by using esh_matrix
+        # TODO: Reduce redundancy by using esh_matrix
         if self.kernel_type != kernel:
             self.set_kernel(kernel)
 
         # Build matrix that maps ODF to signal
         M = np.zeros((self._gtab.bvals.shape[0], esh.LENGTH[self.order]))
-        r, theta, phi = cart2sphere(self._gtabbvecs[:, 0],
-                                    self._gtabbvecs[:, 1],
-                                    self._gtabbvecs[:, 2])
+        r, theta, phi = cart2sphere(self._gtab.bvecs[:, 0],
+                                    self._gtab.bvecs[:, 1],
+                                    self._gtab.bvecs[:, 2])
         theta[np.isnan(theta)] = 0
         counter = 0
         for l in range(0, self.order + 1, 2):
             for m in range(-l, l + 1):
                 M[:, counter] = (
-                    real_sph_harm(m, l, theta, phi) * kernel_wm[l / 2])
+                    real_sph_harm(m, l, theta, phi) * self.kernel_wm[l // 2])
                 counter += 1
 
         return M
