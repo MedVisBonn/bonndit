@@ -9,6 +9,7 @@ __version__ = '0.1.0'
 from dipy.reconst.dti import TensorModel
 
 from .cylkurtosis import CylKurtosisModel
+from .dki import DkiModel, DkiFit
 from .io import load
 from .shdeconv import ShResponse, ShResponseEstimator, SphericalHarmonicsModel
 from .shoredeconv import ShoreMultiTissueResponse, \
