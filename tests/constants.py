@@ -7,7 +7,7 @@ DATA_DIR = os.path.join(dir_path, 'data')
 DECONVOLUTION_RESULTS_DIR = os.path.join(DATA_DIR,
                                          'results/shore_deconvolution')
 CSD_RESULTS_DIR = os.path.join(DATA_DIR, 'results/cs_deconvolution')
-KURTOSIS_RESULTS_DIR = os.path.join(DATA_DIR, 'results/kurtosis')
+KURTOSIS_RESULTS_DIR = os.path.join(DATA_DIR, 'results/dki')
 
 DWMRI_DUMMY_DATA = os.path.join(DATA_DIR, 'data.nii.gz')
 
@@ -20,6 +20,9 @@ SHORE_FIT_PRECOMPUTED = os.path.join(DATA_DIR, 'shore_response_complete.npz')
 SH_RESPONSE = os.path.join(CSD_RESULTS_DIR, 'response.npz')
 # Response computed on complete data
 SH_RESPONSE_PRECOMPUTED = os.path.join(DATA_DIR, 'sh_response_complete.npz')
+
+# dki tensor computed with kurtosis-cone
+DKI_TENSOR = os.path.join(KURTOSIS_RESULTS_DIR, 'kurtosis_fit.nii')
 
 # fodfs calculated with michi-temp shore_deconvolve (added fsl flip sign, rotated to worldspace)
 ODF_RESULT_HPSD_RANK1 = os.path.join(DECONVOLUTION_RESULTS_DIR,

@@ -72,9 +72,9 @@ def multi_voxel_method(per_voxel_data=[]):
             :param self:
             :param data:
             :param mask:
-            :param verbose:
-            :param cpus:
-            :param desc:
+            :param verbose: set to true to show a progress bar
+            :param cpus: Number of cpu workers to use
+            :param desc: description for the progress bar
             :param args:
             :param kwargs:
             :return:

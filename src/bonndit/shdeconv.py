@@ -1,10 +1,7 @@
-from __future__ import division
-
 import errno
 import logging
 import multiprocessing as mp
 import os
-import sys
 from functools import partial
 
 import cvxopt
@@ -15,18 +12,13 @@ from dipy.core.gradients import gradient_table
 from dipy.reconst.shm import real_sph_harm
 from tqdm import tqdm
 
+from bonndit.base import ReconstModel, ReconstFit, multi_voxel_method
 from bonndit.constants import LOTS_OF_DIRECTIONS
 from bonndit.gradients import gtab_reorient
 from bonndit.michi import esh, tensor
 
-try:
-    from itertools import imap
-except ImportError:
-    # For Python 3 imap was removed as gloabl map now returns an iterator
-    imap = map
 
-
-class SphericalHarmonicsModel(object):
+class SphericalHarmonicsModel(ReconstModel):
     def __init__(self, gtab, order=4):
         """
 
@@ -64,7 +56,8 @@ class SphericalHarmonicsModel(object):
 
         return la.lstsq(sh_m, signal, rcond)[0]
 
-    def fit(self, data, vecs=None, verbose=False, cpus=1, desc=""):
+    @multi_voxel_method(per_voxel_data=['vecs'])
+    def fit(self, data, vecs=None, rcond=None):
         """
 
         :param data:
@@ -74,41 +67,25 @@ class SphericalHarmonicsModel(object):
         :param desc:
         :return:
         """
-
-        # 1000 chunks for the progressbar to run smoother
-        chunksize = max(1, int(np.prod(data.shape[:-1]) / 1000))
-
-        # If no vectors are specified create array of Nones for iteration.
-        if type(vecs) != np.ndarray and vecs is None:
-            vecs = np.empty(data.shape[:-1], dtype=object)
-
-        # Calculate average b0 signal in white matter
+        # Calculate average b0 signal in data
         b0_avg = np.mean(data[..., self.gtab.b0s_mask])
 
         # Remove small bvalues, depends on b0_threshold of gtab
         data = data[..., ~self.gtab.b0s_mask]
 
-        # Iterate over the data indices; show progress with tqdm
-        # multiple processes for python > 3
-        if sys.version_info[0] < 3 or cpus == 1:
-            sh_coeff = list(tqdm(imap(self._fit_helper,
-                                      zip(list(data), list(vecs))),
-                                 total=np.prod(data.shape[:-1]),
-                                 disable=not verbose,
-                                 desc=desc))
+        if vecs is not None:
+            with np.errstate(divide='ignore', invalid='ignore'):
+                sh_m = esh_matrix(self.order, gtab_reorient(self._gtab, vecs))
+
         else:
-            with mp.Pool(cpus) as p:
-                sh_coeff = list(tqdm(p.imap(self._fit_helper,
-                                            zip(list(data), list(vecs)),
-                                            chunksize),
-                                     total=np.prod(data.shape[:-1]),
-                                     disable=not verbose,
-                                     desc=desc))
+            sh_m = self.sh_m
 
-        return SphericalHarmonicsFit(self, np.array(sh_coeff), b0_avg)
+        coeffs = la.lstsq(sh_m, data, rcond)[0]
+
+        return SphericalHarmonicsFit(self, np.array(coeffs), b0_avg)
 
 
-class SphericalHarmonicsFit(object):
+class SphericalHarmonicsFit(ReconstFit):
     def __init__(self, model, coefs, b0_avg):
         """
 
@@ -122,6 +99,9 @@ class SphericalHarmonicsFit(object):
 
         self.order = model.order
         self.gtab = model.gtab
+
+    def predict(self, gtab):
+        super().predict(gtab)
 
     @classmethod
     def load(cls, filepath):
@@ -185,7 +165,8 @@ class ShResponseEstimator(object):
 
         # Calculate white matter response
         wm_sh_coefs = SphericalHarmonicsModel(
-            self.gtab, self.order).fit(wm_voxels, wm_vecs, verbose=verbose,
+            self.gtab, self.order).fit(wm_voxels, vecs=wm_vecs,
+                                       verbose=verbose,
                                        cpus=cpus,
                                        desc='WM response').coefs
         wm_sh_coef = self.sh_accumulate(wm_sh_coefs)
@@ -354,10 +335,10 @@ class ShResponse(object):
         data = data[mask, :]
         try:
             func = deconv[pos]
-            if sys.version_info[0] < 3 or cpus == 1:
+            if cpus == 1:
                 result = list(
-                    tqdm(imap(partial(func, conv_matrix=conv_mat),
-                              data),
+                    tqdm(map(partial(func, conv_matrix=conv_mat),
+                             data),
                          total=np.prod(data.shape[:-1]),
                          disable=not verbose,
                          desc='Optimization'))

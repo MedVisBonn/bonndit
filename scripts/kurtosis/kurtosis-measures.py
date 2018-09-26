@@ -193,13 +193,13 @@ for x in range(NX):
             km[x, y, z] = meanKurtosis(lambdas, W)
             kr[x, y, z] = radialKurtosis(lambdas, W)
 
-            if args.kappa:
-                # The given formulas need the the fiber to be oriented along the z-axis. Therefore we need to rotate the
-                # kurtosis tensor
-                W =
-                kappa_radial[x, y, z] = radial_kappa(dm[x, y, z], W)
-                kappa_axial[x, y, z] = axial_kappa(dm[x, y, z], W)
-                kappa_diamond[x, y, z] = diamond_kappa(dm[x, y, z], W)
+            # if args.kappa:
+            #    # The given formulas need the the fiber to be oriented along the z-axis. Therefore we need to rotate the
+            #    # kurtosis tensor
+            #    W =
+            #    kappa_radial[x, y, z] = radial_kappa(dm[x, y, z], W)
+            #    kappa_axial[x, y, z] = axial_kappa(dm[x, y, z], W)
+            #    kappa_diamond[x, y, z] = diamond_kappa(dm[x, y, z], W)
 
 img = nib.Nifti1Image(da, affine)
 nib.save(img, os.path.join(args.out, 'da.nii'))

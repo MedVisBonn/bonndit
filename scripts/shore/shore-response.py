@@ -8,21 +8,17 @@ Find multi-tissue response functions for deconvolution
 """
 from __future__ import print_function, division
 
-import nibabel as nib
-import numpy as np
-import matplotlib.pyplot as plt
-from dipy.data import get_sphere
-from dipy.data import get_data, dsi_voxels
-from dipy.io import read_bvals_bvecs
-from dipy.core.gradients import gradient_table, reorient_bvecs, GradientTable
-from dipy.core.geometry import vec2vec_rotmat
-from dipy.viz import fvtk
-from dipy.data import get_sphere
+import argparse
 
 import dwmri.shore as shore
+import nibabel as nib
+import numpy as np
+from dipy.core.geometry import vec2vec_rotmat
+from dipy.core.gradients import gradient_table, reorient_bvecs, GradientTable
+from dipy.data import get_sphere
+from dipy.io import read_bvals_bvecs
+from dipy.viz import fvtk
 from helper.progress import Progress
-
-import argparse
 
 
 def create_sphere_func(sphere, shore_coeff, b):
@@ -118,7 +114,6 @@ def main():
     parser.add_argument('-r', '--order', default=4, help='Order of the shore basis')
     parser.add_argument('-z', '--zeta', default=700, help='Radial scaling factor')
     parser.add_argument('-t', '--tau', default=1 / (4 * np.pi ** 2), help='q-scaling')
-# What means WM?
     parser.add_argument('-f', '--fawm', default=0.7, help='The WM FA threshold')
 
     args = parser.parse_args()

@@ -1,72 +1,111 @@
-class DkiModel(object):
+import logging
 
-    def __init__(self, gtab, constraints=None):
+import cvxopt
+import numpy as np
+import numpy.linalg as la
+
+from bonndit.base import ReconstModel, ReconstFit, multi_voxel_method
+
+
+class DkiModel(ReconstModel):
+
+    def __init__(self, gtab, constraints=False):
         self.gtab = gtab
-        self.dki_matrix = self.dki_matrix()
 
-        # Let the user choose
-        self.constraints = constraints
-        self.constraint_matrix = self.c_matrix()
-
-    def _fit_helper(self, data):
-        """
-
-        :param data:
-        :return:
-        """
-        d = np.zeros((nk * 2 + 9, 1))
-        # impose minimum diffusivity
-        d[2 * nk] = -0.1
-        d[2 * nk + 4] = -0.1
-        d[2 * nk + 8] = -0.1
-        dims = {'l': 2 * nk, 'q': [], 's': [3]}
-
-        # set up QP problem from normal equations
-        cvxopt.solvers.options['show_progress'] = False
-        P = cvxopt.matrix(np.ascontiguousarray(np.dot(A.T, A)))
-        G = cvxopt.matrix(np.ascontiguousarray(C))
-        h = cvxopt.matrix(np.ascontiguousarray(d))
-
-
-
-
-    def fit(self, data, verbose=False, cpus=1, desc=''):
-        """
-
-        :param data:
-        :param verbose:
-        :param cpus:
-        :param desc:
-        :return:
-        """
-        cond_number = np.linalg.cond(self.dki_matrix())
-        if  cond_number > 1e6:
-            logging.error('Refusing to fit DKI with condition number {}. Are '
-                            'you trying to estimate kurtosis from single-shell '
-                            'data?'.format(cond_number))
-            raise InputError('Condition Number to high.')
+        self.dki_matrix = self.get_dki_matrix()
+        cond_number = np.linalg.cond(self.dki_matrix)
+        if cond_number > 1e6:
+            logging.error('Refusing to create DkiModel. '
+                          'Condition number of DKI matrix is to bit ({}). '
+                          'Are you trying to create a DkiModel from '
+                          'single-shell data?'.format(cond_number))
+            raise ValueError('Condition Number to high.')
         else:
             logging.info('Condition number of A: {}'.format(cond_number))
 
-        # 1000 chunks for the progressbar to run smoother
-        chunksize = max(1, int(np.prod(data.shape[:-1]) / 1000))
+        # Let the user choose
+        self.constraints = constraints
+        if self.constraints:
+            self.constraint_matrix = self.c_matrix()
+        else:
+            self.constraint_matrix = None
+
+    @multi_voxel_method
+    def fit(self, data, constraint=False):
+        """
+
+        :param data:
+        :return:
+        """
 
         # Iterate over the data indices; show progress with tqdm
         # multiple processes for python > 3
-        if sys.version_info[0] < 3 or cpus == 1:
-            dki_coeff = list(tqdm(imap(self._fit_helper,data),
-                                    total=np.prod(data.shape[:-1]),
-                                    disable=not verbose,
-                                    desc=desc))
-        else:
-            with mp.Pool(cpus) as p:
-                dki_coeff = list(tqdm(p.imap(self._fit_helper, data,
-                                               chunksize),
-                                        total=np.prod(data.shape[:-1]),
-                                        disable=not verbose,
-                                        desc=desc))
+        solver = {False: self._solve, True: self._solve_c}
 
-        return DkiFit(model, dki_coeff)
+        try:
+            func = solver[constraint]
+            coeffs = func(data)
+        except KeyError:
+            raise ValueError(('"{}" is not supported as a constraint, please' +
+                              ' choose from [True, False]').format(constraint))
+
+        return DkiFit(self, coeffs)
+
+    def _solve(self, data):
+        """
+
+        :param data:
+        :return:
+        """
+        dki_tensors = la.lstsq(self.dki_matrix, data, rcond=None)[0]
+        return dki_tensors
+
+    def _solve_c(self, data):
+        """
+
+        :param data:
+        :return:
+        """
+        dki_tensor = np.zeros(22)
+
+        bvals = self.gtab.bvals[~self.gtab.b0s_mask]
+        n_grads = len(bvals)
+
+        d = np.zeros((n_grads * 2 + 9, 1))
+        # impose minimum diffusivity
+        d[2 * n_grads] = -0.1
+        d[2 * n_grads + 4] = -0.1
+        d[2 * n_grads + 8] = -0.1
+        dims = {'l': 2 * n_grads, 'q': [], 's': [3]}
+
+        # set up QP problem from normal equations
+        cvxopt.solvers.options['show_progress'] = False
+        P = cvxopt.matrix(np.ascontiguousarray(np.dot(self.dki_matrix.T,
+                                                      self.dki_matrix)))
+        G = cvxopt.matrix(np.ascontiguousarray(self.constraint_matrix))
+        h = cvxopt.matrix(np.ascontiguousarray(d))
+
+        S0 = np.mean(data[~self.gtab.b0s_mask])
+        if S0 <= 0:
+            logging.warning('The average b0 measurement is 0 or smaller.')
+            raise ValueError()
+
+        S = data[self.gtab.b0s_mask]
+        S[S <= 1e-10] = 1e-10  # clamp negative values
+        S = np.log(S / S0)
+        q = cvxopt.matrix(np.ascontiguousarray(-1 * np.dot(self.dki_matrix.T,
+                                                           S)))
+        sol = cvxopt.solvers.coneqp(P, q, G, h, dims)
+        if sol['status'] != 'optimal':
+            logging.warning('First-pass optimization unsuccessful.')
+        c = np.array(sol['x'])[:, 0]
+        dki_tensor[0] = 1
+        dki_tensor[1:7] = c[:6]
+        # divide out d-bar-square to get kurtosis tensor
+        Dbar = (c[0] + c[3] + c[5]) / 3.0
+        dki_tensor[7:] = c[6:] / Dbar ** 2
+
+        return dki_tensor
 
     def c_matrix(self):
         """
@@ -154,8 +193,9 @@ class DkiModel(object):
         C[2 * n_grads + 7, 4] = -1.0
         C[2 * n_grads + 8, 5] = -1.0
 
+        return C
 
-    def dki_matrix(self):
+    def get_dki_matrix(self):
         """ Build Diffusion Kurtosis Matrix
         (maps DKI params to log signal ratio)
 
@@ -207,15 +247,10 @@ class DkiModel(object):
 
         return A
 
-        if np.linalg.cond(A) > 1e6:
-            print('Refusing to fit DKI with condition number ',
-                  np.linalg.cond(A))
-            print(
-                'Are you trying to estimate kurtosis from single-shell data?')
-            sys.exit(1)
-        elif args.verbose:
-            print('Condition number of A: ', np.linalg.cond(A))
 
-class DkiFit(object):
-    def __init__(self):
+class DkiFit(ReconstFit):
+    def __init__(self, model, coeffs):
         pass
+
+    def predict(self, gtab):
+        super().predict(gtab)

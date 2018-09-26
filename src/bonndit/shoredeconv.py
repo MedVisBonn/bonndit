@@ -1,17 +1,7 @@
-from __future__ import division
-
 import errno
-
-try:
-    from itertools import imap
-except ImportError:
-    # For Python 3 imap was removed as global map now returns an iterator
-    imap = map
-
 import logging
 import multiprocessing as mp
 import os
-import sys
 from functools import partial
 
 import cvxopt
@@ -23,12 +13,13 @@ from dipy.reconst.shore import shore_matrix
 from tqdm import tqdm
 
 import bonndit as bd
+from bonndit.base import ReconstModel, ReconstFit, multi_voxel_method
 from bonndit.constants import LOTS_OF_DIRECTIONS
-from bonndit.michi import shore, esh, tensor
 from bonndit.gradients import gtab_reorient
+from bonndit.michi import shore, esh, tensor
 
 
-class ShoreModel(object):
+class ShoreModel(ReconstModel):
     def __init__(self, gtab, order=4, zeta=700, tau=1 / (4 * np.pi ** 2)):
         """
 
@@ -48,32 +39,8 @@ class ShoreModel(object):
             self.shore_m = shore_matrix(self.order, self.zeta, self.gtab,
                                         self.tau)
 
-    def _fit_helper(self, data_vecs, rcond=None):
-        """ Fit shore coefficients to diffusion weighted imaging data.
-
-        This is a helper function for parallelizing the fitting of shore
-        coefficients. First it checks whether the default shore matrix can be
-        used or if a vector is specified to first rotate the gradient table
-        and compute a custom shore matrix for the voxel.
-
-        :param data_vecs: tuple with DWI signal as first entry and a vector or
-        None as second entry
-        :return: fitted shore coefficients
-        """
-
-        signal, vec = data_vecs[0], data_vecs[1]
-
-        if vec is not None:
-            with np.errstate(divide='ignore', invalid='ignore'):
-                shore_m = shore_matrix(self.order, self.zeta,
-                                       gtab_reorient(self.gtab, vec), self.tau)
-
-        else:
-            shore_m = self.shore_m
-
-        return la.lstsq(shore_m, signal, rcond)[0]
-
-    def fit(self, data, vecs=None, verbose=False, cpus=1, desc=''):
+    @multi_voxel_method(per_voxel_data=['vecs'])
+    def fit(self, data, vecs=None, rcond=None):
         """ Fit shore coefficients to diffusion weighted imaging data.
 
         If an array of vectors is specified (vecs), the gradient table is
@@ -87,41 +54,30 @@ class ShoreModel(object):
         :param data: ndarray with DWI data
         :param vecs: ndarray which specifies for every data point the main
         direction of diffusion (e.g. first eigenvector of the diffusion tensor)
-        :param verbose: set to true to show a progress bar
-        :param cpus: Number of cpu workers to use
-        :param desc: description for the progress bar
         :return:  array of per voxel shore coefficients
         """
-        # 1000 chunks for the progressbar to run smoother
-        chunksize = max(1, int(np.prod(data.shape[:-1]) / 1000))
 
-        # If no vectors are specified create array of Nones for iteration.
-        if type(vecs) != np.ndarray and vecs is None:
-            vecs = np.empty(data.shape[:-1], dtype=object)
+        if vecs is not None:
+            with np.errstate(divide='ignore', invalid='ignore'):
+                shore_m = shore_matrix(self.order, self.zeta,
+                                       gtab_reorient(self.gtab, vecs),
+                                       self.tau)
 
-        # Iterate over the data indices; show progress with tqdm
-        # multiple processes for python > 3
-        if sys.version_info[0] < 3 or cpus == 1:
-            shore_coeff = list(tqdm(imap(self._fit_helper,
-                                         zip(list(data), list(vecs))),
-                                    total=np.prod(data.shape[:-1]),
-                                    disable=not verbose,
-                                    desc=desc))
         else:
-            with mp.Pool(cpus) as p:
-                shore_coeff = list(tqdm(p.imap(self._fit_helper,
-                                               zip(list(data), list(vecs)),
-                                               chunksize),
-                                        total=np.prod(data.shape[:-1]),
-                                        disable=not verbose,
-                                        desc=desc))
-        return ShoreFit(self, np.array(shore_coeff))
+            shore_m = self.shore_m
+
+        coeffs = la.lstsq(shore_m, data, rcond)[0]
+
+        return ShoreFit(self, np.array(coeffs))
 
 
-class ShoreFit(object):
+class ShoreFit(ReconstFit):
     def __init__(self, model, coefs):
         self.model = model
         self.coefs = coefs
+
+    def predict(self, gtab):
+        super().predict(gtab)
 
 
 class ShoreMultiTissueResponseEstimator(object):
@@ -201,7 +157,7 @@ class ShoreMultiTissueResponseEstimator(object):
         wm_voxels = data.get_data()[wm_mask.get_data() == 1]
         wm_vecs = dti_vecs.get_data()[wm_mask.get_data() == 1]
         wmshore_coeffs = bd.ShoreModel(self.gtab, self.order, self.zeta,
-                                       self.tau).fit(wm_voxels, wm_vecs,
+                                       self.tau).fit(wm_voxels, vecs=wm_vecs,
                                                      verbose=verbose,
                                                      cpus=cpus,
                                                      desc='WM response').coefs
@@ -403,8 +359,8 @@ class ShoreMultiTissueResponse(object):
 
         # Iterate over the data indices; show progress with tqdm
         # multiple processes for python > 3
-        if sys.version_info[0] < 3 or cpus == 1:
-            signals = list(tqdm(imap(self._convolve_helper,
+        if cpus == 1:
+            signals = list(tqdm(map(self._convolve_helper,
                                         zip(list(fODFs),
                                             list(vol_fractions))),
                                 total=np.prod(fODFs.shape[:-1]),
@@ -486,8 +442,8 @@ class ShoreMultiTissueResponse(object):
         data = data[mask, :]
         try:
             func = deconv[pos]
-            if sys.version_info[0] < 3 or cpus == 1:
-                result = list(tqdm(imap(partial(func, conv_matrix=conv_mat),
+            if cpus == 1:
+                result = list(tqdm(map(partial(func, conv_matrix=conv_mat),
                                         data),
                                    total=np.prod(data.shape[:-1]),
                                    disable=not verbose,
