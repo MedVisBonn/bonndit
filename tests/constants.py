@@ -22,7 +22,7 @@ SH_RESPONSE = os.path.join(CSD_RESULTS_DIR, 'response.npz')
 SH_RESPONSE_PRECOMPUTED = os.path.join(DATA_DIR, 'sh_response_complete.npz')
 
 # dki tensor computed with kurtosis-cone
-DKI_TENSOR = os.path.join(KURTOSIS_RESULTS_DIR, 'kurtosis_fit.nii')
+DKI_TENSOR = os.path.join(KURTOSIS_RESULTS_DIR, 'kurtosis_fit.npz')
 
 # fodfs calculated with michi-temp shore_deconvolve (added fsl flip sign, rotated to worldspace)
 ODF_RESULT_HPSD_RANK1 = os.path.join(DECONVOLUTION_RESULTS_DIR,

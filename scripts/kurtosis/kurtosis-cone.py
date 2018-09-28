@@ -6,13 +6,15 @@
 # Author: Thomas Schultz
 
 from __future__ import print_function, division
-import nibabel as nib
-from dipy.io import read_bvals_bvecs
-import numpy as np
-import cvxopt
-from os import sys
-import os
+
 import argparse
+import os
+from os import sys
+
+import cvxopt
+import nibabel as nib
+import numpy as np
+from dipy.io import read_bvals_bvecs
 
 parser = argparse.ArgumentParser(description='Fit DKI model to input data.')
 parser.add_argument('infile', help='Path to the DWI data')
@@ -186,6 +188,7 @@ for x in range(NX):
             S[S <= 1e-10] = 1e-10  # clamp negative values
             S = np.log(S / S0)
             q = cvxopt.matrix(np.ascontiguousarray(-1 * np.dot(A.T, S)))
+
             sol = cvxopt.solvers.coneqp(P, q, G, h, dims)
             if sol['status'] != 'optimal':
                 print('WARNING: First-pass optimization unsuccessful.')
@@ -200,3 +203,7 @@ if not os.path.exists(args.outdir):
     os.makedirs(args.outdir)
 img = nib.Nifti1Image(out, affine)
 nib.save(img, os.path.join(args.outdir, 'kurtosis_fit.nii'))
+
+# Needed for comparison with bonndit results in bonndittests
+np.savez(os.path.join(args.outdir, 'kurtosis_fit.npz'), data=out, mask=mask,
+         bvals=bvals, bvecs=bvecs)

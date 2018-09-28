@@ -4,12 +4,13 @@ import cvxopt
 import numpy as np
 import numpy.linalg as la
 
-from bonndit.base import ReconstModel, ReconstFit, multi_voxel_method
+from bonndit.base import ReconstModel, ReconstFit
+from bonndit.multivoxel import multi_voxel_method, MultiVoxel
 
 
 class DkiModel(ReconstModel):
 
-    def __init__(self, gtab, constraints=False):
+    def __init__(self, gtab, constraint=False):
         self.gtab = gtab
 
         self.dki_matrix = self.get_dki_matrix()
@@ -24,14 +25,18 @@ class DkiModel(ReconstModel):
             logging.info('Condition number of A: {}'.format(cond_number))
 
         # Let the user choose
-        self.constraints = constraints
-        if self.constraints:
+        self.constraint = constraint
+        if self.constraint:
             self.constraint_matrix = self.c_matrix()
         else:
             self.constraint_matrix = None
 
-    @multi_voxel_method
-    def fit(self, data, constraint=False):
+        # Parameters in this dict are needed to reinitalize the model
+        self._model_params = {'bvals': gtab.bvals, 'bvecs': gtab.bvecs,
+                              'constraint': constraint}
+
+    @multi_voxel_method(per_voxel_data=[])
+    def fit(self, data):
         """
 
         :param data:
@@ -42,14 +47,16 @@ class DkiModel(ReconstModel):
         # multiple processes for python > 3
         solver = {False: self._solve, True: self._solve_c}
 
+        data = data.astype(float)
         try:
-            func = solver[constraint]
+            func = solver[self.constraint]
             coeffs = func(data)
         except KeyError:
             raise ValueError(('"{}" is not supported as a constraint, please' +
-                              ' choose from [True, False]').format(constraint))
+                              ' choose from [True, False]').format(
+                self.constraint))
 
-        return DkiFit(self, coeffs)
+        return DkiFit(coeffs)
 
     def _solve(self, data):
         """
@@ -57,8 +64,11 @@ class DkiModel(ReconstModel):
         :param data:
         :return:
         """
-        dki_tensors = la.lstsq(self.dki_matrix, data, rcond=None)[0]
-        return dki_tensors
+        dki_tensor = np.zeros(22)
+        data = data[~self.gtab.b0s_mask]
+        dki_tensor[0] = 1
+        dki_tensor[1:] = la.lstsq(self.dki_matrix, data, rcond=None)[0]
+        return dki_tensor
 
     def _solve_c(self, data):
         """
@@ -68,7 +78,7 @@ class DkiModel(ReconstModel):
         """
         dki_tensor = np.zeros(22)
 
-        bvals = self.gtab.bvals[~self.gtab.b0s_mask]
+        bvals = self.gtab.bvals[~self.gtab.b0s_mask] / 1000
         n_grads = len(bvals)
 
         d = np.zeros((n_grads * 2 + 9, 1))
@@ -82,15 +92,15 @@ class DkiModel(ReconstModel):
         cvxopt.solvers.options['show_progress'] = False
         P = cvxopt.matrix(np.ascontiguousarray(np.dot(self.dki_matrix.T,
                                                       self.dki_matrix)))
+
         G = cvxopt.matrix(np.ascontiguousarray(self.constraint_matrix))
         h = cvxopt.matrix(np.ascontiguousarray(d))
 
-        S0 = np.mean(data[~self.gtab.b0s_mask])
+        S0 = np.mean(data[self.gtab.b0s_mask])
         if S0 <= 0:
             logging.warning('The average b0 measurement is 0 or smaller.')
             raise ValueError()
-
-        S = data[self.gtab.b0s_mask]
+        S = data[~self.gtab.b0s_mask]
         S[S <= 1e-10] = 1e-10  # clamp negative values
         S = np.log(S / S0)
         q = cvxopt.matrix(np.ascontiguousarray(-1 * np.dot(self.dki_matrix.T,
@@ -113,7 +123,7 @@ class DkiModel(ReconstModel):
         :return:
         """
         bvecs = self.gtab.bvecs[~self.gtab.b0s_mask, :]
-        bvals = self.gtab.bvals[~self.gtab.b0s_mask]
+        bvals = self.gtab.bvals[~self.gtab.b0s_mask] / 1000
 
         max_bval = np.max(bvals)
 
@@ -203,7 +213,7 @@ class DkiModel(ReconstModel):
         """
 
         bvecs = self.gtab.bvecs[~self.gtab.b0s_mask, :]
-        bvals = self.gtab.bvals[~self.gtab.b0s_mask]
+        bvals = self.gtab.bvals[~self.gtab.b0s_mask] / 1000
         A = np.zeros((len(bvals), 21))
         for i in range(len(bvals)):
             # note: the order at this point deviates from Tabesh et al.
@@ -249,8 +259,82 @@ class DkiModel(ReconstModel):
 
 
 class DkiFit(ReconstFit):
-    def __init__(self, model, coeffs):
-        pass
+    def __init__(self, coeffs):
+        self.coeffs = coeffs
+
+        self._diffusivity_axial = None
+        self._diffusivity_radial = None
+        self._diffusivity_mean = None
+
+        self._kurtosis_axial = None
+        self._kurtosis_radial = None
+        self._kurtosis_mean = None
+
+        self._fractional_anisotropy = None
+
+        self._kappa_axial = None
+        self._kappa_radial = None
+        self._kappa_diamond = None
+
+    @classmethod
+    def load(cls, filepath):
+        return MultiVoxel.load(filepath, model_class=DkiModel,
+                               fit_class=cls)
 
     def predict(self, gtab):
         super().predict(gtab)
+
+    @property
+    def diffusivity_axial(self):
+        return self._diffusivity_axial
+
+    @diffusivity_axial.getter
+    def diffusivity_axial(self, value):
+        if self._diffusivity_axial is None:
+            pass
+        else:
+            return self._diffusivity_axial
+
+    def calculate_measures(self):
+
+        ix4 = [[0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 0, 2], [0, 0, 1, 1],
+               [0, 0, 1, 2], [0, 0, 2, 2], [0, 1, 1, 1], [0, 1, 1, 2],
+               [0, 1, 2, 2], [0, 2, 2, 2], [1, 1, 1, 1], [1, 1, 1, 2],
+               [1, 1, 2, 2], [1, 2, 2, 2], [2, 2, 2, 2]]
+
+        invix4 = np.zeros((3, 3, 3, 3), dtype=np.int)
+        for i in range(3):
+            for j in range(3):
+                for k in range(3):
+                    for l in range(3):
+                        s = [i, j, k, l]
+                        s.sort()
+                        invix4[i, j, k, l] = ix4.index(s)
+
+        # L are the eigenvectors such that L[:,i] is ith normalized eigenvector
+        def rotT4Sym(W, L):
+            # build and apply rotation matrix
+            rotmat = np.zeros((15, 15))
+            for idx in range(15):
+                for ii in range(3):
+                    for jj in range(3):
+                        for kk in range(3):
+                            for ll in range(3):
+                                rotmat[idx, invix4[ii, jj, kk, ll]] += L[ii,
+                                                                         ix4[
+                                                                             idx][
+                                                                             0]] * \
+                                                                       L[jj,
+                                                                         ix4[
+                                                                             idx][
+                                                                             1]] * \
+                                                                       L[
+                                                                           kk,
+                                                                           ix4[
+                                                                               idx][
+                                                                               2]] * \
+                                                                       L[ll,
+                                                                         ix4[
+                                                                             idx][
+                                                                             3]]
+            return np.dot(rotmat, W)

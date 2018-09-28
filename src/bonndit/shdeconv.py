@@ -12,10 +12,11 @@ from dipy.core.gradients import gradient_table
 from dipy.reconst.shm import real_sph_harm
 from tqdm import tqdm
 
-from bonndit.base import ReconstModel, ReconstFit, multi_voxel_method
+from bonndit.base import ReconstModel, ReconstFit
 from bonndit.constants import LOTS_OF_DIRECTIONS
 from bonndit.gradients import gtab_reorient
 from bonndit.michi import esh, tensor
+from bonndit.multivoxel import multi_voxel_method, MultiVoxel
 
 
 class SphericalHarmonicsModel(ReconstModel):
@@ -28,6 +29,10 @@ class SphericalHarmonicsModel(ReconstModel):
         self.gtab = gtab
         self.order = order
 
+        # Parameters in this dict are needed to reinitalize the model from saved file
+        self._model_params = {'bvals': gtab.bvals, 'bvecs': gtab.bvecs,
+                              'order': order}
+
         # A gradient table without small bvalues,
         # depends on b0_threshold of gtab
         self._gtab = gradient_table(self.gtab.bvals[~self.gtab.b0s_mask],
@@ -37,24 +42,6 @@ class SphericalHarmonicsModel(ReconstModel):
         # dipy.core.geometry.cart2sphere -> theta = np.arccos(z / r)
         with np.errstate(divide='ignore', invalid='ignore'):
             self.sh_m = esh_matrix(self.order, self.gtab)
-
-    def _fit_helper(self, data_vecs, rcond=None):
-        """
-
-        :param data_vecs:
-        :param rcond:
-        :return:
-        """
-        signal, vec = data_vecs[0], data_vecs[1]
-
-        if vec is not None:
-            with np.errstate(divide='ignore', invalid='ignore'):
-                sh_m = esh_matrix(self.order, gtab_reorient(self._gtab, vec))
-
-        else:
-            sh_m = self.sh_m
-
-        return la.lstsq(sh_m, signal, rcond)[0]
 
     @multi_voxel_method(per_voxel_data=['vecs'])
     def fit(self, data, vecs=None, rcond=None):
@@ -81,20 +68,19 @@ class SphericalHarmonicsModel(ReconstModel):
             sh_m = self.sh_m
 
         coeffs = la.lstsq(sh_m, data, rcond)[0]
-
         return SphericalHarmonicsFit(self, np.array(coeffs), b0_avg)
 
 
 class SphericalHarmonicsFit(ReconstFit):
-    def __init__(self, model, coefs, b0_avg):
+    def __init__(self, model, coeffs, b0_avg):
         """
 
         :param model:
-        :param coefs:
+        :param coeffs:
         :param b0_avg:
         """
         self.model = model
-        self.coefs = coefs
+        self.coeffs = coeffs
         self.b0_avg = b0_avg
 
         self.order = model.order
@@ -105,33 +91,8 @@ class SphericalHarmonicsFit(ReconstFit):
 
     @classmethod
     def load(cls, filepath):
-        """ Load a precalculated SphericalHarmonicsFit object from a file.
-
-        :param filepath: path to the saved SphericalHarmonicsFit object
-        :return: SphericalHarmonicsFit object which contains wm response
-        function
-        """
-        response = np.load(filepath)
-
-        gtab = gradient_table(response['bvals'], response['bvecs'])
-        model = SphericalHarmonicsModel(gtab, response['order'])
-
-        return cls(model, response['coefs'], response['b0_avg'])
-
-    def save(self, filepath):
-        """ Save a mtShoreFit object to a file.
-
-        :param filepath: path to the file
-        """
-        try:
-            os.makedirs(os.path.dirname(filepath))
-        except OSError as e:
-            if e.errno != errno.EEXIST:
-                raise
-
-        np.savez(filepath, coefs=self.coefs,
-                 order=self.order, bvals=self.gtab.bvals,
-                 bvecs=self.gtab.bvecs, b0_avg=self.b0_avg)
+        return MultiVoxel.load(filepath, model_class=SphericalHarmonicsModel,
+                               fit_class=cls)
 
 
 class ShResponseEstimator(object):
@@ -164,28 +125,28 @@ class ShResponseEstimator(object):
         wm_vecs = dti_vecs.get_data()[wm_mask.get_data() == 1]
 
         # Calculate white matter response
-        wm_sh_coefs = SphericalHarmonicsModel(
+        wm_sh_coeffs = SphericalHarmonicsModel(
             self.gtab, self.order).fit(wm_voxels, vecs=wm_vecs,
                                        verbose=verbose,
                                        cpus=cpus,
-                                       desc='WM response').coefs
-        wm_sh_coef = self.sh_accumulate(wm_sh_coefs)
+                                       desc='WM response').coeffs
+        wm_sh_coef = self.sh_accumulate(wm_sh_coeffs)
         signal_wm = self.sh_compress(wm_sh_coef)
 
         return ShResponse(self, signal_wm)
 
-    def sh_accumulate(self, sh_coefs):
+    def sh_accumulate(self, sh_coeffs):
         """
 
-        :param sh_coefs:
+        :param sh_coeffs:
         :return:
         """
-        sh_accum = np.zeros_like(sh_coefs[0])
+        sh_accum = np.zeros_like(sh_coeffs[0])
         accum_count = 0
 
         # Iterate over the data indices
-        for i in np.ndindex(*sh_coefs.shape[:-1]):
-            sh_accum += sh_coefs[i]
+        for i in np.ndindex(*sh_coeffs.shape[:-1]):
+            sh_accum += sh_coeffs[i]
             accum_count += 1
         if accum_count == 0:
             return sh_accum
@@ -194,7 +155,7 @@ class ShResponseEstimator(object):
         with np.errstate(divide='ignore', invalid='ignore'):
             return sh_accum / accum_count
 
-    def sh_compress(self, coefs):
+    def sh_compress(self, coeffs):
         """ Compress the spherical harmonics coefficients
 
         An axial symetric response function aligned to the z-axis can be
@@ -202,24 +163,24 @@ class ShResponseEstimator(object):
         harmonics coefficients. This functions selects the zonal harmonics with
         even order from an array with spherical harmonics coefficients.
 
-        :param coefs: spherical harmonics coefficients
+        :param coeffs: spherical harmonics coefficients
         :return: z-rotational part of the spherical harmonics coefficients
         """
-        zonal_coefs = np.zeros(esh.get_kernel_size(self.order))
+        zonal_coeffs = np.zeros(esh.get_kernel_size(self.order))
 
         counter = 0
         for l in range(0, self.order + 1):
             counter = counter + l
             if l % 2 == 0:
-                zonal_coefs[int(l / 2)] = coefs[counter]
+                zonal_coeffs[int(l / 2)] = coeffs[counter]
 
         # This is what happens above
-        # r[0] = coefs[0]
-        # r[1] = coefs[3]
-        # r[2] = coefs[10]
+        # r[0] = coeffs[0]
+        # r[1] = coeffs[3]
+        # r[2] = coeffs[10]
         # ...
 
-        return zonal_coefs
+        return zonal_coeffs
 
 
 class ShResponse(object):

@@ -190,24 +190,20 @@ def main():
 
     # Deconvolution if 'responseonly' is not set
     if not args.responseonly:
-        out, wmout, gmout, csfout = fit.fodf(data, pos=args.constraint,
-                                             mask=dti_mask, kernel=args.kernel,
-                                             verbose=args.verbose,
-                                             cpus=args.workers)
+        out, wmout = fit.odf(data, pos=args.constraint,
+                             mask=dti_mask, kernel=args.kernel,
+                             verbose=args.verbose,
+                             cpus=args.workers)
         logging.info(
             'Signal deconvolved with multiple tissue response functions.')
 
-        fields.save_tensor(os.path.join(args.outdir, "fodf.nrrd"), out,
+        fields.save_tensor(os.path.join(args.outdir, "odf.nrrd"), out,
                            mask=dti_mask.get_data(), meta=meta)
         logging.info('fODFs saved.')
 
         # Save volumes
         fields.save_scalar(os.path.join(args.outdir, "wmvolume.nrrd"),
                            wmout, meta)
-        fields.save_scalar(os.path.join(args.outdir, "gmvolume.nrrd"),
-                           gmout, meta)
-        fields.save_scalar(os.path.join(args.outdir, "csfvolume.nrrd"),
-                           csfout, meta)
         logging.info('Volume fractions saved.')
 
     logging.info('Success!')

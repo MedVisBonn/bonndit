@@ -6,8 +6,6 @@
 Find multi-tissue response functions for deconvolution
 ======================================================
 """
-from __future__ import print_function, division
-
 import argparse
 
 import dwmri.shore as shore

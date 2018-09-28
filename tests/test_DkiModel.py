@@ -32,7 +32,7 @@ gtab = fsl_gtab_to_worldspace(gtab, data.affine)
 
 reference_fit = DkiFit.load(DKI_TENSOR)
 
-ALLOWED_ERROR = 1e-7
+ALLOWED_ERROR = 1e-10
 
 
 def test_DkiModel_tensor():
@@ -40,7 +40,7 @@ def test_DkiModel_tensor():
     The result calculated with bonndit are compared to results from the old code
     """
 
-    model = DkiModel(gtab)
-    fit = model.fit(data, mask=dti_mask)
-    assert ((reference_fit.dki_tensor - fit.dki_tensor) /
-            reference_fit.dki_tensor < ALLOWED_ERROR).all()
+    model = DkiModel(gtab, constraint=True)
+    fit = model.fit(data.get_data(), mask=dti_mask.get_data())
+    assert ((reference_fit.coeffs - fit.coeffs) /
+            reference_fit.coeffs < ALLOWED_ERROR).all()

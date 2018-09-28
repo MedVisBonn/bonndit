@@ -13,10 +13,11 @@ from dipy.reconst.shore import shore_matrix
 from tqdm import tqdm
 
 import bonndit as bd
-from bonndit.base import ReconstModel, ReconstFit, multi_voxel_method
+from bonndit.base import ReconstModel, ReconstFit
 from bonndit.constants import LOTS_OF_DIRECTIONS
 from bonndit.gradients import gtab_reorient
 from bonndit.michi import shore, esh, tensor
+from bonndit.multivoxel import multi_voxel_method, MultiVoxel
 
 
 class ShoreModel(ReconstModel):
@@ -32,6 +33,10 @@ class ShoreModel(ReconstModel):
         self.order = order
         self.zeta = zeta
         self.tau = tau
+
+        # Parameters in this dict are needed to reinitalize the model from saved file
+        self._model_params = {'bvals': gtab.bvals, 'bvecs': gtab.bvecs,
+                              'order': order, 'zeta': zeta, 'tau': tau}
 
         # Ignore division by zero warning
         # dipy.core.geometry.cart2sphere -> theta = np.arccos(z / r)
@@ -67,14 +72,17 @@ class ShoreModel(ReconstModel):
             shore_m = self.shore_m
 
         coeffs = la.lstsq(shore_m, data, rcond)[0]
-
-        return ShoreFit(self, np.array(coeffs))
+        return ShoreFit(np.array(coeffs))
 
 
 class ShoreFit(ReconstFit):
-    def __init__(self, model, coefs):
-        self.model = model
-        self.coefs = coefs
+    def __init__(self, coeffs):
+        self.coeffs = coeffs
+
+    @classmethod
+    def load(cls, filepath):
+        return MultiVoxel.load(filepath, model_class=ShoreModel,
+                               fit_class=cls)
 
     def predict(self, gtab):
         super().predict(gtab)
@@ -160,7 +168,7 @@ class ShoreMultiTissueResponseEstimator(object):
                                        self.tau).fit(wm_voxels, vecs=wm_vecs,
                                                      verbose=verbose,
                                                      cpus=cpus,
-                                                     desc='WM response').coefs
+                                                     desc='WM response').coeffs
         wmshore_coeff = self.shore_accumulate(wmshore_coeffs)
         signal_wm = self.shore_compress(wmshore_coeff)
 
@@ -170,7 +178,7 @@ class ShoreMultiTissueResponseEstimator(object):
                                        self.tau).fit(gm_voxels,
                                                      verbose=verbose,
                                                      cpus=cpus,
-                                                     desc='GM response').coefs
+                                                     desc='GM response').coeffs
         gmshore_coeff = self.shore_accumulate(gmshore_coeffs)
         signal_gm = self.shore_compress(gmshore_coeff)
 
@@ -180,7 +188,7 @@ class ShoreMultiTissueResponseEstimator(object):
                                         self.tau).fit(csf_voxels,
                                                       verbose=verbose,
                                                       cpus=cpus,
-                                                      desc='CSF response').coefs
+                                                      desc='CSF response').coeffs
         csfshore_coeff = self.shore_accumulate(csfshore_coeffs)
         signal_csf = self.shore_compress(csfshore_coeff)
 
@@ -210,14 +218,14 @@ class ShoreMultiTissueResponseEstimator(object):
         with np.errstate(divide='ignore', invalid='ignore'):
             return shore_accum / accum_count
 
-    def shore_compress(self, coefs):
+    def shore_compress(self, coeffs):
         """ Compress the shore coefficients
 
         An axial symetric response function aligned to the z-axis can be
         described fully using only the z-rotational part of the shore
         coefficients.
 
-        :param coefs: shore coefficients
+        :param coeffs: shore coefficients
         :return: z-rotational part of the shore coefficients
         """
         r = np.zeros(shore.get_kernel_size(self.order, self.order))
@@ -225,7 +233,7 @@ class ShoreMultiTissueResponseEstimator(object):
         ccounter = 0
         for l in range(0, self.order + 1, 2):
             for n in range((self.order - l) // 2 + 1):
-                r[ccounter] = coefs[counter + l]
+                r[ccounter] = coeffs[counter + l]
                 counter += 2 * l + 1
                 ccounter += 1
         return r
