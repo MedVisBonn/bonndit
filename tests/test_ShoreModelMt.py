@@ -46,7 +46,7 @@ gtab = fsl_gtab_to_worldspace(gtab, data.affine)
 dti_vecs = fsl_vectors_to_worldspace(dti_vecs)
 
 model = ShoreMultiTissueResponseEstimator(gtab)
-fit = model.fit(data, dti_vecs, wm_mask, gm_mask, csf_mask)
+fit = model.fit(data, dti_vecs, wm_mask, gm_mask, csf_mask, cpus=5)
 
 reference_fit = ShoreMultiTissueResponse.load(SHORE_FIT_TEST)
 
@@ -57,7 +57,6 @@ def test_ShoreModel_signal_csf():
     """ Here we test the calculation of the response functions
     The result calculated with bonndit are compared to results from the old code
     """
-
     assert (
         (reference_fit.signal_csf - fit.signal_csf)
         / reference_fit.signal_csf <
@@ -68,7 +67,6 @@ def test_ShoreModel_signal_gm():
     """ Here we test the calculation of the response functions
     The result calculated with bonndit are compared to results from the old code
     """
-
     assert (
         (reference_fit.signal_gm - fit.signal_gm) / reference_fit.signal_gm <
         ALLOWED_ERROR).all()
@@ -78,9 +76,6 @@ def test_ShoreModel_signal_wm():
     """ Here we test the calculation of the response functions
     The result calculated with bonndit are compared to results from the old code
     """
-
-    model = ShoreMultiTissueResponseEstimator(gtab)
-    fit = model.fit(data, dti_vecs, wm_mask, gm_mask, csf_mask)
     assert (
         (reference_fit.signal_wm - fit.signal_wm) / reference_fit.signal_wm <
         ALLOWED_ERROR).all()

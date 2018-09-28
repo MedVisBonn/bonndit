@@ -62,9 +62,6 @@ def test_ShoreModel_signal_wm():
     """ Here we test the calculation of the response functions
     The result calculated with bonndit are compared to results from the old code
     """
-
-    model = ShResponseEstimator(gtab)
-    fit = model.fit(data, dti_vecs, wm_mask)
     assert (
         (reference_fit.wm_response - fit.wm_response) /
         reference_fit.wm_response < ALLOWED_ERROR).all()
