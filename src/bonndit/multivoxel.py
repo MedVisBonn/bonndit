@@ -1,5 +1,4 @@
 import errno
-import functools
 import multiprocessing as mp
 import os
 
@@ -17,79 +16,57 @@ def fit_helper(args_kwargs):
     return func(*args, **kwargs)
 
 
-def multi_voxel_method(per_voxel_data=[]):
-    def decorator_mulit_voxel_method(single_voxel_method):
-        """
+class MultiVoxelFitter(object):
+    def __init__(self, model, cpus=1, verbose=False, desc=""):
+        self.model = model
+        self.cpus = cpus
+        self.verbose = verbose
+        self.desc = desc
 
-        :param single_voxel_method:
-        :return:
-        """
+    def fit(self, fit_func, data, per_voxel_data, mask=None):
 
-        @functools.wraps(single_voxel_method)
-        def new_method(self, data, mask=None, verbose=False, cpus=1, desc='',
-                       **kwargs):
-            """
+        space = data.shape[:-1]
 
-            :param self:
-            :param data:
-            :param mask:
-            :param verbose: set to true to show a progress bar
-            :param cpus: Number of cpu workers to use
-            :param desc: description for the progress bar
-            :param args:
-            :param kwargs:
-            :return:
-            """
-            space = data.shape[:-1]
+        if mask is None:
+            mask = np.ones(space)
+        if mask.shape != space:
+            raise ValueError("mask and data shape do not match")
 
-            if mask is None:
-                mask = np.ones(space)
-            if mask.shape != space:
-                raise ValueError("mask and data shape do not match")
+        # Convert integer to boolean mask
+        mask = np.ma.make_mask(mask)
 
-            # Convert integer to boolean mask
-            mask = np.ma.make_mask(mask)
+        # 1000 chunks for the progressbar to run smoother
+        chunksize = max(1, int(np.prod(data.shape[:-1]) / 1000))
 
-            # 1000 chunks for the progressbar to run smoother
-            chunksize = max(1, int(np.prod(data.shape[:-1]) / 1000))
+        # collect kwargs which are the same for all voxels
+        args_kwargs = []
 
-            # collect kwargs which are the same for all voxels
-            general_kwargs = {key: kwargs[key] for key in kwargs.keys()
-                              if key not in per_voxel_data}
-            args_kwargs = []
+        for ijk in np.ndindex(*data.shape[:-1]):
+            if mask[ijk]:
+                # collect kwargs per voxel if specified in the kwargs
+                per_voxel_kwargs = {key: per_voxel_data[key][ijk]
+                                    for key in per_voxel_data}
 
-            for ijk in np.ndindex(*data.shape[:-1]):
-                if mask[ijk]:
-                    # collect kwargs per voxel if specified in the kwargs
-                    per_voxel_kwargs = {key: kwargs[key][ijk]
-                                        for key in per_voxel_data
-                                        if key in kwargs.keys()}
+                args_kwargs.append((fit_func, data[ijk], per_voxel_kwargs))
+                # print(new_kwargs)
 
-                    new_kwargs = {**general_kwargs, **per_voxel_kwargs}
-
-                    args_kwargs.append((single_voxel_method, self, data[ijk],
-                                        new_kwargs))
-            if cpus == 1:
-                coeffs = list(tqdm(map(fit_helper, args_kwargs),
+        if self.cpus == 1:
+            coeffs = list(tqdm(map(fit_helper, args_kwargs),
+                               total=np.prod(data.shape[:-1]),
+                               disable=not self.verbose,
+                               desc=self.desc))
+        else:
+            with mp.Pool(self.cpus) as p:
+                coeffs = list(tqdm(p.imap(fit_helper, args_kwargs,
+                                          chunksize),
                                    total=np.prod(data.shape[:-1]),
-                                   disable=not verbose,
-                                   desc=desc))
-            else:
-                with mp.Pool(cpus) as p:
-                    coeffs = list(tqdm(p.imap(fit_helper, args_kwargs,
-                                              chunksize),
-                                       total=np.prod(data.shape[:-1]),
-                                       disable=not verbose,
-                                       desc=desc))
+                                   disable=not self.verbose,
+                                   desc=self.desc))
 
-            fit_array = np.empty(data.shape[:-1], dtype=object)
-            fit_array[mask] = coeffs
-            return MultiVoxel(self, fit_array, mask)
+        fit_array = np.empty(data.shape[:-1], dtype=object)
+        fit_array[mask] = coeffs
 
-        return new_method
-
-    return decorator_mulit_voxel_method
-
+        return MultiVoxel(self.model, fit_array, mask)
 
 class MultiVoxel(MultiVoxelFit):
     def __init__(self, model, fit_array, mask):

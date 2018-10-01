@@ -16,7 +16,7 @@ from bonndit.base import ReconstModel, ReconstFit
 from bonndit.constants import LOTS_OF_DIRECTIONS
 from bonndit.gradients import gtab_reorient
 from bonndit.michi import esh, tensor
-from bonndit.multivoxel import multi_voxel_method, MultiVoxel
+from bonndit.multivoxel import MultiVoxel, MultiVoxelFitter
 
 
 class SphericalHarmonicsModel(ReconstModel):
@@ -43,15 +43,12 @@ class SphericalHarmonicsModel(ReconstModel):
         with np.errstate(divide='ignore', invalid='ignore'):
             self.sh_m = esh_matrix(self.order, self.gtab)
 
-    @multi_voxel_method(per_voxel_data=['vecs'])
-    def fit(self, data, vecs=None, rcond=None):
+    def _fit_helper(self, data, vecs=None, rcond=None):
         """
 
         :param data:
         :param vecs:
-        :param verbose:
-        :param cpus:
-        :param desc:
+        :param rcond:
         :return:
         """
         # Calculate average b0 signal in data
@@ -69,6 +66,22 @@ class SphericalHarmonicsModel(ReconstModel):
 
         coeffs = la.lstsq(sh_m, data, rcond)[0]
         return SphericalHarmonicsFit(self, np.array(coeffs), b0_avg)
+
+    def fit(self, data, vecs=None, mask=None, **kwargs):
+        """
+
+        :param data:
+        :param vecs:
+        :param mask:
+        :param kwargs:
+        :return:
+        """
+        if vecs is not None:
+            per_voxel_data = {'vecs': vecs}
+        else:
+            per_voxel_data = {}
+        return MultiVoxelFitter(self, **kwargs).fit(self._fit_helper, data,
+                                                    per_voxel_data, mask)
 
 
 class SphericalHarmonicsFit(ReconstFit):

@@ -17,7 +17,7 @@ from bonndit.base import ReconstModel, ReconstFit
 from bonndit.constants import LOTS_OF_DIRECTIONS
 from bonndit.gradients import gtab_reorient
 from bonndit.michi import shore, esh, tensor
-from bonndit.multivoxel import multi_voxel_method, MultiVoxel
+from bonndit.multivoxel import MultiVoxel, MultiVoxelFitter
 
 
 class ShoreModel(ReconstModel):
@@ -44,8 +44,27 @@ class ShoreModel(ReconstModel):
             self.shore_m = shore_matrix(self.order, self.zeta, self.gtab,
                                         self.tau)
 
-    @multi_voxel_method(per_voxel_data=['vecs'])
-    def fit(self, data, vecs=None, rcond=None):
+    def _fit_helper(self, data, vecs=None, rcond=None):
+        """
+
+        :param data:
+        :param vecs:
+        :param rcond:
+        :return:
+        """
+
+        if vecs is not None:
+            with np.errstate(divide='ignore', invalid='ignore'):
+                shore_m = shore_matrix(self.order, self.zeta,
+                                       gtab_reorient(self.gtab, vecs),
+                                       self.tau)
+
+        else:
+            shore_m = self.shore_m
+        coeffs = la.lstsq(shore_m, data, rcond)[0]
+        return ShoreFit(np.array(coeffs))
+
+    def fit(self, data, vecs=None, mask=None, **kwargs):
         """ Fit shore coefficients to diffusion weighted imaging data.
 
         If an array of vectors is specified (vecs), the gradient table is
@@ -61,18 +80,12 @@ class ShoreModel(ReconstModel):
         direction of diffusion (e.g. first eigenvector of the diffusion tensor)
         :return:  array of per voxel shore coefficients
         """
-
         if vecs is not None:
-            with np.errstate(divide='ignore', invalid='ignore'):
-                shore_m = shore_matrix(self.order, self.zeta,
-                                       gtab_reorient(self.gtab, vecs),
-                                       self.tau)
-
+            per_voxel_data = {'vecs': vecs}
         else:
-            shore_m = self.shore_m
-
-        coeffs = la.lstsq(shore_m, data, rcond)[0]
-        return ShoreFit(np.array(coeffs))
+            per_voxel_data = {}
+        return MultiVoxelFitter(self, **kwargs).fit(self._fit_helper, data,
+                                                    per_voxel_data, mask)
 
 
 class ShoreFit(ReconstFit):

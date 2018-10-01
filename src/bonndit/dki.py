@@ -5,7 +5,7 @@ import numpy as np
 import numpy.linalg as la
 
 from bonndit.base import ReconstModel, ReconstFit
-from bonndit.multivoxel import multi_voxel_method, MultiVoxel
+from bonndit.multivoxel import MultiVoxel, MultiVoxelFitter
 
 
 class DkiModel(ReconstModel):
@@ -35,16 +35,12 @@ class DkiModel(ReconstModel):
         self._model_params = {'bvals': gtab.bvals, 'bvecs': gtab.bvecs,
                               'constraint': constraint}
 
-    @multi_voxel_method(per_voxel_data=[])
-    def fit(self, data):
+    def _fit_helper(self, data):
         """
 
         :param data:
         :return:
         """
-
-        # Iterate over the data indices; show progress with tqdm
-        # multiple processes for python > 3
         solver = {False: self._solve, True: self._solve_c}
 
         data = data.astype(float)
@@ -57,6 +53,18 @@ class DkiModel(ReconstModel):
                 self.constraint))
 
         return DkiFit(coeffs)
+
+    def fit(self, data, mask=None, **kwargs):
+        """
+
+        :param data:
+        :param mask:
+        :param kwargs:
+        :return:
+        """
+        per_voxel_data = {}
+        return MultiVoxelFitter(self, **kwargs).fit(self._fit_helper, data,
+                                                    per_voxel_data, mask)
 
     def _solve(self, data):
         """
@@ -289,7 +297,7 @@ class DkiFit(ReconstFit):
         return self._diffusivity_axial
 
     @diffusivity_axial.getter
-    def diffusivity_axial(self, value):
+    def diffusivity_axial(self):
         if self._diffusivity_axial is None:
             pass
         else:
