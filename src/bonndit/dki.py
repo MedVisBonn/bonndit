@@ -2,9 +2,9 @@ import logging
 import math
 
 import cvxopt
+import mpmath as mpm
 import numpy as np
 import numpy.linalg as la
-from dipy.reconst.dki import Wrotate
 
 from bonndit.base import ReconstModel, ReconstFit
 from bonndit.multivoxel import MultiVoxel, MultiVoxelFitter
@@ -12,8 +12,8 @@ from bonndit.multivoxel import MultiVoxel, MultiVoxelFitter
 
 class DkiModel(ReconstModel):
 
-    def __init__(self, gtab, constraint=False):
-        self.gtab = gtab
+    def __init__(self, gtab, constraint=True):
+        super().__init__(gtab)
 
         self.dki_matrix = self.get_dki_matrix()
         cond_number = np.linalg.cond(self.dki_matrix)
@@ -270,18 +270,18 @@ class DkiModel(ReconstModel):
 
 class DkiFit(ReconstFit):
     def __init__(self, coeffs):
-        self.coeffs = coeffs
+        super().__init__(coeffs)
         self.dti_tensor = np.array(
             [[self.coeffs[1], self.coeffs[2], self.coeffs[3]],
              [self.coeffs[2], self.coeffs[4], self.coeffs[5]],
              [self.coeffs[3], self.coeffs[5], self.coeffs[6]]])
 
-        # lambdas are in *ascending* order
-        (self.lambdas, self.evecs) = np.linalg.eigh(self.dti_tensor)
-        # clamp lambdas to avoid numerical trouble
-        self.lambdas[self.lambdas < 1e-10] = 1e-10
+        # evals are in *ascending* order
+        (self.evals, self.evecs) = np.linalg.eigh(self.dti_tensor)
+        # clamp evals to avoid numerical trouble
+        self.evals[self.evals < 1e-10] = 1e-10
 
-        self.rot_kurtosis_tensor = Wrotate(self.coeffs[7:], self.evecs)
+        self.rot_kurtosis_tensor = rotT4Sym(self.coeffs[7:], self.evecs)
 
         self._diffusivity_axial = None
         self._diffusivity_radial = None
@@ -305,132 +305,93 @@ class DkiFit(ReconstFit):
     def predict(self, gtab):
         super().predict(gtab)
 
-    # Diffusivity properties
     @property
-    def diffusivity_axial(self):
-        return self._diffusivity_axial
-
-    @diffusivity_axial.getter
     def diffusivity_axial(self):
         if self._diffusivity_axial is None:
-            self._diffusivity_axial = self.lambdas[2]
-        else:
-            return self._diffusivity_axial
+            self._diffusivity_axial = self.evals[2]
 
-    @property
-    def diffusivity_radial(self):
         return self._diffusivity_axial
 
-    @diffusivity_radial.getter
+    @property
     def diffusivity_radial(self):
         if self._diffusivity_radial is None:
-            self._diffusivity_radial = 0.5 * (self.lambdas[0] +
-                                              self.lambdas[1])
-        else:
-            return self._diffusivity_radial
+            self._diffusivity_radial = 0.5 * (self.evals[0] +
+                                              self.evals[1])
+
+        return self._diffusivity_radial
 
     @property
     def diffusivity_mean(self):
+        if self._diffusivity_mean is None:
+            self._diffusivity_mean = np.mean(self.evals)
+
         return self._diffusivity_mean
 
-    @diffusivity_mean.getter
-    def diffusivity_mean(self):
-        if self._diffusivity_mean is None:
-            self._diffusivity_mean = np.mean(self.lambdas)
-        else:
-            return self._diffusivity_mean
 
     # Fractional anisotropy
     @property
     def fractional_anisotropy(self):
-        return self._fractional_anisotropy
-
-    @fractional_anisotropy.getter
-    def fractional_anisotropy(self):
         if self._fractional_anisotropy is None:
             self._fractional_anisotropy = math.sqrt(
-                ((self.lambdas[0] - self.lambdas[1]) ** 2
-                 + (self.lambdas[1] - self.lambdas[2]) ** 2
-                 + (self.lambdas[2] - self.lambdas[0]) ** 2)
-                / (self.lambdas[0] ** 2
-                   + self.lambdas[1] ** 2
-                   + self.lambdas[2] ** 2) / 2)
-        else:
-            return self._fractional_anisotropy
+                ((self.evals[0] - self.evals[1]) ** 2
+                 + (self.evals[1] - self.evals[2]) ** 2
+                 + (self.evals[2] - self.evals[0]) ** 2)
+                / (self.evals[0] ** 2
+                   + self.evals[1] ** 2
+                   + self.evals[2] ** 2) / 2)
+
+        return self._fractional_anisotropy
+
 
     # Kurtosis properties
     @property
-    def kurtosis_axial(self):
-        return self._kurtosis_axial
-
-    @kurtosis_axial.getter
     def kurtosis_axial(self):
         if self._kurtosis_axial is None:
-            self._kurtosis_axial = axial_kurtosis(self.lambdas,
+            self._kurtosis_axial = axial_kurtosis(self.evals,
                                                   self.rot_kurtosis_tensor)
-        else:
-            return self._kurtosis_axial
 
-    @property
-    def kurtosis_radial(self):
         return self._kurtosis_axial
 
-    @kurtosis_radial.getter
+    @property
     def kurtosis_radial(self):
         if self._kurtosis_radial is None:
-            self._kurtosis_radial = radial_kurtosis(self.lambdas,
+            self._kurtosis_radial = radial_kurtosis(self.evals,
                                                     self.rot_kurtosis_tensor)
-        else:
-            return self._kurtosis_radial
+
+        return self._kurtosis_radial
 
     @property
-    def kurtosis_mean(self):
-        return self._kurtosis_mean
-
-    @kurtosis_mean.getter
     def kurtosis_mean(self):
         if self._kurtosis_mean is None:
-            self._kurtosis_mean = mean_kurtosis(self.lambdas,
+            self._kurtosis_mean = mean_kurtosis(self.evals,
                                                 self.rot_kurtosis_tensor)
-        else:
-            return self._kurtosis_mean
 
-    # Kurtosis properties
+        return self._kurtosis_mean
+
+    # Kappa properties
     @property
-    def kappa_axial(self):
-        return self._kappa_axial
-
-    @kappa_axial.getter
     def kappa_axial(self):
         if self._kappa_axial is None:
             self._kappa_axial = axial_kappa(self._diffusivity_mean,
                                             self.rot_kurtosis_tensor)
-        else:
-            return self._kappa_axial
 
-    @property
-    def kappa_radial(self):
         return self._kappa_axial
 
-    @kappa_radial.getter
+    @property
     def kappa_radial(self):
         if self._kappa_radial is None:
             self._kappa_radial = radial_kappa(self._diffusivity_mean,
                                               self.rot_kurtosis_tensor)
-        else:
-            return self._kappa_radial
+
+        return self._kappa_radial
 
     @property
-    def kappa_diamond(self):
-        return self._kappa_diamond
-
-    @kappa_diamond.getter
     def kappa_diamond(self):
         if self._kappa_diamond is None:
             self._kappa_diamond = diamond_kappa(self._diffusivity_mean,
                                                 self.rot_kurtosis_tensor)
-        else:
-            return self._kappa_diamond
+
+        return self._kappa_diamond
 
 
 def radial_kappa(lambda_mean, kurtosis_tensor):
@@ -466,31 +427,123 @@ def diamond_kappa(lambda_mean, kurtosis_tensor):
                                    + kurtosis_tensor[12]) / 2
 
 
-def radial_kurtosis(lambdas, kurtosis_tensor):
+def radial_kurtosis(evals, kurtosis_tensor):
     """
 
-    :param lambdas:
+    :param evals:
     :param kurtosis_tensor:
     :return:
     """
-    pass
+    return _G1(evals[2], evals[1], evals[0]) * kurtosis_tensor[10] \
+           + _G1(evals[2], evals[0], evals[1]) * kurtosis_tensor[0] \
+           + _G2(evals[2], evals[1], evals[0]) * kurtosis_tensor[3]
 
 
-def axial_kurtosis(lambdas, kurtosis_tensor):
+def axial_kurtosis(evals, kurtosis_tensor):
     """
 
-    :param lambdas:
+    :param evals:
     :param kurtosis_tensor:
     :return:
     """
-    pass
+    return ((evals[0] + evals[1] + evals[2]) ** 2
+            / (9 * evals[2] ** 2)) * kurtosis_tensor[14]
 
 
-def mean_kurtosis(lambdas, kurtosis_tensor):
+def mean_kurtosis(evals, kurtosis_tensor):
     """
 
-    :param lambdas:
+    :param evals:
     :param kurtosis_tensor:
     :return:
     """
-    pass
+    r = _F1(evals[0], evals[1], evals[2]) * kurtosis_tensor[0]
+    r += _F1(evals[1], evals[2], evals[0]) * kurtosis_tensor[10]
+    r += _F1(evals[2], evals[1], evals[0]) * kurtosis_tensor[14]
+    r += _F2(evals[0], evals[1], evals[2]) * kurtosis_tensor[12]
+    r += _F2(evals[1], evals[2], evals[0]) * kurtosis_tensor[5]
+    r += _F2(evals[2], evals[1], evals[0]) * kurtosis_tensor[3]
+    return r
+
+
+def _alpha(x):
+    if x > 0:
+        return math.atanh(math.sqrt(x)) / math.sqrt(x)
+    else:
+        return math.atan(math.sqrt(-x)) / math.sqrt(-x)
+
+
+def _H(a, c):
+    if a == c:
+        return 1.0 / 15.0
+    return (a + 2 * c) ** 2 / (144 * c * c * (a - c) ** 2) * (
+        c * (a + 2 * c) + a * (a - 4 * c) * _alpha(1 - a / c))
+
+
+def _F1(a, b, c):
+    if a == b:
+        return 3 * _H(c, a)
+    if a == c:
+        return 3 * _H(b, a)
+    return (a + b + c) ** 2 / (18 * (a - b) * (a - c)) * (
+        math.sqrt(b * c) / a * float(mpm.elliprf(a / b, a / c, 1)) + (
+        3 * a ** 2 - a * b - a * c - b * c) / (
+            3 * a * math.sqrt(b * c)) * float(
+        mpm.elliprd(a / b, a / c, 1)) - 1)
+
+
+def _F2(a, b, c):
+    if b == c:
+        return 6 * _H(a, c)
+    return (a + b + c) ** 2 / (3 * (b - c) ** 2) * (
+        (b + c) / (math.sqrt(b * c)) * float(mpm.elliprf(a / b, a / c, 1)) + (
+        2 * a - b - c) / (
+            3 * math.sqrt(b * c)) * float(mpm.elliprd(a / b, a / c, 1)) - 2)
+
+
+def _G1(a, b, c):
+    if b == c:
+        return (a + 2 * b) ** 2 / (24 * b * b)
+    return (a + b + c) ** 2 / (18 * b * (b - c) ** 2) * (
+        2 * b + c * (c - 3 * b) / (math.sqrt(b * c)))
+
+
+def _G2(a, b, c):
+    if b == c:
+        return (a + 2 * b) ** 2 / (12 * b * b)
+    return (a + b + c) ** 2 / (3 * (b - c) ** 2) * (
+        (b + c) / (math.sqrt(b * c)) - 2)
+
+
+ix4 = [[0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 0, 2], [0, 0, 1, 1], [0, 0, 1, 2],
+       [0, 0, 2, 2], [0, 1, 1, 1], [0, 1, 1, 2],
+       [0, 1, 2, 2], [0, 2, 2, 2], [1, 1, 1, 1], [1, 1, 1, 2], [1, 1, 2, 2],
+       [1, 2, 2, 2], [2, 2, 2, 2]]
+
+invix4 = np.zeros((3, 3, 3, 3), dtype=np.int)
+for i in range(3):
+    for j in range(3):
+        for k in range(3):
+            for l in range(3):
+                s = [i, j, k, l]
+                s.sort()
+                invix4[i, j, k, l] = ix4.index(s)
+
+
+# L are the eigenvectors such that L[:,i] is ith normalized eigenvector
+def rotT4Sym(W, L):
+    # build and apply rotation matrix
+    rotmat = np.zeros((15, 15))
+    for idx in range(15):
+        for ii in range(3):
+            for jj in range(3):
+                for kk in range(3):
+                    for ll in range(3):
+                        rotmat[idx, invix4[ii, jj, kk, ll]] += L[ii, ix4[idx][
+                            0]] * L[jj, ix4[idx][1]] * L[
+                                                                   kk,
+                                                                   ix4[idx][
+                                                                       2]] * L[
+                                                                   ll,
+                                                                   ix4[idx][3]]
+    return np.dot(rotmat, W)

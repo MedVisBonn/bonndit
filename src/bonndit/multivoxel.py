@@ -78,16 +78,16 @@ class MultiVoxel(MultiVoxelFit):
 
         gtab = gradient_table(filecontent['bvals'], filecontent['bvecs'])
         model_params = {key: filecontent[key] for key in filecontent.keys()
-                        if key not in ['data', 'mask', 'bvals', 'bvecs']}
+                        if key not in ['coeffs', 'mask', 'bvals', 'bvecs']}
         model = model_class(gtab, **model_params)
 
-        data = filecontent['data']
+        coeffs = filecontent['coeffs']
         mask = filecontent['mask']
 
-        fit_array = np.empty(data.shape[:-1], dtype=object)
-        for ijk in np.ndindex(*data.shape[:-1]):
+        fit_array = np.empty(coeffs.shape[:-1], dtype=object)
+        for ijk in np.ndindex(*coeffs.shape[:-1]):
             if mask[ijk]:
-                fit_array[ijk] = fit_class(data[ijk])
+                fit_array[ijk] = fit_class(coeffs[ijk])
 
         return cls(model, fit_array, mask)
 
@@ -101,12 +101,12 @@ class MultiVoxel(MultiVoxelFit):
         if affine is None:
             affine = np.zeros((4, 4))
 
-        data = self.fit_array.coeffs
+        coeffs = self.fit_array.coeffs
         mask = self.mask
         if type == 'npz':
-            np.savez(filepath, data=data, mask=mask, **self._model_params)
+            np.savez(filepath, coeffs=coeffs, mask=mask, **self._model_params)
 
 
         elif type == 'nii':
-            img = nib.Nifti1Image(data, affine=affine)
+            img = nib.Nifti1Image(coeffs, affine=affine)
             nib.save(img, filepath)

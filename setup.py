@@ -12,11 +12,12 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 requirements = ['nibabel', 'numpy', 'pandas', 'dipy', 'scipy', 'tqdm',
-                'cvxopt']
+                'cvxopt', 'mpmath']
 
 setup_requirements = ['pytest-runner', ]
 
-test_requirements = ['pytest', 'nibabel', 'numpy', 'dipy', 'scipy', 'tqdm', 'cvxopt']
+test_requirements = ['pytest', 'nibabel', 'numpy', 'dipy', 'scipy', 'tqdm',
+                     'cvxopt', 'mpmath']
 
 setup(
     author="Olivier Morelle",
@@ -43,9 +44,7 @@ setup(
 
     packages=find_packages('src', exclude=('tests',)),
     package_dir={'': 'src'},
-    scripts=['scripts/mtdeconv', 'scripts/csdeconv',
-             'scripts/kurtosis/kurtosis-cone.py',
-             'scripts/kurtosis/kurtosis-measures.py'],
+    scripts=['scripts/mtdeconv', 'scripts/csdeconv', 'scripts/kurtosis'],
 
     setup_requires=setup_requirements,
     test_suite='tests',

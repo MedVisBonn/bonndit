@@ -29,7 +29,7 @@ class ShoreModel(ReconstModel):
         :param zeta:
         :param tau:
         """
-        self.gtab = gtab
+        super().__init__(gtab)
         self.order = order
         self.zeta = zeta
         self.tau = tau
@@ -90,7 +90,7 @@ class ShoreModel(ReconstModel):
 
 class ShoreFit(ReconstFit):
     def __init__(self, coeffs):
-        self.coeffs = coeffs
+        super().__init__(coeffs)
 
     @classmethod
     def load(cls, filepath):

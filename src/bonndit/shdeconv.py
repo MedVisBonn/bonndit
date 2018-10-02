@@ -26,7 +26,7 @@ class SphericalHarmonicsModel(ReconstModel):
         :param gtab:
         :param order:
         """
-        self.gtab = gtab
+        super().__init__(gtab)
         self.order = order
 
         # Parameters in this dict are needed to reinitalize the model from saved file
@@ -92,8 +92,8 @@ class SphericalHarmonicsFit(ReconstFit):
         :param coeffs:
         :param b0_avg:
         """
+        super().__init__(coeffs)
         self.model = model
-        self.coeffs = coeffs
         self.b0_avg = b0_avg
 
         self.order = model.order
