@@ -23,13 +23,11 @@ class ReconstModel(ABC):
 
 
 class ReconstFit(ABC):
-    def __init__(self, model, coeffs):
+    def __init__(self, coeffs):
         """
 
-        :param model:
         :param coeffs:
         """
-        self.model = model
         self.coeffs = coeffs
 
     @abstractmethod

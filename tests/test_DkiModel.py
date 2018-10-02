@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Tests for `bonndit.shore.mtShoreModel` class."""
-
 import os
 
 import nibabel as nib
