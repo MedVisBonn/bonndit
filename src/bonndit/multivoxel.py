@@ -47,6 +47,7 @@ class MultiVoxelFitter(object):
                 per_voxel_kwargs = {
                     key: per_voxel_data[key][ijk]
                     for key in per_voxel_data}
+                per_voxel_kwargs = {**per_voxel_kwargs, **{'index': ijk}}
 
                 args_kwargs.append((fit_func, data[ijk], per_voxel_kwargs))
                 # print(new_kwargs)
@@ -55,7 +56,7 @@ class MultiVoxelFitter(object):
             coeffs = list(
                 tqdm(
                     map(fit_helper, args_kwargs),
-                    total=np.prod(data.shape[:-1]),
+                    total=sum(mask.flatten()),
                     disable=not self.verbose,
                     desc=self.desc))
         else:
@@ -65,7 +66,7 @@ class MultiVoxelFitter(object):
                         p.imap(
                             fit_helper, args_kwargs,
                             chunksize),
-                        total=np.prod(data.shape[:-1]),
+                        total=sum(mask.flatten()),
                         disable=not self.verbose,
                         desc=self.desc))
 
@@ -78,6 +79,9 @@ class MultiVoxelFitter(object):
 class MultiVoxel(MultiVoxelFit):
     def __init__(self, model, fit_array, mask):
         super().__init__(model, fit_array, mask)
+        self._model_params = {'bvals': self.model.gtab.bvals,
+                              'bvecs': self.model.gtab.bvecs,
+                              }
 
     @classmethod
     def load(cls, filepath, model_class, fit_class):
@@ -94,6 +98,7 @@ class MultiVoxel(MultiVoxelFit):
 
         fit_array = np.empty(coeffs.shape[:-1], dtype=object)
         for ijk in np.ndindex(*coeffs.shape[:-1]):
+
             if mask[ijk]:
                 fit_array[ijk] = fit_class(coeffs[ijk])
 
@@ -109,10 +114,12 @@ class MultiVoxel(MultiVoxelFit):
         if affine is None:
             affine = np.zeros((4, 4))
 
-        coeffs = self.fit_array.coeffs
+        coeffs = self.__getattr__('coeffs')
         mask = self.mask
         if type == 'npz':
-            np.savez(filepath, coeffs=coeffs, mask=mask, **self._model_params)
+            np.savez(
+                filepath, coeffs=coeffs, mask=mask,
+                **self.model._params_dict)
 
         elif type == 'nii':
             img = nib.Nifti1Image(coeffs, affine=affine)
