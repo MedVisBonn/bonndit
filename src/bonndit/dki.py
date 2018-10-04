@@ -19,7 +19,7 @@ class DkiModel(ReconstModel):
         cond_number = np.linalg.cond(self.dki_matrix)
         if cond_number > 1e6:
             logging.error('Refusing to create DkiModel. '
-                          'Condition number of DKI matrix is to bit ({}). '
+                          'Condition number of DKI matrix is to high ({}). '
                           'Are you trying to create a DkiModel from '
                           'single-shell data?'.format(cond_number))
             raise ValueError('Condition Number to high.')
@@ -33,11 +33,11 @@ class DkiModel(ReconstModel):
         else:
             self.constraint_matrix = None
 
-        # Parameters in this dict are needed to reinitalize the model
-        self._model_params = {'bvals': gtab.bvals, 'bvecs': gtab.bvecs,
+        # These parameters are saved for reinitalization
+        self._params_dict = {'bvals': gtab.bvals, 'bvecs': gtab.bvecs,
                               'constraint': constraint}
 
-    def _fit_helper(self, data):
+    def _fit_helper(self, data, **kwargs):
         """
 
         :param data:
@@ -48,13 +48,16 @@ class DkiModel(ReconstModel):
         data = data.astype(float)
         try:
             func = solver[self.constraint]
-            coeffs = func(data)
+            coeffs = func(data, **kwargs)
         except KeyError:
             raise ValueError(('"{}" is not supported as a constraint, please' +
                               ' choose from [True, False]').format(
                 self.constraint))
 
-        return DkiFit(coeffs)
+        if coeffs is None:
+            return None
+        else:
+            return DkiFit(coeffs)
 
     def fit(self, data, mask=None, **kwargs):
         """
@@ -64,11 +67,12 @@ class DkiModel(ReconstModel):
         :param kwargs:
         :return:
         """
+        # specify data which different for every voxel
         per_voxel_data = {}
         return MultiVoxelFitter(self, **kwargs).fit(self._fit_helper, data,
                                                     per_voxel_data, mask)
 
-    def _solve(self, data):
+    def _solve(self, data, **kwargs):
         """
 
         :param data:
@@ -80,7 +84,7 @@ class DkiModel(ReconstModel):
         dki_tensor[1:] = la.lstsq(self.dki_matrix, data, rcond=None)[0]
         return dki_tensor
 
-    def _solve_c(self, data):
+    def _solve_c(self, data, **kwargs):
         """
 
         :param data:
@@ -108,8 +112,11 @@ class DkiModel(ReconstModel):
 
         S0 = np.mean(data[self.gtab.b0s_mask])
         if S0 <= 0:
-            logging.warning('The average b0 measurement is 0 or smaller.')
-            raise ValueError()
+            logging.info('The average b0 measurement is {} in '
+                         'voxel {}. DKI tensor is set to 0'
+                         ''.format(S0, kwargs['index']))
+            return None
+
         S = data[~self.gtab.b0s_mask]
         S[S <= 1e-10] = 1e-10  # clamp negative values
         S = np.log(S / S0)

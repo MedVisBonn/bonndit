@@ -34,9 +34,9 @@ class ShoreModel(ReconstModel):
         self.zeta = zeta
         self.tau = tau
 
-        # Parameters in this dict are needed to reinitalize the model from saved file
-        self._model_params = {'bvals': gtab.bvals, 'bvecs': gtab.bvecs,
-                              'order': order, 'zeta': zeta, 'tau': tau}
+        # These parameters are saved for reinitalization
+        self._params_dict = {'bvals': gtab.bvals, 'bvecs': gtab.bvecs,
+                             'order': order, 'zeta': zeta, 'tau': tau}
 
         # Ignore division by zero warning
         # dipy.core.geometry.cart2sphere -> theta = np.arccos(z / r)
@@ -44,7 +44,7 @@ class ShoreModel(ReconstModel):
             self.shore_m = shore_matrix(self.order, self.zeta, self.gtab,
                                         self.tau)
 
-    def _fit_helper(self, data, vecs=None, rcond=None):
+    def _fit_helper(self, data, vecs=None, rcond=None, **kwargs):
         """
 
         :param data:
@@ -447,11 +447,11 @@ class ShoreMultiTissueResponse(object):
             if kernel == "rank1" and self.order == 4 and cond_number > 1000:
                 logging.warning("For kernel=rank1 and order=4 the condition"
                                 "number of the convolution matrix should be "
-                                "smaller than 1000. The condition number is:" +
-                                str(cond_number))
+                                "smaller than 1000. The condition number is: {:8.3}"
+                                "".format(cond_number))
             else:
-                logging.info('Condition number of convolution matrtix:' +
-                             str(cond_number))
+                logging.info('Condition number of convolution matrix: {:8.3}'
+                             ''.format(cond_number))
 
         # 1000 chunks for the progressbar to run smoother
         chunksize = max(1, int(np.prod(data.shape[:-1]) / 1000))
@@ -657,45 +657,45 @@ class ShoreMultiTissueResponse(object):
         return np.dot(shore_m, M)
 
 
-def dti_masks(wm_mask, gm_mask, csf_mask, dti_fa, dti_mask=None, fawm=0.7):
-    """ Create FA guided tissue masks.
+def fa_guided_mask(tissue_mask, frac_aniso, brainmask=None,
+                   tissue_threshold=0.95, fa_lower_thresh=-10,
+                   fa_upper_thresh=np.inf):
+    """ Create fractional anisotropy guided tissue mask
 
-    Use precalculated fractional anisotropy values for example from DTI to
-    create tissue masks which contain mainly a single tissue. These masks can
-    be used to calculate shore response functions for the individual tissues.
+    Use precalculated fractional anisotropy values to create tissue masks. This
+    function can be used to create a mask for white matter voxels which are
+    likely to contain only a single fiber by feeding it a white matter mask and
+    precalculated fractional anisotropy values.
 
-    :param wm_mask: white matter mask
-    :param gm_mask: gray matter mask
-    :param csf_mask: cerebrospinal fluid mask
-    :param dti_mask: brain mask
-    :param dti_fa: precalculated fractional anisotropy values
-    :param fawm: fractional anisotropy threshold for white matter
-    :return: Masks for wm, gm and csf
+    :param tissue_mask: Tissue mask
+    :param frac_aniso: Precalculated fractional anisotropy values
+    :param brainmask: Brainmask
+    :param tissue_threshold: Threshold for the tissue mask
+    :param fa_lower_thresh: Lower FA threshold
+    :param fa_upper_thresh: Upper FA threshold
+    :return:
     """
+    if fa_lower_thresh == -10 and fa_upper_thresh == np.inf:
+        msg = "Specify either 'fa_lower_thresh' or 'fa_upper_thresh'"
+        raise ValueError(msg)
+
     # Load DTI fa map
-    fa = dti_fa.get_data()
+    fa = frac_aniso.get_data()
 
     # Load DTI mask if available
-    if dti_mask is None:
-        dti_mask = np.ones(fa.shape)
+    if brainmask is None:
+        brainmask = np.ones(fa.shape)
     else:
-        dti_mask = dti_mask.get_data()
+        brainmask = brainmask.get_data()
 
-    # Create masks
-    # WM
-    wm = wm_mask.get_data()
-    wm_by_fa = np.logical_and(wm > 0.95, fa > float(fawm))
-    dti_wm = np.logical_and(dti_mask, wm_by_fa).astype('int')
-    # GM
-    gm = gm_mask.get_data()
-    gm_by_fa = np.logical_and(gm > 0.95, fa < 0.2)
-    dti_gm = np.logical_and(dti_mask, gm_by_fa).astype('int')
-    # CSF
-    csf = csf_mask.get_data()
-    csf_by_fa = np.logical_and(csf > 0.95, fa < 0.2)
-    dti_csf = np.logical_and(dti_mask, csf_by_fa).astype('int')
+    # Create new tissue mask
+    tissue = tissue_mask.get_data()
+    tissue_by_lower_fa = np.logical_and(tissue > tissue_threshold,
+                                        fa_lower_thresh < fa)
 
-    wm_img = nib.Nifti1Image(dti_wm, wm_mask.affine)
-    gm_img = nib.Nifti1Image(dti_gm, gm_mask.affine)
-    csf_img = nib.Nifti1Image(dti_csf, csf_mask.affine)
-    return wm_img, gm_img, csf_img
+    tissue_by_fa = np.logical_and(tissue_by_lower_fa, fa < fa_upper_thresh)
+    fa_mask = np.logical_and(brainmask, tissue_by_fa).astype('int')
+
+    mask_img = nib.Nifti1Image(fa_mask, tissue_mask.affine)
+
+    return mask_img

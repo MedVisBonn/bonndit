@@ -9,7 +9,7 @@ import nibabel as nib
 from dipy.core.gradients import gradient_table
 from dipy.io import read_bvals_bvecs
 
-import bonndit.shoredeconv as bdshore
+import bonndit as bd
 from bonndit import ShResponseEstimator, ShResponse
 from bonndit.io import fsl_vectors_to_worldspace, fsl_gtab_to_worldspace
 from .constants import DATA_DIR, SH_RESPONSE
@@ -23,9 +23,8 @@ dti_mask = nib.load(os.path.join(DATA_DIR, "mask.nii.gz"))
 # Load and adjust tissue segmentation masks
 wm_mask = nib.load(os.path.join(DATA_DIR, "fast_pve_2.nii.gz"))
 
-# TODO: do not hack this function by using wm_mask 3 times
-wm_mask, _, _ = bdshore.dti_masks(wm_mask, wm_mask, wm_mask,
-                                  dti_fa, dti_mask, fawm=0.7)
+wm_mask = bd.shoredeconv.fa_guided_mask(wm_mask, dti_fa, dti_mask,
+                                        fa_lower_thresh=0.7)
 
 # Load DTI first eigenvector
 dti_vecs = nib.load(os.path.join(DATA_DIR, "dti_V1.nii.gz"))

@@ -9,9 +9,9 @@ import nibabel as nib
 from dipy.core.gradients import gradient_table
 from dipy.io import read_bvals_bvecs
 
-import bonndit.shoredeconv as bdshore
 from bonndit import ShoreMultiTissueResponseEstimator, ShoreMultiTissueResponse
 from bonndit.io import fsl_gtab_to_worldspace, fsl_vectors_to_worldspace
+from bonndit.shoredeconv import fa_guided_mask
 from .constants import DATA_DIR, SHORE_FIT_TEST
 
 # Load fractional anisotropy
@@ -25,8 +25,12 @@ csf_mask = nib.load(os.path.join(DATA_DIR, "fast_pve_0.nii.gz"))
 gm_mask = nib.load(os.path.join(DATA_DIR, "fast_pve_1.nii.gz"))
 wm_mask = nib.load(os.path.join(DATA_DIR, "fast_pve_2.nii.gz"))
 
-wm_mask, gm_mask, csf_mask = bdshore.dti_masks(wm_mask, gm_mask, csf_mask,
-                                                   dti_fa, dti_mask, fawm=0.7)
+wm_mask = fa_guided_mask(wm_mask, dti_fa, dti_mask, tissue_threshold=0.95,
+                         fa_lower_thresh=0.7)
+gm_mask = fa_guided_mask(gm_mask, dti_fa, dti_mask, tissue_threshold=0.95,
+                         fa_upper_thresh=0.2)
+csf_mask = fa_guided_mask(csf_mask, dti_fa, dti_mask, tissue_threshold=0.95,
+                          fa_upper_thresh=0.2)
 
 # Load DTI first eigenvector
 dti_vecs = nib.load(os.path.join(DATA_DIR, "dti_V1.nii.gz"))

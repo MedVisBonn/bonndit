@@ -1,12 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-"""
-================================================================================
-Compute fiber orientation distribution functions for diffusion weighted MRI data
-================================================================================
-"""
-
 import argparse
 import logging
 import os
@@ -22,12 +16,6 @@ import bonndit as bd
 from bonndit.io import fsl_vectors_to_worldspace, fsl_gtab_to_worldspace
 from bonndit.michi import fields, dwmri
 
-
-# TODO: Add option to first compute the diffustion tensors which are needed to estimate the response functions.
-# TODO: Add option to automatically build masks for csf gm wm.
-# TODO: Handle nrrd as well as nii input
-# TODO: Save in different output formats
-# TODO: Add logging and make it default
 
 def main():
     parser = argparse.ArgumentParser(
@@ -86,7 +74,7 @@ def main():
     log = parser.add_argument_group('logging (optional)',
                                     'Configure the logging behaviour')
     log.add_argument('-L', '--loglevel', choices=['INFO', 'WARNING', 'ERROR'],
-                     default='WARNING',
+                     default='INFO',
                      help='Specify the logging level for the console')
 
     args = parser.parse_args()
@@ -101,18 +89,19 @@ def main():
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
+    levels = {'INFO': logging.INFO,
+              'WARNING': logging.WARNING,
+              'ERROR': logging.ERROR}
+
     # Logging setup for file
-    logging.basicConfig(filename=os.path.join(args.outdir, 'csdeconv.log'),
+    logging.basicConfig(filename=os.path.join(args.outdir, 'kurtosis.log'),
                         format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                         datefmt='%y-%m-%d %H:%M',
-                        level=logging.INFO,
+                        level=levels[args.loglevel],
                         filemode='w')
 
     # Console logging if verbose flag is set
     if args.verbose:
-        levels = {'INFO': logging.INFO,
-                  'WARNING': logging.WARNING,
-                  'ERROR': logging.ERROR}
         # define a Handler which writes INFO messages or higher to the sys.stderr
         console = logging.StreamHandler()
         console.setLevel(levels[args.loglevel])
@@ -127,6 +116,15 @@ def main():
     logging.info('csdeconv has been called with:')
     param_string = 'Order: {}, FAWM: {}, Constraint: {}'
     logging.info(param_string.format(args.order, args.fawm, args.constraint))
+
+    # Check whether all specified files exist
+    for f in [args.brainmask, args.data, args.dtifa, args.wmmask, args.dtivecs,
+              'bvals', 'bvecs', ]:
+        filepath = os.path.join(indir, f)
+        if not os.path.isfile(filepath):
+            msg = 'No such file or directory: "{}"'.format(filepath)
+            logging.error(msg)
+            raise FileNotFoundError(msg)
 
     # Load fractional anisotropy
     dti_fa = bd.load(os.path.join(indir, args.dtifa))
@@ -150,10 +148,8 @@ def main():
 
     logging.info('Input loaded.')
 
-    # TODO: do not hack by using wm_mask 3 times
-    # Create tissue masks based on fractional anisotropy values
-    wm_mask, _, _ = bd.shoredeconv.dti_masks(wm_mask, wm_mask, wm_mask, dti_fa,
-                                             dti_mask, args.fawm)
+    wm_mask = bd.shoredeconv.fa_guided_mask(wm_mask, dti_fa, dti_mask,
+                                            fa_lower_thresh=0.7)
     logging.info('Fractional anisotropy based tissue mask created.')
 
     # Flip sign of x-coordinate if affine determinant is positive and rotate to worldspace

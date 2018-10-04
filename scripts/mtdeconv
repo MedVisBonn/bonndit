@@ -1,12 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-"""
-================================================================================
-Compute fiber orientation distribution functions for diffusion weighted MRI data
-================================================================================
-"""
-
 import argparse
 import logging
 import os
@@ -20,15 +14,10 @@ from dipy.core.gradients import gradient_table
 from dipy.io import read_bvals_bvecs
 
 import bonndit as bd
+from bonndit.shoredeconv import fa_guided_mask
 from bonndit.io import fsl_vectors_to_worldspace, fsl_gtab_to_worldspace
 from bonndit.michi import fields, dwmri
 
-
-# TODO: Add option to first compute the diffustion tensors which are needed to estimate the response functions.
-# TODO: Add option to automatically build masks for csf gm wm.
-# TODO: Handle nrrd as well as nii input
-# TODO: Save in different output formats
-# TODO: Add logging and make it default
 
 def main():
     parser = argparse.ArgumentParser(
@@ -95,7 +84,8 @@ def main():
 
     log = parser.add_argument_group('logging (optional)', 'Configure the logging behaviour')
     log.add_argument('-L', '--loglevel', choices=['INFO', 'WARNING', 'ERROR'],
-                     default='WARNING', help='Specify the logging level for the console')
+                     default='INFO',
+                     help='Specify the logging level for the console')
 
     args = parser.parse_args()
 
@@ -109,23 +99,25 @@ def main():
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
+    levels = {'INFO': logging.INFO,
+              'WARNING': logging.WARNING,
+              'ERROR': logging.ERROR}
+
     # Logging setup for file
-    logging.basicConfig(filename=os.path.join(args.outdir, 'mtdeconv.log'),
+    logging.basicConfig(filename=os.path.join(args.outdir, 'kurtosis.log'),
                         format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                         datefmt='%y-%m-%d %H:%M',
-                        level=logging.INFO,
+                        level=levels[args.loglevel],
                         filemode='w')
 
     # Console logging if verbose flag is set
     if args.verbose:
-        levels = {'INFO': logging.INFO,
-                  'WARNING': logging.WARNING,
-                  'ERROR': logging.ERROR}
         # define a Handler which writes INFO messages or higher to the sys.stderr
         console = logging.StreamHandler()
         console.setLevel(levels[args.loglevel])
         # set a format which is simpler for console use
-        formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
+        formatter = logging.Formatter(
+            '%(name)-12s: %(levelname)-8s %(message)s')
         # tell the handler to use this format
         console.setFormatter(formatter)
         # add the handler to the root logger
@@ -135,6 +127,15 @@ def main():
     param_string = 'Order: {} Zeta: {}, Tau: {}, FAWM: {}, Constraint: {}'
     logging.info(param_string.format(args.order, args.zeta, args.tau,
                                      args.fawm, args.constraint))
+
+    # Check whether all specified files exist
+    for f in [args.brainmask, args.data, args.dtifa, args.csfmask, args.gmmask,
+              args.wmmask, args.dtivecs, 'bvals', 'bvecs', ]:
+        filepath = os.path.join(indir, f)
+        if not os.path.isfile(filepath):
+            msg = 'No such file or directory: "{}"'.format(filepath)
+            logging.error(msg)
+            raise FileNotFoundError(msg)
 
     # Load fractional anisotropy
     dti_fa = bd.load(os.path.join(indir, args.dtifa))
@@ -161,9 +162,14 @@ def main():
     logging.info('Input loaded.')
 
     # Create tissue masks based on fractional anisotropy values
-    wm_mask, gm_mask, csf_mask = bd.shoredeconv.dti_masks(wm_mask, gm_mask,
-                                                          csf_mask, dti_fa,
-                                                          dti_mask, args.fawm)
+    wm_mask = fa_guided_mask(wm_mask, dti_fa, dti_mask, tissue_threshold=0.95,
+                             fa_lower_thresh=0.7)
+    gm_mask = fa_guided_mask(gm_mask, dti_fa, dti_mask, tissue_threshold=0.95,
+                             fa_upper_thresh=0.2)
+    csf_mask = fa_guided_mask(csf_mask, dti_fa, dti_mask,
+                              tissue_threshold=0.95,
+                              fa_upper_thresh=0.2)
+
     logging.info('Fractional anisotropy based tissue masks created.')
 
     # Flip sign of x-coordinate if affine determinant is positive and rotate to worldspace

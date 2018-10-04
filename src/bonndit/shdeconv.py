@@ -29,9 +29,9 @@ class SphericalHarmonicsModel(ReconstModel):
         super().__init__(gtab)
         self.order = order
 
-        # Parameters in this dict are needed to reinitalize the model from saved file
-        self._model_params = {'bvals': gtab.bvals, 'bvecs': gtab.bvecs,
-                              'order': order}
+        # These parameters are saved for reinitalization
+        self._params_dict = {'bvals': gtab.bvals, 'bvecs': gtab.bvecs,
+                             'order': order}
 
         # A gradient table without small bvalues,
         # depends on b0_threshold of gtab
@@ -43,7 +43,7 @@ class SphericalHarmonicsModel(ReconstModel):
         with np.errstate(divide='ignore', invalid='ignore'):
             self.sh_m = esh_matrix(self.order, self.gtab)
 
-    def _fit_helper(self, data, vecs=None, rcond=None):
+    def _fit_helper(self, data, vecs=None, rcond=None, **kwargs):
         """
 
         :param data:
@@ -297,8 +297,8 @@ class ShResponse(object):
         conv_mat = self.sh_convolution_matrix(kernel)
         with np.errstate(divide='ignore', invalid='ignore'):
             cond_number = la.cond(conv_mat)
-            logging.info('Condition number of convolution matrtix:' +
-                         str(cond_number))
+            logging.info('Condition number of convolution matrix: {:8.3}'
+                         ''.format(cond_number))
 
         # 1000 chunks for the progressbar to run smoother
         chunksize = max(1, int(np.prod(data.shape[:-1]) / 1000))
