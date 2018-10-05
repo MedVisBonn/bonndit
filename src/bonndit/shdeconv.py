@@ -347,7 +347,7 @@ class ShResponse(object):
         conv_mat = self.sh_convolution_matrix(kernel)
         with np.errstate(divide='ignore', invalid='ignore'):
             cond_number = la.cond(conv_mat)
-            logging.info('Condition number of convolution matrix: {:8.3}'
+            logging.info('Condition number of convolution matrix: {:.3f}'
                          ''.format(cond_number))
 
         # 1000 chunks for the progressbar to run smoother

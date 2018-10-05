@@ -484,10 +484,10 @@ class ShoreMultiTissueResponse(object):
             if kernel == "rank1" and self.order == 4 and cond_number > 1000:
                 logging.warning("For kernel=rank1 and order=4 the condition"
                                 "number of the convolution matrix should be "
-                                "smaller than 1000. The condition number is: {:8.3}"
-                                "".format(cond_number))
+                                "smaller than 1000. The condition number is: "
+                                "{:.3f}".format(cond_number))
             else:
-                logging.info('Condition number of convolution matrix: {:8.3}'
+                logging.info('Condition number of convolution matrix: {:.3f}'
                              ''.format(cond_number))
 
         # 1000 chunks for the progressbar to run smoother

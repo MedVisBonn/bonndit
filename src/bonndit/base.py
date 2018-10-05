@@ -22,7 +22,7 @@ class ReconstModel(ABC):
             Diffusion Weighted Data. N measurements for every voxel
         mask : ndarray (..., 1)
             Mask specifying all voxels for which to fit the model
-        kwargs : dict
+        kwargs :
             Keyword Arguments which may differ for each model
 
         Returns
