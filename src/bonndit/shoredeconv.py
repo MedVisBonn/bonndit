@@ -22,13 +22,17 @@ from bonndit.multivoxel import MultiVoxel, MultiVoxelFitter
 
 class ShoreModel(ReconstModel):
     def __init__(self, gtab, order=4, zeta=700, tau=1 / (4 * np.pi ** 2)):
+        """ Model the diffusion imaging signal using the shore basis
+
+        Args:
+            gtab (dipy.data.GradientTable): b-values and b-vectors in a
+        GradientTable object
+            order (int): An even integer representing the order of the shore
+        basis
+            zeta (float): radial scaling factor
+            tau (float): diffusion time.
         """
 
-        :param gtab:
-        :param order:
-        :param zeta:
-        :param tau:
-        """
         super().__init__(gtab)
         self.order = order
         self.zeta = zeta
@@ -47,10 +51,14 @@ class ShoreModel(ReconstModel):
     def _fit_helper(self, data, vecs=None, rcond=None, **kwargs):
         """
 
-        :param data:
-        :param vecs:
-        :param rcond:
-        :return:
+        Args:
+            data:
+            vecs:
+            rcond:
+            **kwargs:
+
+        Returns:
+
         """
 
         if vecs is not None:
@@ -75,10 +83,16 @@ class ShoreModel(ReconstModel):
         regions with high fractional anisotropy to ensure working only with
         single fiber voxels.
 
-        :param data: ndarray with DWI data
-        :param vecs: ndarray which specifies for every data point the main
-        direction of diffusion (e.g. first eigenvector of the diffusion tensor)
-        :return:  array of per voxel shore coefficients
+        Args:
+            data (ndarray): DWI data
+            vecs (ndarray): First eigenvector of the diffusion tensor for every
+             voxel (same shape as data)
+            mask (ndarray): Mask (same shape as data)
+            **kwargs:
+
+        Returns:
+            MultiVoxel object which holds the fitted models for all voxels.
+
         """
         if vecs is not None:
             per_voxel_data = {'vecs': vecs}
@@ -90,19 +104,39 @@ class ShoreModel(ReconstModel):
 
 class ShoreFit(ReconstFit):
     def __init__(self, coeffs):
+        """
+
+        Args:
+            coeffs:
+        """
         super().__init__(coeffs)
 
     @classmethod
     def load(cls, filepath):
+        """
+
+        Args:
+            filepath:
+
+        Returns:
+
+        """
         return MultiVoxel.load(filepath, model_class=ShoreModel,
                                fit_class=cls)
 
     def predict(self, gtab):
+        """
+
+        Args:
+            gtab:
+
+        Returns:
+
+        """
         super().predict(gtab)
 
 
 class ShoreMultiTissueResponseEstimator(object):
-
     """ Model the diffusion imaging signal using the shore basis functions.
 
     The main purpose of this class is to estimate tissue response functions
@@ -130,10 +164,13 @@ class ShoreMultiTissueResponseEstimator(object):
     def __init__(self, gtab, order=4, zeta=700, tau=1 / (4 * np.pi ** 2)):
         """
 
-        :param gtab:
-        :param order:
-        :param zeta:
-        :param tau:
+        Args:
+            gtab (dipy.data.GradientTable): b-values and b-vectors in a
+            GradientTable object
+            order (int): An even integer representing the order of the shore
+        basis
+            zeta (float): radial scaling factor
+            tau (float): diffusion time.
         """
         self.gtab = gtab
         self.order = order
@@ -456,7 +493,6 @@ class ShoreMultiTissueResponse(object):
         # 1000 chunks for the progressbar to run smoother
         chunksize = max(1, int(np.prod(data.shape[:-1]) / 1000))
 
-        # TODO: consider additional Tikhonov regularization
         # Deconvolve the DWI signal
         deconv = {'none': self.deconvolve, 'hpsd': self.deconvolve_hpsd,
                   'nonneg': self.deconvolve_nonneg}

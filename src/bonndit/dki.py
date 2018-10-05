@@ -277,6 +277,11 @@ class DkiModel(ReconstModel):
 
 class DkiFit(ReconstFit):
     def __init__(self, coeffs):
+        """ Compute kurtosis measures for a fitted kurtosis model.
+
+
+        :param coeffs: kurtosis parameters (ndarray of length 21)
+        """
         super().__init__(coeffs)
         self.dti_tensor = np.array(
             [[self.coeffs[1], self.coeffs[2], self.coeffs[3]],
@@ -376,6 +381,9 @@ class DkiFit(ReconstFit):
         return self._kurtosis_mean
 
     # Kappa properties
+    # kurtosis related parameters for a cylindrically constrained kurtosis
+    # M. Ankele, T. Schultz; "Quantifying Microstructure in Fiber Crossings
+    # with Diffusional Kurtosis"; doi: 10.1007/978-3-319-24553-9_19
     @property
     def kappa_axial(self):
         if self._kappa_axial is None:
