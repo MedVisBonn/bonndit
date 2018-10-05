@@ -21,10 +21,12 @@ from bonndit.multivoxel import MultiVoxel, MultiVoxelFitter
 
 class SphericalHarmonicsModel(ReconstModel):
     def __init__(self, gtab, order=4):
-        """
+        """ Model the diffusion imaging signal with spherical harmonics
 
-        :param gtab:
-        :param order:
+        Args:
+            gtab (dipy.data.GradientTable): b-values and b-vectors in a
+            GradientTable object
+            order (int): Order of the spherical harmonics
         """
         super().__init__(gtab)
         self.order = order
@@ -47,10 +49,14 @@ class SphericalHarmonicsModel(ReconstModel):
     def _fit_helper(self, data, vecs=None, rcond=None, **kwargs):
         """
 
-        :param data:
-        :param vecs:
-        :param rcond:
-        :return:
+        Args:
+            data:
+            vecs:
+            rcond:
+            **kwargs:
+
+        Returns:
+
         """
         # Calculate average b0 signal in data
         b0_avg = np.mean(data[..., self.gtab.b0s_mask])
@@ -71,11 +77,14 @@ class SphericalHarmonicsModel(ReconstModel):
     def fit(self, data, vecs=None, mask=None, **kwargs):
         """
 
-        :param data:
-        :param vecs:
-        :param mask:
-        :param kwargs:
-        :return:
+        Args:
+            data:
+            vecs:
+            mask:
+            **kwargs:
+
+        Returns:
+
         """
         if vecs is not None:
             per_voxel_data = {'vecs': vecs}
@@ -90,9 +99,10 @@ class SphericalHarmonicsFit(ReconstFit):
     def __init__(self, model, coeffs, b0_avg):
         """
 
-        :param model:
-        :param coeffs:
-        :param b0_avg:
+        Args:
+            model:
+            coeffs:
+            b0_avg:
         """
         super().__init__(coeffs)
         self.model = model
@@ -102,10 +112,26 @@ class SphericalHarmonicsFit(ReconstFit):
         self.gtab = model.gtab
 
     def predict(self, gtab):
+        """
+
+        Args:
+            gtab:
+
+        Returns:
+
+        """
         super().predict(gtab)
 
     @classmethod
     def load(cls, filepath):
+        """
+
+        Args:
+            filepath:
+
+        Returns:
+
+        """
         return MultiVoxel.load(
             filepath, model_class=SphericalHarmonicsModel,
             fit_class=cls)
@@ -115,8 +141,9 @@ class ShResponseEstimator(object):
     def __init__(self, gtab, order=4):
         """
 
-        :param gtab:
-        :param order:
+        Args:
+            gtab:
+            order:
         """
         self.gtab = gtab
         self.order = order
@@ -124,12 +151,15 @@ class ShResponseEstimator(object):
     def fit(self, data, dti_vecs, wm_mask, verbose=False, cpus=1):
         """
 
-        :param data:
-        :param dti_vecs:
-        :param wm_mask:
-        :param verbose:
-        :param cpus:
-        :return:
+        Args:
+            data:
+            dti_vecs:
+            wm_mask:
+            verbose:
+            cpus:
+
+        Returns:
+
         """
         # Check if tissue masks give at least a single voxel
         if np.sum(wm_mask.get_data()) < 1:
@@ -155,8 +185,11 @@ class ShResponseEstimator(object):
     def sh_accumulate(self, sh_coeffs):
         """
 
-        :param sh_coeffs:
-        :return:
+        Args:
+            sh_coeffs:
+
+        Returns:
+
         """
         sh_accum = np.zeros_like(sh_coeffs[0])
         accum_count = 0
@@ -180,8 +213,12 @@ class ShResponseEstimator(object):
         harmonics coefficients. This functions selects the zonal harmonics with
         even order from an array with spherical harmonics coefficients.
 
-        :param coeffs: spherical harmonics coefficients
-        :return: z-rotational part of the spherical harmonics coefficients
+        Args:
+            coeffs: spherical harmonics coefficients
+
+        Returns:
+            z-rotational part of the spherical harmonics coefficients
+
         """
         zonal_coeffs = np.zeros(esh.get_kernel_size(self.order))
 
@@ -204,9 +241,10 @@ class ShResponse(object):
     def __init__(self, model, sh_coef, kernel="rank1"):
         """
 
-        :param model:
-        :param sh_coef:
-        :param kernel:
+        Args:
+            model:
+            sh_coef:
+            kernel:
         """
         self.model = model
         self.gtab = model.gtab
@@ -228,8 +266,11 @@ class ShResponse(object):
     def set_kernel(self, kernel):
         """
 
-        :param kernel:
-        :return:
+        Args:
+            kernel:
+
+        Returns:
+
         """
         # Get deconvolution kernel
         if kernel == "rank1":
@@ -245,9 +286,11 @@ class ShResponse(object):
     def load(cls, filepath):
         """ Load a precalculated mtShoreFit object from a file.
 
-        :param filepath: path to the saved mtShoreFit object
-        :return: mtShoreFit object which contains response functions for white
-        matter, gray matter and CSF
+        Args:
+            filepath: path to the saved ShResponse object
+
+        Returns:
+            ShResponse object which contains response function for white matter
         """
         response = np.load(filepath)
 
@@ -257,9 +300,13 @@ class ShResponse(object):
         return cls(model, response['wm_resp'])
 
     def save(self, filepath):
-        """ Save a mtShoreFit object to a file.
+        """ Save the object to a file
 
-        :param filepath: path to the file
+        Args:
+            filepath: path to the file
+
+        Returns:
+
         """
         try:
             os.makedirs(os.path.dirname(filepath))
@@ -276,13 +323,16 @@ class ShResponse(object):
             ):
         """
 
-        :param data:
-        :param pos:
-        :param mask:
-        :param kernel:
-        :param verbose:
-        :param cpus:
-        :return:
+        Args:
+            data:
+            pos:
+            mask:
+            kernel:
+            verbose:
+            cpus:
+
+        Returns:
+
         """
         if self.kernel_type != kernel:
             self.set_kernel(kernel)
@@ -357,9 +407,12 @@ class ShResponse(object):
     def deconvolve(self, data, conv_matrix):
         """
 
-        :param data:
-        :param conv_matrix:
-        :return:
+        Args:
+            data:
+            conv_matrix:
+
+        Returns:
+
         """
         NN = esh.LENGTH[self.order]
         deconvolution_result = np.zeros(data.shape[:-1] + (NN,))
@@ -375,9 +428,12 @@ class ShResponse(object):
     def deconvolve_hpsd(self, data, conv_matrix):
         """
 
-        :param data:
-        :param conv_matrix:
-        :return:
+        Args:
+            data:
+            conv_matrix:
+
+        Returns:
+
         """
         NN = esh.LENGTH[self.order]
         deconvolution_result = np.zeros(data.shape[:-1] + (NN,))
@@ -454,9 +510,12 @@ class ShResponse(object):
     def deconvolve_nonneg(self, data, conv_matrix):
         """
 
-        :param data:
-        :param conv_matrix:
-        :return:
+        Args:
+            data:
+            conv_matrix:
+
+        Returns:
+
         """
         NN = esh.LENGTH[self.order]
         deconvolution_result = np.zeros(data.shape[:-1] + (NN,))
@@ -498,10 +557,12 @@ class ShResponse(object):
     def sh_convolution_matrix(self, kernel="rank1"):
         """
 
-        :param kernel:
-        :return:
+        Args:
+            kernel:
+
+        Returns:
+
         """
-        # TODO: Reduce redundancy by using esh_matrix
         if self.kernel_type != kernel:
             self.set_kernel(kernel)
 
@@ -525,12 +586,18 @@ class ShResponse(object):
 def esh_matrix(order, gtab):
     """ Matrix that evaluates SH coeffs in the given directions
 
-    :param order:
-    :param gtab:
-    :return:
+    Args:
+        order:
+        gtab:
+
+    Returns:
+
     """
     bvecs = gtab.bvecs
-    r, theta, phi = cart2sphere(bvecs[:, 0], bvecs[:, 1], bvecs[:, 2])
+    r, theta, phi = cart2sphere(
+        bvecs[:, 0],
+        bvecs[:, 1],
+        bvecs[:, 2])
     theta[np.isnan(theta)] = 0
     M = np.zeros((bvecs.shape[0], esh.LENGTH[order]))
     counter = 0
