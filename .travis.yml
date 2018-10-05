@@ -4,8 +4,13 @@ language: python
 python:
   - 3.6
   - 3.5
-  - 3.4
-  - 2.7
+
+# https://github.com/travis-ci/travis-ci/issues/9815 workaround for testing with 3.7
+matrix:
+    include:
+    - python: 3.7
+      dist: xenial
+      sudo: true
 
 # Command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install: pip install -U tox-travis
