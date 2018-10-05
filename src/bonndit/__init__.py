@@ -6,7 +6,6 @@ __author__ = """Olivier Morelle"""
 __email__ = 'morelle@uni-bonn.de'
 __version__ = '0.1.0'
 
-from .cylkurtosis import CylKurtosisModel
 from .dki import DkiModel, DkiFit
 from .dki import DkiModel, DkiFit
 from .io import load

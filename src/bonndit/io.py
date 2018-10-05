@@ -6,7 +6,25 @@ import numpy as np
 from dipy.core.gradients import gradient_table
 
 
-def load(filename, kwargs={}):
+def load(filename, **kwargs):
+    """ Load NIFTI files based on the base of the filename.
+
+    Using this function it does not matter whether your data is in .nii or in
+    .nii.gz format as long as the base of the filename is correct the data is
+    going to be loaded.
+
+    Parameters
+    ----------
+    filename : str
+        Name of the file
+    kwargs : dict
+        Keyword arguments for nib.load()
+
+    Returns
+    -------
+    nibabel Image Object
+
+    """
     """ This function loads NIFTI files based on the base of the filename. You
     do not need to know wether the ending is .nii or .nii.gz.
 
@@ -29,10 +47,18 @@ def load(filename, kwargs={}):
 
 
 def vector_norm(vectors):
-    """
+    """ Calculate the norm for a given vector and return it.
 
-    :param vectors:
-    :return:
+    Parameters
+    ----------
+    vectors : ndarray (x)
+        Vector to be normed
+
+    Returns
+    -------
+    ndarray (x)
+        Vector of length 1
+
     """
     vecnorm = np.linalg.norm(vectors, axis=-1, keepdims=True)
     vecnorm[vecnorm == 0] = 1.0  # avoid division by zero
@@ -43,8 +69,14 @@ def vector_norm(vectors):
 def fsl_flip_sign(vectors, affine):
     """
 
-    :param vectors:
-    :return:
+    Parameters
+    ----------
+    vectors
+    affine
+
+    Returns
+    -------
+
     """
     # Flip sign according to FSL documentation
     if np.linalg.det(affine) > 0:
@@ -55,13 +87,23 @@ def fsl_flip_sign(vectors, affine):
 
 
 def fsl_gtab_to_worldspace(gtab, affine):
-    """ Rotate bvecs into world coordinate system for data saved by FSL. According
-    to the FSL documentation the sign of the x-coordinate has to be flipped if the
-    determinant of the linear transformation matrix is positive.
+    """ Rotate bvecs into world coordinate system for data saved by FSL.
 
-    :param affine: The 4x4 affine matrix belonging to the provided gtabs data.
-    :param gtab: A dipy GradientTable object holding gradients belonging to the given data
-    :return: A dipy GradientTable object rotated to world coordinates
+    According to the FSL documentation the sign of the x-coordinate has to be
+    flipped if the determinant of the linear transformation matrix is positive.
+
+    Parameters
+    ----------
+    gtab : dipy.data.GradientTable
+        An object holding information about the applied Gradients including
+        b-values and b-vectors
+    affine : ndarray (4,4)
+        The 4x4 affine matrix belonging to the provided gtabs data.
+
+    Returns
+    -------
+    dipy.data.GradientTable
+        GradientTable rotated to world coordinates
     """
     # Get 3x3 linear transformation part of the affine matrix
     linear = affine[0:3, 0:3]
@@ -78,8 +120,13 @@ def fsl_gtab_to_worldspace(gtab, affine):
 def fsl_vectors_to_worldspace(vectors):
     """
 
-    :param vectors:
-    :return:
+    Parameters
+    ----------
+    vectors
+
+    Returns
+    -------
+
     """
     affine = vectors.affine
     vecs = vectors.get_data()
