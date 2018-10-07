@@ -9,10 +9,25 @@ from dipy.reconst.multi_voxel import MultiVoxelFit
 from tqdm import tqdm
 
 
-def fit_helper(args_kwargs):
+def multiprocessing_helper(args_kwargs):
+    """ Call the models actual fitting function with all needed parameters
+
+    Parameters
+    ----------
+    args_kwargs : List
+        First entry is a reference to the actual fitting function
+        Last entry is a dict of keyword arguments
+        Entries in between hold positional arguments
+
+    Returns
+    -------
+    ReconstFit
+        Object holding the fitted model parameters
+    """
+    func = args_kwargs[0]
     args = args_kwargs[1:-1]
     kwargs = args_kwargs[-1]
-    func = args_kwargs[0]
+
     return func(*args, **kwargs)
 
 
@@ -40,28 +55,36 @@ class MultiVoxelFitter(object):
         self.desc = desc
 
     def fit(self, fit_func, data, per_voxel_data, mask=None):
-        """
+        """ Fit a model for every voxel and return a ndarray of fit objects.
 
         Parameters
         ----------
         fit_func
-        data
-        per_voxel_data
-        mask
+            Reference to the models fit function. (Function doing the actual
+            work. Is often called _fit_helper in bonndit)
+        data : ndarray
+            N-dimensional array holding the data for every voxel
+        per_voxel_data : dict
+            Dictionary of n-dimensional arrays which hold additional data
+            different for every voxel
+        mask : ndarray
+            N-dimensional array of the same shape as data[:-1] for selection
+            of voxels
 
         Returns
         -------
-
+        MultiVoxel
+        Object which holds fit objects for every voxel and allows easy access to
+        fitted parameters and fit object functionalities. Inherits form dipys
+        MultiVoxelFit.
         """
 
         space = data.shape[:-1]
-
 
         if mask is None:
             mask = np.ones(space)
         if mask.shape != space:
             raise ValueError("mask and data shape do not match")
-
 
         # Convert integer to boolean mask
         mask = np.ma.make_mask(mask)
@@ -80,16 +103,15 @@ class MultiVoxelFitter(object):
                 per_voxel_kwargs = {**per_voxel_kwargs, **{'index': ijk}}
 
                 args_kwargs.append((fit_func, data[ijk], per_voxel_kwargs))
-                # print(new_kwargs)
 
         if self.cpus == 1:
-            coeffs = list(tqdm(map(fit_helper, args_kwargs),
+            coeffs = list(tqdm(map(multiprocessing_helper, args_kwargs),
                                total=sum(mask.flatten()),
                                disable=not self.verbose,
                                desc=self.desc))
         else:
             with mp.Pool(self.cpus) as p:
-                coeffs = list(tqdm(p.imap(fit_helper, args_kwargs,
+                coeffs = list(tqdm(p.imap(multiprocessing_helper, args_kwargs,
                                           chunksize),
                                    total=sum(mask.flatten()),
                                    disable=not self.verbose,
@@ -99,6 +121,7 @@ class MultiVoxelFitter(object):
         fit_array[mask] = coeffs
 
         return MultiVoxel(self.model, fit_array, mask)
+
 
 class MultiVoxel(MultiVoxelFit):
     def __init__(self, model, fit_array, mask):
@@ -112,8 +135,7 @@ class MultiVoxel(MultiVoxelFit):
         """
         super().__init__(model, fit_array, mask)
         self._model_params = {'bvals': self.model.gtab.bvals,
-                              'bvecs': self.model.gtab.bvecs,
-                              }
+                              'bvecs': self.model.gtab.bvecs}
 
     @classmethod
     def load(cls, filepath, model_class, fit_class):
@@ -147,14 +169,14 @@ class MultiVoxel(MultiVoxelFit):
 
         return cls(model, fit_array, mask)
 
-    def save(self, filepath, affine=None, type='npz'):
+    def save(self, filepath, affine=None, fileformat='npz'):
         """
 
         Parameters
         ----------
         filepath
         affine
-        type
+        fileformat
 
         Returns
         -------
@@ -171,11 +193,10 @@ class MultiVoxel(MultiVoxelFit):
 
         coeffs = self.__getattr__('coeffs')
         mask = self.mask
-        if type == 'npz':
+        if fileformat == 'npz':
             np.savez(filepath, coeffs=coeffs, mask=mask,
                      **self.model._params_dict)
 
-
-        elif type == 'nii':
+        elif fileformat == 'nii':
             img = nib.Nifti1Image(coeffs, affine=affine)
             nib.save(img, filepath)
