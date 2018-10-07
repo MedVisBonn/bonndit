@@ -25,12 +25,6 @@ def load(filename, **kwargs):
     nibabel Image Object
 
     """
-    """ This function loads NIFTI files based on the base of the filename. You
-    do not need to know wether the ending is .nii or .nii.gz.
-
-    :param filename:
-    :return:
-    """
     base_filename = filename.rstrip(".gz").rstrip(".nii")
 
     if isfile(base_filename + '.nii') and isfile(base_filename + '.nii.gz'):
