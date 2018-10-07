@@ -18,12 +18,41 @@ def fit_helper(args_kwargs):
 
 class MultiVoxelFitter(object):
     def __init__(self, model, cpus=1, verbose=False, desc=""):
+        """ A MultiVoxelFitter assists in fitting DWI models on a voxel grid.
+
+        Using the MultiVoxelFitter brings multiprocessing and a tqdm progress
+        bar to every model implementing it.
+
+        Parameters
+        ----------
+        model : ReconstModel
+            Reference to the model object which implements MultiVoxelFitter
+        cpus : int
+            Number of cpus workers to use for multiprocessing
+        verbose : bool
+            Enable or disable the progress bar for fitting
+        desc : str
+            Description of the progress bar if verbose is set to True
+        """
         self.model = model
         self.cpus = cpus
         self.verbose = verbose
         self.desc = desc
 
     def fit(self, fit_func, data, per_voxel_data, mask=None):
+        """
+
+        Parameters
+        ----------
+        fit_func
+        data
+        per_voxel_data
+        mask
+
+        Returns
+        -------
+
+        """
 
         space = data.shape[:-1]
 
@@ -73,6 +102,14 @@ class MultiVoxelFitter(object):
 
 class MultiVoxel(MultiVoxelFit):
     def __init__(self, model, fit_array, mask):
+        """
+
+        Parameters
+        ----------
+        model
+        fit_array
+        mask
+        """
         super().__init__(model, fit_array, mask)
         self._model_params = {'bvals': self.model.gtab.bvals,
                               'bvecs': self.model.gtab.bvecs,
@@ -80,6 +117,18 @@ class MultiVoxel(MultiVoxelFit):
 
     @classmethod
     def load(cls, filepath, model_class, fit_class):
+        """
+
+        Parameters
+        ----------
+        filepath
+        model_class
+        fit_class
+
+        Returns
+        -------
+
+        """
         filecontent = np.load(filepath)
 
         gtab = gradient_table(filecontent['bvals'], filecontent['bvecs'])
@@ -99,6 +148,18 @@ class MultiVoxel(MultiVoxelFit):
         return cls(model, fit_array, mask)
 
     def save(self, filepath, affine=None, type='npz'):
+        """
+
+        Parameters
+        ----------
+        filepath
+        affine
+        type
+
+        Returns
+        -------
+
+        """
         try:
             os.makedirs(os.path.dirname(filepath))
         except OSError as e:
