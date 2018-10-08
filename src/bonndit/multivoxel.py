@@ -125,13 +125,17 @@ class MultiVoxelFitter(object):
 
 class MultiVoxel(MultiVoxelFit):
     def __init__(self, model, fit_array, mask):
-        """
+        """ MultiVoxelFit from dipy with loading and saving functionality
 
         Parameters
         ----------
-        model
-        fit_array
-        mask
+        model : type
+            Class reference to the used model
+        fit_array : ndarray (..., object)
+            N-dimensional array holding fit object for every voxel
+        mask : ndarray (..., bool)
+            N-dimensional array of same shape as the fit_array specifying
+            voxels without a fit object
         """
         super().__init__(model, fit_array, mask)
         self._model_params = {'bvals': self.model.gtab.bvals,
@@ -139,17 +143,21 @@ class MultiVoxel(MultiVoxelFit):
 
     @classmethod
     def load(cls, filepath, model_class, fit_class):
-        """
+        """ Load a saved MultiVoxel object
 
         Parameters
         ----------
-        filepath
-        model_class
-        fit_class
+        filepath : str
+            Path to the saved object
+        model_class : type
+            Model which was used for fitting
+        fit_class : type
+            Reference to fit class which is used to store the fitted parameters
+            for every voxel
 
         Returns
         -------
-
+        MultiVoxel object
         """
         filecontent = np.load(filepath)
 
@@ -170,17 +178,21 @@ class MultiVoxel(MultiVoxelFit):
         return cls(model, fit_array, mask)
 
     def save(self, filepath, affine=None, fileformat='npz'):
-        """
+        """ Save the MultiVoxel object
 
         Parameters
         ----------
-        filepath
-        affine
-        fileformat
+        filepath : str
+            File where to save the object
+        affine : ndarray (4, 4)
+            Affine matrix for the NIFTI file
+        fileformat : str
+            Either 'npz' or 'nii'. ATTENTION: Loading is currently only
+            supported for 'npz'
 
         Returns
         -------
-
+        None
         """
         try:
             os.makedirs(os.path.dirname(filepath))

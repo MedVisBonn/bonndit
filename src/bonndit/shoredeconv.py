@@ -24,13 +24,16 @@ class ShoreModel(ReconstModel):
     def __init__(self, gtab, order=4, zeta=700, tau=1 / (4 * np.pi ** 2)):
         """ Model the diffusion imaging signal using the shore basis
 
-        Args:
-            gtab (dipy.data.GradientTable): b-values and b-vectors in a
-        GradientTable object
-            order (int): An even integer representing the order of the shore
-        basis
-            zeta (float): radial scaling factor
-            tau (float): diffusion time.
+        Parameters
+        ----------
+        gtab : dipy.data.GradientTable
+            b-values and b-vectors in a GradientTable object
+        order : int
+            An even integer representing the order of the shore basis
+        zeta : float
+            Radial scaling factor
+        tau : float
+            Diffusion time
         """
 
         super().__init__(gtab)
@@ -49,15 +52,27 @@ class ShoreModel(ReconstModel):
                                         self.tau)
 
     def _fit_helper(self, data, vecs=None, rcond=None, **kwargs):
-        """
+        """ Fitting is done here
 
-        Args:
-            data:
-            vecs:
-            rcond:
-            **kwargs:
+        This function is handed to the MultivoxelFitter, to fit models for
+        every voxel.
 
-        Returns:
+        Parameters
+        ----------
+        data : ndarray (n)
+            Data of a single voxel
+        vecs : ndarray (3)
+             First eigenvector of the diffusion tensor for a single voxel
+        rcond :
+            Cut-off ratio for small singular values of the coefficient matrix.
+            For further information read documentation of numpy.linalg.lstsq.
+        kwargs : dict
+            Empty dictionary, not used in this function
+
+        Returns
+        -------
+        ShoreFit
+            Object holding the fitted model parameters
 
         """
 
@@ -75,24 +90,29 @@ class ShoreModel(ReconstModel):
     def fit(self, data, vecs=None, mask=None, **kwargs):
         """ Fit shore coefficients to diffusion weighted imaging data.
 
-        If an array of vectors is specified (vecs), the gradient table is
-        rotated with an affine matrix which would align the vector to the
-        z-axis. This can be used to compute comparable shore coefficients for
-        white matter regions of different orientation. Use the first
-        eigenvectors of precomputed diffusion tensors as vectors and use only
-        regions with high fractional anisotropy to ensure working only with
-        single fiber voxels.
+        If an array of vectors is specified (vecs), a rotation is applied to
+        the b-vectors which would align the given vector to the z-axis.  This
+        can be used to compute comparable shore coefficients for white matter
+        regions of different orientation. Use the first eigenvectors of
+        precomputed diffusion tensors as vectors and use only regions with high
+        fractional anisotropy to ensure working only with single fiber voxels.
 
-        Args:
-            data (ndarray): DWI data
-            vecs (ndarray): First eigenvector of the diffusion tensor for every
-             voxel (same shape as data)
-            mask (ndarray): Mask (same shape as data)
-            **kwargs:
+        Parameters
+        ----------
+        data : ndarray (..., n)
+            Diffusion weighted imaging data
+        vecs: ndarray (..., 3)
+            First eigenvector of the diffusion tensor for every voxel
+            (same shape as data)
+        mask : ndarray (..., bool)
+            Mask (same shape as data)
+        kwargs
 
-        Returns:
-            MultiVoxel object which holds the fitted models for all voxels.
 
+        Returns
+        -------
+        MultiVoxel
+            Object which holds the fitted models for all voxels.
         """
         if vecs is not None:
             per_voxel_data = {'vecs': vecs}
@@ -104,34 +124,44 @@ class ShoreModel(ReconstModel):
 
 class ShoreFit(ReconstFit):
     def __init__(self, coeffs):
-        """
+        """ Hold fitted model parameters and provide further functionality
 
-        Args:
-            coeffs:
+        Parameters
+        ----------
+        coeffs : ndarray(n)
+            Fitted model parameter
         """
         super().__init__(coeffs)
 
     @classmethod
     def load(cls, filepath):
-        """
+        """ Load a MultiVoxel object
 
-        Args:
-            filepath:
+        Parameters
+        ----------
+        filepath: str
+            Path to the saved file
 
-        Returns:
-
+        Returns
+        -------
+        MultiVoxel
+            Object holding ShoreFits for every voxel
         """
         return MultiVoxel.load(filepath, model_class=ShoreModel,
                                fit_class=cls)
 
     def predict(self, gtab):
-        """
+        """ Predict DWI measurements. Not yet implemented
 
-        Args:
-            gtab:
+        Parameters
+        ----------
+        gtab : dipy.data.GradientTable
+            Gradients for which to predict the measurements
 
-        Returns:
-
+        Returns
+        -------
+        ndarray (n)
+            Predicted measurements for a single voxel
         """
         super().predict(gtab)
 
@@ -144,15 +174,6 @@ class ShoreMultiTissueResponseEstimator(object):
     as a mtShoreFit object which enables multi-tissue multi-shell
     deconvolution as described in [1]_.
 
-    The method for fitting arbitrary data to a shore model is also exposed to
-    the user and returns a np.ndarray object holding the estimated shore
-    coefficients. Multiprocessing is supported for python >= 3 and can speed up
-    the computation a lot. Unfortunately threads spawned by numpy interfere
-    with this multiprocessing. For optimal performance you need to set the
-    environment variable OMP_NUM_THREADS to 1. You can do this from within a
-    python script by inserting the following code before importing numpy:
-    ```os.environ["OMP_NUM_THREADS"] = "1"```
-
     References
     ----------
     .. [1] M. Ankele, L. Lim, S. Groeschel and T. Schultz; "Versatile, Robust
@@ -164,13 +185,16 @@ class ShoreMultiTissueResponseEstimator(object):
     def __init__(self, gtab, order=4, zeta=700, tau=1 / (4 * np.pi ** 2)):
         """
 
-        Args:
-            gtab (dipy.data.GradientTable): b-values and b-vectors in a
-            GradientTable object
-            order (int): An even integer representing the order of the shore
-        basis
-            zeta (float): radial scaling factor
-            tau (float): diffusion time.
+        Parameters
+        ----------
+        gtab : dipy.data.GradientTable
+            b-values and b-vectors in a GradientTable object
+        order : int
+            An even integer representing the order of the shore basis
+        zeta : float
+            Radial scaling factor
+        tau : float
+            Diffusion time
         """
         self.gtab = gtab
         self.order = order
@@ -185,20 +209,43 @@ class ShoreMultiTissueResponseEstimator(object):
 
     def fit(self, data, dti_vecs, wm_mask, gm_mask, csf_mask,
             verbose=False, cpus=1):
-        """ Compute tissue response functions.
+        """Compute tissue response fucntions
 
         Shore coefficients are fitted for white matter, gray matter and
-        cerebrospinal fluid separately. The averaged and compressed
-        coefficients are returned in a mtShoreFit object.
+        cerebrospinal fluid separately. For white matter gradient tables are
+        rotated such that the first eigenvector of the diffusion tensor would
+        be aligned to the z-axis. Shore coefficients for each tissue are
+        averaged and compressed by using only the z-rotational part of the
+        shore coefficients. The averaged and compressed coefficients are
+        returned in a ShoreMultiTissueResponse object.
 
-        :param data: diffusion weighted data
-        :param dti_vecs: first eigenvector of a precalculated diffusion tensor
-        :param wm_mask: white Matter Mask (0/1)
-        :param gm_mask: gray Matter Mask (0/1)
-        :param csf_mask: cerebrospinal fluid mask (0/1)
-        :param verbose: Set to True for a progress bar
-        :param cpus: Number of cpu workers to use
-        :return: Fitted response functions in a mtShoreFit object
+        Unfortunately threads spawned by numpy interfere with multiprocessing
+        used here. For optimal performance you need to set the environment
+        variable OMP_NUM_THREADS to 1. You can do this from within a
+        python script by inserting the following code before importing numpy:
+        ```os.environ["OMP_NUM_THREADS"] = "1"```
+
+        Parameters
+        ----------
+        data : ``SpatialImage``
+            Diffusion weighted data
+        dti_vecs : ``SpatialImage``
+            First eigenvectors of precalculated diffusion tensors
+        wm_mask : ``SpatialImage``
+            White matter mask (0 or 1)
+        gm_mask : ``SpatialImage``
+            Gray matter mask (0 or 1)
+        csf_mask : ``SpatialImage``
+            Cerebrospinal fluid mask (0 or 1)
+        verbose : bool
+            Set to True for verbose output including a progress bar
+        cpus : int
+            Number of cpu workers to use for multiprocessing
+        Returns
+        -------
+        ShoreMultiTissueResponse
+            Object holding fitted response functions
+
         """
         # Check if tissue masks give at least a single voxel
         if np.sum(wm_mask.get_data()) < 1:
@@ -248,12 +295,20 @@ class ShoreMultiTissueResponseEstimator(object):
     def shore_accumulate(self, shore_coeff):
         """ Average over array of shore coefficients.
 
-        This is used to determine the average response of a specific tissue.
+        This method is used to determine the average response of a specific
+        tissue.
 
-        :param shore_coeff: array of per voxel shore coefficients
-        :return: averaged shore coefficients
+        Parameters
+        ----------
+        shore_coeff : ndarray (..., n)
+            N-dimensional array of per voxel shore coefficients
+
+        Returns
+        -------
+        ndarray
+            Averaged shore coefficients
+
         """
-
         shore_accum = np.zeros_like(shore_coeff[0])
         accum_count = 0
 
@@ -269,14 +324,22 @@ class ShoreMultiTissueResponseEstimator(object):
             return shore_accum / accum_count
 
     def shore_compress(self, coeffs):
-        """ Compress the shore coefficients
+        """ Extract the z-rotational part of the shore coefficients.
 
         An axial symetric response function aligned to the z-axis can be
         described fully using only the z-rotational part of the shore
         coefficients.
 
-        :param coeffs: shore coefficients
-        :return: z-rotational part of the shore coefficients
+        Parameters
+        ----------
+        coeffs : ndarray (n)
+            N-dimensional array holding shore coefficients of a single model
+
+        Returns
+        -------
+        ndarray
+            z-rotational part of the given shore coefficients
+
         """
         r = np.zeros(shore.get_kernel_size(self.order, self.order))
         counter = 0
@@ -294,9 +357,11 @@ class ShoreMultiTissueResponse(object):
     def __init__(self, model, shore_coef, kernel="rank1"):
         """
 
-        :param model:
-        :param shore_coef:
-        :param kernel:
+        Parameters
+        ----------
+        model
+        shore_coef
+        kernel
         """
         self.model = model
         self.gtab = model.gtab
@@ -318,8 +383,13 @@ class ShoreMultiTissueResponse(object):
     def set_kernel(self, kernel):
         """
 
-        :param kernel:
-        :return:
+        Parameters
+        ----------
+        kernel
+
+        Returns
+        -------
+
         """
         # Get deconvolution kernels
         if kernel == "rank1":
@@ -345,9 +415,16 @@ class ShoreMultiTissueResponse(object):
     def load(cls, filepath):
         """ Load a precalculated mtShoreFit object from a file.
 
-        :param filepath: path to the saved mtShoreFit object
-        :return: mtShoreFit object which contains response functions for white
-        matter, gray matter and CSF
+        Parameters
+        ----------
+        filepath : str
+            Path to saved ShoreMultiTissueResponse object
+
+        Returns
+        -------
+        ShoreMultiTissueResponse
+            Object which holds response functions for white matter, gray matter
+            and CSF
         """
         response = np.load(filepath)
 
@@ -359,9 +436,16 @@ class ShoreMultiTissueResponse(object):
         return cls(model, (response['csf'], response['gm'], response['wm']))
 
     def save(self, filepath):
-        """ Save a mtShoreFit object to a file.
+        """ Save the ShoreMultiTissueResponse object to a file
 
-        :param filepath: path to the file
+        Parameters
+        ----------
+        filepath : str
+            Path to the file
+
+        Returns
+        -------
+        None
         """
         try:
             os.makedirs(os.path.dirname(filepath))
@@ -374,14 +458,19 @@ class ShoreMultiTissueResponse(object):
                  order=self.order, bvals=self.gtab.bvals,
                  bvecs=self.gtab.bvecs)
 
-    def _convolve_helper(self, fODF_volfracs):
+    def _convolve_helper(self, fodf_volfracs):
         """
 
-        :param fODF_volfracs:
-        :return:
+        Parameters
+        ----------
+        fodf_volfracs
+
+        Returns
+        -------
+
         """
-        fODF = fODF_volfracs[0]
-        vol_fraction = fODF_volfracs[1]
+        fODF = fodf_volfracs[0]
+        vol_fraction = fodf_volfracs[1]
         conv_matrix = self.shore_convolution_matrix()
 
         x = np.append(esh.sym_to_esh(fODF), vol_fraction)
@@ -391,20 +480,25 @@ class ShoreMultiTissueResponse(object):
 
     def convolve(self, fODFs, vol_fractions=None, S0=None, kernel="rank1",
                  verbose=False, cpus=None, desc=""):
-        """Convolve the Shore Fit with several fODFs.
+        """ Convolve the Shore Fit with several fODFs.
 
         The multiprocessing for this function scales along the number of fODFs.
         For a small number of fODFs it makes sense to specify cpus=1 to avoid
-        the overhead of spawning multiple processes. If you need to convolve a
-        large number of Shore Fits with several fODFs each better use "" which
-        scales along the number of Shore Fits.
+        the overhead of spawning multiple processes.
 
-        :param fODFs:
-        :param vol_fractions:
-        :param S0:
-        :param verbose:
-        :param cpus:
-        :return:
+        Parameters
+        ----------
+        fODFs
+        vol_fractions
+        S0
+        kernel
+        verbose
+        cpus
+        desc
+
+        Returns
+        -------
+
         """
         if self.kernel_type != kernel:
             self.set_kernel(kernel)
@@ -443,16 +537,28 @@ class ShoreMultiTissueResponse(object):
 
     def fodf(self, data, pos='hpsd', mask=None, kernel="rank1", verbose=False,
              cpus=1):
-        """ Deconvolve DWI data with multiple tissue response [1]_.
+        """ Deconvolve DWI data with multiple tissue responses [1]_.
 
-        :param data: diffusion weighted data
-        :param pos: constraint choose between hpsd, nonneg and none
-        :param mask: voxels for which fODFs and volume fractions are calculated
-        :param verbose: set to true to show a progress bar
-        :param cpus: number of cpus (if None use value from os.cpu_count())
-        :return: fodfs, wm volume fraction, gm volume fraction and
-        csf volume fraction
+        Parameters
+        ----------
+        data : ``SpatialImage``
+            Diffusion weighted imaging data
+        pos : str
+            Constraint for the deconvolution (hpsd, nonneg or none)
+        mask : ``SpatialImage``
+            Mask specifying for which voxels to compute the fodf
+        kernel : str
+            Kernel to be used for deconvolution ('rank1' or 'delta')
+        verbose : bool
+            Set to true for verbose output and a progress bar
+        cpus : int
+            Number of cpu workers to be used for the calculations. (if None
+            use value from os.cpu_count())
 
+        Returns
+        -------
+        tuple
+            fodfs, wm volume fraction, gm volume fraction and csf volume fraction
 
         References
         ----------
@@ -535,10 +641,16 @@ class ShoreMultiTissueResponse(object):
     def deconvolve(self, data, conv_matrix):
         """
 
-        :param data:
-        :param conv_matrix:
-        :return:
+        Parameters
+        ----------
+        data
+        conv_matrix
+
+        Returns
+        -------
+
         """
+
         NN = esh.LENGTH[self.order]
         deconvolution_result = np.zeros(data.shape[:-1] + (NN+2,))
 
@@ -552,9 +664,14 @@ class ShoreMultiTissueResponse(object):
     def deconvolve_hpsd(self, data, conv_matrix):
         """
 
-        :param data:
-        :param conv_matrix:
-        :return:
+        Parameters
+        ----------
+        data
+        conv_matrix
+
+        Returns
+        -------
+
         """
         NN = esh.LENGTH[self.order]
         deconvolution_result = np.zeros(data.shape[:-1] + (NN + 2,))
@@ -627,9 +744,14 @@ class ShoreMultiTissueResponse(object):
     def deconvolve_nonneg(self, data, conv_matrix):
         """
 
-        :param data:
-        :param conv_matrix:
-        :return:
+        Parameters
+        ----------
+        data
+        conv_matrix
+
+        Returns
+        -------
+
         """
         NN = esh.LENGTH[self.order]
         deconvolution_result = np.zeros(data.shape[:-1] + (NN + 2,))
@@ -668,8 +790,13 @@ class ShoreMultiTissueResponse(object):
     def shore_convolution_matrix(self, kernel="rank1"):
         """
 
-        :param kernel:
-        :return:
+        Parameters
+        ----------
+        kernel
+
+        Returns
+        -------
+
         """
         if self.kernel_type != kernel:
             self.set_kernel(kernel)
@@ -703,13 +830,26 @@ def fa_guided_mask(tissue_mask, frac_aniso, brainmask=None,
     likely to contain only a single fiber by feeding it a white matter mask and
     precalculated fractional anisotropy values.
 
-    :param tissue_mask: Tissue mask
-    :param frac_aniso: Precalculated fractional anisotropy values
-    :param brainmask: Brainmask
-    :param tissue_threshold: Threshold for the tissue mask
-    :param fa_lower_thresh: Lower FA threshold
-    :param fa_upper_thresh: Upper FA threshold
-    :return:
+    Parameters
+    ----------
+    tissue_mask : ``SpatialImage``
+        Voxel fractions for a specific tissues (e.g. white matter)
+    frac_aniso : ``SpatialImage``
+        Precalculated fractional anisotropy values
+    brainmask : ``SpatialImage``
+        Mask which sepeartes the complete brain from the background
+    tissue_threshold : float
+        Float between 0 and 1 applied to the tissue_mask
+    fa_lower_thresh : float
+        The minimum fractional anisotropy value for a voxel to be considered
+    fa_upper_thresh : float
+        The maximum fractional anisotropy value for a voxel to be considered
+
+    Returns
+    -------
+    ``SpatialImage``
+        Object holding the calculated mask
+
     """
     if fa_lower_thresh == -10 and fa_upper_thresh == np.inf:
         msg = "Specify either 'fa_lower_thresh' or 'fa_upper_thresh'"

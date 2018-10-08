@@ -13,6 +13,13 @@ from bonndit.multivoxel import MultiVoxel, MultiVoxelFitter
 class DkiModel(ReconstModel):
 
     def __init__(self, gtab, constraint=True):
+        """
+
+        Parameters
+        ----------
+        gtab
+        constraint
+        """
         super().__init__(gtab)
 
         self.dki_matrix = self.get_dki_matrix()
@@ -40,8 +47,14 @@ class DkiModel(ReconstModel):
     def _fit_helper(self, data, **kwargs):
         """
 
-        :param data:
-        :return:
+        Parameters
+        ----------
+        data
+        kwargs
+
+        Returns
+        -------
+
         """
         solver = {False: self._solve, True: self._solve_c}
 
@@ -62,10 +75,15 @@ class DkiModel(ReconstModel):
     def fit(self, data, mask=None, **kwargs):
         """
 
-        :param data:
-        :param mask:
-        :param kwargs:
-        :return:
+        Parameters
+        ----------
+        data
+        mask
+        kwargs
+
+        Returns
+        -------
+
         """
         # specify data which different for every voxel
         per_voxel_data = {}
@@ -75,8 +93,16 @@ class DkiModel(ReconstModel):
     def _solve(self, data, **kwargs):
         """
 
-        :param data:
-        :return:
+        Parameters
+        ----------
+        data
+        kwargs
+
+        Returns
+        -------
+        ndarray (21)
+            Fitted kurtosis tensor
+
         """
         dki_tensor = np.zeros(22)
         data = data[~self.gtab.b0s_mask]
@@ -87,8 +113,16 @@ class DkiModel(ReconstModel):
     def _solve_c(self, data, **kwargs):
         """
 
-        :param data:
-        :return:
+        Parameters
+        ----------
+        data
+        kwargs
+
+        Returns
+        -------
+        ndarray (21)
+            Fitted kurtosis tensor
+
         """
         dki_tensor = np.zeros(22)
 
@@ -137,7 +171,9 @@ class DkiModel(ReconstModel):
     def c_matrix(self):
         """
 
-        :return:
+        Returns
+        -------
+
         """
         bvecs = self.gtab.bvecs[~self.gtab.b0s_mask, :]
         bvals = self.gtab.bvals[~self.gtab.b0s_mask] / 1000
@@ -224,9 +260,11 @@ class DkiModel(ReconstModel):
 
     def get_dki_matrix(self):
         """ Build Diffusion Kurtosis Matrix
-        (maps DKI params to log signal ratio)
 
-        :return:
+        This matrix masp DKI params to the log signal ratio.
+        Returns
+        -------
+
         """
 
         bvecs = self.gtab.bvecs[~self.gtab.b0s_mask, :]
@@ -279,8 +317,10 @@ class DkiFit(ReconstFit):
     def __init__(self, coeffs):
         """ Compute kurtosis measures for a fitted kurtosis model.
 
-
-        :param coeffs: kurtosis parameters (ndarray of length 21)
+        Parameters
+        ----------
+        coeffs : ndarray
+            Kurtosis parameters
         """
         super().__init__(coeffs)
         self.dti_tensor = np.array(
@@ -311,10 +351,30 @@ class DkiFit(ReconstFit):
 
     @classmethod
     def load(cls, filepath):
+        """
+
+        Parameters
+        ----------
+        filepath
+
+        Returns
+        -------
+
+        """
         return MultiVoxel.load(filepath, model_class=DkiModel,
                                fit_class=cls)
 
     def predict(self, gtab):
+        """
+
+        Parameters
+        ----------
+        gtab
+
+        Returns
+        -------
+
+        """
         super().predict(gtab)
 
     @property
@@ -412,9 +472,14 @@ class DkiFit(ReconstFit):
 def radial_kappa(lambda_mean, kurtosis_tensor):
     """
 
-    :param lambda_mean:
-    :param kurtosis_tensor:
-    :return:
+    Parameters
+    ----------
+    lambda_mean
+    kurtosis_tensor
+
+    Returns
+    -------
+
     """
     return lambda_mean ** 2 * (kurtosis_tensor[0]
                                + kurtosis_tensor[10]
@@ -424,9 +489,14 @@ def radial_kappa(lambda_mean, kurtosis_tensor):
 def axial_kappa(lambda_mean, kurtosis_tensor):
     """
 
-    :param lambda_mean:
-    :param kurtosis_tensor:
-    :return:
+    Parameters
+    ----------
+    lambda_mean
+    kurtosis_tensor
+
+    Returns
+    -------
+
     """
     return lambda_mean ** 2 * kurtosis_tensor[14]
 
@@ -434,9 +504,14 @@ def axial_kappa(lambda_mean, kurtosis_tensor):
 def diamond_kappa(lambda_mean, kurtosis_tensor):
     """
 
-    :param lambda_mean:
-    :param kurtosis_tensor:
-    :return:
+    Parameters
+    ----------
+    lambda_mean
+    kurtosis_tensor
+
+    Returns
+    -------
+
     """
     return 6 * lambda_mean ** 2 * (kurtosis_tensor[5]
                                    + kurtosis_tensor[12]) / 2
@@ -445,9 +520,14 @@ def diamond_kappa(lambda_mean, kurtosis_tensor):
 def radial_kurtosis(evals, kurtosis_tensor):
     """
 
-    :param evals:
-    :param kurtosis_tensor:
-    :return:
+    Parameters
+    ----------
+    evals
+    kurtosis_tensor
+
+    Returns
+    -------
+
     """
     return _G1(evals[2], evals[1], evals[0]) * kurtosis_tensor[10] \
            + _G1(evals[2], evals[0], evals[1]) * kurtosis_tensor[0] \
@@ -457,9 +537,14 @@ def radial_kurtosis(evals, kurtosis_tensor):
 def axial_kurtosis(evals, kurtosis_tensor):
     """
 
-    :param evals:
-    :param kurtosis_tensor:
-    :return:
+    Parameters
+    ----------
+    evals
+    kurtosis_tensor
+
+    Returns
+    -------
+
     """
     return ((evals[0] + evals[1] + evals[2]) ** 2
             / (9 * evals[2] ** 2)) * kurtosis_tensor[14]
@@ -468,9 +553,14 @@ def axial_kurtosis(evals, kurtosis_tensor):
 def mean_kurtosis(evals, kurtosis_tensor):
     """
 
-    :param evals:
-    :param kurtosis_tensor:
-    :return:
+    Parameters
+    ----------
+    evals
+    kurtosis_tensor
+
+    Returns
+    -------
+
     """
     r = _F1(evals[0], evals[1], evals[2]) * kurtosis_tensor[0]
     r += _F1(evals[1], evals[2], evals[0]) * kurtosis_tensor[10]
@@ -547,6 +637,17 @@ for i in range(3):
 
 # L are the eigenvectors such that L[:,i] is ith normalized eigenvector
 def rotT4Sym(W, L):
+    """
+
+    Parameters
+    ----------
+    W
+    L
+
+    Returns
+    -------
+
+    """
     # build and apply rotation matrix
     rotmat = np.zeros((15, 15))
     for idx in range(15):

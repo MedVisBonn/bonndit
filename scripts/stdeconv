@@ -113,7 +113,7 @@ def main():
         # add the handler to the root logger
         logging.getLogger('').addHandler(console)
 
-    logging.info('csdeconv has been called with:')
+    logging.info('stdeconv has been called with:')
     param_string = 'Order: {}, FAWM: {}, Constraint: {}'
     logging.info(param_string.format(args.order, args.fawm, args.constraint))
 

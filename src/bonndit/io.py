@@ -45,12 +45,12 @@ def vector_norm(vectors):
 
     Parameters
     ----------
-    vectors : ndarray (x)
+    vectors : ndarray
         Vector to be normed
 
     Returns
     -------
-    ndarray (x)
+    ndarray
         Vector of length 1
 
     """
@@ -61,16 +61,18 @@ def vector_norm(vectors):
 
 
 def fsl_flip_sign(vectors, affine):
-    """
+    """ Flip the sign of the x-axis if the affines determinant is larger than 0
 
     Parameters
     ----------
-    vectors
-    affine
+    vectors : ndarray
+        Vectors on which to apply the sign flip
+    affine : ndarray
+        Linear transformation part of the affine (3x3 matrix)
 
     Returns
     -------
-
+    ndarray
     """
     # Flip sign according to FSL documentation
     if np.linalg.det(affine) > 0:
@@ -91,7 +93,7 @@ def fsl_gtab_to_worldspace(gtab, affine):
     gtab : dipy.data.GradientTable
         An object holding information about the applied Gradients including
         b-values and b-vectors
-    affine : ndarray (4,4)
+    affine : ndarray
         The 4x4 affine matrix belonging to the provided gtabs data.
 
     Returns
@@ -112,14 +114,17 @@ def fsl_gtab_to_worldspace(gtab, affine):
 
 
 def fsl_vectors_to_worldspace(vectors):
-    """
+    """ Rotate vectors into world coordinate system for data saved by FSL
 
     Parameters
     ----------
-    vectors
+    vectors : ``Spatial Image``
+        nibabel Image object holding an affine and vectors to be transformed
 
     Returns
     -------
+    ``Spatial Image``
+        Image object holding the transformed vectors and the original affine
 
     """
     affine = vectors.affine

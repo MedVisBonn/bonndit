@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+
 class ReconstModel(ABC):
     def __init__(self, gtab):
         """ An abstract base class for DWI models
@@ -18,9 +19,9 @@ class ReconstModel(ABC):
 
         Parameters
         ----------
-        data : ndarray (..., N)
+        data : ndarray
             Diffusion Weighted Data. N measurements for every voxel
-        mask : ndarray (..., 1)
+        mask : ndarray
             Mask specifying all voxels for which to fit the model
         kwargs :
             Keyword Arguments which may differ for each model
@@ -41,7 +42,7 @@ class ReconstFit(ABC):
 
         Parameters
         ----------
-        coeffs : ndarray (..., N)
+        coeffs : ndarray
              Coefficients of the fitted model
         """
         self.coeffs = coeffs
@@ -57,7 +58,7 @@ class ReconstFit(ABC):
 
         Returns
         -------
-        ndarray (..., N)
+        ndarray
             Predicted signals
 
         """
