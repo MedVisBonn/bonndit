@@ -22,24 +22,25 @@ The bonndit package contains the latest diffusion imaging tools developed at the
 
 Installation
 ------------
-To install bonndit, run the following commands. As long as the package is not public you need to provide your github credentials for cloning.
+To install bonndit, run the following command
 
 .. code-block:: console
 
-    $ git clone git@github.com:MedVisBonn/bonndit.git
-    $ pip install -e bonndit
-
-In future an installation with :code:`pip` directly from PyPI will be also available.
+    $ pip install bonndit
 
 Features
 --------
+* :code:`stdeconv`: Script to calculate white matter response function and fiber orientation distribution functions(fODFs) from a single shell diffusion signal.
+* :code:`mtdeconv`: Script to calculate response functions and fiber orientation distribution functions(fODFs) from a multi shell diffusion signal.
+* :code:`kurtosis`: Script to fit a kurtosis model using quadratic cone programming to guarantee a minimum diffusivity and to calculate kurtosis measures based on the fitted model.
+* All functionality implemented in an object oriented manner.
+* Multiprocessing support implemented in the underlying infrastructure for faster computations
+* Logs written to your output directory
 
-* :code:`mtdeconv`: Script to calculate response functions and fiber orientation distribution functions(fODFs) from the diffusion signal.
-* Multiprocessing support for Python 3 only
 
 Getting Started
 ---------------
-For calculating the response functions and the fODFs from the given data run the following command:
+For calculating the response functions and the fODFs for given data run the following command:
 
 .. code-block:: console
 

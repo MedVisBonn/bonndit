@@ -28,14 +28,6 @@ bonndit\.michi\.fields module
     :undoc-members:
     :show-inheritance:
 
-bonndit\.michi\.math module
----------------------------
-
-.. automodule:: bonndit.michi.math
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 bonndit\.michi\.nrrd2 module
 ----------------------------
 

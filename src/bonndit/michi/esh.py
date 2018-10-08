@@ -1,9 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from math import sin, cos, pi, exp, sqrt
+from math import sin, cos, pi, sqrt
+
 import numpy as np
 import numpy.linalg as la
+
 from . import tensor as T
 from .mmath import binom, multinom, cos_n, sin_n
 
@@ -25,7 +27,7 @@ def get_order(e):
     for i, l in enumerate(LENGTH):
         if l == len(e):
             return i
-    raise Exception("invalid sh size: " + len(e))
+    raise Exception("invalid sh size: " + str(len(e)))
 
 
 def get_order_from_kernel_length(l):
@@ -210,6 +212,8 @@ def legendre_slow(order, theta):
 
 
 def eval_basis(order, theta, phi):
+    # Evaluate spherical harmonics for given order for point on sphere
+    # defined by theta and phi
     res = legendre(order, theta)
 
     cos_m_phi = [cos(m * phi) for m in range(order + 1)]
@@ -288,7 +292,7 @@ def make_kernel_rank1(signal):
         if s == 0:
             raise Exception("signal has 0")
     for i in range(0, order + 1, 2):
-        kernel[i] = signal[i] / rank1sh[INDEX_OFFSET[i]]
+        kernel[i // 2] = signal[i // 2] / rank1sh[INDEX_OFFSET[i]]
     return kernel
 
 

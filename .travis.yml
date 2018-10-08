@@ -4,7 +4,6 @@ language: python
 python:
   - 3.6
   - 3.5
-  - 3.4
 
 # https://github.com/travis-ci/travis-ci/issues/9815 workaround for testing with 3.7
 matrix:
@@ -31,5 +30,5 @@ deploy:
     secure: PLEASE_REPLACE_ME
   on:
     tags: true
-    repo: Oli4/bonndit
+    repo: MedVisBonn/bonndit
     python: 3.6
