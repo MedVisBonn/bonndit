@@ -177,9 +177,10 @@ class ShoreMultiTissueResponseEstimator(object):
     References
     ----------
     .. [1] M. Ankele, L. Lim, S. Groeschel and T. Schultz; "Versatile, Robust
-    and Efficient Tractography With Constrained Higher-Order Tensor fODFs";
-    Int J Comput Assist Radiol Surg. 2017 Aug; 12(8):1257-1270;
-    doi: 10.1007/s11548-017-1593-6
+      and Efficient Tractography With Constrained Higher-Order Tensor fODFs";
+      Int J Comput Assist Radiol Surg. 2017 Aug; 12(8):1257-1270;
+      doi: 10.1007/s11548-017-1593-6
+
     """
 
     def __init__(self, gtab, order=4, zeta=700, tau=1 / (4 * np.pi ** 2)):
@@ -537,7 +538,7 @@ class ShoreMultiTissueResponse(object):
 
     def fodf(self, data, pos='hpsd', mask=None, kernel="rank1", verbose=False,
              cpus=1):
-        """ Deconvolve DWI data with multiple tissue responses [1]_.
+        """ Deconvolve DWI data with multiple tissue responses [2]_.
 
         Parameters
         ----------
@@ -562,10 +563,11 @@ class ShoreMultiTissueResponse(object):
 
         References
         ----------
-        .. [1] M. Ankele, L. Lim, S. Groeschel and T. Schultz; "Versatile,
-        Robust and Efficient Tractography With Constrained Higher-Order
-        Tensor fODFs"; Int J Comput Assist Radiol Surg. 2017 Aug;
-        12(8):1257-1270; doi: 10.1007/s11548-017-1593-6
+        .. [2] M. Ankele, L. Lim, S. Groeschel and T. Schultz; "Versatile,
+          Robust and Efficient Tractography With Constrained Higher-Order
+          Tensor fODFs"; Int J Comput Assist Radiol Surg. 2017 Aug;
+          12(8):1257-1270; doi: 10.1007/s11548-017-1593-6
+
         """
         if self.kernel_type != kernel:
             self.set_kernel(kernel)

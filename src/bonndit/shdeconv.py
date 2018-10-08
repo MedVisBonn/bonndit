@@ -345,8 +345,8 @@ class ShResponse(object):
         np.savez(filepath, wm_resp=self.wm_response, order=self.order,
                  bvals=self.gtab.bvals, bvecs=self.gtab.bvecs)
 
-    def odf(self, data, pos='hpsd', mask=None, kernel="rank1", verbose=False,
-            cpus=1):
+    def fodf(self, data, pos='hpsd', mask=None, kernel="rank1", verbose=False,
+             cpus=1):
         """
 
         Parameters

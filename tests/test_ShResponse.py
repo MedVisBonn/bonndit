@@ -31,7 +31,7 @@ def test_ShoreFit_deconvolution_hpsd_rank1():
     The result calculated with bonndit are compared to results from the old code
     """
     fit = ShResponse.load(SH_RESPONSE_PRECOMPUTED)
-    out, wmout = fit.odf(data, pos='hpsd', kernel="rank1")
+    out, wmout = fit.fodf(data, pos='hpsd', kernel="rank1")
     tensors, mask, meta = fields.load_tensor(CSD_ODF_HPSD_RANK1)
 
     assert ((out - tensors) < ALLOWED_ERROR).all() \
@@ -45,7 +45,7 @@ def test_ShoreFit_deconvolution_nonneg_rank1():
     The result calculated with bonndit are compared to results from the old code
     """
     fit = ShResponse.load(SH_RESPONSE_PRECOMPUTED)
-    out, wmout = fit.odf(data, pos='nonneg', kernel="rank1")
+    out, wmout = fit.fodf(data, pos='nonneg', kernel="rank1")
     tensors, mask, meta = fields.load_tensor(CSD_ODF_NONNEG_RANK1)
 
     assert ((out - tensors) < ALLOWED_ERROR).all() \
@@ -59,7 +59,7 @@ def test_ShoreFit_deconvolution_no_constraint_rank1():
     The result calculated with bonndit are compared to results from the old code
     """
     fit = ShResponse.load(SH_RESPONSE_PRECOMPUTED)
-    out, wmout = fit.odf(data, pos='none', kernel="rank1")
+    out, wmout = fit.fodf(data, pos='none', kernel="rank1")
     tensors, mask, meta = fields.load_tensor(CSD_ODF_NO_CONSTRAINT_RANK1)
 
     assert ((out - tensors) < ALLOWED_ERROR).all() \
@@ -73,7 +73,7 @@ def test_ShoreFit_deconvolution_hpsd_delta():
     The result calculated with bonndit are compared to results from the old code
     """
     fit = ShResponse.load(SH_RESPONSE_PRECOMPUTED)
-    out, wmout = fit.odf(data, pos='hpsd', kernel="delta")
+    out, wmout = fit.fodf(data, pos='hpsd', kernel="delta")
     tensors, mask, meta = fields.load_tensor(CSD_ODF_HPSD_DELTA)
 
     assert ((out - tensors) < ALLOWED_ERROR).all() \
@@ -87,7 +87,7 @@ def test_ShoreFit_deconvolution_nonneg_delta():
     The result calculated with bonndit are compared to results from the old code
     """
     fit = ShResponse.load(SH_RESPONSE_PRECOMPUTED)
-    out, wmout = fit.odf(data, pos='nonneg', kernel="delta")
+    out, wmout = fit.fodf(data, pos='nonneg', kernel="delta")
     tensors, mask, meta = fields.load_tensor(CSD_ODF_NONNEG_DELTA)
 
     assert ((out - tensors) < ALLOWED_ERROR).all() \
@@ -101,7 +101,7 @@ def test_ShoreFit_deconvolution_no_constraint_delta():
     The result calculated with bonndit are compared to results from the old code
     """
     fit = ShResponse.load(SH_RESPONSE_PRECOMPUTED)
-    out, wmout = fit.odf(data, pos='none', kernel="delta")
+    out, wmout = fit.fodf(data, pos='none', kernel="delta")
     tensors, mask, meta = fields.load_tensor(CSD_ODF_NO_CONSTRAINT_DELTA)
 
     assert ((out - tensors) < ALLOWED_ERROR).all() \

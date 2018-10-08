@@ -186,10 +186,10 @@ def main():
 
     # Deconvolution if 'responseonly' is not set
     if not args.responseonly:
-        out, wmout = fit.odf(data, pos=args.constraint,
-                             mask=dti_mask, kernel=args.kernel,
-                             verbose=args.verbose,
-                             cpus=args.workers)
+        out, wmout = fit.fodf(data, pos=args.constraint,
+                              mask=dti_mask, kernel=args.kernel,
+                              verbose=args.verbose,
+                              cpus=args.workers)
         logging.info(
             'Signal deconvolved with multiple tissue response functions.')
 
