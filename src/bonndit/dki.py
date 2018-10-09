@@ -22,6 +22,16 @@ class DkiModel(ReconstModel):
         """
         super().__init__(gtab)
 
+        if self.gtab.b0_threshold < min(self.gtab.bvals):
+            msg = "The specified b0 threshold is {}. The minimum b-value in " \
+                "the gradient table is {}. Please specify an appropriate " \
+                "b0 threshold. You can not set the attribute for an " \
+                "existing GradientTable but you need to create a new " \
+                "GradientTable with the b0_threshold " \
+                "parameter.".format(self.gtab.b0_threshold,
+                                    min(self.gtab.bvals))
+            raise ValueError(msg)
+
         self.dki_matrix = self.get_dki_matrix()
         # Check conditioning before solving for diffusion and kurtosis terms.
         cond_number = np.linalg.cond(self.dki_matrix)
@@ -45,7 +55,7 @@ class DkiModel(ReconstModel):
         self._params_dict = {'bvals': gtab.bvals, 'bvecs': gtab.bvecs,
                              'constraint': constraint}
 
-    def _fit_helper(self, data, **kwargs):
+    def _fit_helper(self, data, index, **kwargs):
         """
 
         Parameters
@@ -62,7 +72,7 @@ class DkiModel(ReconstModel):
         data = data.astype(float)
         try:
             func = solver[self.constraint]
-            coeffs = func(data, **kwargs)
+            coeffs = func(data, index, **kwargs)
         except KeyError:
             raise ValueError(('"{}" is not supported as a constraint, please' +
                               ' choose from [True, False]').format(
@@ -73,7 +83,7 @@ class DkiModel(ReconstModel):
         else:
             return DkiFit(coeffs)
 
-    def fit(self, data, mask=None, **kwargs):
+    def fit(self, data, mask=None, cpus=1, verbose=False, desc='', **kwargs):
         """
 
         Parameters
@@ -88,11 +98,13 @@ class DkiModel(ReconstModel):
         """
         # specify data which different for every voxel
         per_voxel_data = {}
-        return MultiVoxelFitter(self, **kwargs).fit(
+        return MultiVoxelFitter(
+            self, cpus=cpus, verbose=verbose,
+            desc=desc).fit(
             self._fit_helper, data,
             per_voxel_data, mask)
 
-    def _solve(self, data, **kwargs):
+    def _solve(self, data, index, **kwargs):
         """
 
         Parameters
@@ -112,7 +124,7 @@ class DkiModel(ReconstModel):
         dki_tensor[1:] = la.lstsq(self.dki_matrix, data, rcond=None)[0]
         return dki_tensor
 
-    def _solve_c(self, data, **kwargs):
+    def _solve_c(self, data, index, **kwargs):
         """
 
         Parameters
@@ -148,7 +160,6 @@ class DkiModel(ReconstModel):
 
         G = cvxopt.matrix(np.ascontiguousarray(self.constraint_matrix))
         h = cvxopt.matrix(np.ascontiguousarray(d))
-
         S0 = np.mean(data[self.gtab.b0s_mask])
         if S0 <= 0:
             logging.info('The average b0 measurement is {} in '
@@ -489,7 +500,7 @@ class DkiFit(ReconstFit):
     def kappa_axial(self):
         if self._kappa_axial is None:
             self._kappa_axial = axial_kappa(
-                self._diffusivity_mean,
+                self.diffusivity_mean,
                 self.rot_kurtosis_tensor)
 
         return self._kappa_axial
@@ -498,7 +509,7 @@ class DkiFit(ReconstFit):
     def kappa_radial(self):
         if self._kappa_radial is None:
             self._kappa_radial = radial_kappa(
-                self._diffusivity_mean,
+                self.diffusivity_mean,
                 self.rot_kurtosis_tensor)
 
         return self._kappa_radial
@@ -507,7 +518,7 @@ class DkiFit(ReconstFit):
     def kappa_diamond(self):
         if self._kappa_diamond is None:
             self._kappa_diamond = diamond_kappa(
-                self._diffusivity_mean,
+                self.diffusivity_mean,
                 self.rot_kurtosis_tensor)
 
         return self._kappa_diamond
@@ -525,10 +536,13 @@ def radial_kappa(lambda_mean, kurtosis_tensor):
     -------
 
     """
-    return lambda_mean ** 2 * (
-        kurtosis_tensor[0]
-        + kurtosis_tensor[10]
-        + 3 * kurtosis_tensor[3]) / 3
+    if sum(kurtosis_tensor) == 0:
+        return None
+    else:
+        return lambda_mean ** 2 * (
+            kurtosis_tensor[0]
+            + kurtosis_tensor[10]
+            + 3 * kurtosis_tensor[3]) / 3
 
 
 def axial_kappa(lambda_mean, kurtosis_tensor):
@@ -543,7 +557,10 @@ def axial_kappa(lambda_mean, kurtosis_tensor):
     -------
 
     """
-    return lambda_mean ** 2 * kurtosis_tensor[14]
+    if sum(kurtosis_tensor) == 0:
+        return None
+    else:
+        return lambda_mean ** 2 * kurtosis_tensor[14]
 
 
 def diamond_kappa(lambda_mean, kurtosis_tensor):
@@ -558,9 +575,12 @@ def diamond_kappa(lambda_mean, kurtosis_tensor):
     -------
 
     """
-    return 6 * lambda_mean ** 2 * (
-        kurtosis_tensor[5]
-        + kurtosis_tensor[12]) / 2
+    if sum(kurtosis_tensor) == 0:
+        return None
+    else:
+        return 6 * lambda_mean ** 2 * (
+            kurtosis_tensor[5]
+            + kurtosis_tensor[12]) / 2
 
 
 def radial_kurtosis(evals, kurtosis_tensor):
@@ -575,9 +595,12 @@ def radial_kurtosis(evals, kurtosis_tensor):
     -------
 
     """
-    return _G1(evals[2], evals[1], evals[0]) * kurtosis_tensor[10] \
-        + _G1(evals[2], evals[0], evals[1]) * kurtosis_tensor[0] \
-        + _G2(evals[2], evals[1], evals[0]) * kurtosis_tensor[3]
+    if sum(kurtosis_tensor) == 0:
+        return None
+    else:
+        return _G1(evals[2], evals[1], evals[0]) * kurtosis_tensor[10] \
+            + _G1(evals[2], evals[0], evals[1]) * kurtosis_tensor[0] \
+            + _G2(evals[2], evals[1], evals[0]) * kurtosis_tensor[3]
 
 
 def axial_kurtosis(evals, kurtosis_tensor):
@@ -592,9 +615,12 @@ def axial_kurtosis(evals, kurtosis_tensor):
     -------
 
     """
-    return (
-        (evals[0] + evals[1] + evals[2]) ** 2
-        / (9 * evals[2] ** 2)) * kurtosis_tensor[14]
+    if sum(kurtosis_tensor) == 0:
+        return None
+    else:
+        return (
+            (evals[0] + evals[1] + evals[2]) ** 2
+            / (9 * evals[2] ** 2)) * kurtosis_tensor[14]
 
 
 def mean_kurtosis(evals, kurtosis_tensor):
@@ -609,13 +635,16 @@ def mean_kurtosis(evals, kurtosis_tensor):
     -------
 
     """
-    r = _F1(evals[0], evals[1], evals[2]) * kurtosis_tensor[0]
-    r += _F1(evals[1], evals[2], evals[0]) * kurtosis_tensor[10]
-    r += _F1(evals[2], evals[1], evals[0]) * kurtosis_tensor[14]
-    r += _F2(evals[0], evals[1], evals[2]) * kurtosis_tensor[12]
-    r += _F2(evals[1], evals[2], evals[0]) * kurtosis_tensor[5]
-    r += _F2(evals[2], evals[1], evals[0]) * kurtosis_tensor[3]
-    return r
+    if sum(kurtosis_tensor) == 0:
+        return None
+    else:
+        r = _F1(evals[0], evals[1], evals[2]) * kurtosis_tensor[0]
+        r += _F1(evals[1], evals[2], evals[0]) * kurtosis_tensor[10]
+        r += _F1(evals[2], evals[1], evals[0]) * kurtosis_tensor[14]
+        r += _F2(evals[0], evals[1], evals[2]) * kurtosis_tensor[12]
+        r += _F2(evals[1], evals[2], evals[0]) * kurtosis_tensor[5]
+        r += _F2(evals[2], evals[1], evals[0]) * kurtosis_tensor[3]
+        return r
 
 
 def _alpha(x):
