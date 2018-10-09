@@ -110,7 +110,8 @@ def fsl_gtab_to_worldspace(gtab, affine):
     bvecs = np.dot(bvecs, np.transpose(linear))
 
     # Renormalize and return gtab
-    return gradient_table(gtab.bvals, vector_norm(bvecs))
+    return gradient_table(gtab.bvals, vector_norm(bvecs),
+                          b0_threshold=gtab.b0_threshold)
 
 
 def fsl_vectors_to_worldspace(vectors):
