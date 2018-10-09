@@ -50,7 +50,10 @@ class MultiVoxelFitter(object):
             Description of the progress bar if verbose is set to True
         """
         self.model = model
-        self.cpus = cpus
+        if cpus is None:
+            self.cpus = os.cpu_count()
+        else:
+            self.cpus = cpus
         self.verbose = verbose
         self.desc = desc
 
@@ -87,12 +90,11 @@ class MultiVoxelFitter(object):
             raise ValueError("mask and data shape do not match")
 
         # Convert integer to boolean mask
-        mask = np.ma.make_mask(mask)
+        mask = np.ma.make_mask(mask, shrink=False)
 
-        # 1000 chunks for the progressbar to run smoother
-        chunksize = max(1, int(np.prod(data.shape[:-1]) / 1000))
+        # Create chunks such that the progressbar has about 200 steps
+        chunksize = max(1, int(np.prod(data.shape[:-1]) / (self.cpus * 200)))
 
-        # collect kwargs which are the same for all voxels
         args_kwargs = []
 
         for ijk in np.ndindex(*data.shape[:-1]):
@@ -111,7 +113,8 @@ class MultiVoxelFitter(object):
                                desc=self.desc))
         else:
             with mp.Pool(self.cpus) as p:
-                coeffs = list(tqdm(p.imap(multiprocessing_helper, args_kwargs,
+                coeffs = list(tqdm(p.imap(multiprocessing_helper,
+                                          args_kwargs,
                                           chunksize),
                                    total=sum(mask.flatten()),
                                    disable=not self.verbose,

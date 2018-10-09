@@ -28,12 +28,16 @@ def main():
     parser.add_argument('-o', '--outdir',
                         help='Folder in which the output will be saved (default: same as indir)')
 
-    inputfiles = parser.add_argument_group('Custom input filenames', 'It is not recommended to specify \
+    inputfiles = parser.add_argument_group('Custom input filenames (optional)', 'It is not recommended to specify \
     a Specify custom names for input files.')
     inputfiles.add_argument('-d', '--data', default='data.nii.gz',
                             help='Diffusion weighted data (default: data.nii.gz)')
     inputfiles.add_argument('-m', '--brainmask', default='mask.nii.gz',
                             help='Brain mask (default: mask.nii.gz)')
+
+    options = parser.add_argument_group('Options (optional)', '')
+    options.add_argument('-t', '--b0thresh', default=0, type=int,
+                         help='Every b-value below this threshold is treated as 0')
 
     flags = parser.add_argument_group('flags (optional)', '')
     flags.add_argument("-h", "--help", action="help",
@@ -106,7 +110,12 @@ def main():
     # Load bvals and bvecs and initialize a GradientTable object
     bvals, bvecs = read_bvals_bvecs(os.path.join(indir, "bvals"),
                                     os.path.join(indir, "bvecs"))
-    gtab = gradient_table(bvals, bvecs)
+    gtab = gradient_table(bvals, bvecs, b0_threshold=args.b0thresh)
+    if gtab.b0_threshold < min(gtab.bvals):
+        msg = "The specified b0 threshold is {}. The minimum b-value in " \
+              "the gradient table is {}. Please specify an appropriate " \
+              "b0 threshold.".format(gtab.b0_threshold, min(gtab.bvals))
+        raise ValueError(msg)
 
     logging.info('Input loaded.')
 
