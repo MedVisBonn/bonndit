@@ -19,26 +19,42 @@ bonndit.constants module
     :undoc-members:
     :show-inheritance:
 
+bonndit.cylkurtosis module
+--------------------------
+
+.. automodule:: bonndit.cylkurtosis
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+bonndit.dwigenerator module
+---------------------------
+
+.. automodule:: bonndit.dwigenerator
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 bonndit.gradients module
 ------------------------
 
 .. automodule:: bonndit.gradients
-:members:
-        :undoc-members:
-            :show-inheritance:
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
 bonndit.io module
 -----------------
 
 .. automodule:: bonndit.io
-:members:
-        :undoc-members:
-            :show-inheritance:
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
-bonndit.shore module
---------------------
+bonndit.mtshore module
+----------------------
 
-.. automodule:: bonndit.shore
+.. automodule:: bonndit.mtshore
     :members:
     :undoc-members:
     :show-inheritance:
