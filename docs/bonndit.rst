@@ -11,6 +11,14 @@ Subpackages
 Submodules
 ----------
 
+bonndit.base module
+-------------------
+
+.. automodule:: bonndit.base
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 bonndit.constants module
 ------------------------
 
@@ -19,18 +27,10 @@ bonndit.constants module
     :undoc-members:
     :show-inheritance:
 
-bonndit.cylkurtosis module
---------------------------
+bonndit.dki module
+------------------
 
-.. automodule:: bonndit.cylkurtosis
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-bonndit.dwigenerator module
----------------------------
-
-.. automodule:: bonndit.dwigenerator
+.. automodule:: bonndit.dki
     :members:
     :undoc-members:
     :show-inheritance:
@@ -51,10 +51,26 @@ bonndit.io module
     :undoc-members:
     :show-inheritance:
 
-bonndit.mtshore module
-----------------------
+bonndit.multivoxel module
+-------------------------
 
-.. automodule:: bonndit.mtshore
+.. automodule:: bonndit.multivoxel
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+bonndit.shdeconv module
+-----------------------
+
+.. automodule:: bonndit.shdeconv
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+bonndit.shoredeconv module
+--------------------------
+
+.. automodule:: bonndit.shoredeconv
     :members:
     :undoc-members:
     :show-inheritance:
