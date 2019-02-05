@@ -37,11 +37,6 @@ class SphericalHarmonicsModel(ReconstModel):
         self._params_dict = {'bvals': gtab.bvals, 'bvecs': gtab.bvecs,
                              'order': order}
 
-        # A gradient table without small bvalues,
-        # depends on b0_threshold of gtab
-        self._gtab = gradient_table(self.gtab.bvals[~self.gtab.b0s_mask],
-                                    self.gtab.bvecs[~self.gtab.b0s_mask, :])
-
         # Ignore division by zero warning
         # dipy.core.geometry.cart2sphere -> theta = np.arccos(z / r)
         with np.errstate(divide='ignore', invalid='ignore'):
@@ -69,7 +64,8 @@ class SphericalHarmonicsModel(ReconstModel):
 
         if vecs is not None:
             with np.errstate(divide='ignore', invalid='ignore'):
-                sh_m = esh_matrix(self.order, gtab_reorient(self._gtab, vecs))
+                sh_m = esh_matrix(self.order, gtab_reorient(self.gtab, vecs))
+                sh_m = sh_m[~self.gtab.b0s_mask, :]
 
         else:
             sh_m = self.sh_m
@@ -190,6 +186,7 @@ class ShResponseEstimator(object):
         wm_sh_coef = self.sh_accumulate(wm_sh_coeffs)
         signal_wm = self.sh_compress(wm_sh_coef)
 
+        print(self.gtab.bvals)
         return ShResponse(self, signal_wm)
 
     def sh_accumulate(self, sh_coeffs):
@@ -269,11 +266,6 @@ class ShResponse(object):
 
         self.wm_response = sh_coef
 
-        # A gradient table without small bvalues,
-        # depends on b0_threshold of gtab
-        self._gtab = gradient_table(self.gtab.bvals[~self.gtab.b0s_mask],
-                                    self.gtab.bvecs[~self.gtab.b0s_mask, :])
-
         # The deconvolution kernels are computed in set_kernel
         self.kernel_type = kernel
         self.kernel_wm = None
@@ -317,8 +309,8 @@ class ShResponse(object):
 
         """
         response = np.load(filepath)
-
         gtab = gradient_table(response['bvals'], response['bvecs'])
+
         model = ShResponseEstimator(gtab, response['order'])
 
         return cls(model, response['wm_resp'])
@@ -379,6 +371,7 @@ class ShResponse(object):
 
         # Create convolution matrix
         conv_mat = self.sh_convolution_matrix(kernel)
+        conv_mat = conv_mat[~self.gtab.b0s_mask, :]
         with np.errstate(divide='ignore', invalid='ignore'):
             cond_number = la.cond(conv_mat)
             logging.info('Condition number of convolution matrix: {:.3f}'
@@ -583,10 +576,10 @@ class ShResponse(object):
             self.set_kernel(kernel)
 
         # Build matrix that maps ODF to signal
-        M = np.zeros((self._gtab.bvals.shape[0], esh.LENGTH[self.order]))
-        r, theta, phi = cart2sphere(self._gtab.bvecs[:, 0],
-                                    self._gtab.bvecs[:, 1],
-                                    self._gtab.bvecs[:, 2])
+        M = np.zeros((self.gtab.bvals.shape[0], esh.LENGTH[self.order]))
+        r, theta, phi = cart2sphere(self.gtab.bvecs[:, 0],
+                                    self.gtab.bvecs[:, 1],
+                                    self.gtab.bvecs[:, 2])
         theta[np.isnan(theta)] = 0
         counter = 0
         for l in range(0, self.order + 1, 2):
