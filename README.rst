@@ -14,7 +14,7 @@ bonndit
         :alt: Documentation Status
 
 
-The bonndit package contains the latest diffusion imaging tools developed at the University of Bonn.
+The bonndit package contains the latest diffusion imaging tools developed at the University of Bonn. This early release focuses on our framework for single and multi tissue deconvolution using constrained higher-order tensor fODFs. In addition, it includes code for fitting the Diffusional Kurtosis (DKI) model. More will follow as time permits.
 
 
 * Free software: GNU General Public License v3
@@ -31,8 +31,8 @@ To install bonndit, run the following command
 Features
 --------
 * :code:`stdeconv`: Script to calculate white matter response function and fiber orientation distribution functions (fODFs) from a single shell diffusion signal.
-* :code:`mtdeconv`: Script to calculate multi shell response functions and fiber orientation distribution functions (fODFs) from a multi shell diffusion signal.
-* :code:`kurtosis`: Script to fit a kurtosis model using quadratic cone programming to guarantee a minimum diffusivity and to calculate kurtosis measures based on the fitted model.
+* :code:`mtdeconv`: Script to calculate multi tissue response functions and fiber orientation distribution functions (fODFs) from multi shell or DSI signals.
+* :code:`kurtosis`: Script to fit a kurtosis model using quadratic cone programming to guarantee a minimum diffusivity. It also calculates kurtosis measures based on the fitted model.
 * All functionality implemented in an object oriented manner.
 * Multiprocessing support implemented in the underlying infrastructure for faster computations
 * Logs written to your output directory
@@ -40,7 +40,7 @@ Features
 
 Getting Started
 ---------------
-For calculating the response functions and the fODFs for given data run the following command:
+For calculating the multi-tissue response functions and the fODFs for given data run the following command:
 
 .. code-block:: console
 
