@@ -49,7 +49,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'bonndit'
-copyright = u"2018, AG Schultz - Uni Bonn"
+copyright = u"2018, AG Schultz"
 author = u"Olivier Morelle, Michael Ankele, Thomas Schultz"
 
 # The version info for the project you're documenting, acts as replacement
