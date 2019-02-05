@@ -2,16 +2,10 @@
 # -*- coding: utf-8 -*-
 
 
-import numpy as np
-import sys
-
-if sys.version_info >= (3, 0):
-    from . import nrrd3 as NRRD
-else:
-    from . import nrrd2 as NRRD
 import nibabel as NIB
-import copy
-from . import tensor as T
+import numpy as np
+
+from . import nrrd as NRRD
 
 # treat arrays in the program as world space...
 # automatically try to convert between world/file-space while loading/saving
@@ -152,7 +146,8 @@ class Meta:
         dia = [abs(self.frame[i, i]) for i in range(3)]
         if max(dia) - min(dia) < 0.1:
             return
-        if abs(frame[0, 1]) + abs(frame[0, 2]) + abs(frame[1, 2]) < 0.1:
+        if abs(self.frame[0, 1]) + abs(self.frame[0, 2]) + abs(
+            self.frame[1, 2]) < 0.1:
             return
         print('-----------------------------------------------------------')
         print('  ...might have problems with this frame in nifti...')

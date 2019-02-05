@@ -9,12 +9,13 @@ Copyright (c) 2011-2015 Maarten Everts and others. See LICENSE and AUTHORS.
 
 """
 
-import numpy as np
-import zlib
 import bz2
 import mmap
 import os
+import zlib
 from datetime import datetime
+
+import numpy as np
 
 # Reading and writing gzipped data directly gives problems when the uncompressed
 # data is larger than 4GB (2^32). Therefore we'll read and write the data in
@@ -533,8 +534,8 @@ def write(filename, data, options={}, detached_header=False):
         filehandle.write(b'# on ' +
                          datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S').encode('ascii') +
                          b'(GMT).\n')
-        filehandle.write(b'# Complete NRRD file format specification at:\n');
-        filehandle.write(b'# http://teem.sourceforge.net/nrrd/format.html\n');
+        filehandle.write(b'# Complete NRRD file format specification at:\n')
+        filehandle.write(b'# http://teem.sourceforge.net/nrrd/format.html\n')
 
         # Write the fields in order, this ignores fields not in
         # _NRRD_FIELD_ORDER
