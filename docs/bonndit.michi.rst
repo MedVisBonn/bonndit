@@ -28,18 +28,10 @@ bonndit\.michi\.fields module
     :undoc-members:
     :show-inheritance:
 
-bonndit\.michi\.nrrd2 module
+bonndit\.michi\.nrrd module
 ----------------------------
 
-.. automodule:: bonndit.michi.nrrd2
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-bonndit\.michi\.nrrd3 module
-----------------------------
-
-.. automodule:: bonndit.michi.nrrd3
+.. automodule:: bonndit.michi.nrrd
     :members:
     :undoc-members:
     :show-inheritance:
