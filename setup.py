@@ -32,7 +32,10 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
     ],
-    description="The bonndit package contains the latest diffusion imaging tools developed at the University of Bonn.",
+    description=(
+        'The bonndit package contains the latest diffusion imaging tools '
+        'developed at the University of Bonn.'
+    ),
     install_requires=requirements,
     license="GNU General Public License v3",
     long_description=readme + '\n\n' + history,
@@ -48,6 +51,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/MedVisBonn/bonndit',
-    version='version='version='0.1.0''',
+    version='0.1.0',
     zip_safe=False,
 )
