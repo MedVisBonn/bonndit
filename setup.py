@@ -23,7 +23,7 @@ setup(
     author="Olivier Morelle",
     author_email='morelle@uni-bonn.de',
     classifiers=[
-        'Topic ::  Scientific/Engineering',
+        'Topic :: Scientific/Enginering',
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
