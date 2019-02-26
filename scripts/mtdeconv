@@ -21,10 +21,11 @@ from bonndit.michi import fields, dwmri
 
 def main():
     parser = argparse.ArgumentParser(
-        description='This script computes fiber orientation distribution functions (fODFs) \
-        as described in "Versatile, Robust and Efficient Tractography With Constrained Higher \
-        Order Tensor fODFs" by Ankele et al. (2017). It is assumed that the input data is saved \
-        using FSL.', add_help=False)
+        description='This script computes fiber orientation distribution '
+                    'functions (fODFs) as described in "Versatile, Robust and '
+                    'Efficient Tractography With Constrained Higher Order '
+                    'Tensor fODFs" by Ankele et al. (2017). It is assumed that'
+                    ' the input data is saved using FSL.', add_help=False)
 
     parser.add_argument('indir',
                         help='Folder containing all required input files')
@@ -33,7 +34,7 @@ def main():
                         help='Folder in which the output will be saved (default: same as indir)')
 
     inputfiles = parser.add_argument_group('Custom input filenames', 'It is not recommended to specify \
-    a Specify custom names for input files.')
+    custom names for input files.')
     inputfiles.add_argument('-d', '--data', default='data.nii.gz',
                             help='Diffusion weighted data (default: data.nii.gz)')
     inputfiles.add_argument('-e', '--dtivecs', default='dti_V1.nii.gz',
@@ -104,7 +105,7 @@ def main():
               'ERROR': logging.ERROR}
 
     # Logging setup for file
-    logging.basicConfig(filename=os.path.join(args.outdir, 'mtdeconv.log'),
+    logging.basicConfig(filename=os.path.join(outdir, 'mtdeconv.log'),
                         format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                         datefmt='%y-%m-%d %H:%M',
                         level=levels[args.loglevel],
@@ -129,54 +130,99 @@ def main():
     logging.info(param_string.format(args.order, args.zeta, args.tau,
                                      args.fawm, args.constraint, args.kernel))
 
-    # Check whether all specified files exist
-    for f in [args.brainmask, args.data, args.dtifa, args.csfmask, args.gmmask,
-              args.wmmask, args.dtivecs, 'bvals', 'bvecs', ]:
-        filepath = os.path.join(indir, f)
-        if not os.path.isfile(filepath):
-            msg = 'No such file or directory: "{}"'.format(filepath)
-            logging.error(msg)
-            raise FileNotFoundError(msg)
+    # If deconvolution is wanted check whether a response exists already
+    response_available = False
+    if not args.responseonly:
+        if os.path.exists(os.path.join(outdir, 'response.npz')):
+            response_available = True
 
-    # Load fractional anisotropy
-    dti_fa = bd.load(os.path.join(indir, args.dtifa))
+    # If response available load data and response
+    if response_available:
+        # Only mask, and data are needed. Gradients are saved in response.
+        for f in [args.brainmask, 'bvals', 'bvecs', ]:
+            filepath = os.path.join(indir, f)
+            if not os.path.isfile(filepath):
+                msg = 'No such file or directory: "{}"'.format(filepath)
+                logging.error(msg)
+                raise FileNotFoundError(msg)
 
-    # Load DTI mask
-    dti_mask = bd.load(os.path.join(indir, args.brainmask))
+        # Load existing response
+        fit = bd.ShoreMultiTissueResponse.load(
+            os.path.join(outdir, "response.npz"))
+        logging.info('Existing response functions loaded.')
 
-    # Load tissue segmentation masks
-    csf_mask = bd.load(os.path.join(indir, args.csfmask))
-    gm_mask = bd.load(os.path.join(indir, args.gmmask))
-    wm_mask = bd.load(os.path.join(indir, args.wmmask))
+        # Load DTI mask
+        dti_mask = bd.load(os.path.join(indir, args.brainmask))
 
-    # Load first eigenvectors of a precalculated diffusion tensor
-    dti_vecs = bd.load(os.path.join(indir, args.dtivecs))
+        # Load diffusion weighted data
+        data = bd.load(os.path.join(indir, args.data))
 
-    # Load diffusion weighted data
-    data = bd.load(os.path.join(indir, args.data))
+        logging.info('Input loaded.')
 
-    # Load bvals and bvecs and initialize a GradientTable object
-    bvals, bvecs = read_bvals_bvecs(os.path.join(indir, "bvals"),
-                                    os.path.join(indir, "bvecs"))
-    gtab = gradient_table(bvals, bvecs)
+    # If response not available load files and compute response
+    else:
+        # Test whether all required files are available
+        for f in [args.brainmask, args.dtifa, args.csfmask, args.gmmask,
+                  args.wmmask, args.dtivecs, 'bvals', 'bvecs', ]:
+            filepath = os.path.join(indir, f)
+            if not os.path.isfile(filepath):
+                msg = 'No such file or directory: "{}"'.format(filepath)
+                logging.error(msg)
+                raise FileNotFoundError(msg)
 
-    logging.info('Input loaded.')
+        # Load fractional anisotropy
+        dti_fa = bd.load(os.path.join(indir, args.dtifa))
 
-    # Create tissue masks based on fractional anisotropy values
-    wm_mask = fa_guided_mask(wm_mask, dti_fa, dti_mask, tissue_threshold=0.95,
-                             fa_lower_thresh=0.7)
-    gm_mask = fa_guided_mask(gm_mask, dti_fa, dti_mask, tissue_threshold=0.95,
-                             fa_upper_thresh=0.2)
-    csf_mask = fa_guided_mask(csf_mask, dti_fa, dti_mask,
-                              tissue_threshold=0.95,
-                              fa_upper_thresh=0.2)
+        # Load DTI mask
+        dti_mask = bd.load(os.path.join(indir, args.brainmask))
 
-    logging.info('Fractional anisotropy based tissue masks created.')
+        # Load tissue segmentation masks
+        csf_mask = bd.load(os.path.join(indir, args.csfmask))
+        gm_mask = bd.load(os.path.join(indir, args.gmmask))
+        wm_mask = bd.load(os.path.join(indir, args.wmmask))
 
-    # Flip sign of x-coordinate if affine determinant is positive and rotate to worldspace
-    gtab = fsl_gtab_to_worldspace(gtab, data.affine)
-    dti_vecs = fsl_vectors_to_worldspace(dti_vecs)
-    logging.info('Rotation to worldspace finished')
+        # Load first eigenvectors of a precalculated diffusion tensor
+        dti_vecs = bd.load(os.path.join(indir, args.dtivecs))
+
+        # Load diffusion weighted data
+        data = bd.load(os.path.join(indir, args.data))
+
+        # Load bvals and bvecs and initialize a GradientTable object
+        bvals, bvecs = read_bvals_bvecs(os.path.join(indir, "bvals"),
+                                        os.path.join(indir, "bvecs"))
+        gtab = gradient_table(bvals, bvecs)
+
+        logging.info('Input loaded.')
+
+        # Create tissue masks based on fractional anisotropy values
+        wm_mask = fa_guided_mask(wm_mask, dti_fa, dti_mask,
+                                 tissue_threshold=0.95,
+                                 fa_lower_thresh=0.7)
+        gm_mask = fa_guided_mask(gm_mask, dti_fa, dti_mask,
+                                 tissue_threshold=0.95,
+                                 fa_upper_thresh=0.2)
+        csf_mask = fa_guided_mask(csf_mask, dti_fa, dti_mask,
+                                  tissue_threshold=0.95,
+                                  fa_upper_thresh=0.2)
+
+        if args.tissuemasks:
+            nib.save(wm_mask, os.path.join(outdir, 'wm_mask.nii.gz'))
+            nib.save(gm_mask, os.path.join(outdir, 'gm_mask.nii.gz'))
+            nib.save(csf_mask, os.path.join(outdir, 'csf_mask.nii.gz'))
+
+        logging.info('Fractional anisotropy based tissue masks created.')
+
+        # Flip sign of x-coordinate if affine determinant is positive and rotate to worldspace
+        gtab = fsl_gtab_to_worldspace(gtab, data.affine)
+        dti_vecs = fsl_vectors_to_worldspace(dti_vecs)
+        logging.info('Rotation to worldspace finished')
+
+        model = bd.ShoreMultiTissueResponseEstimator(gtab, args.order,
+                                                     args.zeta, args.tau)
+        fit = model.fit(data, dti_vecs, wm_mask, gm_mask, csf_mask,
+                        verbose=args.verbose, cpus=args.workers)
+        fit.save(os.path.join(outdir, "response.npz"))
+        logging.info('Response functions estimated and saved.')
 
     # We need this Meta object for saving later
     base_filename = os.path.join(indir, args.data).rstrip(".gz").rstrip(".nii")
@@ -188,36 +234,7 @@ def main():
         except FileNotFoundError as e:
             raise FileNotFoundError(e)
 
-    if args.tissuemasks:
-        nib.save(wm_mask, os.path.join(args.outdir, 'wm_mask.nii.gz'))
-        nib.save(gm_mask, os.path.join(args.outdir, 'gm_mask.nii.gz'))
-        nib.save(csf_mask, os.path.join(args.outdir, 'csf_mask.nii.gz'))
-
-    # Check if response is already in the output folder
-    if not args.responseonly:
-        if os.path.exists(os.path.join(outdir, "response.npz")):
-            fit = bd.ShoreMultiTissueResponse.load(
-                os.path.join(outdir, "response.npz"))
-            logging.info('Existing response functions loaded.')
-
-        else:
-            model = bd.ShoreMultiTissueResponseEstimator(gtab, args.order,
-                                                         args.zeta, args.tau)
-            fit = model.fit(data, dti_vecs, wm_mask, gm_mask, csf_mask,
-                            verbose=args.verbose, cpus=args.workers)
-            fit.save(os.path.join(outdir, "response.npz"))
-            logging.info('Response functions estimated and saved.')
-
-    # Force recalculate the response if response only is specified
-    else:
-        model = bd.ShoreMultiTissueResponseEstimator(gtab, args.order,
-                                                     args.zeta, args.tau)
-        fit = model.fit(data, dti_vecs, wm_mask, gm_mask, csf_mask,
-                        verbose=args.verbose,
-                                         cpus=args.workers)
-        fit.save(os.path.join(outdir, "response.npz"))
-        logging.info('Response functions recalculated and saved.')
-
+    print('test')
     # Deconvolution if 'responseonly' is not set
     if not args.responseonly:
         out, wmout, gmout, csfout = fit.fodf(data, pos=args.constraint,
@@ -226,16 +243,16 @@ def main():
                                              cpus=args.workers)
         logging.info('Signal deconvolved with multiple tissue response functions.')
 
-        fields.save_tensor(os.path.join(args.outdir, "fodf.nrrd"), out,
+        fields.save_tensor(os.path.join(outdir, "fodf.nrrd"), out,
                            mask=dti_mask.get_data(), meta=meta)
         logging.info('fODFs saved.')
 
         # Save volumes
-        fields.save_scalar(os.path.join(args.outdir, "wmvolume.nrrd"),
+        fields.save_scalar(os.path.join(outdir, "wmvolume.nrrd"),
                            wmout, meta)
-        fields.save_scalar(os.path.join(args.outdir, "gmvolume.nrrd"),
+        fields.save_scalar(os.path.join(outdir, "gmvolume.nrrd"),
                            gmout, meta)
-        fields.save_scalar(os.path.join(args.outdir, "csfvolume.nrrd"),
+        fields.save_scalar(os.path.join(outdir, "csfvolume.nrrd"),
                            csfout, meta)
         logging.info('Volume fractions saved.')
 
