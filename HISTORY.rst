@@ -2,7 +2,7 @@
 History
 =======
 
-0.1.2 (2019-02-06)
+0.1.2 (2019-02-26)
 -------------------
 
 * 'mtdeconv': If response is available, files needed for the computation of the response are not loaded.
