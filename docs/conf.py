@@ -55,7 +55,7 @@ author = u"Olivier Morelle, Michael Ankele, Thomas Schultz"
 # the built documents.
 #
 
-VERSION = '0.1.1'
+VERSION = '0.1.2'
 # The short X.Y version.
 version = VERSION.rstrip('beta').rstrip('alpha').rstrip('rc')
 # The full version, including alpha/beta/rc tags.
