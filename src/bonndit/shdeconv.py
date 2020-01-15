@@ -7,6 +7,7 @@ from functools import partial
 import cvxopt
 import numpy as np
 import numpy.linalg as la
+import nibabel
 from dipy.core.geometry import cart2sphere
 from dipy.core.gradients import gradient_table
 from dipy.reconst.shm import real_sph_harm
@@ -357,7 +358,9 @@ class ShResponse(object):
         if self.kernel_type != kernel:
             self.set_kernel(kernel)
 
-        data = data.get_data()
+        # Allows passing in either a NiftiImage or a numpy array
+        if type(data)==nibabel.nifti1.Nifti1Image:
+            data = data.get_data()
         # Remove small bvalues, depends on b0_threshold of gtab
         data = data[..., ~self.gtab.b0s_mask]
         space = data.shape[:-1]

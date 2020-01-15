@@ -94,7 +94,7 @@ def main():
               'ERROR': logging.ERROR}
 
     # Logging setup for file
-    logging.basicConfig(filename=os.path.join(args.outdir, 'stdeconv.log'),
+    logging.basicConfig(filename=os.path.join(outdir, 'stdeconv.log'),
                         format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                         datefmt='%y-%m-%d %H:%M',
                         level=levels[args.loglevel],
@@ -169,7 +169,7 @@ def main():
             raise FileNotFoundError(e)
 
     if args.tissuemasks:
-        nib.save(wm_mask, os.path.join(args.outdir, 'wm_mask.nii.gz'))
+        nib.save(wm_mask, os.path.join(outdir, 'wm_mask.nii.gz'))
 
     # Check if response is already in the output folder
     if not args.responseonly:
@@ -199,14 +199,14 @@ def main():
                               verbose=args.verbose,
                               cpus=args.workers)
         logging.info(
-            'Signal deconvolved with multiple tissue response functions.')
+            'Signal deconvolved with single tissue response function.')
 
-        fields.save_tensor(os.path.join(args.outdir, "odf.nrrd"), out,
+        fields.save_tensor(os.path.join(outdir, "odf.nrrd"), out,
                            mask=dti_mask.get_data(), meta=meta)
         logging.info('fODFs saved.')
 
         # Save volumes
-        fields.save_scalar(os.path.join(args.outdir, "wmvolume.nrrd"),
+        fields.save_scalar(os.path.join(outdir, "wmvolume.nrrd"),
                            wmout, meta)
         logging.info('Volume fractions saved.')
 

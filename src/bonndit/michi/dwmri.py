@@ -199,7 +199,7 @@ def _nrrd_parse_gtab(data, meta):
         key = 'DWMRI_gradient_{:04}'.format(i)
         try:
             g = meta.key_value_pairs[key]
-            g = np.array([float(x) for x in g.split(' ')])
+            g = np.array([float(x) for x in g.split(' ') if x])
             l2 = g[0] ** 2 + g[1] ** 2 + g[2] ** 2
             B[i] = bmax * l2
             if l2 > 0:
