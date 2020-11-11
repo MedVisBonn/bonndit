@@ -112,7 +112,7 @@ def power(v, order):
 def dot(a, b):
     assert (len(a) == len(b))
     order = get_order(a)
-    return np.dot(a, b * MULTIPLIER[order])
+    return np.dot(a, np.multiply(b,MULTIPLIER[order]))
 
 
 # Frobenius norm ||T||
