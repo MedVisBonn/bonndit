@@ -8,8 +8,8 @@ import os
 import nibabel as nib
 from dipy.io import read_bvals_bvecs
 
-from bonndit.michi import fields
-from bonndit.shdeconv import ShResponse
+from bonndit.utils import fields
+from bonndit.models.shdeconv import ShResponse
 from .constants import CSD_RESULTS_DIR as DRD
 from .constants import DATA_DIR, SH_RESPONSE_PRECOMPUTED, DWMRI_DUMMY_DATA, \
     CSD_ODF_HPSD_DELTA, CSD_ODF_NONNEG_DELTA, \

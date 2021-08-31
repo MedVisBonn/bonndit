@@ -10,8 +10,8 @@ from dipy.core.gradients import gradient_table
 from dipy.io import read_bvals_bvecs
 
 from bonndit import ShoreMultiTissueResponseEstimator, ShoreMultiTissueResponse
-from bonndit.io import fsl_gtab_to_worldspace, fsl_vectors_to_worldspace
-from bonndit.shoredeconv import fa_guided_mask
+from bonndit.utils.io import fsl_gtab_to_worldspace, fsl_vectors_to_worldspace
+from bonndit.models.shoredeconv import fa_guided_mask
 from .constants import DATA_DIR, SHORE_FIT_TEST
 
 # Load fractional anisotropy

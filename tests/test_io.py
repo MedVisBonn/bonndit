@@ -1,6 +1,6 @@
 import numpy as np
 
-from bonndit.io import vector_norm, fsl_flip_sign
+from bonndit.utils.io import vector_norm, fsl_flip_sign
 
 
 def test_vector_norm_1_axis():

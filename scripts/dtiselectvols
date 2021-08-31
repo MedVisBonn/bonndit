@@ -2,15 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-import logging
-import os
 
-import nibabel as nib
 import numpy as np
 from dipy.io import read_bvals_bvecs
 
-import bonndit as bd
-from bonndit.michi import fields, dwmri
+from bonndit.utils import dwmri, fields
 
 
 def main():

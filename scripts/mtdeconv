@@ -14,9 +14,9 @@ from dipy.core.gradients import gradient_table
 from dipy.io import read_bvals_bvecs
 
 import bonndit as bd
-from bonndit.shoredeconv import fa_guided_mask
-from bonndit.io import fsl_vectors_to_worldspace, fsl_gtab_to_worldspace
-from bonndit.michi import fields, dwmri
+from bonndit.models.shoredeconv import fa_guided_mask
+from bonndit.utils.io import fsl_vectors_to_worldspace, fsl_gtab_to_worldspace
+from bonndit.utils import dwmri, fields
 
 
 def main():
