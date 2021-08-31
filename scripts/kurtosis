@@ -13,8 +13,8 @@ from dipy.core.gradients import gradient_table
 from dipy.io import read_bvals_bvecs
 
 import bonndit as bd
-from bonndit.io import fsl_gtab_to_worldspace
-from bonndit.michi import dwmri
+from bonndit.utils.io import fsl_gtab_to_worldspace
+from bonndit.utils import dwmri
 
 
 def main():
@@ -128,10 +128,10 @@ def main():
     # We need this Meta object for saving later
     base_filename = os.path.join(indir, args.data).rstrip(".gz").rstrip(".nii")
     try:
-        _, _, meta = dwmri.load(base_filename+'.nii.gz')
+        _, _, meta = dwmri.load(base_filename + '.nii.gz')
     except FileNotFoundError:
         try:
-            _, _, meta = dwmri.load(base_filename+'.nii')
+            _, _, meta = dwmri.load(base_filename + '.nii')
         except FileNotFoundError as e:
             raise FileNotFoundError(e)
 

@@ -2,15 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-import logging
-import os
 
-import nibabel as nib
 import numpy as np
 from dipy.io import read_bvals_bvecs
 
-import bonndit as bd
-from bonndit.michi import fields, dwmri
+from bonndit.utils import dwmri, fields
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -46,7 +43,7 @@ def main():
 
     # Load data and save selection
     data, _, meta = dwmri.load(args.indata)
-    fields.save_basic(args.outdata, data[:,:,:,selection], meta)
+    fields.save_basic(args.outdata, data[:, :, :, selection], meta)
 
 if __name__ == "__main__":
     main()

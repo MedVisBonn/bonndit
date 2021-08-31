@@ -7,8 +7,8 @@ import os
 
 import nibabel as nib
 
-import bonndit.shoredeconv as bs
-from bonndit.michi import fields
+import bonndit.models.shoredeconv as bs
+from bonndit.utils import fields
 from .constants import DECONVOLUTION_RESULTS_DIR as DRD
 from .constants import SHORE_FIT_PRECOMPUTED, DWMRI_DUMMY_DATA, \
     ODF_RESULT_HPSD_DELTA, ODF_RESULT_NONNEG_DELTA, \

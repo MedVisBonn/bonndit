@@ -8,7 +8,7 @@ from dipy.core.gradients import gradient_table
 from dipy.io import read_bvals_bvecs
 
 from bonndit import DkiModel, DkiFit
-from bonndit.io import fsl_gtab_to_worldspace
+from bonndit.utils.io import fsl_gtab_to_worldspace
 from .constants import DATA_DIR, DKI_TENSOR
 
 # Load fractional anisotropy

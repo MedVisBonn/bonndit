@@ -13,8 +13,8 @@ from dipy.core.gradients import gradient_table
 from dipy.io import read_bvals_bvecs
 
 import bonndit as bd
-from bonndit.io import fsl_vectors_to_worldspace, fsl_gtab_to_worldspace
-from bonndit.michi import fields, dwmri
+from bonndit.utils.io import fsl_vectors_to_worldspace, fsl_gtab_to_worldspace
+from bonndit.utils import dwmri, fields
 
 
 def main():
@@ -149,8 +149,8 @@ def main():
 
     logging.info('Input loaded.')
 
-    wm_mask = bd.shoredeconv.fa_guided_mask(wm_mask, dti_fa, dti_mask,
-                                            fa_lower_thresh=0.7)
+    wm_mask = bonndit.models.shoredeconv.fa_guided_mask(wm_mask, dti_fa, dti_mask,
+                                                        fa_lower_thresh=0.7)
     logging.info('Fractional anisotropy based tissue mask created.')
 
     # Flip sign of x-coordinate if affine determinant is positive and rotate to worldspace
