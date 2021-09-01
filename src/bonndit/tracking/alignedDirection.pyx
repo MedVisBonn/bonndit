@@ -33,7 +33,7 @@ cdef class Probabilities:
     cdef void aligned_direction(
         self, double[:, :] vectors,
         double[:] direction
-    ) nogil:
+    ) nogil except *:
         # calculate angle between direction and possibilities. If angle is
         # bigger than 90 use the opposite direction.
         cdef int i, n = vectors.shape[0]
@@ -44,7 +44,11 @@ cdef class Probabilities:
             # print(*vectors[i])
             #	if sum(direction) == 0 or sum(vectors[i]) == 0:
             # print(*direction,*vectors[i])
-            if sum_c(vectors[i]) != 0:
+            if sum_c(direction) == 0:
+                break
+            if norm(vectors[i]) != 0 and norm(vectors[i]) == norm(vectors[i]):
+                # with gil:
+                # print(norm(direction), norm(vectors[i]))
                 test_angle = acos(
                     clip(
                         scalar(
@@ -64,7 +68,7 @@ cdef class Probabilities:
                 self.angles[i] = 180
                 mult_with_scalar(self.test_vectors[i], 0, vectors[i])
 
-    cdef void random_choice(self, double[:] direction) nogil:
+    cdef void random_choice(self, double[:] direction) nogil except *:
         cdef double best_choice = rand() / RAND_MAX
         if sum_c(self.probability) != 0:
             mult_with_scalar(
