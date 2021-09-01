@@ -39,23 +39,23 @@ cdef class Interpolation:
 
 	cdef void calc_cube(self,double[:] point) nogil:
 		""" This function calculates the cube around a point.
-		
+
 		Parameters
 		----------
 		point 3 dimensional point
 
 
 		Returns
-		------- 
+		-------
 
 		"""
 		add_pointwise(self.floor_point, neigh, point)
 		floor_pointwise_matrix(self.floor_point, self.floor_point)
 
 	cdef void nearest_neigh(self,double[:] point) nogil:
-		""" Return the nearest neighbour to a given point by l2 norm. Therefore uses the cube around a point and calc 
+		""" Return the nearest neighbour to a given point by l2 norm. Therefore uses the cube around a point and calc
 		the distance to all other points.
-		
+
 		Parameters
 		----------
 		point
@@ -151,9 +151,9 @@ cdef class Trilinear(Interpolation):
 
 
 	cdef void interpolate(self, double[:] point, double[:] old_dir) nogil except *:
-		""" This function calculates the interpolation based on https://en.wikipedia.org/wiki/Trilinear_interpolation 
+		""" This function calculates the interpolation based on https://en.wikipedia.org/wiki/Trilinear_interpolation
 		for each vectorfield. Afterwards the we chose randomly from the 3 vectors.
-		
+
 		Parameters
 		----------
 		point   Point in plane
@@ -262,7 +262,7 @@ cdef class Trilinear(Interpolation):
 				# Does not work with mult_with_scalar dont understand :(
 				for k in range(3):
 					self.cuboid[i,j,k] = exponent * self.vector_field[1+k, j, int(self.floor_point[i, 0]),int(self.floor_point[i, 1]),int(self.floor_point[i, 2])]
-				if sum_c(self.best_dir[j])!=0 and sum_c(self.cuboid[i,k])!=0:
+				if norm(self.best_dir[j])!=0 and norm(self.cuboid[i,k])!=0:
 					test_angle = angle_deg(self.best_dir[j], self.cuboid[i,j])
 					if test_angle > 90:
 						mult_with_scalar(self.cuboid[i,j], -1, self.cuboid[i,j])
@@ -286,7 +286,7 @@ cdef class Trilinear(Interpolation):
 							if self.not_check[0,0]==k or self.not_check[1,0]==k:
 								continue
 							# angle between avg direction and corner direction:
-							if sum_c(self.cuboid[i,k])!=0:
+							if norm(self.cuboid[i,k])!=0 and norm(self.best_dir[j]) != 0:
 								test_angle = angle_deg(self.best_dir[j], self.cuboid[i,k])
 								minus = 1
 								if test_angle > 90:

@@ -8,8 +8,8 @@ cdef class Probabilities:
 	cdef double expectation, sigma
 	cdef double[:] probability, angles, best_fit
 	cdef double[:,:] test_vectors
-	cdef void random_choice(self, double[:]) nogil
-	cdef void aligned_direction(self, double[:,:], double[:]) nogil
+	cdef void random_choice(self, double[:]) nogil  except *
+	cdef void aligned_direction(self, double[:,:], double[:]) nogil  except *
 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
 
 cdef class Gaussian(Probabilities):

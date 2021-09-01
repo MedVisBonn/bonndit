@@ -37,7 +37,8 @@ cdef void tracking(double[:,:,:,:] paths, double[:,:,:] wm_mask, double[:] old_d
 		#with gil:
 		#	print(*interpolate.next_dir)
 		#print(*paths[j,0,1])
-		forward_tracking(paths[j,:,1,:], wm_mask, old_dir, interpolate, integrate, trafo, max_track_length, wmmin, features[j,:,0, :])
+		forward_tracking(paths[j,:,1,:], wm_mask, old_dir, interpolate, integrate, trafo, max_track_length, wmmin,
+		                 features[j,:,1, :])
 
 
 cdef void forward_tracking(double[:,:] paths, double[:,:,:] wm_mask, double[:] old_dir,  Interpolation interpolate,
@@ -51,17 +52,18 @@ cdef void forward_tracking(double[:,:] paths, double[:,:,:] wm_mask, double[:] o
 	for k in range(max_track_length - 1):
 		#break if white matter is to low.
 		if wm_mask[int(paths[k,0]), int(paths[k,1]), int(paths[k,2])] < wmmin:
-			if k<30:
+			if k<10:
 				set_zero_matrix(paths)
 				set_zero_matrix(features)
 			break
 		# find matching directions
-
+		if sum_c(old_dir) == 0:
+			break
 		interpolate.interpolate(paths[k], old_dir)
 
 		# Check next step is valid. If it is: Integrate. else break
 		if sum_c(interpolate.next_dir) == 0 or sum_c(interpolate.next_dir) != sum_c(interpolate.next_dir):
-			if k<30:
+			if k<10:
 				set_zero_matrix(paths)
 				set_zero_matrix(features)
 			break
@@ -76,9 +78,7 @@ cdef void forward_tracking(double[:,:] paths, double[:,:,:] wm_mask, double[:] o
 			sub_vectors(paths[k + 3], paths[k], paths[k + 1])
 			if sum_c(paths[k + 2]) != 0 and sum_c(paths[k + 3])!=0:
 				features[k,1] = angle_deg(paths[k + 2], paths[k + 3])
-			else:
-				with gil:
-					print(np.asarray(paths[k+2:k+4]))
+
 			if features[k,1] > 120:
 				#pass
 				set_zero_matrix(paths)
@@ -108,7 +108,7 @@ cpdef tracking_all(double[:,:,:,:,:] vector_field, meta, double[:,:,:] wm_mask, 
                    interpolation, prob, stepsize, double variance, int samples, int max_track_length, double wmmin,
                    double expectation):
 	"""
-	
+
 	Parameters
 	----------
 	vector_field
