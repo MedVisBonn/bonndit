@@ -64,6 +64,10 @@ ext_modules = [
         ["src/bonndit/tracking/integration.pyx"],
     ),
     Extension(
+        "bonndit.tracking.stopping",
+        ["src/bonndit/tracking/stopping.pyx"],
+    ),
+    Extension(
         "bonndit.tracking.tracking_prob",
         ["src/bonndit/tracking/tracking_prob.pyx"],
         extra_compile_args=['-fopenmp'],

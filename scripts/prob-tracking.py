@@ -81,6 +81,7 @@ def main():
         int(args.mtlength),
         float(args.wmmin),
         float(args.exp or 1))
+
     paths_len = [sum(paths_len[:i + 1]) for i in range(len(paths_len))]
 
     tracks = PlyElement.describe(
