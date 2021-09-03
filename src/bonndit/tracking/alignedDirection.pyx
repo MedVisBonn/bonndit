@@ -29,6 +29,12 @@ cdef class Probabilities:
 
 
 	cdef void aligned_direction(self, double[:,:] vectors, double[:] direction) nogil  except *:
+		"""
+
+		@param vectors:
+		@param direction:
+		@return:
+		"""
 		#calculate angle between direction and possibilities. If angle is bigger than 90 use the opposite direction.
 		cdef int i, n = vectors.shape[0]
 		cdef double test_angle, min_angle = 180
@@ -58,6 +64,11 @@ cdef class Probabilities:
 				mult_with_scalar(self.test_vectors[i], 0, vectors[i])
 
 	cdef void random_choice(self, double[:] direction) nogil  except *:
+		"""
+
+		@param direction:
+		@return:
+		"""
 		cdef double best_choice = rand() / RAND_MAX
 		if sum_c(self.probability) != 0:
 			mult_with_scalar(self.probability, 1/sum_c(self.probability), self.probability)
@@ -89,6 +100,12 @@ cdef class Probabilities:
 
 cdef class Gaussian(Probabilities):
 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil except *:
+		"""
+
+		@param vectors:
+		@param direction:
+		@return:
+		"""
 		cdef int i
 		self.aligned_direction(vectors, direction)
 		for i in range(3):
@@ -98,6 +115,12 @@ cdef class Gaussian(Probabilities):
 
 cdef class Laplacian(Probabilities):
 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil except *:
+		"""
+
+		@param vectors:
+		@param direction:
+		@return:
+		"""
 		cdef int i
 		self.aligned_direction(vectors, direction)
 		for i in range(3):
@@ -108,6 +131,12 @@ cdef class Laplacian(Probabilities):
 
 cdef class ScalarOld(Probabilities):
 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil except *:
+		"""
+
+		@param vectors:
+		@param direction:
+		@return:
+		"""
 		cdef int i
 		cdef double s
 		self.aligned_direction(vectors, direction)
@@ -126,6 +155,12 @@ cdef class ScalarOld(Probabilities):
 
 cdef class ScalarNew(Probabilities):
 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil  except *:
+		"""
+
+		@param vectors:
+		@param direction:
+		@return:
+		"""
 		cdef int i
 		cdef double s
 		self.aligned_direction(vectors, direction)

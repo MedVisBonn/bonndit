@@ -59,9 +59,13 @@ ext_modules = [
         include_dirs=[numpy.get_include(), '.'],
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
     ),
-    Extension(
-        "bonndit.tracking.integration",
-        ["src/bonndit/tracking/integration.pyx"],
+	Extension(
+		"bonndit.tracking.integration",
+		["src/bonndit/tracking/integration.pyx"],
+	),
+	Extension(
+        "bonndit.tracking.stopping",
+        ["src/bonndit/tracking/stopping.pyx"],
     ),
     Extension(
         "bonndit.tracking.tracking_prob",

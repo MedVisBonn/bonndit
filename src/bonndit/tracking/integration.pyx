@@ -16,6 +16,7 @@ cdef class Integration:
 		self.origin = origin
 		self.next_point = np.zeros((3,))
 		self.three_vector = np.zeros((3,))
+		self.old_dir = np.ndarray((3,))
 
 	cdef void integrate(self, double[:] direction, double[:] coordinate) nogil:
 		pass
@@ -39,9 +40,9 @@ cdef class FACT(Integration):
 cdef class Euler(Integration):
 	cdef void integrate(self, double[:] direction, double[:] coordinate) nogil:
 		""" Euler Integration
-		
+
 		Converts itow and adds the current direction to the current position
-		
+
 		Parameters
 		----------
 		direction: current direction

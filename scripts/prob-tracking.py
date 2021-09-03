@@ -55,6 +55,7 @@ def main():
                                                args.interpolation, args.prob, args.sw, float(args.var),
                                                int(args.samples),
                                                int(args.mtlength), float(args.wmmin), float(args.exp or 1))
+
     paths_len = [sum(paths_len[:i + 1]) for i in range(len(paths_len))]
 
     tracks = PlyElement.describe(np.array(paths, dtype=[('x', 'f4'), ('y', 'f4'), ('z', 'f4'),

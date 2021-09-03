@@ -19,12 +19,25 @@ cdef class Trafo:
 
 
 	cdef void itow(self, double[:] point) nogil:
+		"""
+		Converts a point from index space to world space
+		@param point: vector (3,)
+			Input point
+		@return: Nothing. Result is saved in point_itow
+		"""
 		set_zero_vector(self.point_itow)
 		matrix_mult(self.point_itow, self.ItoW, point)
 		add_vectors(self.point_itow, self.origin, self.point_itow)
 
 
 	cdef void wtoi(self, double[:] point) nogil:
+
+		"""
+    		Converts a point from world space to index space
+    		@param point: vector (3,)
+    		    Input point
+    		@return: Nothing. Result is saved in point_wtoi
+		"""
 		set_zero_vector(self.point_wtoi)
 		sub_vectors(self.three_vector, point, self.origin)
 		matrix_mult(self.point_wtoi, self.ItoW_inv, self.three_vector)

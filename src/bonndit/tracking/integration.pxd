@@ -10,6 +10,8 @@ cdef class Integration:
 	cdef double[:,:] ItoW
 	cdef double[:] origin
 	cdef Trafo trafo
+	cdef double[:] old_dir
+
 	cdef void integrate(self, double[:], double[:]) nogil
 
 cdef class Euler(Integration):
