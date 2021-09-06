@@ -38,8 +38,7 @@ cdef void get_neighbor_for_coor(double[:] nearest_fodf_sum, double[:,:,:,:]  fod
 
 
 
-cpdef approx_all_spherical(double[:,:,:] output, double[:,:] data, double[:,:,:,:]  fodf, int nearest, double nu,
-                     int run_all, int rank):
+cpdef approx_all_spherical(double[:,:,:] output, double[:,:] data, double[:,:,:,:]  fodf, int nearest, double nu, int rank):
     """ This function calculates the best tensor approximation with spherical approximation as described in xy.
 
     Parameters
@@ -100,36 +99,4 @@ cpdef approx_all_spherical(double[:,:,:] output, double[:,:] data, double[:,:,:,
                             rank,  valsec[:, threadid()],
                                val[:, threadid()],
                                der[:, threadid()], testv[:, threadid()], anisoten[:, threadid()], isoten[:, threadid()])
-        if run_all:
-            #Algorithm 1: 1
-            # Use whole tensor as residual.
-            res[:,threadid()] = fodf[:, coordinates[i,0], coordinates[i,1], coordinates[i,2]]
-            # Set avg. as initial values.
-            set_zero_matrix(vs[:, :, threadid()])
-            set_initial_spherical(vs[:, :, threadid()], output[:, :, i])
-            ## And as consensus vector.
-            for j in range(3):
-                mult_with_scalar(pen_act[:, j, threadid()], 1, vs[1:, j, threadid()])
-
-            # Update residual.
-            for k in range(3):
-                hota_4o3d_sym_eval(tens_average[k, :, threadid()], vs[0, k, threadid()], vs[1:, k, threadid()])
-                sub_vectors(res[1:, threadid()], res[1:, threadid()], tens_average[k, :, threadid()])
-
-            ##Initialize norm
-            norm[threadid()] = calc_norm_spherical(vs[0, :, threadid()], vs[1:, :, threadid()], res[1:, threadid()], \
-                                                                 pen_act[:, :, threadid()], nu, testv[:, threadid()])
-
-            refine_average_spherical(vs[0, :, threadid()], vs[1:, :, threadid()], tens_average[:, :,
-                                                                                       threadid()],
-                                                         res[1:, threadid()],
-                                pen_act[:, :, threadid()], nu, norm[threadid()], der[:, threadid()],
-                                   testv[:, threadid()], three_vector[:, threadid()], three_matrix[:, :, threadid()],
-                                one_vector[:, threadid()], anisoten[:, threadid()], isoten[:, threadid()],
-                                three_vector_placeholder[:,0, threadid()], three_vector_placeholder[:,1, threadid()],
-                                three_vector_placeholder[:,2, threadid()], three_vector_placeholder[:,3, threadid()]
-                                , three_vector_placeholder[:,4, threadid()])
-
-
-            output[:, :, i] = vs[:, :, threadid()]
 

@@ -31,7 +31,7 @@ def main():
     NUM = data.shape[1]
     output = np.zeros((4, int(args.r), NUM))
     # check format:
-    approx_all_spherical(output, data, fodfs, np.int(0), np.float32(0), np.int(0), np.int(args.r))
+    approx_all_spherical(output, data, fodfs, np.int(0), np.float32(0), np.int(args.r))
 
     output = output.reshape((4, int(args.r)) + fodfs.shape[1:])
     newmeta = {k: meta[k] for k in ['space', 'space origin']}
