@@ -41,7 +41,6 @@ def main():
     approx_all_spherical(
         output, data, fodfs, np.int(0),
         np.float32(0),
-        np.int(0),
         np.int(args.r))
 
     output = output.reshape((4, int(args.r)) + fodfs.shape[1:])
