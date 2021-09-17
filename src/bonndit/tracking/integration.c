@@ -2185,13 +2185,13 @@ static PyObject *__pyx_memoryviewslice__get_base(struct __pyx_memoryviewslice_ob
 static PyTypeObject *__pyx_ptype_7bonndit_8tracking_4ItoW_Trafo = 0;
 #endif
 
-/* Module declarations from "helper_functions.cython_helpers" */
+/* Module declarations from "bonndit.helper_functions.cython_helpers" */
 #if !CYTHON_COMPILING_IN_LIMITED_API
 #endif
-static double (*__pyx_f_16helper_functions_14cython_helpers_sum_c)(__Pyx_memviewslice); /*proto*/
-static double (*__pyx_f_16helper_functions_14cython_helpers_norm)(__Pyx_memviewslice); /*proto*/
-static void (*__pyx_f_16helper_functions_14cython_helpers_mult_with_scalar)(__Pyx_memviewslice, double, __Pyx_memviewslice); /*proto*/
-static void (*__pyx_f_16helper_functions_14cython_helpers_add_vectors)(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice); /*proto*/
+static double (*__pyx_f_7bonndit_16helper_functions_14cython_helpers_sum_c)(__Pyx_memviewslice); /*proto*/
+static double (*__pyx_f_7bonndit_16helper_functions_14cython_helpers_norm)(__Pyx_memviewslice); /*proto*/
+static void (*__pyx_f_7bonndit_16helper_functions_14cython_helpers_mult_with_scalar)(__Pyx_memviewslice, double, __Pyx_memviewslice); /*proto*/
+static void (*__pyx_f_7bonndit_16helper_functions_14cython_helpers_add_vectors)(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice); /*proto*/
 
 /* Module declarations from "bonndit.tracking.integration" */
 #if !CYTHON_COMPILING_IN_LIMITED_API
@@ -3831,7 +3831,7 @@ static void __pyx_f_7bonndit_8tracking_11integration_5Euler_integrate(struct __p
  * 		#print("threee ", *self.three_vector)
  */
   if (unlikely(!__pyx_v_self->__pyx_base.three_vector.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 55, __pyx_L1_error)}
-  __pyx_t_1 = __pyx_f_16helper_functions_14cython_helpers_norm(__pyx_v_direction);
+  __pyx_t_1 = __pyx_f_7bonndit_16helper_functions_14cython_helpers_norm(__pyx_v_direction);
   if (unlikely(__pyx_t_1 == 0)) {
     #ifdef WITH_THREAD
     PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
@@ -3842,7 +3842,7 @@ static void __pyx_f_7bonndit_8tracking_11integration_5Euler_integrate(struct __p
     #endif
     __PYX_ERR(1, 55, __pyx_L1_error)
   }
-  __pyx_f_16helper_functions_14cython_helpers_mult_with_scalar(__pyx_v_self->__pyx_base.three_vector, (__pyx_v_self->__pyx_base.stepsize / __pyx_t_1), __pyx_v_direction);
+  __pyx_f_7bonndit_16helper_functions_14cython_helpers_mult_with_scalar(__pyx_v_self->__pyx_base.three_vector, (__pyx_v_self->__pyx_base.stepsize / __pyx_t_1), __pyx_v_direction);
 
   /* "bonndit/tracking/integration.pyx":56
  * 		self.trafo.itow(coordinate)
@@ -3854,7 +3854,7 @@ static void __pyx_f_7bonndit_8tracking_11integration_5Euler_integrate(struct __p
   if (unlikely(!__pyx_v_self->__pyx_base.three_vector.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 56, __pyx_L1_error)}
   if (unlikely(!__pyx_v_self->__pyx_base.trafo->point_itow.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 56, __pyx_L1_error)}
   if (unlikely(!__pyx_v_self->__pyx_base.three_vector.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 56, __pyx_L1_error)}
-  __pyx_f_16helper_functions_14cython_helpers_add_vectors(__pyx_v_self->__pyx_base.three_vector, __pyx_v_self->__pyx_base.trafo->point_itow, __pyx_v_self->__pyx_base.three_vector);
+  __pyx_f_7bonndit_16helper_functions_14cython_helpers_add_vectors(__pyx_v_self->__pyx_base.three_vector, __pyx_v_self->__pyx_base.trafo->point_itow, __pyx_v_self->__pyx_base.three_vector);
 
   /* "bonndit/tracking/integration.pyx":58
  * 		add_vectors(self.three_vector, self.trafo.point_itow, self.three_vector)
@@ -19422,12 +19422,12 @@ static int __Pyx_modinit_function_import_code(void) {
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__Pyx_modinit_function_import_code", 0);
   /*--- Function import code ---*/
-  __pyx_t_1 = PyImport_ImportModule("helper_functions.cython_helpers"); if (!__pyx_t_1) __PYX_ERR(1, 1, __pyx_L1_error)
+  __pyx_t_1 = PyImport_ImportModule("bonndit.helper_functions.cython_helpers"); if (!__pyx_t_1) __PYX_ERR(1, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (__Pyx_ImportFunction(__pyx_t_1, "sum_c", (void (**)(void))&__pyx_f_16helper_functions_14cython_helpers_sum_c, "double (__Pyx_memviewslice)") < 0) __PYX_ERR(1, 1, __pyx_L1_error)
-  if (__Pyx_ImportFunction(__pyx_t_1, "norm", (void (**)(void))&__pyx_f_16helper_functions_14cython_helpers_norm, "double (__Pyx_memviewslice)") < 0) __PYX_ERR(1, 1, __pyx_L1_error)
-  if (__Pyx_ImportFunction(__pyx_t_1, "mult_with_scalar", (void (**)(void))&__pyx_f_16helper_functions_14cython_helpers_mult_with_scalar, "void (__Pyx_memviewslice, double, __Pyx_memviewslice)") < 0) __PYX_ERR(1, 1, __pyx_L1_error)
-  if (__Pyx_ImportFunction(__pyx_t_1, "add_vectors", (void (**)(void))&__pyx_f_16helper_functions_14cython_helpers_add_vectors, "void (__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice)") < 0) __PYX_ERR(1, 1, __pyx_L1_error)
+  if (__Pyx_ImportFunction(__pyx_t_1, "sum_c", (void (**)(void))&__pyx_f_7bonndit_16helper_functions_14cython_helpers_sum_c, "double (__Pyx_memviewslice)") < 0) __PYX_ERR(1, 1, __pyx_L1_error)
+  if (__Pyx_ImportFunction(__pyx_t_1, "norm", (void (**)(void))&__pyx_f_7bonndit_16helper_functions_14cython_helpers_norm, "double (__Pyx_memviewslice)") < 0) __PYX_ERR(1, 1, __pyx_L1_error)
+  if (__Pyx_ImportFunction(__pyx_t_1, "mult_with_scalar", (void (**)(void))&__pyx_f_7bonndit_16helper_functions_14cython_helpers_mult_with_scalar, "void (__Pyx_memviewslice, double, __Pyx_memviewslice)") < 0) __PYX_ERR(1, 1, __pyx_L1_error)
+  if (__Pyx_ImportFunction(__pyx_t_1, "add_vectors", (void (**)(void))&__pyx_f_7bonndit_16helper_functions_14cython_helpers_add_vectors, "void (__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice)") < 0) __PYX_ERR(1, 1, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_RefNannyFinishContext();
   return 0;
@@ -19710,7 +19710,7 @@ if (!__Pyx_RefNanny) {
  * #cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, warn.unused_results=True
  * 
  * import numpy as np             # <<<<<<<<<<<<<<
- * from helper_functions.cython_helpers cimport norm, add_vectors, mult_with_scalar, sum_c
+ * from bonndit.helper_functions.cython_helpers cimport norm, add_vectors, mult_with_scalar, sum_c
  * from .ItoW cimport Trafo
  */
   __pyx_t_1 = __Pyx_ImportDottedModule(__pyx_n_s_numpy, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)

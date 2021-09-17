@@ -9,10 +9,11 @@ from .ItoW cimport Trafo
 from .stopping cimport Validator
 from .integration cimport Euler, Integration
 from .interpolation cimport FACT, Trilinear, Interpolation
-from helper_functions.cython_helpers cimport mult_with_scalar, sum_c, \
-    set_zero_matrix, set_zero_vector, sub_vectors, \
+from bonndit.helper_functions.cython_helpers cimport mult_with_scalar, \
+    sum_c, set_zero_matrix, set_zero_vector, sub_vectors, \
     angle_deg, norm
 import numpy as np
+from tqdm import tqdm
 
 
 cdef void tracking(
@@ -80,26 +81,24 @@ cdef void forward_tracking(
     for k in range(max_track_length - 1):
         # validate indey and wm density.
         if validator.index_checker(paths[k]):
-            with gil:
-                print('Run out of shape')
+        # with gil:
+        # print('Run out of shape')
             break
         if validator.wm_checker(paths[k]):
-            with gil:
-                print('WM density to low')
+        # with gil:
+        # print('WM density to low')
             break
         # find matching directions
         if sum_c(integrate.old_dir) == 0:
-            with gil:
-                print(
-                    k,
-                    'old direction not valid. Actually this should not happen.')
+        # with gil:
+        # print(k ,'old direction not valid. Actually this should not happen.')
             break
         interpolate.interpolate(paths[k], integrate.old_dir)
 
         # Check next step is valid. If it is: Integrate. else break
         if validator.next_point_checker(interpolate.next_dir):
-            with gil:
-                print('Next point not valid')
+        # with gil:
+        # print('Next point not valid')
             break
 
         integrate.integrate(interpolate.next_dir, paths[k])
@@ -111,8 +110,8 @@ cdef void forward_tracking(
         if validator.curvature_checker(
             paths[k - min(30, k):k + 1],
             min(30, k) - 1, features[k:k + 1, 1]):
-            with gil:
-                print('Curvature to big')
+        # with gil:
+        # print('Curvature to big')
             validator.set_path_zero(paths, features)
             return
         integrate.old_dir = interpolate.next_dir
@@ -129,7 +128,7 @@ cpdef tracking_all(
     double[:, :] seeds, integration,
     interpolation, prob, stepsize, double variance, int samples,
     int max_track_length, double wmmin,
-    double expectation
+    double expectation, verbose, logging
 ):
     """
 	@param vector_field: Array (4,3,x,y,z)
@@ -167,7 +166,7 @@ cpdef tracking_all(
     cdef Trafo trafo
     cdef Probabilities directionGetter
     cdef Validator validator
-    print(np.array(wm_mask.shape, dtype=np.intc))
+
     validator = Validator(
         wm_mask, np.array(wm_mask.shape, dtype=np.intc),
         wmmin)
@@ -181,7 +180,7 @@ cpdef tracking_all(
     elif prob == "ScalarNew":
         directionGetter = ScalarNew(expectation, variance)
     else:
-        print('Gaussian or Laplacian or Scalar are available so far. ')
+        logging.error('Gaussian or Laplacian or Scalar are available so far. ')
         return 0
 
     trafo = < Trafo > Trafo(np.float64(meta['space directions']),
@@ -191,7 +190,7 @@ cpdef tracking_all(
         integrate = Euler(meta['space directions'], meta['space origin'],
             trafo, float(stepsize))
     else:
-        print('Only Euler is available so far. Hence set Euler as argument.')
+        logging.error('Only Euler is available so far. Hence set Euler as argument.')
         return 0
 
     cdef int[:] dim = np.array(vector_field.shape, dtype=np.int32)
@@ -201,7 +200,7 @@ cpdef tracking_all(
         interpolate = Trilinear(vector_field, dim[2:5], trafo, directionGetter)
     # Integration options euler and FACT
     else:
-        print('FACT or Triliniear are available so far.')
+        logging.error('FACT or Triliniear are available so far.')
         return 0
     cdef int i, j, k, m = seeds.shape[0]
     # Array to save Polygons
@@ -220,7 +219,7 @@ cpdef tracking_all(
     tracks = []
     tracks_len = []
 
-    for i in range(m):
+    for i in tqdm(range(m), disable=not verbose):
         # Convert seedpoint
         trafo.wtoi(seeds[i][:3])
         for j in range(samples):

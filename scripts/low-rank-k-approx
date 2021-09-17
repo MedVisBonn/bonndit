@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import logging
+import os
 import argparse
 import numpy as np
 from bonndit.directions.fodfapprox import approx_all_spherical
@@ -10,9 +12,9 @@ import nrrd
 def main():
     parser = argparse.ArgumentParser(
         description='This script performs a low-rank approximation of fODFs '
-                    'that are given in a higher-order tensor format, as described in '
-                    '"Estimating Crossing Fibers: A Tensor Decomposition Approach" '
-                    'by Schultz/Seidel (2008).')
+        'that are given in a higher-order tensor format, as described in '
+        '"Estimating Crossing Fibers: A Tensor Decomposition Approach" '
+        'by Schultz/Seidel (2008).')
     parser.add_argument(
         'infile',
         help=(
@@ -24,15 +26,39 @@ def main():
         'outfile',
         help='5D output file with the approximation result (4,r,x,y,z)')
     parser.add_argument('-r', help='rank', default=3)
+    parser.add_argument('-v', '--verbose', default=True)
     args = parser.parse_args()
+
+    logging.basicConfig(
+        filename=os.path.join("./", 'mtdeconv.log'),
+        format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+        datefmt='%y-%m-%d %H:%M', level=logging.INFO, filemode='w')
+
+    if args.verbose:
+        # define a Handler which writes INFO messages or higher to the
+        # sys.stderr
+        console = logging.StreamHandler()
+        console.setLevel(logging.INFO)
+        # set a format which is simpler for console use
+        formatter = logging.Formatter(
+            '%(name)-12s: %(levelname)-8s %(message)s')
+        # tell the handler to use this format
+        console.setFormatter(formatter)
+        # add the handler to the root logger
+        logging.getLogger('').addHandler(console)
+
     # Load fODF input file
     fodfs, meta = nrrd.read(args.infile)
 
     if fodfs.shape[0] != 16:
-        raise Exception("fodf has to be 4th order tensor.")
+        logging.error("fodf has to be 4th order tensor.")
+        raise Exception()
     if len(fodfs.shape) != 4:
-        raise Exception(
-            "fodf have to be in 3d space. Hence, fodf has to be 4d.")
+        logging.error("fodf have to be in 3d space. Hence, fodf has to be 4d.")
+        raise Exception()
+
+    logging.info("fODF is loaded and has the correct format")
+    logging.info(f"Creating low-rank {args.r} approximation")
 
     data = fodfs.reshape((fodfs.shape[0], -1))
     NUM = data.shape[1]
@@ -41,7 +67,9 @@ def main():
     approx_all_spherical(
         output, data, fodfs, np.int(0),
         np.float32(0),
-        np.int(args.r))
+        np.int(args.r),
+        args.verbose)
+    logging.info(f"Low-rank {args.r} approximation is calculated")
 
     output = output.reshape((4, int(args.r)) + fodfs.shape[1:])
     newmeta = {k: meta[k] for k in ['space', 'space origin']}
@@ -49,6 +77,7 @@ def main():
     newmeta['space directions'] = np.vstack(
         ([np.nan, np.nan, np.nan], meta['space directions']))
     nrrd.write(args.outfile, np.float32(output), newmeta)
+    logging.info(f"Low-rank {args.r} approximation is saved to {args.outfile}")
 
 
 if __name__ == "__main__":
