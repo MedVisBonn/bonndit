@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 import argparse
 import numpy as np
 from scipy.ndimage import gaussian_filter
@@ -24,9 +27,9 @@ def main():
                                        'at the first intersection with a low density region')
     parser.add_argument('--exclusion', help='Exclusion slice. Can be set via x<10. Multiple regions can be seperated '
                                             'by whitespace.')
-    parser.add_argument('--exclusionq',
+    parser.add_argument('--exclusionc',
                         help='Exclusion region. Can be given via 5<x<10,4<y<20,3<z<30. Multiple regions can be seperated by whitespace.')
-    parser.add_argument('--min_len', help='Min length of a streamline in terms of steps.')
+    parser.add_argument('--minlen', help='Min length of a streamline in terms of steps.')
     args = parser.parse_args()
 
     exclusion = []
@@ -40,12 +43,12 @@ def main():
                 raise Exception('Only >,< is allowed')
             if not is_integer(ex[2]):
                 raise Exception('Only integers are allowed')
-    exclusionq = []
+    exclusionc = []
 
-    if args.exclusionq:
-        exclusionq = re.split(' ', args.exclusionq)
-        exclusionq = [re.split(',', x) for x in exclusionq]
-        exclusionq = [[re.split('(<|>)', x) for x in exclusionq[index]] for index in range(len(exclusionq))]
+    if args.exclusionc:
+        exclusionc = re.split(' ', args.exclusionc)
+        exclusionc = [re.split(',', x) for x in exclusionc]
+        exclusionc = [[re.split('(<|>)', x) for x in exclusionc[index]] for index in range(len(exclusionc))]
 
     with open(args.i, 'rb') as f:
         try:
@@ -66,19 +69,19 @@ def main():
         endindex[:] = plydata['fiber'].data['endindex']
 
     _, meta = nrrd.read(args.m)
-    trafo = Trafo(np.float64(meta['space directions'][2:]), np.float64(meta['space origin']))
+    trafo = Trafo(np.float64(meta['space directions'][1:]), np.float64(meta['space origin']))
 
 
     # split streamlines according endindex
     streamlines_test = plysplitter(vertices, endindex)
     # Read meta data and convert the streamlines into subsets in index space
     delete = []
-    delete = streamline_filter(streamlines_test, exclusionq, exclusion, trafo)
+    delete = streamline_filter(streamlines_test, exclusionc, exclusion, trafo)
 
     streamlines_test = np.array(streamlines_test, dtype=object)[delete]
     endindexes = [streamlines_test[i].shape[0] for i in range(len(streamlines_test))]
-    if args.min_len:
-        streamlines_test = streamlines_test[np.array(endindexes) > int(args.min_len)]
+    if args.minlen:
+        streamlines_test = streamlines_test[np.array(endindexes) > int(args.minlen)]
 
     # First mask
     mask = np.zeros(meta['sizes'][2:])

@@ -2,6 +2,10 @@
 History
 =======
 
+0.2.0 (2021-09-17)
+------------------
+* Included the missing steps of the whole tracking pipeline.
+
 0.1.2 (2019-02-26)
 -------------------
 

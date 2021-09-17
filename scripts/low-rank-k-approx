@@ -17,7 +17,7 @@ def main():
 
     parser.add_argument('outfile',
                         help='5D output file with the approximation result (4,r,x,y,z)')
-    parser.add_argument('-r', help='rank')
+    parser.add_argument('-r', help='rank', default=3)
     args = parser.parse_args()
     # Load fODF input file
     fodfs, meta = nrrd.read(args.infile)

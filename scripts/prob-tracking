@@ -1,3 +1,7 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+
 from bonndit.tracking.tracking_prob import tracking_all
 import argparse
 import nrrd
@@ -13,18 +17,18 @@ def main():
                     'Reducing Model Uncertainty in Crossing Fiber Tractography, Gruen et al. (2021)')
 
     parser.add_argument('-i', help='5D (4,3,x,y,z) Multivectorfield, where the first dimension gives the length '
-                                   'and the direction of the vector, the second dimension denots different directions')
+                                   'and the direction of the vector, the second dimension denots different directions', required=True)
 
-    parser.add_argument('-wm', help='WM Mask')
-    parser.add_argument('-wmmin', help='Minimum WM density befor tracking stops')
+    parser.add_argument('-wm', help='WM Mask', required=True)
+    parser.add_argument('-wmmin', help='Minimum WM density befor tracking stops', default=0.15)
     parser.add_argument('-s', help='Seedspointfile: Each row denots a seedpoint 3 columns an initial direction can '
                                    'also be given as 3 additional columns. Columns should be seperated by whitespace.')
-    parser.add_argument('-sw', help='Stepwidth for Eulerintegration')
+    parser.add_argument('-sw', help='Stepwidth for Eulerintegration', default=0.9)
     parser.add_argument('-o', help='Outfile is in ply format.')
-    parser.add_argument('-mtlength', help='Maximum track steps.')
-    parser.add_argument('-samples', help='Samples per seed.')
-    parser.add_argument('-var', help='Variance.')
-    parser.add_argument('-exp', help='Expectation')
+    parser.add_argument('-mtlength', help='Maximum track steps.', default=300)
+    parser.add_argument('-samples', help='Samples per seed.', default=1)
+    parser.add_argument('-var', help='Variance.', default=1)
+    parser.add_argument('-exp', help='Expectation', default=0)
     parser.add_argument('-interpolation', '--interpolation',
                         help='decide between FACT interpolation and Trilinear interpolation. Default is Trilinear.',
                         default='Trilinear')

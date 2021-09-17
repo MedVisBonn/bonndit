@@ -14,12 +14,12 @@ d =[(x,y,z) for x in c for y in c for z in c if sum(set(x + y+ z)) == 22 == sum(
 cdef int[:,:,:] all_opt = np.array([d[x] for x in range(len(d)) if not [y for y in d[:x] if (d[x][0] in y) and (d[x][1] in y) and (d[x][2] in y)]], dtype=np.int32)
 
 cdef void mean_calc(double[:,:] output, double[:,:,:] vectors, double[:] prob) except *:
-	""" 
-	Given the three models with 1,2 and three fibers, this script groups them into three groups where each group 
-	contains at most one fiber out of a model. The groups are build by minimizing the summed average. To generate 
-	this all combinations (18) are tested and the minimum is chosen. Then the weighted average vector out of each 
+	"""
+	Given the three models with 1,2 and three fibers, this script groups them into three groups where each group
+	contains at most one fiber out of a model. The groups are build by minimizing the summed average. To generate
+	this all combinations (18) are tested and the minimum is chosen. Then the weighted average vector out of each
 	group is calculated and returned.
-	
+
 	Parameters
 	----------
 	prob    probability to build the weighted average.
@@ -28,7 +28,7 @@ cdef void mean_calc(double[:,:] output, double[:,:,:] vectors, double[:] prob) e
 
 	Returns
 	-------
-	
+
 
 	"""
 	cdef int i,j,k, l, best_ind = 0
@@ -61,11 +61,12 @@ cdef void mean_calc(double[:,:] output, double[:,:,:] vectors, double[:] prob) e
 				if all_opt[i, j, k] != 0:
 					angle_sum += fabs(angle_deg(avg_vec, vec[k]))
 		# save index with lowest angle sum.
+		print(angle_sum)
 		if angle_sum < min_var or i == 0:
 			min_var = angle_sum
 			best_ind = i
-
 	# Take the best index and return it.
+	print(best_ind)
 	for i in range(3):
 		l = 0
 		# renom the probabilities to avoid, that the second and third vector are short.
@@ -87,8 +88,6 @@ cdef void mean_calc(double[:,:] output, double[:,:,:] vectors, double[:] prob) e
 		#	                 * abs(vectors[(all_opt[best_ind, i,j] -1)// 3, 0, (all_opt[best_ind,i,j] - 1) % 3]),
 			#	                 vectors[(all_opt[best_ind, i,j] -1)// 3, 1:,(all_opt[best_ind,i,j] - 1) % 3])
 			if sum_c(output[1:, i]) != 0:
-				if angle_deg(output[1:, i], vec[j])<0:
-					print('something went wrong')
 				if fabs(angle_deg(output[1:, i], vec[j])) > 90:
 					mult_with_scalar(vec[j], -1, vec[j])
 			add_vectors(output[1:, i], output[1:, i], vec[j])
@@ -100,6 +99,8 @@ cdef void mean_calc(double[:,:] output, double[:,:,:] vectors, double[:] prob) e
 		if norm(output[1:,i])  != 0:
 			mult_with_scalar(output[1:, i], 1/norm(output[1:,i]) , output[1:, i])
 
+		print(np.asarray(output[:,i]))
+	print(np.asarray(vectors))
 
 
 

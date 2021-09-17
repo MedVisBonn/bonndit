@@ -1,3 +1,7 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+
 import argparse
 import nrrd
 import numpy as np
@@ -17,9 +21,9 @@ def main():
                         help='Selection or average')
     parser.add_argument('-o', '--outfile', required=True,
                         help='5D output file with the approximation result (4,r,x,y,z)')
-    parser.add_argument('-x', '--x', default=1,
+    parser.add_argument('-a', '--a', default=1,
                         help='Parameter for Distribution')
-    parser.add_argument('-y', '--y', default=20,
+    parser.add_argument('-b', '--b', default=20,
                         help='Parameter for Distribution')
 
     args = parser.parse_args()
@@ -49,7 +53,7 @@ def main():
     output = np.zeros(rank_3.shape)
     modelling = np.zeros((3,) + rank_3.shape[2:])
 
-    model_avg(output, low_rank, fodf, args.type, modelling, np.float64(args.x), np.float64(args.y))
+    model_avg(output, low_rank, fodf, args.type, modelling, np.float64(args.a), np.float64(args.b))
     output = output.reshape((4, 3) + fodf.shape[1:])
     # update meta file.
     newmeta = {k: meta[k] for k in ['space', 'space origin']}

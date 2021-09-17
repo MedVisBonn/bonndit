@@ -11,7 +11,7 @@
         ],
         "depends": [],
         "include_dirs": [
-            "/usr/local/lib/python3.8/dist-packages/numpy/core/include",
+            "/home/johannes/.local/lib/python3.8/site-packages/numpy/core/include",
             "."
         ],
         "name": "bonndit.tracking.interpolation",
