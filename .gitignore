@@ -105,6 +105,12 @@ ENV/
 # PyCharme
 .idea
 
+#Some dataformats
+*.ini
+*.nrrd
+*.ply
+*.c
+
 # notebook experiments
 notebooks/experiments
 notebooks/experiments/*
