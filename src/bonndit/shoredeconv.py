@@ -16,7 +16,7 @@ import bonndit as bd
 from bonndit.base import ReconstModel, ReconstFit
 from bonndit.constants import LOTS_OF_DIRECTIONS
 from bonndit.gradients import gtab_reorient
-from bonndit.michi import shore, esh, tensor
+from bonndit.utils import shore, esh, tensor
 from bonndit.multivoxel import MultiVoxel, MultiVoxelFitter
 
 

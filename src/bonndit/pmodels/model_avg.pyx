@@ -68,6 +68,7 @@ cpdef void model_avg(
                     fodf[1:, i, j, k],
                     vectorfields[:, :, :, i, j, k])
                 prob[:, i, j, k] = calc_prob(fodf[1:, i, j, k], res, x, y)
+                print(np.asarray(prob[:, i, j, k]))
                 if sum(prob[:, i, j, k]) != 0:
                     mult_with_scalar(
                         prob[:, i, j, k],
@@ -76,6 +77,7 @@ cpdef void model_avg(
                                 2,
                                 i, j, k]),
                         prob[:, i, j, k])
+                print(np.asarray(prob[:, i, j, k]))
                 if model == 'selection':
                     # If selection, take the model with the highest prob. And
                     # write the model vectors to the output

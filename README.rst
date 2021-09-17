@@ -14,7 +14,15 @@ bonndit
         :alt: Documentation Status
 
 
-The bonndit package contains the latest diffusion imaging tools developed at the University of Bonn. This early release focuses on our framework for single and multi tissue deconvolution using constrained higher-order tensor fODFs. In addition, it includes code for fitting the Diffusional Kurtosis (DKI) model. More will follow as time permits.
+The bonndit package contains the latest diffusion imaging tools developed at the University of Bonn.
+Within the package the whole pipeline from the raw data to tractogaphy is covered.
+
+Included is a framework for
+single and multi tissue deconvolution using constrained higher-order tensor fODFs.
+In addition, it includes code for fitting the Diffusional Kurtosis (DKI) model. To extract directions two methods are
+included. On the one hand simple peak extraction and on the other hand a low rank approximation framework.
+Further an average and selection approach is implemented, which reduces the model uncertainty. Within
+these multivectorfields we can apply a probabilistic streamline based tracking approach, which can be filtered afterwards.
 
 
 * Free software: GNU General Public License v3
@@ -33,13 +41,20 @@ Features
 * :code:`stdeconv`: Script to calculate white matter response function and fiber orientation distribution functions (fODFs) from a single shell diffusion signal.
 * :code:`mtdeconv`: Script to calculate multi tissue response functions and fiber orientation distribution functions (fODFs) from multi shell or DSI signals.
 * :code:`kurtosis`: Script to fit a kurtosis model using quadratic cone programming to guarantee a minimum diffusivity. It also calculates kurtosis measures based on the fitted model.
-* All functionality implemented in an object oriented manner.
+* :code:`low-rank-k-approx`: Script to calculate the low rank approx of a symmetric 4th order tensor.
+* :code:`csd-peaks`: Script to extract the peaks from a 8th order tensor.
+* :code:`peak-modelling`: Script to fuse multiple rank k=1,2,3 models into one new model with reduced model uncertainty.
+* :code:`prob-tracking`: Script for probabilistic tracking.
+* :code:`bundle-filtering`: Script to apply various filters to the streamlines.
 * Multiprocessing support implemented in the underlying infrastructure for faster computations
 * Logs written to your output directory
 
 
 Getting Started
----------------
+-------------
+mtdeconv
+~~~~
+
 For calculating the multi-tissue response functions and the fODFs for given data run the following command:
 
 .. code-block:: console
@@ -70,6 +85,82 @@ If you want to see a list of parameters type the following:
 
     $ mtdeconv -h
 
+
+low-rank-k-approx
+~~~~
+For calculating the low rank k approximation of a given 4th order fODF run the following command:
+
+.. code-block:: console
+
+	$ low-rank-k-approx /path/to/your/fODF path/to/save the decomposition
+
+With additional argument
+
+* :code:`-r`: Rank of low rank approximation.
+
+
+peak-modelling
+~~~~~~~
+Build a new model (Selection or Averaging) from given low rank k = 1,2,3 approximations by running the following command:
+
+.. code-block:: console
+
+	$ peak-modelling -f path/to/fODF -i path/to/rank-1 path/to/rank-2 path/to/rank-3 -o path/to/outfile
+
+Further the parameters can be set
+
+* :code:`-t`: Selection or Averaging
+* :code:`-a`: a parameter for Kumaraswarmy PDF
+* :code:`-b`: b parameter for Kumaraswarmy PDF
+
+csd-peaks
+~~~~~~~~
+For extracting maxima from a given 8th order fODF by run the following command:
+
+.. code-block:: console
+
+	$ csd-peaks path/to/fODF path/to/output
+
+If you want to see a list of parameters type the following:
+
+.. code-block:: console
+
+    $ csd-peaks -h
+
+prob-tracking
+~~~~~~
+Within the generated multivectorfields, which are an output of either low-rank-approx, peak-modelling or csd-peaks,
+running the following command
+
+.. code-block:: console
+
+	$ prob-tracking -i path/to/multivectorfield -wm path/to/wmMask -s path/to/seedPointFile -o /path/to/output
+
+generates streamlines for each seed point. The seed point file has to contain 3 or 6 values per row, which denotes
+in the first 3 columns the x,y,z coordinates of the seed point and further an initial direction (in the next 3 columns)
+can be included.
+
+If you want to see a list of parameters type the following:
+
+.. code-block:: console
+
+    $ csd-peaks -h
+
+bundle-filtering
+~~~~
+The generated streamlines can be filtered by running the following command:
+
+.. code-block:: console
+
+	$ bundle-filtering -i path/to/trackingResults -m path/to/fODF -o path/to/outfile
+
+Further several filter parameters can be set:
+
+* :code:`--mask`: Minimal streamline density. Creates a voxel mask and cuts of each streamline at the first intersection with the complement of the mask.
+* :code:`--exclusion`: Filters out all streamlines which intersect with a given plane e.g. x<10. Several planes can be seperated with white spaces.
+* :code:`--exclusionc`: Filters out all streamlines which intersect with a given cube e.g. 10<x<20,5<y90,40<z<100. Several cubes can be seperated by a white space
+* :code:`--minlen`: Filters out all streamlines which not at least minlen long.
+
 Reference
 ----------
 
@@ -80,6 +171,10 @@ If you use our software as part of a scientific project, please cite the corresp
 It was refined and extended in
 
 * Michael Ankele, Lek-Heng Lim, Samuel Groeschel, Thomas Schultz: Versatile, Robust, and Efficient Tractography With Constrained Higher-Order Tensor fODFs. In: Int'l J. of Computer Assisted Radiology and Surgery, 12(8):1257-1270, 2017
+
+The methods implemented in :code:`low-rank-k-approx` was first introduced in
+
+* Thomas Schultz, Hans-Peter Seidel: Estimating Crossing Fibers: A Tensor Decomposition Approach. In: IEEE Transactions on Visualization and Computer Graphics, 14(6):1635-42, 2008
 
 The use of quadratic cone programming to make the kurtosis fit more stable which is implemented in :code:`kurtosis` has been explained in the methods section of
 
@@ -95,6 +190,8 @@ Authors
 * **Thomas Schultz** - *Initial work* - [ThomasSchultz] (https://github.com/ThomasSchultz)
 
 * **Olivier Morelle** - *Code curation, documentation and test* [Oli4] (https://github.com/Oli4)
+
+* **Johannes Grün** - *Extended work* - [JoGruen] (https://github.com/JoGruen)
 
 Credits
 -------

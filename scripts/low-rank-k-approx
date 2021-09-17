@@ -1,43 +1,49 @@
-# !/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 import argparse
 import numpy as np
+from bonndit.directions.fodfapprox import approx_all_spherical
 import nrrd
-import bonndit.directions.csd_peaks as cs
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description='This script evaluates a 8th order tensor fodf on a sphere and selects k maxima with minimum seperation'
-        ' angle and minimum difference to the minimum. Then each peak is refined by a gradient descent. ')
+        description='This script performs a low-rank approximation of fODFs '
+                    'that are given in a higher-order tensor format, as described in '
+                    '"Estimating Crossing Fibers: A Tensor Decomposition Approach" '
+                    'by Schultz/Seidel (2008).')
     parser.add_argument(
         'infile',
         help=(
-            '4D input file containing fODFs in masked 8-order tensor format '
-            '(1+45 fODF coefficients,x,y,z)'
+            '4D input file containing fODFs in masked higher-order tensor '
+            'format (1+#fODF coefficients,x,y,z)'
         ))
 
     parser.add_argument(
         'outfile',
         help='5D output file with the approximation result (4,r,x,y,z)')
-    parser.add_argument('-p', help='peaks')
-    parser.add_argument('-sa', help='Seperation angle in degrees')
-    parser.add_argument('-h', help='minimum height')
+    parser.add_argument('-r', help='rank', default=3)
     args = parser.parse_args()
     # Load fODF input file
     fodfs, meta = nrrd.read(args.infile)
 
-    if fodfs.shape[0] != 46:
+    if fodfs.shape[0] != 16:
         raise Exception("fodf has to be 4th order tensor.")
     if len(fodfs.shape) != 4:
         raise Exception(
             "fodf have to be in 3d space. Hence, fodf has to be 4d.")
 
     data = fodfs.reshape((fodfs.shape[0], -1))
-    output = cs.csd_peaks(data, int(args.p), float(args.sa), float(args.h))
+    NUM = data.shape[1]
+    output = np.zeros((4, int(args.r), NUM))
+    # check format:
+    approx_all_spherical(
+        output, data, fodfs, np.int(0),
+        np.float32(0),
+        np.int(args.r))
 
-    output = output.reshape((4, int(args.p)) + fodfs.shape[1:])
+    output = output.reshape((4, int(args.r)) + fodfs.shape[1:])
     newmeta = {k: meta[k] for k in ['space', 'space origin']}
     newmeta['kinds'] = ['list', 'list', 'space', 'space', 'space']
     newmeta['space directions'] = np.vstack(
