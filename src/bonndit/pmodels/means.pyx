@@ -6,7 +6,7 @@ import numpy as np
 import cython
 from cython.parallel cimport prange, threadid
 import psutil
-from helper_functions.cython_helpers cimport angle_deg, add_vectors, mult_with_scalar, set_zero_vector, norm, sum_c
+from bonndit.helper_functions.cython_helpers cimport angle_deg, add_vectors, mult_with_scalar, set_zero_vector, norm, sum_c
 from libc.math cimport fabs
 
 c = [(x,y,z) for x in (1,2,3) for y in (4,5,0) for z in (7,0)]
@@ -61,12 +61,11 @@ cdef void mean_calc(double[:,:] output, double[:,:,:] vectors, double[:] prob) e
 				if all_opt[i, j, k] != 0:
 					angle_sum += fabs(angle_deg(avg_vec, vec[k]))
 		# save index with lowest angle sum.
-		print(angle_sum)
+
 		if angle_sum < min_var or i == 0:
 			min_var = angle_sum
 			best_ind = i
 	# Take the best index and return it.
-	print(best_ind)
 	for i in range(3):
 		l = 0
 		# renom the probabilities to avoid, that the second and third vector are short.
@@ -98,9 +97,6 @@ cdef void mean_calc(double[:,:] output, double[:,:,:] vectors, double[:] prob) e
 		output[0, i] = to_norm
 		if norm(output[1:,i])  != 0:
 			mult_with_scalar(output[1:, i], 1/norm(output[1:,i]) , output[1:, i])
-
-		print(np.asarray(output[:,i]))
-	print(np.asarray(vectors))
 
 
 

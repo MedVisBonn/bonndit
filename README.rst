@@ -6,9 +6,6 @@ bonndit
 .. image:: https://img.shields.io/pypi/v/bonndit.svg
         :target: https://pypi.python.org/pypi/bonndit
 
-.. image:: https://travis-ci.com/MedVisBonn/bonndit.svg?token=FqhWHkwE6EPeAZDNegqx&branch=master
-    :target: https://travis-ci.com/MedVisBonn/bonndit
-
 .. image:: https://readthedocs.org/projects/bonndit/badge/?version=latest
         :target: https://bonndit.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
@@ -136,9 +133,11 @@ running the following command
 
 	$ prob-tracking -i path/to/multivectorfield -wm path/to/wmMask -s path/to/seedPointFile -o /path/to/output
 
-generates streamlines for each seed point. The seed point file has to contain 3 or 6 values per row, which denotes
-in the first 3 columns the x,y,z coordinates of the seed point and further an initial direction (in the next 3 columns)
-can be included.
+generates streamlines for each seed point.
+The seed point file has to contain 3 or 6 values per row, which denotes
+in the first 3 columns the x,y,z coordinates (in index space) of the seed point
+and further an initial direction (in the next 3 columns)
+can be included. Columns are seperated by a single white space.
 
 If you want to see a list of parameters type the following:
 

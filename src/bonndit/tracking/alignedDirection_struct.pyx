@@ -4,7 +4,7 @@ import Cython
 from libc.math cimport acos, pi, exp, abs, cos, pow
 from libc.stdlib cimport rand, srand, RAND_MAX
 from libc.time cimport time
-from helper_functions.cython_helpers cimport scalar, clip, mult_with_scalar, sum_c, norm
+from bonndit.helper_functions.cython_helpers cimport scalar, clip, mult_with_scalar, sum_c, norm
 import numpy as np
 
 cdef:
@@ -18,7 +18,7 @@ cdef:
 
 	void aligned_direction(Probabilities *self, double* vectors, double* direction) nogil:
 			"""
-			
+
 			"""
 			cdef int i, n = vectors.shape[0]
 			cdef double test_angle, min_angle = 180

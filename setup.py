@@ -98,9 +98,9 @@ ext_modules = [
 ]
 
 requirements = ['nibabel', 'numpy', 'pandas', 'dipy', 'scipy', 'tqdm',
-                'cvxopt', 'mpmath', 'plyfile']
+                'cvxopt', 'mpmath', 'plyfile', 'Cython']
 
-setup_requirements = ['pytest-runner', ]
+setup_requirements = ['pytest-runner', 'cython']
 
 test_requirements = ['pytest', 'nibabel', 'numpy', 'dipy', 'scipy', 'tqdm',
                      'cvxopt', 'mpmath']
@@ -135,7 +135,7 @@ setup(
 			 'scripts/low-rank-k-approx',
 			 'scripts/peak-modelling',
 			 'scripts/prob-tracking',
-			 'scripts/bundle-filter',
+			 'scripts/bundle-filtering',
 			 'scripts/csd-peaks'],
     ext_modules=cythonize(ext_modules),
     # cmdclass={'build_ext': build_ext},
@@ -144,6 +144,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/MedVisBonn/bonndit',
-    version='0.1.2',
+    version='0.2.0',
     zip_safe=False,
 )

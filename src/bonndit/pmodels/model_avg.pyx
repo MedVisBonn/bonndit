@@ -10,6 +10,7 @@ from .means cimport mean_calc
 from libc.math cimport log, exp, pow
 from cython.parallel cimport prange, threadid
 import psutil
+from tqdm import tqdm
 
 
 # Multiplier of the tensor entries.
@@ -22,7 +23,7 @@ cdef int[:] LENGTH =  np.array([1,3,6,10,15], dtype=np.int32)
 
 
 cpdef void model_avg(double[:,:,:,:,:] output, double[:,:,:,:,:,:] vectorfields, double[:,:,:,:] fodf,  str model,
-                     double[:,:,:,:] prob, double x, double y)  except *:
+                     double[:,:,:,:] prob, double x, double y, verbose)  except *:
 	"""
 	Given three multi vectorfields with one, two and three fibers per voxel. This script calculates
 		the weighted average voxelwise. With weights build from the probabilities of the models.
@@ -39,9 +40,11 @@ cpdef void model_avg(double[:,:,:,:,:] output, double[:,:,:,:,:,:] vectorfields,
 	vectorfields:    three multivectorfields.
 	fodf:            fodfs which where used to generate the low rank approx.
 	res:
+	verbose
 
 	Returns
 	-------
+
 
 	"""
 	cdef int i, j, k, index, dim0 = vectorfields.shape[3], dim1 = vectorfields.shape[4], dim2 = vectorfields.shape[5]
@@ -49,7 +52,7 @@ cpdef void model_avg(double[:,:,:,:,:] output, double[:,:,:,:,:,:] vectorfields,
 	cdef double[:,:] res = np.zeros((3,15))
 	cdef double[:,:,:] mean_ary = np.zeros((thread_num, 4,3))
 	# Loop through each voxel
-	for i in range(dim0):
+	for i in tqdm(range(dim0), disable=not verbose):
 		for j in range(dim1):
 			for k in range(dim2):
 				if fodf[0,i,j,k] < 0.5:
@@ -57,11 +60,11 @@ cpdef void model_avg(double[:,:,:,:,:] output, double[:,:,:,:,:,:] vectorfields,
 				# Calculate the probability of each model
 				res = calc_res(fodf[1:,i,j,k], vectorfields[:,:,:,i,j,k])
 				prob[:,i,j,k] = calc_prob(fodf[1:,i,j,k], res,x,y)
-				print(np.asarray(prob[:,i,j,k] ))
+
 				if sum(prob[:, i, j, k]) != 0:
 					mult_with_scalar(prob[:, i, j, k], 1 / (prob[0, i, j, k] + prob[1, i, j, k] + prob[2, i, j, k]),
 					                 prob[:, i, j, k])
-				print(np.asarray(prob[:, i, j, k]))
+
 				if model == 'selection':
 					# If selection, take the model with the highest prob. And write the model vectors to the output
 					index = argmax(prob[:,i,j,k])
@@ -70,8 +73,6 @@ cpdef void model_avg(double[:,:,:,:,:] output, double[:,:,:,:,:,:] vectorfields,
 				elif model == 'averaging':
 					# Build three groups of vectors which are most aligned and multiply them with the weights to get
 					# the ouput
-
-					#print(*prob)
 
 					mean_calc(output[:,:,i,j,k], vectorfields[:,:,:,i, j,k], prob[:,i,j,k])
 				else:

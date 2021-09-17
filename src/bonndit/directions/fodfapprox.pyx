@@ -8,7 +8,7 @@ from bonndit.helper_functions.average cimport approx_initial
 from bonndit.helper_functions.penalty_spherical cimport calc_norm_spherical, refine_average_spherical
 from bonndit.helper_functions.cython_helpers cimport mult_with_scalar, sub_vectors, \
     set_zero_vector, set_zero_matrix, add_vectors
-from bonndit.helper_functions.hota cimport hota_4o3d_sym_eval
+from tqdm import tqdm
 cimport numpy as np
 from cython.parallel cimport threadid
 
@@ -38,7 +38,7 @@ cdef void get_neighbor_for_coor(double[:] nearest_fodf_sum, double[:,:,:,:]  fod
 
 
 
-cpdef approx_all_spherical(double[:,:,:] output, double[:,:] data, double[:,:,:,:]  fodf, int nearest, double nu, int rank):
+cpdef approx_all_spherical(double[:,:,:] output, double[:,:] data, double[:,:,:,:]  fodf, int nearest, double nu, int rank, verbose):
     """ This function calculates the best tensor approximation with spherical approximation as described in xy.
 
     Parameters
@@ -86,7 +86,7 @@ cpdef approx_all_spherical(double[:,:,:] output, double[:,:] data, double[:,:,:,
     cdef double[:,:] three_vector = np.empty([3, thread_num], dtype=DTYPE) , one_vector = np.empty([1, thread_num], dtype=DTYPE)
     cdef double[:,:,:] three_vector_placeholder = np.empty([3,  5, thread_num], dtype=DTYPE)
     #print(1)
-    for i in range(num):
+    for i in tqdm(range(num), disable=not verbose):
         ##get neighbourhood for each coordinate and save in the blocked thread memory.
        # set_zero_matrix(nearest_fodf[:,:, threadid()])
         set_zero_vector(sum_data[:, threadid()])

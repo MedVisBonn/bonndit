@@ -3,9 +3,10 @@
 
 import numpy as np
 import cython
+from tqdm import tqdm
 
 @cython.cdivision(True)
-cdef intersection_finder(double[:,:,:] hast_dict, double[:]x, double[:] y):
+cdef void intersection_finder(double[:,:,:] hast_dict, double[:]x, double[:] y) except *:
 
     """
     This function takes to points x and y and hash_dict. It adds one to all visted grid points.
@@ -78,12 +79,12 @@ cdef intersection_finder(double[:,:,:] hast_dict, double[:]x, double[:] y):
             t_next_z += dt_dz
 
 
-cpdef intersection_dict(double[:,:,:] hash_dict, streamlines_test):
+cpdef intersection_dict(double[:,:,:] hash_dict, streamlines_test, verbose):
     """
     Create intersection dict. coordinates are set as keys of dict and value is the intesection count of streamline
     with grid
     """
-    for streamline in streamlines_test:
+    for streamline in tqdm(streamlines_test, disable=not verbose):
         for i in range(1, streamline.shape[0]):
             if np.all(~np.isnan(streamline[i - 1:i+1])):
                 intersection_finder(hash_dict, np.array(streamline[i - 1], dtype=np.float64),np.array(streamline[i], dtype=np.float64))
@@ -91,13 +92,13 @@ cpdef intersection_dict(double[:,:,:] hash_dict, streamlines_test):
 
 
 
-cpdef plysplitter(vertices, endindex):
+cpdef plysplitter(vertices, endindex, verbose):
     """
     split plydata into streamlines
     """
     streamlines = []
     endindex = np.insert(endindex, 0, 0)
-    for i in range(1, endindex.shape[0]):
+    for i in tqdm(range(1, endindex.shape[0]), disable=not verbose):
         streamlines.append(vertices[int(endindex[i - 1]): int(endindex[i])])
     return streamlines
 
@@ -137,12 +138,12 @@ cdef filter_q(streamline, exclusion):
     return False
 
 
-cpdef streamline_filter(streamlines, exclusionq, exclusion, trafo):
+cpdef streamline_filter(streamlines, exclusionq, exclusion, trafo, verbose):
     """
     Filter out all streamlines which do not fullfill the filter rules
     """
     delete = []
-    for i in range(len(streamlines)):
+    for i in tqdm(range(len(streamlines)), disable=not verbose):
         for j in range(streamlines[i].shape[0]):
             streamlines[i][j][:-1] = trafo.wtoi_p(np.array(streamlines[i][j][:-1], dtype=np.float64))
             if filter_q(streamlines[i][j][:-1], exclusionq) or filter_s(streamlines[i][j][:-1],
@@ -160,12 +161,12 @@ cpdef streamline_itow(streamlines_test, trafo):
             streamlines_test[i][j][:-1] = trafo.itow_p(np.array(streamlines_test[i][j][:-1], dtype=np.float64))
     return streamlines_test
 
-cpdef filter_mask(streamlines_test, mask):
+cpdef filter_mask(streamlines_test, mask, verbose):
     """
     Cut of the streamline at the first intersection with a low density area.
     """
     streamlines = []
-    for stream in streamlines_test:
+    for stream in tqdm(streamlines_test, disable=not verbose):
         for i in range(stream.shape[0]):
             if stream[i][3] == 1:
                 for j, point in enumerate(stream[i:]):

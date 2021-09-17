@@ -234,7 +234,6 @@ def main():
         except FileNotFoundError as e:
             raise FileNotFoundError(e)
 
-    print('test')
     # Deconvolution if 'responseonly' is not set
     if not args.responseonly:
         out, wmout, gmout, csfout = fit.fodf(data, pos=args.constraint,
