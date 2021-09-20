@@ -40,7 +40,7 @@ def main():
 	parser.add_argument('-v', '--verbose', default=True)
 	args = parser.parse_args()
 
-	logging.basicConfig(filename=os.path.join("./", 'mtdeconv.log'),
+	logging.basicConfig(filename=os.path.join("./", 'prob-tracking.log'),
 						format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
 						datefmt='%y-%m-%d %H:%M',
 						level=logging.INFO,

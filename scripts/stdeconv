@@ -202,7 +202,7 @@ def main():
             'Signal deconvolved with single tissue response function.')
 
         fields.save_tensor(os.path.join(outdir, "odf.nrrd"), out,
-                           mask=dti_mask.get_data(), meta=meta)
+                           mask=dti_mask.get_fdata(), meta=meta)
         logging.info('fODFs saved.')
 
         # Save volumes

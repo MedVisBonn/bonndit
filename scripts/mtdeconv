@@ -52,8 +52,8 @@ def main():
 
     flags = parser.add_argument_group('flags (optional)', '')
     flags.add_argument("-h", "--help", action="help", help="Show this help message and exit")
-    flags.add_argument('-v', '--verbose', action='store_true',
-                       help='Activate progress bars and console logging')
+    flags.add_argument('-v', '--verbose',
+                       help='Activate progress bars and console logging', default=True)
     flags.add_argument('-R', '--responseonly', action='store_true',
                        help='Calculate and save only the response functions')
     flags.add_argument('-M', '--tissuemasks', action='store_true',
@@ -243,7 +243,7 @@ def main():
         logging.info('Signal deconvolved with multiple tissue response functions.')
 
         fields.save_tensor(os.path.join(outdir, "fodf.nrrd"), out,
-                           mask=dti_mask.get_data(), meta=meta)
+                           mask=dti_mask.get_fdata(), meta=meta)
         logging.info('fODFs saved.')
 
         # Save volumes
