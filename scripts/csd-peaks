@@ -18,18 +18,18 @@ def main():
 						help='5D output file with the approximation result (4,r,x,y,z)')
 	parser.add_argument('-p', help='Maximum number of peaks per voxel.', default=3)
 	parser.add_argument('-sa', help='Separation angle in degrees between two peaks.', default=15)
-	parser.add_argument('-h', help='Minimum height of peak', default=0)
+	parser.add_argument('-m', help='Minimum height of peak', default=0)
 	args = parser.parse_args()
 	# Load fODF input file
 	fodfs, meta = nrrd.read(args.infile)
-
+	print(fodfs.shape)
 	if fodfs.shape[0] != 46:
 		raise Exception("fodf has to be 8th order tensor.")
 	if len(fodfs.shape) != 4:
 		raise Exception("fodf have to be in 3d space. Hence, fodf has to be 4d.")
 
 	data = fodfs.reshape((fodfs.shape[0], -1))
-	output = cs.csd_peaks(data, int(args.p), float(args.sa), float(args.h))
+	output = cs.csd_peaks(data, int(args.p), float(args.sa), float(args.m))
 
 	output = output.reshape((4, int(args.p)) + fodfs.shape[1:])
 	newmeta = {k: meta[k] for k in ['space', 'space origin']}
