@@ -1,12 +1,10 @@
 #%%cython --annotate
 #cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, warn.unused_results=True
 import numpy as np
-from numpy.linalg import norm
 cimport numpy as cnp
 from tqdm import tqdm
 from libc.math cimport fabs, cos, pi
 from bonndit.helper_functions.hota cimport hota_8o3d_sym_eval
-from bonndit.helper_functions.cython_helpers cimport sum_c
 from bonndit.helper_functions.average cimport refine_rank1_3d
 cimport cython
 import os
