@@ -259,20 +259,19 @@ cpdef csd_peaks(double[:,:] tens, int max_num, float relative_peak_threshold, fl
     """
     sphere = np.load(dirname + '/sphere.npz')
     tens_eval = hota_8o3d_sym_eval(tens[1:].T, sphere['vertices'].T)
-    print(tens_eval.shape)
-    cdef int NUM = tens.shape[1], i, j, k
+    cdef int NUM = tens.shape[1], i, size = tens.shape[0] -1
     cdef double[:,:,:] vs = np.zeros((NUM, max_num, 3))
-    cdef double[:,:] ls = np.zeros((NUM, max_num))
+    cdef double[:,:,:] ls = np.zeros((NUM, max_num, 1))
     cdef double[:] testv = np.zeros((3,),dtype=np.float64), der = np.zeros((3,),dtype=np.float64), \
-        iso = np.zeros(15,dtype=np.float64),  aniso = np.zeros((15,),dtype=np.float64)
+        iso = np.zeros(size,dtype=np.float64),  aniso = np.zeros((size,),dtype=np.float64)
     for i in tqdm(range(NUM)):
         if tens[0, i] == 0:
             continue
-        maxima_finder(ls[i], vs[i], tens[1:,i], tens_eval[i], sphere['edges'], sphere['vertices'], der, testv, iso,
+        maxima_finder(ls[i, :, 0], vs[i], tens[1:,i], tens_eval[i], sphere['edges'], sphere['vertices'], der, testv, iso,
                       aniso, relative_peak_threshold, min_separation_angle, max_num)
 
-    print(aniso.shape, *aniso)
-    return ls, vs
+
+    return np.concatenate((np.asarray(ls), np.asarray(vs)), axis=-1).transpose(2,1,0)
 
 
 @cython.boundscheck(False)

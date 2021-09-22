@@ -16,20 +16,21 @@ import os
 def main():
 	parser = argparse.ArgumentParser(
 		description='Given a bundle various checkings on each fiber can be done. All filters are only applied if they '
-					'are set. Filteroptions are exclusion slices, exclusion regions, min length, min density.')
+					'are set. Filteroptions are exclusion slices, exclusion regions, min length, min density.',
+		formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
 	parser.add_argument('-i', help='Infile should contain a bundle in ply format where the fourth column contains '
-								   'information about the seedpoint.')
-	parser.add_argument('-m', help='Metadata from fodf file.')
-	parser.add_argument('-o', help='Outfile')
-	parser.add_argument('-f', help='Outfile mask')
+								   'information about the seedpoint.', default=argparse.SUPPRESS, required=True)
+	parser.add_argument('-m', help='Metadata from fodf file.', default=argparse.SUPPRESS, required=True)
+	parser.add_argument('-o', help='Outfile', default=argparse.SUPPRESS, required=True)
+	parser.add_argument('-f', help='Outfile mask', default=argparse.SUPPRESS)
 	parser.add_argument('--mask', help='Min Streamline density. Starting from the seed the streamline is terminated '
 									   'at the first intersection with a low density region', default=5)
 	parser.add_argument('--exclusion', help='Exclusion slice. Can be set via x<10. Multiple regions can be seperated '
-											'by whitespace.')
+											'by whitespace.', default=argparse.SUPPRESS)
 	parser.add_argument('--exclusionc',
-						help='Exclusion region. Can be given via 5<x<10,4<y<20,3<z<30. Multiple regions can be seperated by whitespace.')
-	parser.add_argument('--minlen', help='Min length of a streamline in terms of steps.')
+						help='Exclusion region. Can be given via 5<x<10,4<y<20,3<z<30. Multiple regions can be seperated by whitespace.', default=argparse.SUPPRESS)
+	parser.add_argument('--minlen', help='Min length of a streamline in terms of steps.', default=argparse.SUPPRESS)
 	parser.add_argument('-v', '--verbose', default=True)
 
 	args = parser.parse_args()

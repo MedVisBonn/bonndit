@@ -13,12 +13,12 @@ def main():
 		description='This script performs a low-rank approximation of fODFs '
 					'that are given in a higher-order tensor format, as described in '
 					'"Estimating Crossing Fibers: A Tensor Decomposition Approach" '
-					'by Schultz/Seidel (2008).')
+					'by Schultz/Seidel (2008).', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 	parser.add_argument('infile',
-						help='4D input file containing fODFs in masked higher-order tensor format (1+#fODF coefficients,x,y,z)')
+						help='4D input file containing fODFs in masked higher-order tensor format (1+#fODF coefficients,x,y,z)', default=argparse.SUPPRESS)
 
 	parser.add_argument('outfile',
-						help='5D output file with the approximation result (4,r,x,y,z)')
+						help='5D output file with the approximation result (4,r,x,y,z)', default=argparse.SUPPRESS)
 	parser.add_argument('-r', help='rank', default=3)
 	parser.add_argument('-v', '--verbose', default=True)
 	args = parser.parse_args()

@@ -1,4 +1,4 @@
-# !/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 import argparse
@@ -17,12 +17,11 @@ def main():
 	parser.add_argument('outfile',
 						help='5D output file with the approximation result (4,r,x,y,z)')
 	parser.add_argument('-p', help='Maximum number of peaks per voxel.', default=3)
-	parser.add_argument('-sa', help='Separation angle in degrees between two peaks.', default=15)
+	parser.add_argument('-sa', help='Separation angle in degrees between two peaks.', default=0)
 	parser.add_argument('-m', help='Minimum height of peak', default=0)
 	args = parser.parse_args()
 	# Load fODF input file
 	fodfs, meta = nrrd.read(args.infile)
-	print(fodfs.shape)
 	if fodfs.shape[0] != 46:
 		raise Exception("fodf has to be 8th order tensor.")
 	if len(fodfs.shape) != 4:

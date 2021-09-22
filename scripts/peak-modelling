@@ -12,16 +12,17 @@ from bonndit.pmodels.model_avg import model_avg
 def main():
 	parser = argparse.ArgumentParser(
 		description='This script performs a model selection or averaging according to '
-					'Reducing Model Uncertainty in Crossing Fiber Tractography, Gruen et al. (2021)')
+					'Reducing Model Uncertainty in Crossing Fiber Tractography, Gruen et al. (2021)',
+		formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
 	parser.add_argument('-f', '--fodf', required=True,
-						help='4D input file containing fODFs in masked higher-order tensor format (1+#fODF coefficients,x,y,z)')
+						help='4D input file containing fODFs in masked higher-order tensor format (1+#fODF coefficients,x,y,z)', default=argparse.SUPPRESS)
 	parser.add_argument('-i', '--infile', nargs='+', required=True,
-						help='Three infiles containing low rank approx of rank 1 2 3')
+						help='Three infiles containing low rank approx of rank 1 2 3', default=argparse.SUPPRESS)
 	parser.add_argument('-t', '--type',
 						help='selection or averaging', default='averaging')
 	parser.add_argument('-o', '--outfile', required=True,
-						help='5D output file with the approximation result (4,r,x,y,z)')
+						help='5D output file with the approximation result (4,r,x,y,z)', default=argparse.SUPPRESS)
 	parser.add_argument('-a', '--a', default=1,
 						help='Parameter for Distribution')
 	parser.add_argument('-b', '--b', default=20,
