@@ -98,12 +98,12 @@ ext_modules = [
 ]
 
 requirements = ['nibabel', 'numpy', 'pandas', 'dipy', 'scipy', 'tqdm',
-                'cvxopt', 'mpmath', 'plyfile', 'Cython']
+                'cvxopt', 'mpmath', 'plyfile', 'Cython', 'pynrrd']
 
 setup_requirements = ['pytest-runner', 'cython']
 
 test_requirements = ['pytest', 'nibabel', 'numpy', 'dipy', 'scipy', 'tqdm',
-                     'cvxopt', 'mpmath']
+                     'cvxopt', 'mpmath', 'pynrrd']
 print(find_packages('src'))
 setup(
     author="Olivier Morelle",

@@ -15,15 +15,17 @@ path_tree = []
 def main():
     parser = argparse.ArgumentParser(
         description='This script performs tracking along a multi vector field as described in '
-        'Reducing Model Uncertainty in Crossing Fiber Tractography, Gruen et al. (2021)')
+        'Reducing Model Uncertainty in Crossing Fiber Tractography, Gruen et al. (2021)',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument(
         '-i',
         help='5D (4,3,x,y,z) Multivectorfield, where the first dimension gives the length '
         'and the direction of the vector, the second dimension denots different directions',
-        required=True)
+        required=True, default=argparse.SUPPRESS)
 
-    parser.add_argument('-wm', help='WM Mask', required=True)
+    parser.add_argument('-wm', help='WM Mask',
+                        required=True, default=argparse.SUPPRESS)
     parser.add_argument(
         '-wmmin', help='Minimum WM density befor tracking stops', default=0.15)
     parser.add_argument(
@@ -32,26 +34,23 @@ def main():
         'also be given as 3 additional columns. Columns should be seperated by whitespace.')
     parser.add_argument(
         '-sw', help='Stepwidth for Eulerintegration', default=0.9)
-    parser.add_argument('-o', help='Outfile is in ply format.')
+    parser.add_argument('-o', help='Outfile is in ply format.',
+                        default=argparse.SUPPRESS)
     parser.add_argument('-mtlength', help='Maximum track steps.', default=300)
     parser.add_argument('-samples', help='Samples per seed.', default=1)
     parser.add_argument('-var', help='Variance.', default=1)
     parser.add_argument('-exp', help='Expectation', default=0)
     parser.add_argument(
         '-interpolation', '--interpolation',
-        help=(
-            'decide between FACT interpolation and Trilinear interpolation. '
-            'Default is Trilinear.'
-        ),
+        help='decide between FACT interpolation and Trilinear interpolation.',
         default='Trilinear')
     parser.add_argument(
         '-integration', '--integration',
-        help='Decide between Euler integration and Euler integration. '
-        'Default is Euler integration.', default='Euler')
+        help='Decide between Euler integration and Euler integration. ',
+        default='Euler')
     parser.add_argument(
-        '-prob', '--prob',
-        help='Decide between Laplacian and Gaussian. '
-        'Default is Gaussian.', default='Gaussian')
+        '-prob', '--prob', help='Decide between Laplacian and Gaussian. ',
+        default='Gaussian')
     parser.add_argument('-v', '--verbose', default=True)
     args = parser.parse_args()
 
