@@ -30,8 +30,8 @@ def main():
 	parser.add_argument('-o', help='Outfile is in ply format.', default=argparse.SUPPRESS)
 	parser.add_argument('-mtlength', help='Maximum track steps.', default=300)
 	parser.add_argument('-samples', help='Samples per seed.', default=1)
-	parser.add_argument('-var', help='Variance.', default=1)
-	parser.add_argument('-exp', help='Expectation', default=0)
+	parser.add_argument('-var', help='Variance for probabilistic direction selection..', default=1)
+	parser.add_argument('-exp', help='Expectation for probabilistic direction selection.', default=0)
 	parser.add_argument('-interpolation', '--interpolation',
 						help='decide between FACT interpolation and Trilinear interpolation.',
 						default='Trilinear')
