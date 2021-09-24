@@ -164,33 +164,6 @@ Further parameters can be set:
 * :code:`-prob`: Probabilistic direction selection method. So far Gaussian, Laplacian, ScalarOld, ScalarNew are implemented. Default Gaussian.
 * :code:`-v`: Show Commandline output. Default True
 
-For a set of possible directions :math:`v_i` and a given current direction :math:`w`, the next direction is chosen either by
-Gaussian
-
-.. math::
-
-	p \left( v_i \right) = \exp \left( \left( -1/2 \left(  \theta_i - b \right) / \sigma \right)^2 \right)
-
-Laplacian
-
-.. math::
-
-	p \left( v_i \right) = 1/2 \exp \left( - \left| \frac{  \theta_i - b } { \sigma } \right| \right)
-
-ScalarOld
-
-.. math::
-
-	p \left( v_i \right) =  \mathbb{1}_{ \lbrace \theta_i < \frac{1}{3}\pi \rbrace }  \lambda_i \cos \left( \left( \frac{3}{\sqrt{2 \pi}} \theta_i \right)^2 \right)^2
-
-ScalarNew
-
-.. math::
-
-	p \left( v_i \right) =  \mathbb{1}_{ \lbrace \theta_i < \frac{1}{3}\pi \rbrace }  \lambda_i \cos \left( \left( \frac{3}{\sqrt{2 \pi}} \theta_i \right)^2 \right)^2 \exp \left( - \frac{\left( \| v_i \| - \| w \| \right)^2}{\sigma} \right)
-
-where :math:`\theta_i` denotes the angle between :math:`\pm v_i` and :math:`w` (Select :math:`\pm v_i` such that :math:`\theta_i \leq 90`) and :math:`b` is set via :code:`-exp` and :math:`\sigma` is set via :code:`-var`.
-
 bundle-filtering
 ~~~~
 The generated streamlines can be filtered by running the following command:
