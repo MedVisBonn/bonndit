@@ -4,7 +4,7 @@ import cython
 from libc.math cimport acos, pi, exp, fabs, cos, pow, tanh
 from libc.stdlib cimport rand, srand, RAND_MAX
 from libc.time cimport time
-from bonndit.helper_functions.cython_helpers cimport scalar, clip, mult_with_scalar, sum_c, norm
+from bonndit.utilc.cython_helpers cimport scalar, clip, mult_with_scalar, sum_c, norm
 import numpy as np
 
 

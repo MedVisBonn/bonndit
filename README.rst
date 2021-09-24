@@ -109,9 +109,9 @@ Build a new model (Selection or Averaging) from given low rank k = 1,2,3 approxi
 
 Further the parameters can be set
 
-* :code:`-t`: Selection or Averaging. Default Averaging
+* :code:`-t`: selection or averaging. Default averaging
 * :code:`-a`: a parameter for Kumaraswarmy PDF. Default a = 1
-* :code:`-b`: b parameter for Kumaraswarmy PDF. Defualt b = 20
+* :code:`-b`: b parameter for Kumaraswarmy PDF. Default b = 20
 
 The output is a dim (4,3,x,y,z) array. Here the first axis contains in place 0: :math:`\lambda` the volume fraction
 and in the remaining places :math:`\mathbb{v}` the unit direction. If a voxel contains only 1 or 2 directions they are

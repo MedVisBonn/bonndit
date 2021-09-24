@@ -4,9 +4,9 @@
 # import numpy as np
 import numpy as np
 import psutil
-from bonndit.helper_functions.average cimport approx_initial
-from bonndit.helper_functions.penalty_spherical cimport calc_norm_spherical, refine_average_spherical
-from bonndit.helper_functions.cython_helpers cimport mult_with_scalar, sub_vectors, \
+from bonndit.utilc.average cimport approx_initial
+from bonndit.utilc.penalty_spherical cimport calc_norm_spherical, refine_average_spherical
+from bonndit.utilc.cython_helpers cimport mult_with_scalar, sub_vectors, \
     set_zero_vector, set_zero_matrix, add_vectors
 from tqdm import tqdm
 cimport numpy as np

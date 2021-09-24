@@ -6,7 +6,7 @@ import numpy as np
 import cython
 from cython.parallel cimport prange, threadid
 import psutil
-from bonndit.helper_functions.cython_helpers cimport angle_deg, add_vectors, mult_with_scalar, set_zero_vector, norm, sum_c
+from bonndit.utilc.cython_helpers cimport angle_deg, add_vectors, mult_with_scalar, set_zero_vector, norm, sum_c
 from libc.math cimport fabs
 
 c = [(x,y,z) for x in (1,2,3) for y in (4,5,0) for z in (7,0)]
@@ -15,7 +15,7 @@ cdef int[:,:,:] all_opt = np.array([d[x] for x in range(len(d)) if not [y for y 
 
 cdef void mean_calc(double[:,:] output, double[:,:,:] vectors, double[:] prob) except *:
 	"""
-	Given the three models with 1,2 and three fibers, this script groups them into three groups where each group
+	Given the three deconv with 1,2 and three fibers, this script groups them into three groups where each group
 	contains at most one fiber out of a model. The groups are build by minimizing the summed average. To generate
 	this all combinations (18) are tested and the minimum is chosen. Then the weighted average vector out of each
 	group is calculated and returned.

@@ -1,69 +1,69 @@
-bonndit\.michi package
+bonndit\.utils package
 ======================
 
 Submodules
 ----------
 
-bonndit\.michi\.dwmri module
+bonndit\.utils\.dwmri module
 ----------------------------
 
-.. automodule:: bonndit.michi.dwmri
+.. automodule:: bonndit.utils.dwmri
     :members:
     :undoc-members:
     :show-inheritance:
 
-bonndit\.michi\.esh module
+bonndit\.utils\.esh module
 --------------------------
 
-.. automodule:: bonndit.michi.esh
+.. automodule:: bonndit.utils.esh
     :members:
     :undoc-members:
     :show-inheritance:
 
-bonndit\.michi\.fields module
+bonndit\.utils\.fields module
 -----------------------------
 
-.. automodule:: bonndit.michi.fields
+.. automodule:: bonndit.utils.fields
     :members:
     :undoc-members:
     :show-inheritance:
 
-bonndit\.michi\.nrrd module
+bonndit\.utils\.nrrd module
 ----------------------------
 
-.. automodule:: bonndit.michi.nrrd
+.. automodule:: bonndit.utils.nrrd
     :members:
     :undoc-members:
     :show-inheritance:
 
-bonndit\.michi\.shore module
+bonndit\.utils\.shore module
 ----------------------------
 
-.. automodule:: bonndit.michi.shore
+.. automodule:: bonndit.utils.shore
     :members:
     :undoc-members:
     :show-inheritance:
 
-bonndit\.michi\.storage module
+bonndit\.utils\.storage module
 ------------------------------
 
-.. automodule:: bonndit.michi.storage
+.. automodule:: bonndit.utils.storage
     :members:
     :undoc-members:
     :show-inheritance:
 
-bonndit\.michi\.tensor module
+bonndit\.utils\.tensor module
 -----------------------------
 
-.. automodule:: bonndit.michi.tensor
+.. automodule:: bonndit.utils.tensor
     :members:
     :undoc-members:
     :show-inheritance:
 
-bonndit\.michi\.vector module
+bonndit\.utils\.vector module
 -----------------------------
 
-.. automodule:: bonndit.michi.vector
+.. automodule:: bonndit.utils.vector
     :members:
     :undoc-members:
     :show-inheritance:
@@ -72,7 +72,7 @@ bonndit\.michi\.vector module
 Module contents
 ---------------
 
-.. automodule:: bonndit.michi
+.. automodule:: bonndit.utils
     :members:
     :undoc-members:
     :show-inheritance:

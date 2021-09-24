@@ -2,7 +2,7 @@
 #cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True,
 # warn.unused_results=True
 import Cython
-from bonndit.helper_functions.cython_helpers cimport add_pointwise, floor_pointwise_matrix, norm, mult_with_scalar,\
+from bonndit.utilc.cython_helpers cimport add_pointwise, floor_pointwise_matrix, norm, mult_with_scalar,\
 	add_vectors, sub_vectors, scalar, clip, set_zero_vector, set_zero_matrix, sum_c, sum_c_int, set_zero_vector_int, \
 	angle_deg, set_zero_matrix_int
 import numpy as np

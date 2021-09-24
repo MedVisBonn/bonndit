@@ -8,7 +8,7 @@ from .ItoW cimport Trafo
 from .stopping cimport Validator
 from .integration cimport  Euler, Integration
 from .interpolation cimport  FACT, Trilinear, Interpolation
-from bonndit.helper_functions.cython_helpers cimport mult_with_scalar, sum_c, set_zero_matrix, set_zero_vector, sub_vectors, \
+from bonndit.utilc.cython_helpers cimport mult_with_scalar, sum_c, set_zero_matrix, set_zero_vector, sub_vectors, \
 	angle_deg, norm
 import numpy as np
 from tqdm import tqdm

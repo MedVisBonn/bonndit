@@ -16,24 +16,24 @@ with open('HISTORY.rst') as history_file:
 
 ext_modules = [
     Extension(
-        "bonndit.helper_functions.cython_helpers",
-        ["src/bonndit/helper_functions/cython_helpers.pyx"],
+        "bonndit.utilc.cython_helpers",
+        ["src/bonndit/utilc/cython_helpers.pyx"],
     ),
     Extension(
-        "bonndit.helper_functions.hota",
-        ["src/bonndit/helper_functions/hota.pyx"],
+        "bonndit.utilc.hota",
+        ["src/bonndit/utilc/hota.pyx"],
     ),
     Extension(
-        "bonndit.helper_functions.structures",
-        ["src/bonndit/helper_functions/structures.pyx"],
+        "bonndit.utilc.structures",
+        ["src/bonndit/utilc/structures.pyx"],
     ),
     Extension(
-        "bonndit.helper_functions.penalty_spherical",
-        ["src/bonndit/helper_functions/penalty_spherical.pyx"],
+        "bonndit.utilc.penalty_spherical",
+        ["src/bonndit/utilc/penalty_spherical.pyx"],
     ),
     Extension(
-        "bonndit.helper_functions.average",
-        ["src/bonndit/helper_functions/average.pyx"],
+        "bonndit.utilc.average",
+        ["src/bonndit/utilc/average.pyx"],
     ),
     Extension(
         "bonndit.directions.fodfapprox",

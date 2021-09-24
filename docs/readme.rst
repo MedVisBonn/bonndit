@@ -109,9 +109,9 @@ Build a new model (Selection or Averaging) from given low rank k = 1,2,3 approxi
 
 Further the parameters can be set
 
-* :code:`-t`: Selection or Averaging. Default Averaging
+* :code:`-t`: selection or averaging. Default averaging
 * :code:`-a`: a parameter for Kumaraswarmy PDF. Default a = 1
-* :code:`-b`: b parameter for Kumaraswarmy PDF. Defualt b = 20
+* :code:`-b`: b parameter for Kumaraswarmy PDF. Default b = 20
 
 The output is a dim (4,3,x,y,z) array. Here the first axis contains in place 0: :math:`\lambda` the volume fraction
 and in the remaining places :math:`\mathbb{v}` the unit direction. If a voxel contains only 1 or 2 directions they are
@@ -164,7 +164,7 @@ Further parameters can be set:
 * :code:`-prob`: Probabilistic direction selection method. So far Gaussian, Laplacian, ScalarOld, ScalarNew are implemented. Default Gaussian.
 * :code:`-v`: Show Commandline output. Default True
 
-For a set of possible directions :math:`v_i` and a given current direction :math:`w`, the next direction is chosen either by
+For a set of possible directions :math:`v_i` and a given current direction :math:`w`, the probability of the next direction is given eitherr by
 Gaussian
 
 .. math::
@@ -189,7 +189,9 @@ ScalarNew
 
 	p \left( v_i \right) =  \mathbb{1}_{ \lbrace \theta_i < \frac{1}{3}\pi \rbrace }  \lambda_i \cos \left( \left( \frac{3}{\sqrt{2 \pi}} \theta_i \right)^2 \right)^2 \exp \left( - \frac{\left( \| v_i \| - \| w \| \right)^2}{\sigma} \right)
 
-where :math:`\theta_i` denotes the angle between :math:`\pm v_i` and :math:`w` (Select :math:`\pm v_i` such that :math:`\theta_i \leq 90`) and :math:`b` is set via :code:`-exp` and :math:`\sigma` is set via :code:`-var`.
+where :math:`\theta_i` denotes the angle between :math:`\pm v_i` and :math:`w` (Select :math:`\pm v_i` such
+that :math:`\theta_i \leq 90`) and :math:`b` is set via :code:`-exp` and :math:`\sigma` is set via :code:`-var`.
+Then the next direction is chosen by an random draw.
 
 bundle-filtering
 ~~~~

@@ -2,7 +2,7 @@
 #cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, warn.unused_results=True
 
 import numpy as np
-from bonndit.helper_functions.cython_helpers cimport norm, add_vectors, mult_with_scalar, sum_c
+from bonndit.utilc.cython_helpers cimport norm, add_vectors, mult_with_scalar, sum_c
 from .ItoW cimport Trafo
 ###
 # Given a direction and a Coordinate compute the next point

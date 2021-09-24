@@ -2,7 +2,7 @@
 #cython: language_level=3, boundscheck=True, wraparound=True, warn.unused=True, warn.unused_args=True,
 # warn.unused_results=True
 
-from bonndit.helper_functions.cython_helpers cimport matrix_mult, add_vectors, sub_vectors, set_zero_vector
+from bonndit.utilc.cython_helpers cimport matrix_mult, add_vectors, sub_vectors, set_zero_vector
 import numpy as np
 DTYPE = np.float64
 

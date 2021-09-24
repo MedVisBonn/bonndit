@@ -13,11 +13,11 @@ from dipy.reconst.shore import shore_matrix
 from tqdm import tqdm
 
 import bonndit as bd
-from bonndit.base import ReconstModel, ReconstFit
-from bonndit.constants import LOTS_OF_DIRECTIONS
-from bonndit.gradients import gtab_reorient
+from bonndit.deconv.base import ReconstModel, ReconstFit
+from bonndit.utils.constants import LOTS_OF_DIRECTIONS
+from bonndit.utils.gradients import gtab_reorient
 from bonndit.utils import shore, esh, tensor
-from bonndit.multivoxel import MultiVoxel, MultiVoxelFitter
+from bonndit.deconv.multivoxel import MultiVoxel, MultiVoxelFitter
 
 
 class ShoreModel(ReconstModel):
@@ -54,7 +54,7 @@ class ShoreModel(ReconstModel):
     def _fit_helper(self, data, vecs=None, rcond=None, **kwargs):
         """ Fitting is done here
 
-        This function is handed to the MultivoxelFitter, to fit models for
+        This function is handed to the MultivoxelFitter, to fit deconv for
         every voxel.
 
         Parameters
@@ -112,7 +112,7 @@ class ShoreModel(ReconstModel):
         Returns
         -------
         MultiVoxel
-            Object which holds the fitted models for all voxels.
+            Object which holds the fitted deconv for all voxels.
         """
         if vecs is not None:
             per_voxel_data = {'vecs': vecs}

@@ -10,12 +10,13 @@ import bonndit.directions.csd_peaks as cs
 def main():
 	parser = argparse.ArgumentParser(
 		description='This script evaluates a 8th order tensor fodf on a sphere and selects k maxima with minimum seperation'
-					' angle and minimum difference to the minimum. Then each peak is refined by a gradient descent. ')
+					' angle and minimum difference to the minimum. Then each peak is refined by a gradient descent. ',
+					formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 	parser.add_argument('infile',
-						help='4D input file containing fODFs in masked 8-order tensor format (1+45 fODF coefficients,x,y,z)')
+						help='4D input file containing fODFs in masked 8-order tensor format (1+45 fODF coefficients,x,y,z)', default=argparse.SUPPRESS)
 
 	parser.add_argument('outfile',
-						help='5D output file with the approximation result (4,r,x,y,z)')
+						help='5D output file with the approximation result (4,r,x,y,z)', default=argparse.SUPPRESS)
 	parser.add_argument('-r', help='Maximum number of peaks per voxel.', default=3)
 	parser.add_argument('-sa', help='Separation angle in degrees between two peaks.', default=0)
 	parser.add_argument('-m', help='Minimum height of peak', default=0)

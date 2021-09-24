@@ -4,8 +4,8 @@ import numpy as np
 cimport numpy as cnp
 from tqdm import tqdm
 from libc.math cimport fabs, cos, pi
-from bonndit.helper_functions.hota cimport hota_8o3d_sym_eval
-from bonndit.helper_functions.average cimport refine_rank1_3d
+from bonndit.utilc.hota cimport hota_8o3d_sym_eval
+from bonndit.utilc.average cimport refine_rank1_3d
 cimport cython
 import os
 dirname = os.path.dirname(__file__)
