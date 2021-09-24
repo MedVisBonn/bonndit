@@ -276,8 +276,7 @@ cpdef csd_peaks(double[:,:] tens, int max_num, float relative_peak_threshold, fl
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef remove_similar_vertices(double[:, :] vertices, double theta, bint return_mapping=False,
-                             bint return_index=True):
+cdef remove_similar_vertices(double[:, :] vertices, double theta, bint return_mapping=False, bint return_index=True):
     """Remove vertices that are less than `theta` degrees from any other
     Returns vertices that are at least theta degrees from any other vertex.
     Vertex v and -v are considered the same so if v and -v are both in
