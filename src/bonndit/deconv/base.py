@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 class ReconstModel(ABC):
     def __init__(self, gtab):
-        """ An abstract base class for DWI models
+        """ An abstract base class for DWI deconv
 
         Parameters
         ----------
@@ -38,7 +38,7 @@ class ReconstModel(ABC):
 
 class ReconstFit(ABC):
     def __init__(self, coeffs):
-        """ An abstract base class for the fits of DWI models
+        """ An abstract base class for the fits of DWI deconv
 
         Parameters
         ----------

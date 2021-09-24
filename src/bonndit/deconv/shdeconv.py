@@ -13,11 +13,11 @@ from dipy.core.gradients import gradient_table
 from dipy.reconst.shm import real_sph_harm
 from tqdm import tqdm
 
-from bonndit.models.base import ReconstModel, ReconstFit
+from bonndit.deconv.base import ReconstModel, ReconstFit
 from bonndit.utils.constants import LOTS_OF_DIRECTIONS
 from bonndit.utils.gradients import gtab_reorient
-from bonndit.utils import esh, tensor
-from bonndit.utils.multivoxel import MultiVoxel, MultiVoxelFitter
+from bonndit.michi import esh, tensor
+from bonndit.deconv.multivoxel import MultiVoxel, MultiVoxelFitter
 
 
 class SphericalHarmonicsModel(ReconstModel):

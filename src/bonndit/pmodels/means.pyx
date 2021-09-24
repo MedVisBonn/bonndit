@@ -6,7 +6,7 @@ import numpy as np
 import cython
 from cython.parallel cimport prange, threadid
 import psutil
-from bonndit.helper_functions.cython_helpers cimport angle_deg, add_vectors, \
+from bonndit.utilc.cython_helpers cimport angle_deg, add_vectors, \
     mult_with_scalar, set_zero_vector, norm, sum_c
 from libc.math cimport fabs
 
@@ -26,7 +26,7 @@ cdef void mean_calc(
     double[:] prob
 ) except *:
     """
-	Given the three models with 1,2 and three fibers, this script groups them into three groups where each group
+	Given the three deconv with 1,2 and three fibers, this script groups them into three groups where each group
 	contains at most one fiber out of a model. The groups are build by minimizing the summed average. To generate
 	this all combinations (18) are tested and the minimum is chosen. Then the weighted average vector out of each
 	group is calculated and returned.

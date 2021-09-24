@@ -10,7 +10,7 @@ from tqdm import tqdm
 
 
 def multiprocessing_helper(args_kwargs):
-    """ Call the models actual fitting function with all needed parameters
+    """ Call the deconv actual fitting function with all needed parameters
 
     Parameters
     ----------
@@ -33,7 +33,7 @@ def multiprocessing_helper(args_kwargs):
 
 class MultiVoxelFitter(object):
     def __init__(self, model, cpus=1, verbose=False, desc=""):
-        """ A MultiVoxelFitter assists in fitting DWI models on a voxel grid.
+        """ A MultiVoxelFitter assists in fitting DWI deconv on a voxel grid.
 
         Using the MultiVoxelFitter brings multiprocessing and a tqdm progress
         bar to every model implementing it.
@@ -63,7 +63,7 @@ class MultiVoxelFitter(object):
         Parameters
         ----------
         fit_func
-            Reference to the models fit function. (Function doing the actual
+            Reference to the deconv fit function. (Function doing the actual
             work. Is often called _fit_helper in bonndit)
         data : ndarray
             N-dimensional array holding the data for every voxel

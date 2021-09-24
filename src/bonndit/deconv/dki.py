@@ -6,8 +6,8 @@ import mpmath as mpm
 import numpy as np
 import numpy.linalg as la
 
-from bonndit.models.base import ReconstModel, ReconstFit
-from bonndit.utils.multivoxel import MultiVoxel, MultiVoxelFitter
+from bonndit.deconv.base import ReconstModel, ReconstFit
+from bonndit.deconv.multivoxel import MultiVoxel, MultiVoxelFitter
 
 
 class DkiModel(ReconstModel):

@@ -4,9 +4,9 @@
 
 import numpy as np
 import cython
-from bonndit.helper_functions.cython_helpers cimport mult_with_scalar, \
-    argmax, sub_vectors, norm, sum_c
-from bonndit.helper_functions.hota cimport hota_4o3d_sym_eval
+from bonndit.utilc.cython_helpers cimport mult_with_scalar, argmax, \
+    sub_vectors, norm, sum_c
+from bonndit.utilc.hota cimport hota_4o3d_sym_eval
 from .means cimport mean_calc
 from libc.math cimport log, exp, pow
 from cython.parallel cimport prange, threadid
@@ -34,7 +34,7 @@ cpdef void model_avg(
 ) except *:
     """
 	Given three multi vectorfields with one, two and three fibers per voxel. This script calculates
-		the weighted average voxelwise. With weights build from the probabilities of the models.
+		the weighted average voxelwise. With weights build from the probabilities of the deconv.
 	or
 		the chooses the model with the max probability.
 
@@ -169,7 +169,7 @@ cdef double[:, :] calc_res(
     double[:, :, :] vectorfields
 ) except *:
     """
-	Calculates the residual of all models.
+	Calculates the residual of all deconv.
 	Parameters
 	----------
 	fodf
