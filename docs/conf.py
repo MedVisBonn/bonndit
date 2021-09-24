@@ -47,15 +47,15 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'bonndit'
-copyright = u"2019, AG Schultz"
-author = u"Olivier Morelle, Michael Ankele, Thomas Schultz"
+copyright = u"2021, AG Schultz"
+author = u"Olivier Morelle, Michael Ankele, Thomas Schultz, Johannes Grün"
 
 # The version info for the project you're documenting, acts as replacement
 # for |version| and |release|, also used in various other places throughout
 # the built documents.
 #
 
-VERSION = '0.1.2'
+VERSION = '0.2.0'
 # The short X.Y version.
 version = VERSION.rstrip('beta').rstrip('alpha').rstrip('rc')
 # The full version, including alpha/beta/rc tags.

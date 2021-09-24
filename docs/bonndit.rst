@@ -7,7 +7,7 @@ Subpackages
 .. toctree::
 
     bonndit.utils
-	bonndit.deconv
+    bonndit.deconv
 
 
 
