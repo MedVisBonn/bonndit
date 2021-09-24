@@ -45,3 +45,11 @@ bonndit.deconv.shoredeconv module
     :members:
     :undoc-members:
     :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: bonndit.deconv
+    :members:
+    :undoc-members:
+    :show-inheritance:
