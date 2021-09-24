@@ -95,8 +95,8 @@ With additional argument
 
 * :code:`-r`: Rank of low rank approximation. Default = 3
 
-The output is a dim (4,r,x,y,z) array. Here the first axis contains in place 0: :math:`\lambda` the volume fraction
-and in the remaining places :math:`\mathbb{v}` the unit direction.
+The output is a dim (4,r,x,y,z) array. Here the first axis contains in place 0 the volume fraction
+and in the remaining places the unit direction.
 
 
 peak-modelling
@@ -113,8 +113,8 @@ Further the parameters can be set
 * :code:`-a`: a parameter for Kumaraswarmy PDF. Default a = 1
 * :code:`-b`: b parameter for Kumaraswarmy PDF. Default b = 20
 
-The output is a dim (4,3,x,y,z) array. Here the first axis contains in place 0: :math:`\lambda` the volume fraction
-and in the remaining places :math:`\mathbb{v}` the unit direction. If a voxel contains only 1 or 2 directions they are
+The output is a dim (4,3,x,y,z) array. Here the first axis contains in place 0 the volume fraction
+and in the remaining places the unit direction. If a voxel contains only 1 or 2 directions they are
 at the first entries of the second axis.
 
 csd-peaks
@@ -131,8 +131,8 @@ Further parameters can be set
 * :code:`-sa`: Minimum separation angle in degrees. Default 0
 * :code:`-m`: Minimum height of peak. Default 0
 
-The output is a dim (4,r,x,y,z) array. Here the first axis contains in place 0: :math:`\lambda` the volume fraction
-and in the remaining places :math:`\mathbb{v}` the unit direction.
+The output is a dim (4,r,x,y,z) array. Here the first axis contains in place 0 the volume fraction
+and in the remaining places the unit direction.
 
 prob-tracking
 ~~~~~~
@@ -149,7 +149,10 @@ in the first 3 columns the x,y,z coordinates (in index space) of the seed point
 and further an initial direction (in the next 3 columns)
 can be included. Columns are seperated by a single white space.
 
-The output file is in ply format, which contain the vertex coordinates and the length of each streamline.
+The output file is in ply format, which contains two elements. Firstly, vertices:
+contains spatial information about the streamlines, e.g. coordinates in 3D. Further the seed-coordinate is marked by a 1.
+These are saved in the properties: x, y, z, seedpoint.
+Secondly, fiber. Contains the property endindex, which denotes the end index of a streamline.
 
 Further parameters can be set:
 
@@ -171,6 +174,12 @@ The generated streamlines can be filtered by running the following command:
 .. code-block:: console
 
 	$ bundle-filtering -i path/to/trackingResults.ply -m path/to/fODF.nrrd -o path/to/outfile.ply
+
+If this script is applied to self generated ply data, it is important that this ply file contains the following:
+Firstly, vertices:
+contains spatial information about the streamlines, e.g. coordinates in 3D. Further the seed-coordinate is marked by a 1.
+These are saved in the properties: x, y, z, seedpoint.
+Secondly, fiber. Contains the property endindex, which denotes the end index of a streamline.
 
 Further several filter parameters can be set:
 

@@ -193,6 +193,12 @@ where :math:`\theta_i` denotes the angle between :math:`\pm v_i` and :math:`w` (
 that :math:`\theta_i \leq 90`) and :math:`b` is set via :code:`-exp` and :math:`\sigma` is set via :code:`-var`.
 Then the next direction is chosen by an random draw.
 
+The output file is in ply format, which contains two elements. Firstly, vertices:
+contains spatial information about the streamlines, e.g. coordinates in 3D. Further the seed-coordinate is marked by a 1.
+These are saved in the properties: x, y, z, seedpoint.
+Secondly, fiber. Contains the property endindex, which denotes the end index of a streamline.
+
+
 bundle-filtering
 ~~~~
 The generated streamlines can be filtered by running the following command:
@@ -200,6 +206,12 @@ The generated streamlines can be filtered by running the following command:
 .. code-block:: console
 
 	$ bundle-filtering -i path/to/trackingResults.ply -m path/to/fODF.nrrd -o path/to/outfile.ply
+
+If this script is applied to self generated ply data, it is important that this ply file contains the following:
+Firstly, vertices:
+contains spatial information about the streamlines, e.g. coordinates in 3D. Further the seed-coordinate is marked by a 1.
+These are saved in the properties: x, y, z, seedpoint.
+Secondly, fiber. Contains the property endindex, which denotes the end index of a streamline.
 
 Further several filter parameters can be set:
 
