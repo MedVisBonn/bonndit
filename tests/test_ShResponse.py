@@ -21,7 +21,7 @@ bvals, bvecs = read_bvals_bvecs(os.path.join(DATA_DIR, "bvals"),
                                 os.path.join(DATA_DIR, "bvecs"))
 
 bval_indices = bvals <= 700
-new_data = data.get_data()[:, :, :, bval_indices]
+new_data = data.get_fdata()[:, :, :, bval_indices]
 data = nib.Nifti1Image(new_data, data.affine)
 ALLOWED_ERROR = 1e-10
 

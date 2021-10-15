@@ -32,11 +32,12 @@ def main():
         '-s',
         help='Seedspointfile: Each row denots a seedpoint 3 columns an initial direction can '
         'also be given as 3 additional columns. Columns should be seperated by whitespace.',
-        default=argparse.SUPPRESS)
+        required=True, default=argparse.SUPPRESS)
     parser.add_argument(
         '-sw', help='Stepwidth for Eulerintegration', default=0.9)
-    parser.add_argument('-o', help='Outfile is in ply format.',
-                        default=argparse.SUPPRESS)
+    parser.add_argument(
+        '-o', help='Outfile is in ply format.', required=True,
+        default=argparse.SUPPRESS)
     parser.add_argument('-mtlength', help='Maximum track steps.', default=300)
     parser.add_argument('-samples', help='Samples per seed.', default=1)
     parser.add_argument(
@@ -134,7 +135,7 @@ def main():
                    ('z', 'f4'),
                    ('seedpoint', 'f4'),
                    ('angle', 'f4')]),
-        -'vertices', comments=[])
+        'vertices', comments=[])
     endindex = PlyElement.describe(
         np.array(paths_len, dtype=[('endindex', 'i4')]), 'fiber')
     PlyData([tracks, endindex]).write(args.o)

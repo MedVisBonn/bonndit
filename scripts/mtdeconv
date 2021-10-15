@@ -15,7 +15,8 @@ from dipy.io import read_bvals_bvecs
 
 import bonndit as bd
 from bonndit.deconv.shoredeconv import fa_guided_mask
-from bonndit.utils.io import fsl_vectors_to_worldspace, fsl_gtab_to_worldspace
+from bonndit.utils.io import fsl_vectors_to_worldspace, \
+    fsl_gtab_to_worldspace, metadata_checker
 from bonndit.utils import dwmri, fields
 
 
@@ -56,6 +57,12 @@ def main():
     inputfiles.add_argument('-m', '--brainmask', default='mask.nii.gz',
                             help='Brain mask (default: mask.nii.gz)')
     inputfiles.add_argument(
+        '-Ma', '--masks', default='fast_first.nii.gz',
+        help=(
+            'Tissue masks containing white matter, gray matter and csf '
+            'mask. (default: fast_first.nii.gz)'
+        ))
+    inputfiles.add_argument(
         '-W', '--wmmask', default='fast_pve_2.nii.gz',
         help='White matter mask (default: fast_pve_2.nii.gz)')
     inputfiles.add_argument(
@@ -64,6 +71,11 @@ def main():
     inputfiles.add_argument(
         '-F', '--csfmask', default='fast_pve_0.nii.gz',
         help='Cerebrospinal fluid mask (default: fast_pve_0.nii.gz)')
+    inputfiles.add_argument(
+        '-E', '--response', default='response.npz',
+        help='Precalculated response function. '
+        'If not exist it will be calculated.'
+        '(default: response.npz)')
 
     flags = parser.add_argument_group('flags (optional)', '')
     flags.add_argument("-h", "--help", action="help",
@@ -162,7 +174,7 @@ def main():
     # If deconvolution is wanted check whether a response exists already
     response_available = False
     if not args.responseonly:
-        if os.path.exists(os.path.join(outdir, 'response.npz')):
+        if os.path.exists(os.path.join(outdir, args.response)):
             response_available = True
 
     # If response available load data and response
@@ -177,7 +189,7 @@ def main():
 
         # Load existing response
         fit = bd.ShoreMultiTissueResponse.load(
-            os.path.join(outdir, "response.npz"))
+            os.path.join(outdir, args.response))
         logging.info('Existing response functions loaded.')
 
         # Load DTI mask
@@ -190,10 +202,19 @@ def main():
 
     # If response not available load files and compute response
     else:
+        # check if fast+first output is available. Otherwise fall back to fast
+        # only!
+        all_files = [
+            args.brainmask, args.dtifa,
+            args.dtivecs, 'bvals', 'bvecs', ]
+        filepath = os.path.join(indir, args.masks)
+        if not os.path.isfile(filepath):
+            ff = 0
+            all_files += [args.csfmask, args.gmmask, args.wmmask]
+        else:
+            ff = 1
         # Test whether all required files are available
-        for f in [
-                args.brainmask, args.dtifa, args.csfmask, args.gmmask,
-                args.wmmask, args.dtivecs, 'bvals', 'bvecs', ]:
+        for f in all_files:
             filepath = os.path.join(indir, f)
             if not os.path.isfile(filepath):
                 msg = 'No such file or directory: "{}"'.format(filepath)
@@ -205,17 +226,35 @@ def main():
 
         # Load DTI mask
         dti_mask = bd.load(os.path.join(indir, args.brainmask))
+        # Load tissue segmentation masks. If fast+first is available take it
+        # otherwise fall back to fast
+        if ff:
+            masks = bd.load(os.path.join(indir, args.masks))
+            csf_mask = nib.Nifti1Image(
+                masks.get_fdata()[:, :, :, 3],
+                masks.affine)
+            gm_mask = nib.Nifti1Image(
+                masks.get_fdata()[:, :, :, 0],
+                masks.affine)
+            wm_mask = nib.Nifti1Image(
+                masks.get_fdata()[:, :, :, 2],
+                masks.affine)
 
-        # Load tissue segmentation masks
-        csf_mask = bd.load(os.path.join(indir, args.csfmask))
-        gm_mask = bd.load(os.path.join(indir, args.gmmask))
-        wm_mask = bd.load(os.path.join(indir, args.wmmask))
+        else:
+            csf_mask = bd.load(os.path.join(indir, args.csfmask))
+            gm_mask = bd.load(os.path.join(indir, args.gmmask))
+            wm_mask = bd.load(os.path.join(indir, args.wmmask))
 
         # Load first eigenvectors of a precalculated diffusion tensor
         dti_vecs = bd.load(os.path.join(indir, args.dtivecs))
 
         # Load diffusion weighted data
         data = bd.load(os.path.join(indir, args.data))
+        # Check if metadata of all input matches the metadata of data
+        af = data.affine
+        dti_fa, dti_mask, csf_mask, gm_mask, wm_mask, \
+            dti_vecs = metadata_checker(
+                af, dti_fa, dti_mask, csf_mask, gm_mask, wm_mask, dti_vecs)
 
         # Load bvals and bvecs and initialize a GradientTable object
         bvals, bvecs = read_bvals_bvecs(os.path.join(indir, "bvals"),
