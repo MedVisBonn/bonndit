@@ -137,7 +137,7 @@ setup(
 			 'scripts/prob-tracking',
 			 'scripts/bundle-filtering',
 			 'scripts/csd-peaks',
-			 'scripts/pre-pipe'],
+			 'scripts/data2fodf'],
     ext_modules=cythonize(ext_modules),
     # cmdclass={'build_ext': build_ext},
     package_data={"": ['*.pxd', '*.npz']},
