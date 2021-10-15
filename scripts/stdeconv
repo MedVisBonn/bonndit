@@ -15,6 +15,7 @@ from dipy.io import read_bvals_bvecs
 import bonndit as bd
 from bonndit.utils.io import fsl_vectors_to_worldspace, fsl_gtab_to_worldspace
 from bonndit.utils import dwmri, fields
+from bonndit.deconv.shoredeconv import fa_guided_mask
 
 
 def main():
@@ -149,8 +150,7 @@ def main():
 
     logging.info('Input loaded.')
 
-    wm_mask = bonndit.models.shoredeconv.fa_guided_mask(wm_mask, dti_fa, dti_mask,
-                                                        fa_lower_thresh=0.7)
+    wm_mask = fa_guided_mask(wm_mask, dti_fa, dti_mask,fa_lower_thresh=0.7)
     logging.info('Fractional anisotropy based tissue mask created.')
 
     # Flip sign of x-coordinate if affine determinant is positive and rotate to worldspace

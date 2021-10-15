@@ -249,19 +249,22 @@ class ShoreMultiTissueResponseEstimator(object):
 
         """
         # Check if tissue masks give at least a single voxel
-        if np.sum(wm_mask.get_data()) < 1:
+        if np.sum(wm_mask.get_fdata()) < 1:
             raise ValueError('No white matter voxels specified by wm_mask. '
                              'A corresponding response can not be computed.')
-        if np.sum(gm_mask.get_data()) < 1:
+        if np.sum(gm_mask.get_fdata()) < 1:
             raise ValueError('No gray matter voxels specified by gm_mask. '
                              'A corresponding response can not be computed.')
-        if np.sum(csf_mask.get_data()) < 1:
+        if np.sum(csf_mask.get_fdata()) < 1:
             raise ValueError('No CSF voxels specified by csf_mask. '
                              'A corresponding response can not be computed.')
 
         # Calculate wm response
-        wm_voxels = data.get_data()[wm_mask.get_data() == 1]
-        wm_vecs = dti_vecs.get_data()[wm_mask.get_data() == 1]
+        wm_voxels = data.get_fdata()[wm_mask.get_fdata() == 1]
+        wm_vecs = dti_vecs.get_fdata()[wm_mask.get_fdata() == 1]
+      #  scale = np.mean(wm_voxels, axis=0)[0]
+       # for i in range(wm_voxels.shape[0]):
+        #    wm_voxels[i] *= (scale / wm_voxels[i, 0])
         wmshore_coeffs = bd.ShoreModel(self.gtab, self.order, self.zeta,
                                        self.tau).fit(wm_voxels, vecs=wm_vecs,
                                                      verbose=verbose,
@@ -271,7 +274,7 @@ class ShoreMultiTissueResponseEstimator(object):
         signal_wm = self.shore_compress(wmshore_coeff)
 
         # Calculate gm response
-        gm_voxels = data.get_data()[gm_mask.get_data() == 1]
+        gm_voxels = data.get_fdata()[gm_mask.get_fdata() == 1]
         gmshore_coeffs = bd.ShoreModel(self.gtab, self.order, self.zeta,
                                        self.tau).fit(gm_voxels,
                                                      verbose=verbose,
@@ -281,7 +284,7 @@ class ShoreMultiTissueResponseEstimator(object):
         signal_gm = self.shore_compress(gmshore_coeff)
 
         # Calculate csf response
-        csf_voxels = data.get_data()[csf_mask.get_data() == 1]
+        csf_voxels = data.get_fdata()[csf_mask.get_fdata() == 1]
         csfshore_coeffs = bd.ShoreModel(self.gtab, self.order, self.zeta,
                                         self.tau).fit(csf_voxels,
                                                       verbose=verbose,
@@ -572,13 +575,13 @@ class ShoreMultiTissueResponse(object):
         if self.kernel_type != kernel:
             self.set_kernel(kernel)
 
-        data = data.get_data()
+        data = data.get_fdata()
         space = data.shape[:-1]
 
         if not mask:
             mask = np.ones(space)
         else:
-            mask = mask.get_data()
+            mask = mask.get_fdata()
         # Convert integer to boolean mask
         mask = np.ma.make_mask(mask)
 
@@ -858,16 +861,16 @@ def fa_guided_mask(tissue_mask, frac_aniso, brainmask=None,
         raise ValueError(msg)
 
     # Load DTI fa map
-    fa = frac_aniso.get_data()
+    fa = frac_aniso.get_fdata()
 
     # Load DTI mask if available
     if brainmask is None:
         brainmask = np.ones(fa.shape)
     else:
-        brainmask = brainmask.get_data()
+        brainmask = brainmask.get_fdata()
 
     # Create new tissue mask
-    tissue = tissue_mask.get_data()
+    tissue = tissue_mask.get_fdata()
     tissue_by_lower_fa = np.logical_and(tissue > tissue_threshold,
                                         fa_lower_thresh < fa)
 

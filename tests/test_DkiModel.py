@@ -39,6 +39,6 @@ def test_DkiModel_tensor():
     """
 
     model = DkiModel(gtab, constraint=True)
-    fit = model.fit(data.get_data(), mask=dti_mask.get_data())
+    fit = model.fit(data.get_fdata(), mask=dti_mask.get_fdata())
     assert ((reference_fit.coeffs - fit.coeffs) /
             reference_fit.coeffs < ALLOWED_ERROR).all()

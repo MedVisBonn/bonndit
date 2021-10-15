@@ -240,7 +240,7 @@ def load(filename, dtype=None):
         return data, meta
     elif is_nifti(filename):
         img = NIB.load(filename)
-        data = img.get_data()
+        data = img.get_fdata()
         data = apply_dtype(data, dtype)
         affine = img.get_affine()
         meta = affine_to_meta3d(affine)

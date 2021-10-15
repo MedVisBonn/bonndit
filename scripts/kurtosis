@@ -104,7 +104,7 @@ def main():
             raise FileNotFoundError(msg)
 
     # Load mask
-    mask = bd.load(os.path.join(indir, args.brainmask)).get_data()
+    mask = bd.load(os.path.join(indir, args.brainmask)).get_fdata()
 
     # Load diffusion weighted data
     data = bd.load(os.path.join(indir, args.data))
@@ -144,7 +144,7 @@ def main():
 
         else:
             model = bd.DkiModel(gtab)
-            fit = model.fit(data.get_data(), mask, verbose=args.verbose,
+            fit = model.fit(data.get_fdata(), mask, verbose=args.verbose,
                             cpus=args.workers, desc='Estimate DKI tensors')
             fit.save(os.path.join(outdir, "kurtosis_fit.npz"))
             logging.info('Kurtosis fit estimated and saved.')
@@ -152,7 +152,7 @@ def main():
     # Force recalculate the kurtosis_fit if fitonly is specified
     else:
         model = bd.DkiModel(gtab)
-        fit = model.fit(data.get_data(), mask, verbose=args.verbose,
+        fit = model.fit(data.get_fdata(), mask, verbose=args.verbose,
                         cpus=args.workers, desc='Estimate DKI tensors')
         fit.save(os.path.join(outdir, "kurtosis_fit.npz"))
         logging.info('Kurtosis fit recalculated and saved.')

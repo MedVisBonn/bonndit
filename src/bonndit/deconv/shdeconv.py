@@ -16,7 +16,7 @@ from tqdm import tqdm
 from bonndit.deconv.base import ReconstModel, ReconstFit
 from bonndit.utils.constants import LOTS_OF_DIRECTIONS
 from bonndit.utils.gradients import gtab_reorient
-from bonndit.michi import esh, tensor
+from bonndit.utils import esh, tensor
 from bonndit.deconv.multivoxel import MultiVoxel, MultiVoxelFitter
 
 
@@ -170,13 +170,13 @@ class ShResponseEstimator(object):
 
         """
         # Check if tissue masks give at least a single voxel
-        if np.sum(wm_mask.get_data()) < 1:
+        if np.sum(wm_mask.get_fdata()) < 1:
             raise ValueError('No white matter voxels specified by wm_mask. '
                              'A corresponding response can not be computed.')
 
         # Select white matter voxels
-        wm_voxels = data.get_data()[wm_mask.get_data() == 1]
-        wm_vecs = dti_vecs.get_data()[wm_mask.get_data() == 1]
+        wm_voxels = data.get_fdata()[wm_mask.get_fdata() == 1]
+        wm_vecs = dti_vecs.get_fdata()[wm_mask.get_fdata() == 1]
 
         # Calculate white matter response
         wm_sh_coeffs = SphericalHarmonicsModel(
@@ -360,7 +360,7 @@ class ShResponse(object):
 
         # Allows passing in either a NiftiImage or a numpy array
         if type(data)==nibabel.nifti1.Nifti1Image:
-            data = data.get_data()
+            data = data.get_fdata()
         # Remove small bvalues, depends on b0_threshold of gtab
         data = data[..., ~self.gtab.b0s_mask]
         space = data.shape[:-1]
@@ -368,7 +368,7 @@ class ShResponse(object):
         if not mask:
             mask = np.ones(space)
         else:
-            mask = mask.get_data()
+            mask = mask.get_fdata()
         # Convert integer to boolean mask
         mask = np.ma.make_mask(mask)
 

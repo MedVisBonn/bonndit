@@ -11,28 +11,28 @@ from .constants import KURTOSIS_RESULTS_DIR, DKI_TENSOR
 fit = DkiFit.load(DKI_TENSOR)
 
 ref_axial_diffusivity = nib.load(
-    os.path.join(KURTOSIS_RESULTS_DIR, 'da.nii')).get_data()
+    os.path.join(KURTOSIS_RESULTS_DIR, 'da.nii')).get_fdata()
 ref_radial_diffusivity = nib.load(
-    os.path.join(KURTOSIS_RESULTS_DIR, 'dr.nii')).get_data()
+    os.path.join(KURTOSIS_RESULTS_DIR, 'dr.nii')).get_fdata()
 ref_mean_diffusivity = nib.load(
-    os.path.join(KURTOSIS_RESULTS_DIR, 'dm.nii')).get_data()
+    os.path.join(KURTOSIS_RESULTS_DIR, 'dm.nii')).get_fdata()
 
 ref_axial_kurtosis = nib.load(
-    os.path.join(KURTOSIS_RESULTS_DIR, 'ka.nii')).get_data()
+    os.path.join(KURTOSIS_RESULTS_DIR, 'ka.nii')).get_fdata()
 ref_radial_kurtosis = nib.load(
-    os.path.join(KURTOSIS_RESULTS_DIR, 'kr.nii')).get_data()
+    os.path.join(KURTOSIS_RESULTS_DIR, 'kr.nii')).get_fdata()
 ref_mean_kurtosis = nib.load(
-    os.path.join(KURTOSIS_RESULTS_DIR, 'km.nii')).get_data()
+    os.path.join(KURTOSIS_RESULTS_DIR, 'km.nii')).get_fdata()
 
 ref_axial_kappa = nib.load(
-    os.path.join(KURTOSIS_RESULTS_DIR, 'kappaAxial.nii')).get_data()
+    os.path.join(KURTOSIS_RESULTS_DIR, 'kappaAxial.nii')).get_fdata()
 ref_radial_kappa = nib.load(
-    os.path.join(KURTOSIS_RESULTS_DIR, 'kappaRadial.nii')).get_data()
+    os.path.join(KURTOSIS_RESULTS_DIR, 'kappaRadial.nii')).get_fdata()
 ref_diamond_kappa = nib.load(
-    os.path.join(KURTOSIS_RESULTS_DIR, 'kappaDiamond.nii')).get_data()
+    os.path.join(KURTOSIS_RESULTS_DIR, 'kappaDiamond.nii')).get_fdata()
 
 ref_fractional_anisotropy = nib.load(
-    os.path.join(KURTOSIS_RESULTS_DIR, 'fa.nii')).get_data()
+    os.path.join(KURTOSIS_RESULTS_DIR, 'fa.nii')).get_fdata()
 
 ALLOWED_ERROR = 1e-10
 

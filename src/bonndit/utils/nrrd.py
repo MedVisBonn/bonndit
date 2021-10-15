@@ -218,7 +218,7 @@ def _determine_dtype(fields):
 
 def read_data(fields, filehandle, filename=None, seek_past_header=True):
     """Read the NRRD data from a file object into a numpy structure.
-    
+
     If seek_past_header is True, the '\n\n' header-data separator will be
     found, otherwise it is assumed that the current fpos of the filehandle
     object is pointing to the first byte after the '\n\n' line.
@@ -304,7 +304,7 @@ def read_data(fields, filehandle, filename=None, seek_past_header=True):
 def _validate_magic_line(line):
     """For NRRD files, the first four characters are always "NRRD", and
     remaining characters give information about the file format version
-    
+
     >>> _validate_magic_line('NRRD0005')
     >>> _validate_magic_line('NRRD0006')
     Traceback (most recent call last):
@@ -364,7 +364,7 @@ def read_header(nrrdfile):
         # Handle the <key>:=<value> lines first since <value> may contain a
         # ': ' which messes up the <field>: <desc> parsing
         key_value = line.split(':=', 1)
-        if len(key_value) is 2:
+        if len(key_value) == 2:
             key, value = key_value
             # TODO: escape \\ and \n ??
             # value.replace(r'\\\\', r'\\').replace(r'\n', '\n')
@@ -373,7 +373,7 @@ def read_header(nrrdfile):
 
         # Handle the "<field>: <desc>" lines.
         field_desc = line.split(': ', 1)
-        if len(field_desc) is 2:
+        if len(field_desc) == 2:
             field, desc = field_desc
             ## preceeding and suffixing white space should be ignored.
             field = field.rstrip().lstrip()

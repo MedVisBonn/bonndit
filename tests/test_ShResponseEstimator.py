@@ -40,7 +40,7 @@ bval_indices = bvals <= 700
 bvals = bvals[bval_indices]
 bvecs = bvecs[bval_indices, :]
 gtab = gradient_table(bvals, bvecs)
-new_data = data.get_data()[:, :, :, bval_indices]
+new_data = data.get_fdata()[:, :, :, bval_indices]
 data = nib.Nifti1Image(new_data, data.affine)
 
 # Rotation to worldspace and sign flip according to fsl documentation

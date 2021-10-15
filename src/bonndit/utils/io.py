@@ -43,6 +43,32 @@ def load(filename, **kwargs):
                 msg = 'No such file: "{}"'.format(filename)
                 raise FileNotFoundError(msg)
 
+def metadata_checker(ref, *kwargs):
+	"""
+
+	@param ref:
+	@param kwargs:
+	@return:
+	"""
+	output = []
+	for file in kwargs:
+		if np.sum(np.abs(ref - file.affine)) == 0:
+			output.append(file)
+			continue
+		else:
+			I = np.dot(ref[:3, :3], np.linalg.inv(file.affine[:3, :3]))
+			if not np.all(np.abs(I) == np.identity(3)):
+				msg = 'Input corrupted. File {} is rotated compared to the data file'.format(file.get_filename())
+				raise Exception(msg)
+			if not np.all(np.dot(I, file.affine[:3, 3]) == ref[:3,3]):
+				msg = 'Input corrupted. File {} is shifted compared to the data file'.format(file.get_filename())
+				raise Exception(msg)
+			output.append(nib.Nifti1Image(file.get_fdata()[::I[0,0],::I[1,1],::I[2,2]], ref))
+	return output
+
+
+
+
 
 def vector_norm(vectors):
     """ Calculate the norm for a given vector and return it.
@@ -133,7 +159,7 @@ def fsl_vectors_to_worldspace(vectors):
 
     """
     affine = vectors.affine
-    vecs = vectors.get_data()
+    vecs = vectors.get_fdata()
 
     # Get 3x3 linear transformation part of the affine matrix
     linear = affine[0:3, 0:3]
