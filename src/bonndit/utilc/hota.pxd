@@ -3,6 +3,7 @@
 # warn.unused_results=True
 
 cdef void hota_4o3d_sym_eval(double[:], double, double[:]) nogil
+cdef double hota_4o3d_sym_tsp(double[:], double[:]) nogil
 cdef double hota_4o3d_sym_norm(double[:]) nogil
 cdef hota_8o3d_sym_eval(double[:,:], double[:,:])
 cdef void hota_4o3d_sym_make_iso(double[:], double) nogil

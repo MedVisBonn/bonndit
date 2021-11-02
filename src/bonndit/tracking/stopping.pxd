@@ -9,9 +9,14 @@ cdef class Validator:
 		int[:] shape
 		double[:,:] points
 		double angle
+		double[:,:] inclusion
+		double[:] inclusion_check
+		int inclusion_num
+
 
 	cdef bint wm_checker(self, double[:]) nogil except *
 	cdef bint index_checker(self, double[:]) nogil except *
 	cdef bint curvature_checker(self, double[:,:], int, double[:]) nogil except *
 	cdef bint next_point_checker(self, double[:]) nogil except *
 	cdef void set_path_zero(self, double[:,:], double[:,:]) nogil except *
+	cdef void included(self, double[:] point) nogil except *

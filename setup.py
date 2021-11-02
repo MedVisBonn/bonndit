@@ -32,8 +32,8 @@ ext_modules = [
         ["src/bonndit/utilc/penalty_spherical.pyx"],
     ),
     Extension(
-        "bonndit.utilc.average",
-        ["src/bonndit/utilc/average.pyx"],
+        "bonndit.utilc.lowrank",
+        ["src/bonndit/utilc/lowrank.pyx"],
     ),
     Extension(
         "bonndit.directions.fodfapprox",

@@ -262,9 +262,7 @@ class ShoreMultiTissueResponseEstimator(object):
         # Calculate wm response
         wm_voxels = data.get_fdata()[wm_mask.get_fdata() == 1]
         wm_vecs = dti_vecs.get_fdata()[wm_mask.get_fdata() == 1]
-        scale = np.mean(wm_voxels, axis=0)[0]
-        for i in range(wm_voxels.shape[0]):
-            wm_voxels[i] *= (scale / wm_voxels[i, 0])
+
         wmshore_coeffs = bd.ShoreModel(self.gtab, self.order, self.zeta,
                                        self.tau).fit(wm_voxels, vecs=wm_vecs,
                                                      verbose=verbose,

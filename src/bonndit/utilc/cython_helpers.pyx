@@ -16,9 +16,16 @@ cdef double max_c(double a, double b) nogil:
     else:
         return a
 
+cdef double dist(double[:] v, double[:]  w) nogil:
+    cdef int i, n =v.shape[0]
+    cdef double res = 0
+    for i in range(n):
+        res += pow(v[i] - w[i], 2)
+    return pow(res, 0.5)
+
 cdef double angle_deg(double[:] vec1, double[:] vec2) nogil:
     """ Calculate the angle between two vectors
-    
+
     Parameters
     ----------
     vec1 :

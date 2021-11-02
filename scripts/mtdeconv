@@ -53,8 +53,6 @@ def main():
 	inputfiles.add_argument('-E', '--response', default='response.npz', help='Precalculated response function. '
 																			 'If not exist it will be calculated.'
 																			 '(default: response.npz)')
-	inputfiles.add_argument('-WT', '--wmtissue',
-							help='White matter tissue. If set if will be used instead of mask.')
 
 
 	flags = parser.add_argument_group('flags (optional)', '')
@@ -173,16 +171,10 @@ def main():
 		filepath = os.path.join(indir, args.masks)
 		if not os.path.isfile(filepath):
 			ff = 0
-			all_files += [args.csfmask, args.gmmask]
+			all_files += [args.csfmask, args.gmmask, args.wmmask]
 		else:
 			ff = 1
-		# check if WM Tissue mask is set
-		filepath = os.path.join(indir, args.wmtissue)
-		if not os.path.isfile(filepath):
-			wm = 0
-			all_files += [args.wmmask]
-		else:
-			wm = 1
+
 		# Test whether all required files are available
 		for f in all_files:
 			filepath = os.path.join(indir, f)
@@ -201,20 +193,13 @@ def main():
 			masks = bd.load(os.path.join(indir, args.masks))
 			csf_mask = nib.Nifti1Image(masks.get_fdata()[:, :, :, 3], masks.affine)
 			gm_mask = nib.Nifti1Image(masks.get_fdata()[:, :, :, 0], masks.affine)
-			if wm:
-				wm_mask_ref = nib.Nifti1Image(masks.get_fdata()[:, :, :, 2], masks.affine)
-			else:
-				wm_mask = nib.Nifti1Image(masks.get_fdata()[:, :, :, 2], masks.affine)
+			wm_mask = nib.Nifti1Image(masks.get_fdata()[:, :, :, 2], masks.affine)
 		else:
 			csf_mask = bd.load(os.path.join(indir, args.csfmask))
 			gm_mask = bd.load(os.path.join(indir, args.gmmask))
-			if wm:
-				wm_mask_ref = bd.load(os.path.join(indir, args.wmmask))
-			else:
-				wm_mask = bd.load(os.path.join(indir, args.wmmask))
+			wm_mask = bd.load(os.path.join(indir, args.wmmask))
 
-		if wm:
-			wm_mask = bd.load(os.path.join(indir, args.wmtissue))
+
 
 
 		# Load first eigenvectors of a precalculated diffusion tensor
@@ -234,12 +219,8 @@ def main():
 		logging.info('Input loaded.')
 
 		# Create tissue masks based on fractional anisotropy values
-		if not wm:
-			wm_mask = fa_guided_mask(wm_mask, dti_fa, dti_mask,
-									 tissue_threshold=0.95,
-									 fa_lower_thresh=0.7)
-		else:
-			wm_mask_ref = fa_guided_mask(wm_mask_ref, dti_fa, dti_mask,
+
+		wm_mask = fa_guided_mask(wm_mask, dti_fa, dti_mask,
 									 tissue_threshold=0.95,
 									 fa_lower_thresh=0.7)
 		gm_mask = fa_guided_mask(gm_mask, dti_fa, dti_mask,
@@ -263,7 +244,7 @@ def main():
 
 		model = bd.ShoreMultiTissueResponseEstimator(gtab, args.order,
 													 args.zeta, args.tau)
-		fit = model.fit(data, dti_vecs, wm_mask, gm_mask, csf_mask, wm_mask_ref,
+		fit = model.fit(data, dti_vecs, wm_mask, gm_mask, csf_mask,
 						verbose=args.verbose, cpus=args.workers)
 		fit.save(os.path.join(outdir, "response.npz"))
 		logging.info('Response functions estimated and saved.')

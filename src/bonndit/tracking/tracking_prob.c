@@ -2570,16 +2570,16 @@ static PyTypeObject *__pyx_ptype_7bonndit_8tracking_13interpolation_FACT = 0;
 static PyTypeObject *__pyx_ptype_7bonndit_8tracking_13interpolation_Trilinear = 0;
 #endif
 
-/* Module declarations from "bonndit.helper_functions.cython_helpers" */
+/* Module declarations from "bonndit.utilc.cython_helpers" */
 #if !CYTHON_COMPILING_IN_LIMITED_API
 #endif
-static double (*__pyx_f_7bonndit_16helper_functions_14cython_helpers_angle_deg)(__Pyx_memviewslice, __Pyx_memviewslice); /*proto*/
-static double (*__pyx_f_7bonndit_16helper_functions_14cython_helpers_sum_c)(__Pyx_memviewslice); /*proto*/
-static double (*__pyx_f_7bonndit_16helper_functions_14cython_helpers_norm)(__Pyx_memviewslice); /*proto*/
-static void (*__pyx_f_7bonndit_16helper_functions_14cython_helpers_mult_with_scalar)(__Pyx_memviewslice, double, __Pyx_memviewslice); /*proto*/
-static void (*__pyx_f_7bonndit_16helper_functions_14cython_helpers_sub_vectors)(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice); /*proto*/
-static void (*__pyx_f_7bonndit_16helper_functions_14cython_helpers_set_zero_matrix)(__Pyx_memviewslice); /*proto*/
-static void (*__pyx_f_7bonndit_16helper_functions_14cython_helpers_set_zero_vector)(__Pyx_memviewslice); /*proto*/
+static double (*__pyx_f_7bonndit_5utilc_14cython_helpers_angle_deg)(__Pyx_memviewslice, __Pyx_memviewslice); /*proto*/
+static double (*__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c)(__Pyx_memviewslice); /*proto*/
+static double (*__pyx_f_7bonndit_5utilc_14cython_helpers_norm)(__Pyx_memviewslice); /*proto*/
+static void (*__pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar)(__Pyx_memviewslice, double, __Pyx_memviewslice); /*proto*/
+static void (*__pyx_f_7bonndit_5utilc_14cython_helpers_sub_vectors)(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice); /*proto*/
+static void (*__pyx_f_7bonndit_5utilc_14cython_helpers_set_zero_matrix)(__Pyx_memviewslice); /*proto*/
+static void (*__pyx_f_7bonndit_5utilc_14cython_helpers_set_zero_vector)(__Pyx_memviewslice); /*proto*/
 
 /* Module declarations from "bonndit.tracking.tracking_prob" */
 #if !CYTHON_COMPILING_IN_LIMITED_API
@@ -4186,7 +4186,7 @@ __pyx_t_5.strides[0] = __pyx_v_paths.strides[3];
  */
       if (unlikely(!__pyx_v_integrate->old_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 46, __pyx_L1_error)}
       if (unlikely(!__pyx_v_interpolate->next_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 46, __pyx_L1_error)}
-      __pyx_f_7bonndit_16helper_functions_14cython_helpers_mult_with_scalar(__pyx_v_integrate->old_dir, -1.0, __pyx_v_interpolate->next_dir);
+      __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_integrate->old_dir, -1.0, __pyx_v_interpolate->next_dir);
 
       /* "bonndit/tracking/tracking_prob.pyx":44
  * 		forward_tracking(paths[j,:,0, :], interpolate, integrate, trafo, validator, max_track_length,
@@ -4228,7 +4228,7 @@ __pyx_t_5.strides[0] = __pyx_v_paths.strides[3];
     __PYX_ERR(0, 48, __pyx_L1_error)
 }
 
-__pyx_f_7bonndit_16helper_functions_14cython_helpers_mult_with_scalar(__pyx_v_integrate->old_dir, -1.0, __pyx_t_5);
+__pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_integrate->old_dir, -1.0, __pyx_t_5);
       __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
       __pyx_t_5.memview = NULL; __pyx_t_5.data = NULL;
     }
@@ -4479,7 +4479,7 @@ __pyx_t_6 = ((struct __pyx_vtabstruct_7bonndit_8tracking_8stopping_Validator *)_
  * 		#		print(k ,'old direction not valid. Actually this should not happen.')
  */
     if (unlikely(!__pyx_v_integrate->old_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 80, __pyx_L1_error)}
-    __pyx_t_5 = ((__pyx_f_7bonndit_16helper_functions_14cython_helpers_sum_c(__pyx_v_integrate->old_dir) == 0.0) != 0);
+    __pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_v_integrate->old_dir) == 0.0) != 0);
     if (__pyx_t_5) {
 
       /* "bonndit/tracking/tracking_prob.pyx":83
@@ -6479,7 +6479,7 @@ __pyx_t_4 = __pyx_memoryview_fromslice(__pyx_t_19, 3, (PyObject *(*)(char *)) __
       __Pyx_GOTREF(__pyx_t_4);
       __pyx_t_16 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(__pyx_t_4, PyBUF_WRITABLE); if (unlikely(!__pyx_t_16.memview)) __PYX_ERR(0, 209, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      __pyx_t_7 = ((__pyx_f_7bonndit_16helper_functions_14cython_helpers_sum_c(__pyx_t_16) == 2.0) != 0);
+      __pyx_t_7 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_16) == 2.0) != 0);
       __PYX_XDEC_MEMVIEW(&__pyx_t_16, 1);
       __pyx_t_16.memview = NULL; __pyx_t_16.data = NULL;
       if (__pyx_t_7) {
@@ -22364,15 +22364,15 @@ static int __Pyx_modinit_function_import_code(void) {
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__Pyx_modinit_function_import_code", 0);
   /*--- Function import code ---*/
-  __pyx_t_1 = PyImport_ImportModule("bonndit.helper_functions.cython_helpers"); if (!__pyx_t_1) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_t_1 = PyImport_ImportModule("bonndit.utilc.cython_helpers"); if (!__pyx_t_1) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (__Pyx_ImportFunction(__pyx_t_1, "angle_deg", (void (**)(void))&__pyx_f_7bonndit_16helper_functions_14cython_helpers_angle_deg, "double (__Pyx_memviewslice, __Pyx_memviewslice)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
-  if (__Pyx_ImportFunction(__pyx_t_1, "sum_c", (void (**)(void))&__pyx_f_7bonndit_16helper_functions_14cython_helpers_sum_c, "double (__Pyx_memviewslice)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
-  if (__Pyx_ImportFunction(__pyx_t_1, "norm", (void (**)(void))&__pyx_f_7bonndit_16helper_functions_14cython_helpers_norm, "double (__Pyx_memviewslice)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
-  if (__Pyx_ImportFunction(__pyx_t_1, "mult_with_scalar", (void (**)(void))&__pyx_f_7bonndit_16helper_functions_14cython_helpers_mult_with_scalar, "void (__Pyx_memviewslice, double, __Pyx_memviewslice)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
-  if (__Pyx_ImportFunction(__pyx_t_1, "sub_vectors", (void (**)(void))&__pyx_f_7bonndit_16helper_functions_14cython_helpers_sub_vectors, "void (__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
-  if (__Pyx_ImportFunction(__pyx_t_1, "set_zero_matrix", (void (**)(void))&__pyx_f_7bonndit_16helper_functions_14cython_helpers_set_zero_matrix, "void (__Pyx_memviewslice)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
-  if (__Pyx_ImportFunction(__pyx_t_1, "set_zero_vector", (void (**)(void))&__pyx_f_7bonndit_16helper_functions_14cython_helpers_set_zero_vector, "void (__Pyx_memviewslice)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ImportFunction(__pyx_t_1, "angle_deg", (void (**)(void))&__pyx_f_7bonndit_5utilc_14cython_helpers_angle_deg, "double (__Pyx_memviewslice, __Pyx_memviewslice)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ImportFunction(__pyx_t_1, "sum_c", (void (**)(void))&__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c, "double (__Pyx_memviewslice)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ImportFunction(__pyx_t_1, "norm", (void (**)(void))&__pyx_f_7bonndit_5utilc_14cython_helpers_norm, "double (__Pyx_memviewslice)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ImportFunction(__pyx_t_1, "mult_with_scalar", (void (**)(void))&__pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar, "void (__Pyx_memviewslice, double, __Pyx_memviewslice)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ImportFunction(__pyx_t_1, "sub_vectors", (void (**)(void))&__pyx_f_7bonndit_5utilc_14cython_helpers_sub_vectors, "void (__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ImportFunction(__pyx_t_1, "set_zero_matrix", (void (**)(void))&__pyx_f_7bonndit_5utilc_14cython_helpers_set_zero_matrix, "void (__Pyx_memviewslice)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ImportFunction(__pyx_t_1, "set_zero_vector", (void (**)(void))&__pyx_f_7bonndit_5utilc_14cython_helpers_set_zero_vector, "void (__Pyx_memviewslice)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_RefNannyFinishContext();
   return 0;
@@ -22681,7 +22681,7 @@ if (!__Pyx_RefNanny) {
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /* "bonndit/tracking/tracking_prob.pyx":13
- * from bonndit.helper_functions.cython_helpers cimport mult_with_scalar, sum_c, set_zero_matrix, set_zero_vector, sub_vectors, \
+ * from bonndit.utilc.cython_helpers cimport mult_with_scalar, sum_c, set_zero_matrix, set_zero_vector, sub_vectors, \
  * 	angle_deg, norm
  * import numpy as np             # <<<<<<<<<<<<<<
  * from tqdm import tqdm

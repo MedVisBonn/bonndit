@@ -24,3 +24,4 @@ cdef:
 	int sum_c_int(int[:]) nogil
 	void set_zero_vector_int(int[:]) nogil
 	int argmax(double[:]) nogil
+	double dist(double[:], double[:]) nogil

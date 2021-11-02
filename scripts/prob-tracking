@@ -40,6 +40,7 @@ def main():
 	parser.add_argument('-prob', '--prob', help='Decide between Laplacian and Gaussian. '
 												, default='Gaussian')
 	parser.add_argument('-v', '--verbose', default=True)
+	parser.add_argument('-r', '--restriction', nargs='+')
 	args = parser.parse_args()
 
 	logging.basicConfig(filename=os.path.join("./", 'prob-tracking.log'),
@@ -79,7 +80,11 @@ def main():
 		logging.error("Vectorfield (x,y,z) and wm mask have to have same dimensions.")
 		raise Exception()
 	logging.info("WM Mask loaded")
-
+	restrictions = []
+	for i, file in enumerate(args.restriction):
+		a = open(file)
+		restrictions.extend(np.array([[i, *list(map(float, f.split()))] for f in a]))
+	print(np.array(restrictions))
 	seeds = open(args.s)
 	seeds = [list(map(float, point.split())) for point in seeds]
 	if [1 for seed in seeds if len(seed) not in [3, 6]]:
@@ -92,7 +97,7 @@ def main():
 									args.integration,
 									args.interpolation, args.prob, args.sw, float(args.var),
 									int(args.samples),
-									int(args.mtlength), float(args.wmmin), float(args.exp or 1), args.verbose, logging)
+									int(args.mtlength), float(args.wmmin), float(args.exp or 1), args.verbose, logging, np.array(restrictions))
 
 	paths_len = [sum(paths_len[:i + 1]) for i in range(len(paths_len))]
 

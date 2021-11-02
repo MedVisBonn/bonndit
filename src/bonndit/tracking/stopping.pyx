@@ -2,19 +2,32 @@
 #cython: language_level=3, boundscheck=True, wraparound=True, warn.unused=True, warn.unused_args=True,
 # warn.unused_results=True
 
-from bonndit.utilc.cython_helpers cimport sub_vectors, angle_deg, sum_c, set_zero_matrix
+from bonndit.utilc.cython_helpers cimport sub_vectors, angle_deg, sum_c, set_zero_matrix, dist
 import numpy as np
 DTYPE = np.float64
 
 
 
 cdef class Validator:
-	def __cinit__(self, double[:,:,:] wm_mask, int[:] shape, double min_wm):
+	def __cinit__(self, double[:,:,:] wm_mask, int[:] shape, double min_wm, double[:,:] inclusion, int r):
 		self.min_wm = min_wm
 		self.wm_mask = wm_mask
 		self.shape = shape
 		self.points = np.zeros([2,3])
 		self.angle = 0
+		self.inclusion = inclusion
+		self.inclusion_check = np.zeros(r)
+		self.inclusion_num = r
+
+	cdef void included(self, double[:] point) nogil except *:
+		if sum_c(self.inclusion_check) == self.inclusion_num:
+			return
+		for i in range(self.inclusion.shape[0]):
+		#	with gil:
+		#		print(dist(self.inclusion[i,1:], point))
+			if dist(self.inclusion[i,1:], point) < 3:
+				self.inclusion_check[int(self.inclusion[i,0])] = 1
+				break
 
 	cdef bint wm_checker(self, double[:] point) nogil except *:
 		""" Checks if the wm density is at a given point below a threshold.
@@ -72,3 +85,4 @@ cdef class Validator:
 	cdef void set_path_zero(self, double[:,:] path, double[:,:] features) nogil except *:
 		set_zero_matrix(path)
 		set_zero_matrix(features)
+
