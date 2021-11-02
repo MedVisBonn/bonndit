@@ -2109,13 +2109,13 @@ static PyObject *__pyx_memoryviewslice_convert_item_to_object(struct __pyx_memor
 static PyObject *__pyx_memoryviewslice_assign_item_from_object(struct __pyx_memoryviewslice_obj *__pyx_v_self, char *__pyx_v_itemp, PyObject *__pyx_v_value); /* proto*/
 static PyObject *__pyx_memoryviewslice__get_base(struct __pyx_memoryviewslice_obj *__pyx_v_self); /* proto*/
 
-/* Module declarations from "bonndit.helper_functions.cython_helpers" */
+/* Module declarations from "bonndit.utilc.cython_helpers" */
 #if !CYTHON_COMPILING_IN_LIMITED_API
 #endif
-static void (*__pyx_f_7bonndit_16helper_functions_14cython_helpers_matrix_mult)(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice); /*proto*/
-static void (*__pyx_f_7bonndit_16helper_functions_14cython_helpers_add_vectors)(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice); /*proto*/
-static void (*__pyx_f_7bonndit_16helper_functions_14cython_helpers_sub_vectors)(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice); /*proto*/
-static void (*__pyx_f_7bonndit_16helper_functions_14cython_helpers_set_zero_vector)(__Pyx_memviewslice); /*proto*/
+static void (*__pyx_f_7bonndit_5utilc_14cython_helpers_matrix_mult)(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice); /*proto*/
+static void (*__pyx_f_7bonndit_5utilc_14cython_helpers_add_vectors)(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice); /*proto*/
+static void (*__pyx_f_7bonndit_5utilc_14cython_helpers_sub_vectors)(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice); /*proto*/
+static void (*__pyx_f_7bonndit_5utilc_14cython_helpers_set_zero_vector)(__Pyx_memviewslice); /*proto*/
 
 /* Module declarations from "bonndit.tracking.ItoW" */
 #if !CYTHON_COMPILING_IN_LIMITED_API
@@ -3560,7 +3560,7 @@ static void __pyx_f_7bonndit_8tracking_4ItoW_5Trafo_itow(struct __pyx_obj_7bonnd
  * 		add_vectors(self.point_itow, self.origin, self.point_itow)
  */
   if (unlikely(!__pyx_v_self->point_itow.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 28, __pyx_L1_error)}
-  __pyx_f_7bonndit_16helper_functions_14cython_helpers_set_zero_vector(__pyx_v_self->point_itow);
+  __pyx_f_7bonndit_5utilc_14cython_helpers_set_zero_vector(__pyx_v_self->point_itow);
 
   /* "bonndit/tracking/ItoW.pyx":29
  * 		"""
@@ -3571,7 +3571,7 @@ static void __pyx_f_7bonndit_8tracking_4ItoW_5Trafo_itow(struct __pyx_obj_7bonnd
  */
   if (unlikely(!__pyx_v_self->point_itow.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 29, __pyx_L1_error)}
   if (unlikely(!__pyx_v_self->ItoW.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 29, __pyx_L1_error)}
-  __pyx_f_7bonndit_16helper_functions_14cython_helpers_matrix_mult(__pyx_v_self->point_itow, __pyx_v_self->ItoW, __pyx_v_point);
+  __pyx_f_7bonndit_5utilc_14cython_helpers_matrix_mult(__pyx_v_self->point_itow, __pyx_v_self->ItoW, __pyx_v_point);
 
   /* "bonndit/tracking/ItoW.pyx":30
  * 		set_zero_vector(self.point_itow)
@@ -3583,7 +3583,7 @@ static void __pyx_f_7bonndit_8tracking_4ItoW_5Trafo_itow(struct __pyx_obj_7bonnd
   if (unlikely(!__pyx_v_self->point_itow.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 30, __pyx_L1_error)}
   if (unlikely(!__pyx_v_self->origin.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 30, __pyx_L1_error)}
   if (unlikely(!__pyx_v_self->point_itow.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 30, __pyx_L1_error)}
-  __pyx_f_7bonndit_16helper_functions_14cython_helpers_add_vectors(__pyx_v_self->point_itow, __pyx_v_self->origin, __pyx_v_self->point_itow);
+  __pyx_f_7bonndit_5utilc_14cython_helpers_add_vectors(__pyx_v_self->point_itow, __pyx_v_self->origin, __pyx_v_self->point_itow);
 
   /* "bonndit/tracking/ItoW.pyx":21
  * 
@@ -3630,7 +3630,7 @@ static void __pyx_f_7bonndit_8tracking_4ItoW_5Trafo_wtoi(struct __pyx_obj_7bonnd
  * 		matrix_mult(self.point_wtoi, self.ItoW_inv, self.three_vector)
  */
   if (unlikely(!__pyx_v_self->point_wtoi.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 41, __pyx_L1_error)}
-  __pyx_f_7bonndit_16helper_functions_14cython_helpers_set_zero_vector(__pyx_v_self->point_wtoi);
+  __pyx_f_7bonndit_5utilc_14cython_helpers_set_zero_vector(__pyx_v_self->point_wtoi);
 
   /* "bonndit/tracking/ItoW.pyx":42
  * 		"""
@@ -3641,7 +3641,7 @@ static void __pyx_f_7bonndit_8tracking_4ItoW_5Trafo_wtoi(struct __pyx_obj_7bonnd
  */
   if (unlikely(!__pyx_v_self->three_vector.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 42, __pyx_L1_error)}
   if (unlikely(!__pyx_v_self->origin.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 42, __pyx_L1_error)}
-  __pyx_f_7bonndit_16helper_functions_14cython_helpers_sub_vectors(__pyx_v_self->three_vector, __pyx_v_point, __pyx_v_self->origin);
+  __pyx_f_7bonndit_5utilc_14cython_helpers_sub_vectors(__pyx_v_self->three_vector, __pyx_v_point, __pyx_v_self->origin);
 
   /* "bonndit/tracking/ItoW.pyx":43
  * 		set_zero_vector(self.point_wtoi)
@@ -3653,7 +3653,7 @@ static void __pyx_f_7bonndit_8tracking_4ItoW_5Trafo_wtoi(struct __pyx_obj_7bonnd
   if (unlikely(!__pyx_v_self->point_wtoi.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 43, __pyx_L1_error)}
   if (unlikely(!__pyx_v_self->ItoW_inv.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 43, __pyx_L1_error)}
   if (unlikely(!__pyx_v_self->three_vector.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 43, __pyx_L1_error)}
-  __pyx_f_7bonndit_16helper_functions_14cython_helpers_matrix_mult(__pyx_v_self->point_wtoi, __pyx_v_self->ItoW_inv, __pyx_v_self->three_vector);
+  __pyx_f_7bonndit_5utilc_14cython_helpers_matrix_mult(__pyx_v_self->point_wtoi, __pyx_v_self->ItoW_inv, __pyx_v_self->three_vector);
 
   /* "bonndit/tracking/ItoW.pyx":33
  * 
@@ -19555,12 +19555,12 @@ static int __Pyx_modinit_function_import_code(void) {
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__Pyx_modinit_function_import_code", 0);
   /*--- Function import code ---*/
-  __pyx_t_1 = PyImport_ImportModule("bonndit.helper_functions.cython_helpers"); if (!__pyx_t_1) __PYX_ERR(1, 1, __pyx_L1_error)
+  __pyx_t_1 = PyImport_ImportModule("bonndit.utilc.cython_helpers"); if (!__pyx_t_1) __PYX_ERR(1, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (__Pyx_ImportFunction(__pyx_t_1, "matrix_mult", (void (**)(void))&__pyx_f_7bonndit_16helper_functions_14cython_helpers_matrix_mult, "void (__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice)") < 0) __PYX_ERR(1, 1, __pyx_L1_error)
-  if (__Pyx_ImportFunction(__pyx_t_1, "add_vectors", (void (**)(void))&__pyx_f_7bonndit_16helper_functions_14cython_helpers_add_vectors, "void (__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice)") < 0) __PYX_ERR(1, 1, __pyx_L1_error)
-  if (__Pyx_ImportFunction(__pyx_t_1, "sub_vectors", (void (**)(void))&__pyx_f_7bonndit_16helper_functions_14cython_helpers_sub_vectors, "void (__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice)") < 0) __PYX_ERR(1, 1, __pyx_L1_error)
-  if (__Pyx_ImportFunction(__pyx_t_1, "set_zero_vector", (void (**)(void))&__pyx_f_7bonndit_16helper_functions_14cython_helpers_set_zero_vector, "void (__Pyx_memviewslice)") < 0) __PYX_ERR(1, 1, __pyx_L1_error)
+  if (__Pyx_ImportFunction(__pyx_t_1, "matrix_mult", (void (**)(void))&__pyx_f_7bonndit_5utilc_14cython_helpers_matrix_mult, "void (__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice)") < 0) __PYX_ERR(1, 1, __pyx_L1_error)
+  if (__Pyx_ImportFunction(__pyx_t_1, "add_vectors", (void (**)(void))&__pyx_f_7bonndit_5utilc_14cython_helpers_add_vectors, "void (__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice)") < 0) __PYX_ERR(1, 1, __pyx_L1_error)
+  if (__Pyx_ImportFunction(__pyx_t_1, "sub_vectors", (void (**)(void))&__pyx_f_7bonndit_5utilc_14cython_helpers_sub_vectors, "void (__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice)") < 0) __PYX_ERR(1, 1, __pyx_L1_error)
+  if (__Pyx_ImportFunction(__pyx_t_1, "set_zero_vector", (void (**)(void))&__pyx_f_7bonndit_5utilc_14cython_helpers_set_zero_vector, "void (__Pyx_memviewslice)") < 0) __PYX_ERR(1, 1, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_RefNannyFinishContext();
   return 0;
@@ -19842,7 +19842,7 @@ if (!__Pyx_RefNanny) {
 
   /* "bonndit/tracking/ItoW.pyx":6
  * 
- * from bonndit.helper_functions.cython_helpers cimport matrix_mult, add_vectors, sub_vectors, set_zero_vector
+ * from bonndit.utilc.cython_helpers cimport matrix_mult, add_vectors, sub_vectors, set_zero_vector
  * import numpy as np             # <<<<<<<<<<<<<<
  * DTYPE = np.float64
  * 
@@ -19853,7 +19853,7 @@ if (!__Pyx_RefNanny) {
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "bonndit/tracking/ItoW.pyx":7
- * from bonndit.helper_functions.cython_helpers cimport matrix_mult, add_vectors, sub_vectors, set_zero_vector
+ * from bonndit.utilc.cython_helpers cimport matrix_mult, add_vectors, sub_vectors, set_zero_vector
  * import numpy as np
  * DTYPE = np.float64             # <<<<<<<<<<<<<<
  * 

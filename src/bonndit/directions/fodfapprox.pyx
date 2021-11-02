@@ -4,7 +4,7 @@
 # import numpy as np
 import numpy as np
 import psutil
-from bonndit.utilc.average cimport approx_initial
+from bonndit.utilc.lowrank cimport approx_initial
 from bonndit.utilc.penalty_spherical cimport calc_norm_spherical, \
     refine_average_spherical
 from bonndit.utilc.cython_helpers cimport mult_with_scalar, sub_vectors, \
@@ -134,3 +134,11 @@ cpdef approx_all_spherical(
             val[:, threadid()],
             der[:, threadid()], testv[:, threadid()],
             anisoten[:, threadid()], isoten[:, threadid()])
+
+
+
+# cpdef approx_all(fodf):
+# num = fodf.shape
+# for i in range(num):
+#        if
+# _candidates_3d_d
