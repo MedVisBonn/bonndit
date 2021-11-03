@@ -74,8 +74,8 @@ cdef class CurvatureNotValidator:
 		return True
 
 cdef class CurvatureValidator(CurvatureNotValidator):
-	def __cinit__(self, double max_angle):
-		super().__cinit__(max_angle)
+	#def __cinit__(self, double max_angle):
+#		super().__cinit__(max_angle)
 
 	cdef bint curvature_checker(self, double[:,:] path, int path_len, double[:] features) nogil except *:
 			"""
@@ -111,8 +111,8 @@ cdef class ROINotValidator:
 		return False
 
 cdef class ROIValidator(ROINotValidator):
-	def __cinit__(self, double[:,:] inclusion, int r ):
-		super().__cinit__(inclusion, r)
+	#def __cinit__(self, double[:,:] inclusion, int r ):
+	#	super().__cinit__(inclusion, r)
 
 	cdef void included(self, double[:] point) nogil except *:
 		if sum_c(self.inclusion_check) == self.inclusion_num:
