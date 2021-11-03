@@ -1,5 +1,5 @@
 #%%cython --annotate
-#cython: language_level=3, boundscheck=True, wraparound=True, warn.unused=True, warn.unused_args=True,
+#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True,
 # warn.unused_results=True
 
 from bonndit.utilc.cython_helpers cimport sub_vectors, angle_deg, sum_c, set_zero_matrix, dist
@@ -73,7 +73,7 @@ cdef class CurvatureNotValidator:
 		self.points = np.zeros([2,3])
 
 	cdef bint curvature_checker(self, double[:,:] path, int path_len, double[:] features) nogil except *:
-		return True
+		return False
 
 cdef class CurvatureValidator(CurvatureNotValidator):
 	#def __cinit__(self, double max_angle):

@@ -97,10 +97,14 @@ cdef void forward_tracking(double[:,:] paths,  Interpolation interpolate,
 		# Check curvature between current point and point 30mm ago
 		if validator.Curve.curvature_checker(paths[k-min(30, k):k + 1], min(30, k) - 1, features[k:k+1,1]):
 			validator.set_path_zero(paths, features)
-			return
+			break
 		integrate.old_dir = interpolate.next_dir
-	trafo.itow(paths[k])
-	paths[k] = trafo.point_itow
+	if k == max_track_length - 2:
+		trafo.itow(paths[k+1])
+		paths[k+1] = trafo.point_itow
+	else:
+		trafo.itow(paths[k])
+		paths[k] = trafo.point_itow
 
 
 
