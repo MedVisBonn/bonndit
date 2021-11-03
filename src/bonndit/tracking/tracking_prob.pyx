@@ -35,7 +35,7 @@ cdef void tracking(double[:,:,:,:] paths, double[:] seed,
 	cdef int j
 	for j in range(samples):
 		# set zero inclusion check
-		set_zero_vector(validator.inclusion_check)
+		set_zero_vector(validator.ROI.inclusion_check)
 		if seed_shape == 3:
 			interpolate.main_dir(paths[j, 0, 0])
 			integrate.old_dir = interpolate.next_dir
@@ -51,10 +51,7 @@ cdef void tracking(double[:,:,:,:] paths, double[:] seed,
 		forward_tracking(paths[j,:,1,:], interpolate, integrate, trafo, validator, max_track_length,
 		                 features[j,:,1, :])
 		# if not found bot regions of interest delete path.
-		if sum_c(validator.inclusion_check) != validator.inclusion_num:
-		#	with gil:
-		#		print(sum_c(validator.inclusion_check))
-		#		print(validator.inclusion_num)
+		if validator.ROI.included_checker():
 			validator.set_path_zero(paths[j,:,1,:], features[j,:,1, :])
 			validator.set_path_zero(paths[j, :, 0, :], features[j, :, 0, :])
 
@@ -77,24 +74,16 @@ cdef void forward_tracking(double[:,:] paths,  Interpolation interpolate,
 	for k in range(max_track_length - 1):
 		# validate indey and wm density.
 		if validator.index_checker(paths[k]):
-		#	with gil:
-		#		print('Run out of shape')
 			break
 		if validator.wm_checker(paths[k]):
-		#	with gil:
-		#		print('WM density to low')
 			break
 		# find matching directions
 		if sum_c(integrate.old_dir) == 0:
-		#	with gil:
-		#		print(k ,'old direction not valid. Actually this should not happen.')
 			break
 		interpolate.interpolate(paths[k], integrate.old_dir)
 
 		# Check next step is valid. If it is: Integrate. else break
 		if validator.next_point_checker(interpolate.next_dir):
-		#	with gil:
-		#		print('Next point not valid')
 			break
 
 		integrate.integrate(interpolate.next_dir, paths[k])
@@ -104,11 +93,9 @@ cdef void forward_tracking(double[:,:] paths,  Interpolation interpolate,
 
 		trafo.itow(paths[k])
 		paths[k] = trafo.point_itow
-		validator.included(paths[k])
+		validator.ROI.included(paths[k])
 		# Check curvature between current point and point 30mm ago
-		if validator.curvature_checker(paths[k-min(30, k):k + 1], min(30, k) - 1, features[k:k+1,1]):
-		#	with gil:
-		#		print('Curvature to big')
+		if validator.Curve.curvature_checker(paths[k-min(30, k):k + 1], min(30, k) - 1, features[k:k+1,1]):
 			validator.set_path_zero(paths, features)
 			return
 		integrate.old_dir = interpolate.next_dir
@@ -122,7 +109,7 @@ cdef void forward_tracking(double[:,:] paths,  Interpolation interpolate,
 
 cpdef tracking_all(double[:,:,:,:,:] vector_field, meta, double[:,:,:] wm_mask, double[:,:] seeds, integration,
                    interpolation, prob, stepsize, double variance, int samples, int max_track_length, double wmmin,
-                   double expectation, verbose, logging, double[:,:] point_cloud):
+                   double expectation, verbose, logging, double[:,:] point_cloud, double max_angle):
 	"""
 	@param vector_field: Array (4,3,x,y,z)
 		Where the first dimension contains the length and direction, the second
@@ -159,8 +146,7 @@ cpdef tracking_all(double[:,:,:,:,:] vector_field, meta, double[:,:,:] wm_mask, 
 	cdef Trafo trafo
 	cdef Probabilities directionGetter
 	cdef Validator validator
-
-	validator = Validator(wm_mask,np.array(wm_mask.shape, dtype=np.intc), wmmin, point_cloud, int(max(point_cloud[:,0]) + 1))
+	validator = Validator(wm_mask,np.array(wm_mask.shape, dtype=np.intc), wmmin, point_cloud, int(max(point_cloud[:,0]) + 1), max_angle)
 	#select appropriate model
 	if prob == "Gaussian":
 		directionGetter = Gaussian(0, variance)
