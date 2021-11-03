@@ -14,10 +14,12 @@ cdef class Validator:
 		self.wm_mask = wm_mask
 		self.shape = shape
 		if r > 0:
+			print(1)
 			self.ROI = ROIValidator(inclusion, r)
 		else:
 			self.ROI = ROINotValidator(inclusion, r)
 		if max_angle > 0:
+			print(1)
 			self.Curve = CurvatureValidator(max_angle)
 		else:
 			self.Curve = CurvatureNotValidator(max_angle)
