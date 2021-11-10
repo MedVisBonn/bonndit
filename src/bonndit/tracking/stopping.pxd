@@ -33,12 +33,13 @@ cdef class ROINotValidator:
 		double[:,:] inclusion
 		double[:] inclusion_check
 		int inclusion_num
-
-	cdef void included(self, double[:] point) nogil except *
+	cdef void included(self, double[:]) nogil except *
 	cdef bint included_checker(self) nogil except *
 
 cdef class ROIValidator(ROINotValidator):
-	cdef void included(self, double[:] point) nogil except *
-	cdef bint included_checker(self) nogil except *
+
+
+	cdef void included(self, double[:]) nogil except *
+	cdef bint included_checker(self)	 nogil except *
 
 

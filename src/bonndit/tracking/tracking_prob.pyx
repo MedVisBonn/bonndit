@@ -119,7 +119,7 @@ cdef void forward_tracking(double[:,:] paths,  Interpolation interpolate,
 
 cpdef tracking_all(double[:,:,:,:,:] vector_field, meta, double[:,:,:] wm_mask, double[:,:] seeds, integration,
                    interpolation, prob, stepsize, double variance, int samples, int max_track_length, double wmmin,
-                   double expectation, verbose, logging, double[:,:] point_cloud, double max_angle):
+                   double expectation, verbose, logging, inclusion, double max_angle):
 	"""
 	@param vector_field: Array (4,3,x,y,z)
 		Where the first dimension contains the length and direction, the second
@@ -156,7 +156,7 @@ cpdef tracking_all(double[:,:,:,:,:] vector_field, meta, double[:,:,:] wm_mask, 
 	cdef Trafo trafo
 	cdef Probabilities directionGetter
 	cdef Validator validator
-	validator = Validator(wm_mask,np.array(wm_mask.shape, dtype=np.intc), wmmin, point_cloud, int(max(point_cloud[:,0]) + 1), max_angle)
+	validator = Validator(wm_mask,np.array(wm_mask.shape, dtype=np.intc), wmmin, inclusion, max_angle)
 	#select appropriate model
 	if prob == "Gaussian":
 		directionGetter = Gaussian(0, variance)

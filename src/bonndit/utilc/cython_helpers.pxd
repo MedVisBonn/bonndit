@@ -25,3 +25,6 @@ cdef:
 	void set_zero_vector_int(int[:]) nogil
 	int argmax(double[:]) nogil
 	double dist(double[:], double[:]) nogil
+	bint bigger(double[:], double[:]) nogil
+	bint smaller(double[:], double[:]) nogil
+

@@ -1,23 +1,24 @@
 #%%cython --annotate
 #cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True,
 # warn.unused_results=True
+import os
 
-from bonndit.utilc.cython_helpers cimport sub_vectors, angle_deg, sum_c, set_zero_matrix, dist
+from bonndit.utilc.cython_helpers cimport sub_vectors, angle_deg, sum_c, set_zero_matrix, bigger, smaller
 import numpy as np
 DTYPE = np.float64
 
 
 
 cdef class Validator:
-	def __cinit__(self, double[:,:,:] wm_mask, int[:] shape, double min_wm, double[:,:] inclusion, int r, double max_angle):
+	def __cinit__(self, double[:,:,:] wm_mask, int[:] shape, double min_wm, str inclusion, double max_angle):
 		self.min_wm = min_wm
 		self.wm_mask = wm_mask
 		self.shape = shape
-		if r > 0:
+		if inclusion:
 			print(1)
-			self.ROI = ROIValidator(inclusion, r)
+			self.ROI = ROIValidator(inclusion)
 		else:
-			self.ROI = ROINotValidator(inclusion, r)
+			self.ROI = ROINotValidator(inclusion)
 		if max_angle > 0:
 			print(1)
 			self.Curve = CurvatureValidator(max_angle)
@@ -100,10 +101,10 @@ cdef class CurvatureValidator(CurvatureNotValidator):
 				return False
 
 cdef class ROINotValidator:
-	def __cinit__(self, double[:,:] inclusion, int r):
-		self.inclusion = inclusion
-		self.inclusion_check = np.zeros(r)
-		self.inclusion_num = r
+	def __cinit__(self, str inclusion):
+		self.inclusion = np.zeroes([3,3])
+		self.inclusion_num = 0
+		self.inclusion_check = np.zeros(1)
 
 
 	cdef void included(self, double[:] point) nogil except *:
@@ -113,16 +114,31 @@ cdef class ROINotValidator:
 		return False
 
 cdef class ROIValidator(ROINotValidator):
-	#def __cinit__(self, double[:,:] inclusion, int r ):
-	#	super().__cinit__(inclusion, r)
+	def __cinit__(self, str inclusion):
+		cubes = [x for x in os.listdir(inclusion) if x.endswith('.pts')]
+		output = np.zeros((len(cubes)*2, 3))
+		for i, cube in enumerate(cubes):
+			points = open(cube)
+			points = np.array([list(map(float, point.split())) for point in points])
+			points = np.vstack((np.min(points, axis=0), np.max(points, axis=0)))
+			output[2*i:2*(i+1)] = points
+		self.inclusion = output
+		self.inclusion_num = len(cubes)
+		self.inclusion_check = np.zeros(len(cubes))
 
 	cdef void included(self, double[:] point) nogil except *:
+		cdef int i
 		if sum_c(self.inclusion_check) == self.inclusion_num:
 			return
-		for i in range(self.inclusion.shape[0]):
-			if dist(self.inclusion[i,1:], point) < 3:
-				self.inclusion_check[int(self.inclusion[i,0])] = 1
-				break
+
+		for i in range(self.inclusion_num):
+			if smaller(point, self.inclusion[2*i]):
+				continue
+			if bigger(point, self.inclusion[2*i + 1]):
+				continue
+			self.inclusion_check[i] = 1
+
+
 
 	cdef bint included_checker(self) nogil except *:
 		return sum_c(self.inclusion_check) != self.inclusion_num
