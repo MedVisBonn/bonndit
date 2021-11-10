@@ -170,10 +170,10 @@ cpdef tracking_all(double[:,:,:,:,:] vector_field, meta, double[:,:,:] wm_mask, 
 		logging.error('Gaussian or Laplacian or Scalar are available so far. ')
 		return 0
 
-	trafo = <Trafo> Trafo(np.float64(meta['space directions']), np.float64(meta['space origin']))
+	trafo = <Trafo> Trafo(np.float64(meta['space directions'][2:]), np.float64(meta['space origin']))
 	#cdef Integration integrate
 	if integration == "Euler":
-		integrate = Euler(meta['space directions'], meta['space origin'], trafo, float(stepsize))
+		integrate = Euler(meta['space directions'][2:], meta['space origin'], trafo, float(stepsize))
 	else:
 		logging.error('Only Euler is available so far. Hence set Euler as argument.')
 		return 0
