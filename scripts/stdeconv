@@ -120,7 +120,7 @@ def main():
                                      args.kernel))
 
     # Check whether all specified files exist
-    for f in [args.brainmask, args.data, args.dtifa, args.wmmask, args.dtivecs,
+    for f in [args.brainmask, args.data, args.dtifa, args.dtivecs,
               'bvals', 'bvecs', ]:
         filepath = os.path.join(indir, f)
         if not os.path.isfile(filepath):
@@ -134,8 +134,11 @@ def main():
     # Load DTI mask
     dti_mask = bd.load(os.path.join(indir, args.brainmask))
 
-    # Load tissue segmentation masks
-    wm_mask = bd.load(os.path.join(indir, args.wmmask))
+    # Load tissue segmentation masks (now optional)
+    try:
+        wm_mask = bd.load(os.path.join(indir, args.wmmask))
+    except:
+        wm_mask = None
 
     # Load first eigenvectors of a precalculated diffusion tensor
     dti_vecs = bd.load(os.path.join(indir, args.dtivecs))
