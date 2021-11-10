@@ -16,6 +16,22 @@ cdef double max_c(double a, double b) nogil:
     else:
         return a
 
+cdef bint bigger(double[:] a, double[:] b) nogil:
+    cdef int i
+    for i in range(a.shape[0]):
+        if a[i] < b[i]:
+            return False
+    else:
+        return True
+
+cdef bint smaller(double[:] a, double[:] b) nogil:
+    cdef int i
+    for i in range(a.shape[0]):
+        if a[i] > b[i]:
+            return False
+    else:
+        return True
+
 cdef double dist(double[:] v, double[:] w) nogil:
     cdef int i, n = v.shape[0]
     cdef double res = 0
@@ -26,15 +42,15 @@ cdef double dist(double[:] v, double[:] w) nogil:
 cdef double angle_deg(double[:] vec1, double[:] vec2) nogil:
     """ Calculate the angle between two vectors
 
-    Parameters
-    ----------
-    vec1 :
-    vec2 : two vectors of same dimensions.
+	Parameters
+	----------
+	vec1 :
+	vec2 : two vectors of same dimensions.
 
-    Returns
-    -------
+	Returns
+	-------
 
-    """
+	"""
     if vec1.shape[0] != vec2.shape[0]:
         printf("Wrong dimensions \n")
     if acos(
@@ -49,11 +65,11 @@ cdef double angle_deg(double[:] vec1, double[:] vec2) nogil:
 
 cdef void matrix_mult(double[:] res, double[:, :] A, double[:] v) nogil:
     """Easy matrix multiplication.
-    :param res: Result vector size m
-    :param A: Matrix size mxn
-    :param v: vector size n
-    :return: res size n
-    """
+	:param res: Result vector size m
+	:param A: Matrix size mxn
+	:param v: vector size n
+	:return: res size n
+	"""
 
     cdef int i, j, n = A.shape[0], m = A.shape[1]
     if n != res.shape[0] or m != v.shape[0]:
