@@ -13,8 +13,10 @@ cdef:
 	double scalar(double[:], double[:]) nogil
 	double scalar_minus(double[:], double[:]) nogil
 	void mult_with_scalar(double[:], double, double[:]) nogil
+	void mult_with_scalar_int(int[:], int, int[:]) nogil
 	void add_vectors(double[:], double[:], double[:]) nogil
 	void sub_vectors(double[:], double[:], double[:]) nogil
+	void sub_vectors_int(int[:], int[:], int[:]) nogil
 	double fak(int) nogil
 	double binom(int, int) nogil
 	void set_zero_matrix(double[:,:]) nogil

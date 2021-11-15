@@ -39,6 +39,8 @@ cdef double dist(double[:] v, double[:]  w) nogil:
 		res += pow(v[i] - w[i], 2)
 	return pow(res, 0.5)
 
+
+@cython.cdivision(True)
 cdef double angle_deg(double[:] vec1, double[:] vec2) nogil:
 	""" Calculate the angle between two vectors
 
@@ -53,8 +55,11 @@ cdef double angle_deg(double[:] vec1, double[:] vec2) nogil:
 	"""
 	if vec1.shape[0] != vec2.shape[0]:
 		printf("Wrong dimensions \n")
+	if sum_c(vec1) != sum_c(vec1) or sum_c(vec2) != sum_c(vec2) or norm(vec1) == 0 or norm(vec2) == 0:
+		return 0
 	if acos(clip(scalar(vec1, vec2) / (norm(vec1) * (norm(vec2))), -1,1)) * 180/ pi < 0:
 		printf("Something is wrong \n")
+
 	return acos(clip(scalar(vec1, vec2) / (norm(vec1) * (norm(vec2))), -1,1)) * 180 / pi
 
 cdef void matrix_mult(double[:] res, double[:,:] A, double[:] v) nogil:
@@ -135,6 +140,11 @@ cdef void mult_with_scalar(double[:] res, double s, double[:] v) nogil:
 	for i in range(k):
 		res[i] = s*v[i]
 
+cdef void mult_with_scalar_int(int[:] res, int s, int [:] v) nogil:
+	cdef int i, k = v.shape[0]
+	for i in range(k):
+		res[i] = s*v[i]
+
 
 cdef void add_vectors(double[:] res, double[:] v, double[:] w) nogil:
 	cdef int i, k = v.shape[0]
@@ -142,6 +152,11 @@ cdef void add_vectors(double[:] res, double[:] v, double[:] w) nogil:
 		res[i] = v[i] + w[i]
 
 cdef void sub_vectors(double[:] res, double[:] v, double[:] w) nogil:
+	cdef int i, k = v.shape[0]
+	for i in range(k):
+		res[i] = v[i] - w[i]
+
+cdef void sub_vectors_int(int[:] res, int[:] v, int[:] w) nogil:
 	cdef int i, k = v.shape[0]
 	for i in range(k):
 		res[i] = v[i] - w[i]
