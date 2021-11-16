@@ -102,7 +102,7 @@ cdef class CurvatureValidator(CurvatureNotValidator):
 
 cdef class ROINotValidator:
 	def __cinit__(self, str inclusion):
-		self.inclusion = np.zeroes([3,3])
+		self.inclusion = np.zeros([3,3])
 		self.inclusion_num = 0
 		self.inclusion_check = np.zeros(1)
 
@@ -115,7 +115,7 @@ cdef class ROINotValidator:
 
 cdef class ROIValidator(ROINotValidator):
 	def __cinit__(self, str inclusion):
-		cubes = [x for x in os.listdir(inclusion) if x.endswith('.pts')]
+		cubes = [os.path.join(inclusion, x) for x in os.listdir(inclusion) if x.endswith('.pts')]
 		output = np.zeros((len(cubes)*2, 3))
 		for i, cube in enumerate(cubes):
 			points = open(cube)

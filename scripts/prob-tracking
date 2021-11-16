@@ -62,7 +62,7 @@ def main():
 		logging.getLogger('').addHandler(console)
 
 	# Open files and do various error checking
-	vector_field, _ = nrrd.read(args.i)
+	vector_field, meta = nrrd.read(args.i)
 	if vector_field.shape[0] != 4:
 		logging.error("Wrong dimension on first axis. Has to contain 4 values.")
 		raise Exception()
@@ -75,16 +75,18 @@ def main():
 
 	logging.info("Multivectorfield loaded")
 
-	wm_mask, meta = nrrd.read(args.wm)
+	wm_mask, _ = nrrd.read(args.wm)
 	if vector_field.shape[2:] != wm_mask.shape:
 		logging.error("Vectorfield (x,y,z) and wm mask have to have same dimensions.")
 		raise Exception()
 	logging.info("WM Mask loaded")
-	restrictions = []
-	for i, file in enumerate(args.restriction):
-		a = open(file)
-		restrictions.extend(np.array([[i, *list(map(float, f.split()))] for f in a]))
-	print(np.array(restrictions))
+	restrictions = ""
+#if args.restriction:
+#
+#	for iinclusion, file in enumerate(args.restriction):
+#		a = open(file)
+#		restrictions.extend(np.array([[i, *list(map(float, f.split()))] for f in a]))
+#	print(np.array(restrictions))
 	seeds = open(args.s)
 	seeds = [list(map(float, point.split())) for point in seeds]
 	if [1 for seed in seeds if len(seed) not in [3, 6]]:
@@ -97,7 +99,8 @@ def main():
 									args.integration,
 									args.interpolation, args.prob, args.sw, float(args.var),
 									int(args.samples),
-									int(args.mtlength), float(args.wmmin), float(args.exp or 1), args.verbose, logging, np.array(restrictions))
+									int(args.mtlength), float(args.wmmin), float(args.exp or 1), args.verbose,
+									logging, restrictions, 130)
 
 	paths_len = [sum(paths_len[:i + 1]) for i in range(len(paths_len))]
 
