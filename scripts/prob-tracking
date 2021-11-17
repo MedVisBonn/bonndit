@@ -30,6 +30,7 @@ def main():
 	parser.add_argument('-o', help='Outfile is in ply format.', required=True, default=argparse.SUPPRESS)
 	parser.add_argument('-mtlength', help='Maximum track steps.', default=300)
 	parser.add_argument('-samples', help='Samples per seed.', default=1)
+	parser.add_argument('-maxangle', help='Max angle over the last 30 mm of the streamline', default=130)
 	parser.add_argument('-var', help='Variance for probabilistic direction selection..', default=1)
 	parser.add_argument('-exp', help='Expectation for probabilistic direction selection.', default=0)
 	parser.add_argument('-interpolation', '--interpolation',
@@ -100,7 +101,7 @@ def main():
 									args.interpolation, args.prob, args.sw, float(args.var),
 									int(args.samples),
 									int(args.mtlength), float(args.wmmin), float(args.exp or 1), args.verbose,
-									logging, restrictions, 130)
+									logging, restrictions, float(args.maxangle))
 
 	paths_len = [sum(paths_len[:i + 1]) for i in range(len(paths_len))]
 

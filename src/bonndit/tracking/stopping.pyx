@@ -3,14 +3,15 @@
 # warn.unused_results=True
 import os
 
-from bonndit.utilc.cython_helpers cimport sub_vectors, angle_deg, sum_c, set_zero_matrix, bigger, smaller
+from bonndit.utilc.cython_helpers cimport sub_vectors, angle_deg, sum_c, set_zero_matrix, bigger, smaller, mult_with_scalar, norm
 import numpy as np
+from bonndit.tracking.ItoW cimport Trafo
 DTYPE = np.float64
 
 
 
 cdef class Validator:
-	def __cinit__(self, double[:,:,:] wm_mask, int[:] shape, double min_wm, str inclusion, double max_angle):
+	def __cinit__(self, double[:,:,:] wm_mask, int[:] shape, double min_wm, str inclusion, double max_angle, Trafo trafo):
 		self.min_wm = min_wm
 		self.wm_mask = wm_mask
 		self.shape = shape
@@ -21,9 +22,9 @@ cdef class Validator:
 			self.ROI = ROINotValidator(inclusion)
 		if max_angle > 0:
 			print(1)
-			self.Curve = CurvatureValidator(max_angle)
+			self.Curve = CurvatureValidator(max_angle, trafo)
 		else:
-			self.Curve = CurvatureNotValidator(max_angle)
+			self.Curve = CurvatureNotValidator(max_angle, trafo)
 
 
 
@@ -68,32 +69,37 @@ cdef class Validator:
 
 
 cdef class CurvatureNotValidator:
-	def __cinit__(self, max_angle):
+	def __cinit__(self, max_angle, trafo):
 		self.max_angle = max_angle
 		self.angle = 0
-		self.points = np.zeros([2,3])
+		self.points = np.zeros([5,3])
+		self.trafo = trafo
 
-	cdef bint curvature_checker(self, double[:,:] path, int path_len, double[:] features) nogil except *:
+	cdef bint curvature_checker(self, double[:,:] path,  double[:] features) nogil except *:
 		return False
 
 cdef class CurvatureValidator(CurvatureNotValidator):
 	#def __cinit__(self, double max_angle):
 #		super().__cinit__(max_angle)
 
-	cdef bint curvature_checker(self, double[:,:] path, int path_len, double[:] features) nogil except *:
+	cdef bint curvature_checker(self, double[:,:] path,  double[:] features) nogil except *:
 			"""
 			Checks the angles between the current direction and the directions anlong the polygon. If a angle is to large returns True
 			@param path: polygon to check
-			@param path_len: length of the polygon
 			@param features: save the angle between the current direction and the direction k points ago into the features.
 			@return:
 			"""
-			cdef int l
-			sub_vectors(self.points[1], path[path_len], path[path_len + 1])
-			for l in range(path_len):
-				sub_vectors(self.points[0], path[path_len - l], path[path_len - l + 1])
-				if sum_c(self.points[1]) != 0 and sum_c(self.points[0]) != 0:
-					self.angle = angle_deg(self.points[1], self.points[0])
+			cdef int l = 1, k = path.shape[0]
+			cdef double length = 0
+			self.trafo.itow(path[k])
+			mult_with_scalar(self.points[3], 1, self.trafo.point_itow)
+			sub_vectors(self.points[1], path[k-1], self.points[3])
+			length += norm(self.points[1])
+			while k >= 2 and length < 30 and l < k:
+				l += 1
+				sub_vectors(self.points[0], path[k-l], path[k-l+1])
+				length += norm(self.points[0])
+				self.angle = angle_deg(self.points[1], self.points[0])
 				if self.angle > self.max_angle:
 					return True
 			else:

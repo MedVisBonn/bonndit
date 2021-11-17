@@ -95,10 +95,13 @@ cdef void forward_tracking(double[:,:] paths,  Interpolation interpolate,
 		paths[k] = trafo.point_itow
 		validator.ROI.included(paths[k])
 		# Check curvature between current point and point 30mm ago
-		if validator.Curve.curvature_checker(paths[k-min(30, k):k + 1], min(30, k) - 1, features[k:k+1,1]):
+		if validator.Curve.curvature_checker(paths[:k + 1], features[k:k+1,1]):
 			validator.set_path_zero(paths, features)
 			return
 		integrate.old_dir = interpolate.next_dir
+	if k == 0:
+		trafo.itow(paths[k])
+		paths[k] = trafo.point_itow
 	if k == max_track_length - 2:
 		if sum_c(paths[k+1]) == 0:
 			with gil:
@@ -156,7 +159,6 @@ cpdef tracking_all(double[:,:,:,:,:] vector_field, meta, double[:,:,:] wm_mask, 
 	cdef Trafo trafo
 	cdef Probabilities directionGetter
 	cdef Validator validator
-	validator = Validator(wm_mask,np.array(wm_mask.shape, dtype=np.intc), wmmin, inclusion, max_angle)
 	#select appropriate model
 	if prob == "Gaussian":
 		directionGetter = Gaussian(0, variance)
@@ -171,6 +173,7 @@ cpdef tracking_all(double[:,:,:,:,:] vector_field, meta, double[:,:,:] wm_mask, 
 		return 0
 
 	trafo = <Trafo> Trafo(np.float64(meta['space directions'][2:]), np.float64(meta['space origin']))
+	validator = Validator(wm_mask,np.array(wm_mask.shape, dtype=np.intc), wmmin, inclusion, max_angle, trafo)
 	#cdef Integration integrate
 	if integration == "Euler":
 		integrate = Euler(meta['space directions'][2:], meta['space origin'], trafo, float(stepsize))

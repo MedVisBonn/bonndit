@@ -1,7 +1,7 @@
 #%%cython --annotate
 #cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True,
 # warn.unused_results=True
-
+from bonndit.tracking.ItoW cimport Trafo
 cdef class Validator:
 	cdef:
 		double min_wm
@@ -22,11 +22,12 @@ cdef class CurvatureNotValidator:
 		double[:,:] points
 		double angle
 		double max_angle
+		Trafo trafo
 
-	cdef bint curvature_checker(self, double[:,:], int, double[:]) nogil except *
+	cdef bint curvature_checker(self, double[:,:], double[:]) nogil except *
 
 cdef class CurvatureValidator(CurvatureNotValidator):
-	cdef bint curvature_checker(self, double[:,:], int, double[:]) nogil except *
+	cdef bint curvature_checker(self, double[:,:],  double[:]) nogil except *
 
 cdef class ROINotValidator:
 	cdef:
