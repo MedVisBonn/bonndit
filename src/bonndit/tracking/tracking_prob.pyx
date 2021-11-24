@@ -139,7 +139,8 @@ cpdef tracking_all(
     double[:, :] seeds, integration,
     interpolation, prob, stepsize, double variance, int samples,
     int max_track_length, double wmmin,
-    double expectation, verbose, logging, inclusion, double max_angle
+    double expectation, verbose, logging, inclusion, double max_angle,
+    double[:, :] trafo_fsl
 ):
     """
 	@param vector_field: Array (4,3,x,y,z)
@@ -192,9 +193,13 @@ cpdef tracking_all(
 
     trafo = < Trafo > Trafo(np.float64(meta['space directions'][2:]),
         np.float64(meta['space origin']))
+    trafo_matrix = np.zeros((4, 4))
+    trafo_matrix[:3, :3] = meta['space directions'][2:]
+    trafo_matrix[:3, 3] = meta['space origin']
+    trafo_matrix[3, 3] = 1
     validator = Validator(
         wm_mask, np.array(wm_mask.shape, dtype=np.intc),
-        wmmin, inclusion, max_angle, trafo)
+        wmmin, inclusion, max_angle, trafo, trafo_matrix, trafo_fsl)
     # cdef Integration integrate
     if integration == "Euler":
         integrate = Euler(meta['space directions'][2:],

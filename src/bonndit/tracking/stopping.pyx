@@ -10,20 +10,21 @@ from bonndit.tracking.ItoW cimport Trafo
 DTYPE = np.float64
 
 
-
+# TODO Mich um die Registrierung kümmern.
 cdef class Validator:
     def __cinit__(
         self, double[:, :, :] wm_mask, int[:] shape,
-        double min_wm, str inclusion, double max_angle, Trafo trafo
+        double min_wm, str inclusion, double max_angle, Trafo trafo,
+        double[:, :] matrix_trafo, double[:, :] trafo_fsl
     ):
         self.min_wm = min_wm
         self.wm_mask = wm_mask
         self.shape = shape
         if inclusion:
             print(1)
-            self.ROI = ROIValidator(inclusion)
+            self.ROI = ROIValidator(inclusion, matrix_trafo, trafo_fsl)
         else:
-            self.ROI = ROINotValidator(inclusion)
+            self.ROI = ROINotValidator(inclusion, matrix_trafo, trafo_fsl)
         if max_angle > 0:
             print(1)
             self.Curve = CurvatureValidator(max_angle, trafo)
@@ -123,7 +124,10 @@ cdef class CurvatureValidator(CurvatureNotValidator):
             return False
 
 cdef class ROINotValidator:
-    def __cinit__(self, str inclusion):
+    def __cinit__(
+        self, str inclusion, double[:, :] trafo,
+        double[:, :] trafo_fsl
+    ):
         self.inclusion = np.zeros([3, 3])
         self.inclusion_num = 0
         self.inclusion_check = np.zeros(1)
@@ -136,7 +140,10 @@ cdef class ROINotValidator:
         return False
 
 cdef class ROIValidator(ROINotValidator):
-    def __cinit__(self, str inclusion):
+    def __cinit__(
+        self, str inclusion, double[:, :] trafo,
+        double[:, :] trafo_fsl
+    ):
         cubes = [
             os.path.join(
                 inclusion,
@@ -150,6 +157,9 @@ cdef class ROIValidator(ROINotValidator):
                         map(
                             float,
                             point.split())) for point in points])
+            points = np.hstack((points, np.ones((points.shape, 1))))
+            points = trafo @ trafo_fsl @ np.linalg.inv(trafo) @ points
+            points = points[:, :3]
             points = np.vstack(
                 (
                     np.min(points, axis=0),

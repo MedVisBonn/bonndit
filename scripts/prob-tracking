@@ -61,7 +61,8 @@ def main():
         '-prob', '--prob', help='Decide between Laplacian and Gaussian. ',
         default='Gaussian')
     parser.add_argument('-v', '--verbose', default=True)
-    parser.add_argument('-r', '--restriction', nargs='+')
+    parser.add_argument('-r', '--restriction')
+    parser.add_argument('-fsl')
     args = parser.parse_args()
 
     logging.basicConfig(
@@ -104,7 +105,7 @@ def main():
             "Vectorfield (x,y,z) and wm mask have to have same dimensions.")
         raise Exception()
     logging.info("WM Mask loaded")
-    restrictions = ""
+    # restrictions = ""
 # if args.restriction:
 #
 # for iinclusion, file in enumerate(args.restriction):
@@ -123,6 +124,10 @@ def main():
     seeds = np.float64(seeds)
     logging.info("Seedfile loaded")
     logging.info("Start fiber tracking")
+    if os.path.exists(args.fsl):
+        trafo_fsl = np.loadtxt(args.fsl)
+    else:
+        trafo_fsl = np.diag(4)
     paths, paths_len = tracking_all(
         np.float64(vector_field),
         meta, np.float64(wm_mask),
@@ -133,7 +138,8 @@ def main():
         int(args.mtlength),
         float(args.wmmin),
         float(args.exp or 1),
-        args.verbose, logging, restrictions, float(args.maxangle))
+        args.verbose, logging, args.restrictions, float(args.maxangle),
+        trafo_fsl)
 
     paths_len = [sum(paths_len[:i + 1]) for i in range(len(paths_len))]
 
