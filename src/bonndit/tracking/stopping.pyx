@@ -158,7 +158,7 @@ cdef class ROIValidator(ROINotValidator):
                             float,
                             point.split())) for point in points])
             points = np.hstack((points, np.ones((points.shape, 1))))
-            points = trafo @ trafo_fsl @ np.linalg.inv(trafo) @ points
+            points = trafo @ np.linalg.inv(trafo_fsl) @ np.linalg.inv(trafo) @ points
             points = points[:, :3]
             points = np.vstack(
                 (
