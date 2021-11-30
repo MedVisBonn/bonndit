@@ -100,13 +100,13 @@ def main():
 	if os.path.exists(args.fsl):
 		trafo_fsl = np.loadtxt(args.fsl)
 	else:
-		trafo_fsl = np.diag(4)
+		trafo_fsl = np.identity(4)
 	paths, paths_len = tracking_all(np.float64(vector_field), meta, np.float64(wm_mask), np.float64(seeds),
 									args.integration,
 									args.interpolation, args.prob, args.sw, float(args.var),
 									int(args.samples),
 									int(args.mtlength), float(args.wmmin), float(args.exp or 1), args.verbose,
-									logging, args.restrictions, float(args.maxangle), trafo_fsl)
+									logging, args.restriction, float(args.maxangle), trafo_fsl)
 
 	paths_len = [sum(paths_len[:i + 1]) for i in range(len(paths_len))]
 

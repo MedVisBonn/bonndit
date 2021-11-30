@@ -103,17 +103,18 @@ cdef void forward_tracking(double[:,:] paths,  Interpolation interpolate,
 		trafo.itow(paths[k])
 		paths[k] = trafo.point_itow
 	if k == max_track_length - 2:
-		if sum_c(paths[k+1]) == 0:
+		if norm(paths[k+1]) == 0:
 			with gil:
 				print('1 Fehler')
 		trafo.itow(paths[k+1])
 		paths[k+1] = trafo.point_itow
 	else:
-		if sum_c(paths[k]) == 0:
+		if norm(paths[k]) == 0:
 			with gil:
-				print('Ne oder')
-		trafo.itow(paths[k])
-		paths[k] = trafo.point_itow
+				print(k, 'Ne oder')
+		else:
+			trafo.itow(paths[k])
+			paths[k] = trafo.point_itow
 
 
 

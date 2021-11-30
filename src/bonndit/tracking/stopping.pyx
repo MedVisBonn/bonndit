@@ -126,8 +126,8 @@ cdef class ROIValidator(ROINotValidator):
 		for i, cube in enumerate(cubes):
 			points = open(cube)
 			points = np.array([list(map(float, point.split())) for point in points])
-			points = np.hstack((points, np.ones((points.shape, 1))))
-			points = trafo @ np.linalg.inv(trafo_fsl) @ np.linalg.inv(trafo) @ points
+			points = np.hstack((points, np.ones((points.shape[0], 1))))
+			points = points @ np.linalg.inv(trafo) @ np.linalg.inv(trafo_fsl) @ trafo
 			points = points[:,:3]
 			points = np.vstack((np.min(points, axis=0), np.max(points, axis=0)))
 			output[2*i:2*(i+1)] = points

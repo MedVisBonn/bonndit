@@ -12,6 +12,14 @@ from plyfile import PlyElement, PlyData
 import logging
 import os
 
+def is_integer(n):
+    try:
+        float(n)
+    except ValueError:
+        return False
+    else:
+        return float(n).is_integer
+
 
 def main():
 	parser = argparse.ArgumentParser(
@@ -63,6 +71,7 @@ def main():
 				raise Exception('Only >,< is allowed')
 			if not is_integer(ex[2]):
 				raise Exception('Only integers are allowed')
+			ex[2] = int(ex[2])
 	exclusionc = []
 
 	if args.exclusionc:
