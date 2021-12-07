@@ -261,14 +261,16 @@ def main():
 
 	# Deconvolution if 'responseonly' is not set
 	if not args.responseonly:
-		out, wmout, gmout, csfout = fit.fodf(data, pos=args.constraint,
+		out, wmout, gmout, csfout, residuals = fit.fodf(data, pos=args.constraint,
 											 mask=dti_mask, kernel=args.kernel,
 											 verbose=args.verbose,
 											 cpus=args.workers)
 		logging.info('Signal deconvolved with multiple tissue response functions.')
-
+		residuals = nib.Nifti1Image(residuals, affine=data.affine)
+		nib.save(residuals, os.path.join(outdir, 'residuals.nii.gz'))
 		fields.save_tensor(os.path.join(outdir, "fodf.nrrd"), out,
 						   mask=dti_mask.get_fdata(), meta=meta)
+
 		logging.info('fODFs saved.')
 
 		# Save volumes
