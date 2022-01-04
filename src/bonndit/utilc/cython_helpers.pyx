@@ -55,10 +55,12 @@ cdef double angle_deg(double[:] vec1, double[:] vec2) nogil:
 	"""
 	if vec1.shape[0] != vec2.shape[0]:
 		printf("Wrong dimensions \n")
-	if sum_c(vec1) != sum_c(vec1) or sum_c(vec2) != sum_c(vec2) or norm(vec1) == 0 or norm(vec2) == 0:
 		return 0
+	if sum_c(vec1) != sum_c(vec1) or sum_c(vec2) != sum_c(vec2) or norm(vec1) == 0 or norm(vec2) == 0:
+		return 90
 	if acos(clip(scalar(vec1, vec2) / (norm(vec1) * (norm(vec2))), -1,1)) * 180/ pi < 0:
 		printf("Something is wrong \n")
+		return 0
 
 	return acos(clip(scalar(vec1, vec2) / (norm(vec1) * (norm(vec2))), -1,1)) * 180 / pi
 
