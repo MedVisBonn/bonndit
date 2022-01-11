@@ -8,7 +8,7 @@ cdef class Validator:
 		double[:,:,:] wm_mask
 		int[:] shape
 		CurvatureNotValidator Curve
-		ROINotValidator ROI
+		ROIInNotValidator ROI
 
 
 	cdef bint wm_checker(self, double[:]) nogil except *
@@ -29,7 +29,7 @@ cdef class CurvatureNotValidator:
 cdef class CurvatureValidator(CurvatureNotValidator):
 	cdef bint curvature_checker(self, double[:,:],  double[:]) nogil except *
 
-cdef class ROINotValidator:
+cdef class ROIInNotValidator:
 	cdef:
 		double[:,:] inclusion
 		double[:] inclusion_check
@@ -37,7 +37,7 @@ cdef class ROINotValidator:
 	cdef void included(self, double[:]) nogil except *
 	cdef bint included_checker(self) nogil except *
 
-cdef class ROIValidator(ROINotValidator):
+cdef class ROIInValidator(ROIInNotValidator):
 
 
 	cdef void included(self, double[:]) nogil except *
