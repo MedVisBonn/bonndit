@@ -78,7 +78,7 @@ def main():
 	output = np.zeros(rank_3.shape)
 	modelling = np.zeros((3,) + rank_3.shape[2:])
 	logging.info(f"Calculating {args.type} model")
-	model_avg(output, low_rank, fodf, args.type, mhota_4o3d_sym_evalodelling, np.float64(args.a), np.float64(args.b), args.verbose)
+	model_avg(output, low_rank, fodf, args.type, modelling, np.float64(args.a), np.float64(args.b), args.verbose)
 	output = output.reshape((4, 3) + fodf.shape[1:])
 	# update meta file.
 	newmeta = {k: meta[k] for k in ['space', 'space origin']}
