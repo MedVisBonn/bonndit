@@ -25,7 +25,7 @@ cdef void intersection_finder(double[:,:,:] hast_dict, double[:]x, double[:] y) 
     cdef float dx = abs(x[0] - y[0]),  dy = abs(x[1] - y[1]), dz = abs(x[2] - y[2])
     cdef int x0  = int(x[0]), y0 = int(x[1]), z0 =  int(x[2])
     cdef float dt_dx = 1/dx, dt_dy = 1/dy,  dt_dz = 1/dz
-    cdef int n = 1
+    cdef int n = 1, j,k,l,i
     cdef int x_inc, y_inc, z_inc
     cdef float t_next_x, t_next_y, t_next_z
     if dx == 0:
@@ -66,7 +66,10 @@ cdef void intersection_finder(double[:,:,:] hast_dict, double[:]x, double[:] y) 
     #print(n)
     for i in range(n):
         # to world
-        hast_dict[x0-1:x0+2, y0-1:y0+2, z0-1:z0+2] += 1
+        for j in range(3):
+            for k in range(3):
+                for l in range(3):
+                    hast_dict[x0-1+j, y0-1+k, z0-1+l] += 1
         #print(x0, y0, z0)
         if t_next_x <= t_next_y and t_next_x <= t_next_z:
             x0 += x_inc
