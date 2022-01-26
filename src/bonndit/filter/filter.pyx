@@ -76,7 +76,7 @@ cdef void intersection_finder(
                 for l in range(-1, 2):
                     hast_dict[
                         x0 + j, y0 + k,
-                        z0 + l] += exp((j ** 2 + k ** 2 + l ** 2))
+                        z0 + l] += exp(-(j ** 2 + k ** 2 + l ** 2))
         # print(x0, y0, z0)
         if t_next_x <= t_next_y and t_next_x <= t_next_z:
             x0 += x_inc
