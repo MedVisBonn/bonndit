@@ -358,13 +358,14 @@ cdef class Trilinear(Interpolation):
                 else:
                     exponent = 0
                 # Does not work with mult_with_scalar dont understand :(
-
-                mult_with_scalar(
-                    test_cuboid[i, j, :], exponent,
-                    self.vector_field[
-                        1:, j, int(self.floor_point[i, 0]),
+                for k in range(3):
+                    test_cuboid[
+                        i, j,
+                        k] = exponent * self.vector_field[
+                        1 + k, j,
+                        int(self.floor_point[i, 0]),
                         int(self.floor_point[i, 1]),
-                        int(self.floor_point[i, 2])])
+                        int(self.floor_point[i, 2])]
                 if norm(self.best_dir[j]) != 0 and norm(
                     test_cuboid[
                         i,
