@@ -8,7 +8,7 @@ cdef class Validator:
 		double[:,:,:] wm_mask
 		int[:] shape
 		CurvatureNotValidator Curve
-		ROIInNotValidator ROI
+		ROIInNotValidator ROIIn
 
 
 	cdef bint wm_checker(self, double[:]) nogil except *

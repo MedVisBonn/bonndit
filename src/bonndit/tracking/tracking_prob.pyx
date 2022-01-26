@@ -35,7 +35,7 @@ cdef void tracking(double[:,:,:,:] paths, double[:] seed,
 	cdef int j
 	for j in range(samples):
 		# set zero inclusion check
-		set_zero_vector(validator.ROI.inclusion_check)
+		set_zero_vector(validator.ROIIn.inclusion_check)
 		if seed_shape == 3:
 			interpolate.main_dir(paths[j, 0, 0])
 			integrate.old_dir = interpolate.next_dir
@@ -51,7 +51,7 @@ cdef void tracking(double[:,:,:,:] paths, double[:] seed,
 		forward_tracking(paths[j,:,1,:], interpolate, integrate, trafo, validator, max_track_length,
 		                 features[j,:,1, :])
 		# if not found bot regions of interest delete path.
-		if validator.ROI.included_checker():
+		if validator.ROIIn.included_checker():
 			validator.set_path_zero(paths[j,:,1,:], features[j,:,1, :])
 			validator.set_path_zero(paths[j, :, 0, :], features[j, :, 0, :])
 
@@ -93,7 +93,7 @@ cdef void forward_tracking(double[:,:] paths,  Interpolation interpolate,
 
 		trafo.itow(paths[k])
 		paths[k] = trafo.point_itow
-		validator.ROI.included(paths[k])
+		validator.ROIIn.included(paths[k])
 		# Check curvature between current point and point 30mm ago
 		if validator.Curve.curvature_checker(paths[:k + 1], features[k:k+1,1]):
 			validator.set_path_zero(paths, features)

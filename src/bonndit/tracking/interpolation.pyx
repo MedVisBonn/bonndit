@@ -10,7 +10,7 @@ from .ItoW cimport Trafo
 cdef int[:,:] permute_poss = np.array([[0,1,2],[0,2,1], [1,0,2], [1,2,0], [2,1,0], [2,0,1]], dtype=np.int32)
 
 from .alignedDirection cimport Probabilities
-from libc.math cimport pow, pi, acos, floor, fabs
+from libc.math cimport pow, pi, acos, floor, fabs,fmax
 from libc.stdio cimport printf
 DTYPE = np.float64
 ###
@@ -106,10 +106,22 @@ cdef class Interpolation:
 cdef class FACT(Interpolation):
 	cdef void interpolate(self, double[:] point, double[:] old_dir) nogil except *:
 		cdef int i
-		cdef double l
+		cdef double l, max_value
 		self.nearest_neigh(point)
+		max_value = fmax(fmax(self.vector_field[0, 0, int(self.floor_point[self.best_ind, 0]), int(self.floor_point[
+			                                                                                   self.best_ind,1]),
+		                                   int(self.floor_point[self.best_ind, 2])], self.vector_field[0, 1,
+		                                                                                               int(self.floor_point[self.best_ind, 0]), int(self.floor_point[
+			                                                                                   self.best_ind,1]),
+		                                                                                               int(
+			                                                                                               self.floor_point[self.best_ind, 2])]), self.vector_field[0, 2, int(self.floor_point[self.best_ind, 0]), int(self.floor_point[
+			                                                                                   self.best_ind,1]),
+		                                                                                                                                                            int(self.floor_point[self.best_ind, 2])])
+
 		for i in range(3):
-			if self.vector_field[0, i, int(self.floor_point[self.best_ind, 0]), int(self.floor_point[self.best_ind, 1]),int(self.floor_point[self.best_ind, 2])] != 0:
+			if self.vector_field[0, i, int(self.floor_point[self.best_ind, 0]), int(self.floor_point[self.best_ind,
+			                                                                                         1]),
+			                     int(self.floor_point[self.best_ind, 2])] > max_value/10:
 				l = pow(fabs(self.vector_field[0, i, int(self.floor_point[self.best_ind, 0]),
 				        int(self.floor_point[self.best_ind, 1]),int(self.floor_point[self.best_ind,
 				                                                    2])]), 1/4)
@@ -308,9 +320,6 @@ cdef class Trilinear(Interpolation):
 				break
 
 		self.set_new_poss()
-
-
-
 
 
 
