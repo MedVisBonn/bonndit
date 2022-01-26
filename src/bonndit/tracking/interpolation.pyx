@@ -35,7 +35,7 @@ cdef double[
             x, y,
             z] for x in range(2) for y in range(2) for z in range(2)],
     dtype=DTYPE)
-cdef int[:] minus = np.array((3,), dtype=DTYPE)
+cdef int[:] minus = np.array((3,), dtype=np.int32)
 cdef int[
     :,
     :] neigh_int = np.array(
