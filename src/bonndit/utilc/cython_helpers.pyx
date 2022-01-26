@@ -39,6 +39,12 @@ cdef double dist(double[:] v, double[:]  w) nogil:
 		res += pow(v[i] - w[i], 2)
 	return pow(res, 0.5)
 
+cdef bint point_validator(double v, int a) nogil:
+	if a != 0:
+		if v == 0:
+			return False
+	if v != v:
+		return False
 
 @cython.cdivision(True)
 cdef double angle_deg(double[:] vec1, double[:] vec2) nogil:

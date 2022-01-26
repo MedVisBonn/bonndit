@@ -4,9 +4,10 @@
 import Cython
 from bonndit.utilc.cython_helpers cimport add_pointwise, floor_pointwise_matrix, norm, mult_with_scalar,\
 	add_vectors, sub_vectors, scalar, clip, set_zero_vector, set_zero_matrix, sum_c, sum_c_int, set_zero_vector_int, \
-	angle_deg, set_zero_matrix_int
+	angle_deg, set_zero_matrix_int, point_validator
 import numpy as np
 from .ItoW cimport Trafo
+cdef int[:,:] permute_poss = np.array([[0,1,2],[0,2,1], [1,0,2], [1,2,0], [2,1,0], [2,0,1]], dtype=np.int32)
 
 from .alignedDirection cimport Probabilities
 from libc.math cimport pow, pi, acos, floor, fabs
@@ -19,8 +20,10 @@ DTYPE = np.float64
 
 cdef int[:] permutation = np.array([0,1,2]*8, dtype=np.int32)
 cdef double[:,:] neigh = np.array([[x, y, z] for x in range(2) for y in range(2) for z in range(2)], dtype=DTYPE)
-
+cdef int[:] minus = np.array((3,), dtype=DTYPE)
 cdef int[:,:] neigh_int = np.array([[x, y, z] for x in range(2) for y in range(2) for z in range(2)], dtype=np.int32)
+cdef int[:] best = np.zeros((4*8,), dtype=np.int32),  old_best = np.zeros((8,), dtype=np.int32)
+cdef double[:,:,:] test_cuboid = np.zeros((8, 3, 3), dtype=DTYPE)
 
 cdef class Interpolation:
 
@@ -234,104 +237,80 @@ cdef class Trilinear(Interpolation):
 			for i in range(3):
 				mult_with_scalar(self.cuboid[index,i], 1, self.dir[index, i])
 
-
-#
-	cdef int kmeans(self, double[:] point) nogil except *:
-		cdef int i, j, k, l, max_try=0, minus, best_min=0, best=0, con=0
-		cdef double exponent = 0, best_angle=0, min_angle=0
-		set_zero_matrix_int(self.not_check)
-		for i in range(24):
-			self.cache[int(point[0]), int(point[1]), int(point[2]), i, 0] = permutation[i]
+	cdef void set_new_poss(self) nogil except *:
+		cdef int i,j,k
 		for i in range(8):
 			set_zero_matrix(self.cuboid[i])
+		for i in range(8):
+			for j in range(3):
+				for k in range(3):
+					self.cuboid[i, j, k] = best[4*i + j + 1] * test_cuboid[i, permute_poss[best[4*i], j], k]
+
+	cdef int kmeans(self, double[:] point) nogil except *:
+		cdef int i, j, k, l, max_try=0, best_min=0
+		cdef double exponent = 0, best_angle=0, min_angle=0, con=0
+		for i in range(8):
+			set_zero_matrix(test_cuboid[i])
 
 		for i in range(8):
 			for j in range(3):
-				if self.vector_field[0, j, int(self.floor_point[i, 0]),
-				                                       int(self.floor_point[i, 1]),
-				                                       int(self.floor_point[i, 2])] != 0 and self.vector_field[0, j, int(self.floor_point[i, 0]),
-				                                       int(self.floor_point[i, 1]),
-				                                       int(self.floor_point[i, 2])] == self.vector_field[0, j, int(self.floor_point[i, 0]),
-				                                       int(self.floor_point[i, 1]),
-				                                       int(self.floor_point[i, 2])]:
+				if point_validator(self.vector_field[0, j, int(self.floor_point[i, 0]), int(self.floor_point[i, 1]), int(self.floor_point[i, 2])], 1):
 					exponent = pow(fabs(self.vector_field[0, j, int(self.floor_point[i, 0]),
 				                                       int(self.floor_point[i, 1]),
 				                                       int(self.floor_point[i, 2])]), 1/4)
 				else:
 					exponent = 0
 				# Does not work with mult_with_scalar dont understand :(
-				for k in range(3):
-					self.cuboid[i,j,k] = exponent * self.vector_field[1+k, j, int(self.floor_point[i, 0]),int(self.floor_point[i, 1]),int(self.floor_point[i, 2])]
-				if norm(self.best_dir[j])!=0 and norm(self.cuboid[i,k])!=0:
-					test_angle = angle_deg(self.best_dir[j], self.cuboid[i,j])
+
+				mult_with_scalar(test_cuboid[i,j,:], exponent,  self.vector_field[1:, j, int(self.floor_point[i, 0]),int(self.floor_point[i, 1]),int(self.floor_point[i, 2])])
+				if norm(self.best_dir[j])!=0 and norm(test_cuboid[i,k])!=0:
+					test_angle = angle_deg(self.best_dir[j], test_cuboid[i,j])
 					if test_angle > 90:
-						mult_with_scalar(self.cuboid[i,j], -1, self.cuboid[i,j])
-				add_vectors(self.best_dir[j], self.best_dir[j], self.cuboid[i,j])
-		for i in range(3):
-			mult_with_scalar(self.best_dir[i],1/8, self.best_dir[i])
+						mult_with_scalar(test_cuboid[i,j], -1, test_cuboid[i,j])
+				add_vectors(self.best_dir[j], self.best_dir[j], test_cuboid[i,j])
 		while True:
+			con = 0
 			max_try += 1
-			set_zero_matrix(self.new_best_dir)
 			# each corner
 			for i in range(8):
-				for l in range(3):
-					self.not_check[l, 0] = -1
-				# each avg direction
-				for j in range(3):
-					# each possibility
-					# Fit each direction recursively to the edge with the smallest angle. Keep them in groups of three.
-					for l in range(3):
-						min_angle = 0
+				min_angle = 0
+				for j in range(6):
+					set_zero_vector_int(minus)
+					for k in range(3):
+						if norm(test_cuboid[i,permute_poss[j,k]]) != 0 and norm(self.best_dir[k]) != 0:
+							ang = angle_deg(self.best_dir[k], test_cuboid[i, permute_poss[j,k]])
+							if ang > 90:
+								test_angle += 180 - ang
+								minus[k] = -1
+							else:
+								test_angle = ang
+								minus[k] = 1
+					if min_angle == 0 or test_angle < min_angle:
+						min_angle = test_angle
+						best[4*i] = j
 						for k in range(3):
-							if self.not_check[0,0]==k or self.not_check[1,0]==k:
-								continue
-							# angle between avg direction and corner direction:
-							if norm(self.cuboid[i,k])!=0 and norm(self.best_dir[j]) != 0:
-								test_angle = angle_deg(self.best_dir[j], self.cuboid[i,k])
-								minus = 1
-								if test_angle > 90:
-									test_angle = 180 - test_angle
-									minus = -1
-								if min_angle == 0 or test_angle<min_angle:
-									min_angle=test_angle
-									best=k
-									best_min = minus
-						# No proper assignment found. Because angle where zero
-						if min_angle!=0:
-							self.not_check[l, 0]=best
-							self.not_check[l, 1]=best_min
-				# reoder cuboid according to order from above. And take the correct direction.
-
-				for k in range(3):
-					mult_with_scalar(self.dir[i, k], self.not_check[k, 1],self.cuboid[i, self.not_check[k,0]])
-
-					#self.array_pl[k] = self.cache[int(point[0]),int(point[1]),int(point[2]),i * 3 + self.not_check[k,
-					 #                                                                                            0], 0]
-					#self.cache[int(point[0]), int(point[1]), int(point[2]), i * 3 + k, 1] *= self.not_check[k, 1]
-			#	for k in range(3):
-			#		self.cache[int(point[0]),int(point[1]),int(point[2]),i * 3 + k,0] = self.array_pl[k]
+							best[4*i + k + 1] = minus[k]
 
 
-				for k in range(3):
-					mult_with_scalar(self.cuboid[i, k], 1, self.dir[i, k])
-					#build new avg from cuboids:
-					add_vectors(self.new_best_dir[k], self.new_best_dir[k], self.cuboid[i, k])
+			for i in range(8):
+				con += fabs(best[4*i] - old_best[i])
+				old_best[i] = best[4*i]
+			if con == 0:
+				break
+			set_zero_matrix(self.best_dir)
+			for i in range(8):
+				for j in range(3):
+					mult_with_scalar(test_cuboid[i, permute_poss[best[4 * i], j]], best[4 * i + k + 1], test_cuboid[i, permute_poss[best[4 * i], j]])
+					add_vectors(self.best_dir[j], self.best_dir[j], test_cuboid[i, permute_poss[best[4*i],j]])
 
-			con = 1
-			for i in range(3):
-				mult_with_scalar(self.new_best_dir[i], 1/8, self.new_best_dir[i])
-				sub_vectors(self.point, self.best_dir[i], self.new_best_dir[i])
-				if norm(self.point) == 0:
-					con = 0
-				mult_with_scalar(self.best_dir[i], 1, self.new_best_dir[i])
-			if con:
-				return 1
-			if max_try==100:
-				with gil:
-					print('NOOO')
-				for i in range(24):
-					self.cache[int(point[0]), int(point[1]), int(point[2]),i, 0]=permutation[i]
-				return 0
+			if max_try == 1000:
+				with gil: print('I do not converge')
+				break
+
+		self.set_new_poss()
+
+
+
 
 
 
