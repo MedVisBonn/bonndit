@@ -20,7 +20,7 @@ DTYPE = np.float64
 
 cdef int[:] permutation = np.array([0,1,2]*8, dtype=np.int32)
 cdef double[:,:] neigh = np.array([[x, y, z] for x in range(2) for y in range(2) for z in range(2)], dtype=DTYPE)
-cdef int[:] minus = np.array((3,), dtype=DTYPE)
+cdef int[:] minus = np.array((3,), dtype=np.int32)
 cdef int[:,:] neigh_int = np.array([[x, y, z] for x in range(2) for y in range(2) for z in range(2)], dtype=np.int32)
 cdef int[:] best = np.zeros((4*8,), dtype=np.int32),  old_best = np.zeros((8,), dtype=np.int32)
 cdef double[:,:,:] test_cuboid = np.zeros((8, 3, 3), dtype=DTYPE)
