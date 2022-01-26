@@ -29,4 +29,4 @@ cdef:
 	double dist(double[:], double[:]) nogil
 	bint bigger(double[:], double[:]) nogil
 	bint smaller(double[:], double[:]) nogil
-
+	bint point_validator(double , int) nogil
