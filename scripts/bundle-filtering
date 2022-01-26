@@ -61,7 +61,7 @@ def main():
 		logging.getLogger('').addHandler(console)
 
 	exclusion = []
-	if args.exclusion:
+	if exclusion in args:
 		exclusion = re.split(' ', args.exclusion)
 		exclusion = [re.split('(<|>)', x) for x in exclusion]
 		for ex in exclusion:
@@ -74,7 +74,7 @@ def main():
 			ex[2] = int(ex[2])
 	exclusionc = []
 
-	if args.exclusionc:
+	if exclusionc in args:
 		exclusionc = re.split(' ', args.exclusionc)
 		exclusionc = [re.split(',', x) for x in exclusionc]
 		exclusionc = [[re.split('(<|>)', x) for x in exclusionc[index]] for index in range(len(exclusionc))]
