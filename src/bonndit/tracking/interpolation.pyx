@@ -143,7 +143,7 @@ cdef class Trilinear(Interpolation):
 		self.point = np.zeros((3,), dtype=DTYPE)
 		self.dir = np.zeros((8, 3, 3), dtype=DTYPE)
 		self.new_best_dir = np.zeros((3, 3), dtype=DTYPE)
-		self.cache = np.zeros((grid[0], grid[1], grid[2], 24,2), dtype=np.int32)
+		self.cache = np.zeros((grid[0], grid[1], grid[2], 4*8), dtype=np.int32)
 		self.permutation = np.zeros((16,), dtype=np.int32)
 		self.not_check = np.zeros((3,2), dtype=np.int32)
 		self.floor = np.zeros((3,), dtype=np.int32)
@@ -197,8 +197,10 @@ cdef class Trilinear(Interpolation):
 				self.set_vector(self.best_ind, i)
 				mult_with_scalar(self.best_dir[i], l, self.vector)
 
-		#if sum_c_int(self.cache[self.floor[0], self.floor[1], self.floor[2],:,0]) == 0:
-		con = self.kmeans(point)
+		if sum_c_int(self.cache[self.floor[0], self.floor[1], self.floor[2],:]) == 0:
+			self.permute(point)
+		else:
+			con = self.kmeans(point)
 		#else:
 		#	self.permute(point)
 		if con:
@@ -253,9 +255,7 @@ cdef class Trilinear(Interpolation):
 		cdef int i, index, k, l
 		for index in range(8):
 			for i in range(3):
-				mult_with_scalar(self.dir[index,i], self.cache[int(point[0]), int(point[1]),int(point[2]), index*3 +
-				                                               i, 1], self.cuboid[index,  self.cache[int(point[0]), int(point[1]),int(point[2]), index*3 + i, 0
-				]])
+				mult_with_scalar(self.dir[index,i], self.cache[int(point[0]), int(point[1]),int(point[2]), index*4 + 1 +i], self.cuboid[index,  permute_poss[self.cache[int(point[0]), int(point[1]),int(point[2]), index*4], i]])
 		for index in range(8):
 			for i in range(3):
 				mult_with_scalar(self.cuboid[index,i], 1, self.dir[index, i])
@@ -325,9 +325,9 @@ cdef class Trilinear(Interpolation):
 				con = 1
 				break
 			set_zero_matrix(self.best_dir)
-			for i in range(8):
-				for j in range(3):
-					mult_with_scalar(test_cuboid[i, permute_poss[best[4 * i], j]], best[4 * i + k + 1], test_cuboid[i, permute_poss[best[4 * i], j]])
+#			for i in range(8):
+#				for j in range(3):
+#					mult_with_scalar(test_cuboid[i, permute_poss[best[4 * i], j]], best[4 * i + k + 1], test_cuboid[i, permute_poss[best[4 * i], j]])
 #					add_vectors(self.best_dir[j], self.best_dir[j], test_cuboid[i, permute_poss[best[4*i],j]])
 
 			if max_try == 100:
@@ -335,6 +335,8 @@ cdef class Trilinear(Interpolation):
 				with gil: print('I do not converge')
 				break
 
+		for i in range(32):
+			self.cache[self.floor[0], self.floor[1], self.floor[2],i] = int(best[i])
 		self.set_new_poss()
 		return int(con)
 

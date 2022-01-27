@@ -29,7 +29,7 @@ cdef class Trilinear(Interpolation):
 	cdef int[:,:] not_check
 	cdef double[:] point
 	cdef double[:,:,:] dir
-	cdef int[:,:,:,:,:] cache
+	cdef int[:,:,:,:] cache
 	cdef int[:] floor
 	cdef int[:] permutation
 	cdef void set_array(self, int, int, int) nogil
