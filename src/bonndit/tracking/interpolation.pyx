@@ -197,10 +197,11 @@ cdef class Trilinear(Interpolation):
 				self.set_vector(self.best_ind, i)
 				mult_with_scalar(self.best_dir[i], l, self.vector)
 
-		if sum_c_int(self.cache[self.floor[0], self.floor[1], self.floor[2],:]) == 0:
-			self.permute(point)
-		else:
-			con = self.kmeans(point)
+#		if sum_c_int(self.cache[self.floor[0], self.floor[1], self.floor[2],:]) != 0:
+#			self.permute(point)
+#			con = 1
+#		else:
+		con = self.kmeans(point)
 		#else:
 		#	self.permute(point)
 		if con:

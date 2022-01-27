@@ -98,24 +98,22 @@ cdef void forward_tracking(double[:,:] paths,  Interpolation interpolate,
 			validator.set_path_zero(paths, features)
 			return
 		integrate.old_dir = interpolate.next_dir
-	if not point_validator(norm(paths[k]), 1):
-		set_zero_vector(paths[k])
-#	if k == 0:
-#		trafo.itow(paths[k])
-#		paths[k] = trafo.point_itow
-#	if k == max_track_length - 2:
-#		if norm(paths[k+1]) == 0:
-#			with gil:
-#				print('1 Fehler')
-#		trafo.itow(paths[k+1])
-#		paths[k+1] = trafo.point_itow
-#	else:
-#		if norm(paths[k]) == 0:
-#			with gil:
-#				print(k, 'Ne oder')
-#		else:
-#			trafo.itow(paths[k])
-#			paths[k] = trafo.point_itow
+	if k == 0:
+		trafo.itow(paths[k])
+		paths[k] = trafo.point_itow
+	if k == max_track_length - 2:
+		if norm(paths[k+1]) == 0:
+			with gil:
+				print('1 Fehler')
+		trafo.itow(paths[k+1])
+		paths[k+1] = trafo.point_itow
+	else:
+		if norm(paths[k]) == 0:
+			with gil:
+				print(k, 'Ne oder')
+		else:
+			trafo.itow(paths[k])
+			paths[k] = trafo.point_itow
 
 
 
