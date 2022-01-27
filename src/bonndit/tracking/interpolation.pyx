@@ -180,11 +180,22 @@ cdef class Trilinear(Interpolation):
 		"""
 		cdef int i, j
 		cdef int con = 1
-
+		cdef double test=0
 		self.calc_cube(point)
 		for i in range(3):
 			self.floor[i] = int(point[i])
-
+		# Check if the best dir is initialized. If no initizialize first with the nearest neighbor. Then fit neighbors.
+		for i in range(3):
+			test+=norm(self.best_dir[i])
+		if test==0:
+			self.nearest_neigh(point)
+			for i in range(3):
+				if point_validator(self.vector_field[0, i, int(self.floor_point[self.best_ind, 0]), int(self.floor_point[self.best_ind,1]),int(self.floor_point[self.best_ind, 2])], 1):
+					l = pow(fabs(self.vector_field[0, i, int(self.floor_point[self.best_ind, 0]),int(self.floor_point[self.best_ind, 1]), int(self.floor_point[self.best_ind,2])]), 1 / 4)
+				else:
+					l = 0
+				self.set_vector(self.best_ind, i)
+				mult_with_scalar(self.best_dir[i], l, self.vector)
 
 		#if sum_c_int(self.cache[self.floor[0], self.floor[1], self.floor[2],:,0]) == 0:
 		con = self.kmeans(point)
@@ -280,7 +291,7 @@ cdef class Trilinear(Interpolation):
 					test_angle = angle_deg(self.best_dir[j], test_cuboid[i,j])
 					if test_angle > 90:
 						mult_with_scalar(test_cuboid[i,j], -1, test_cuboid[i,j])
-				add_vectors(self.best_dir[j], self.best_dir[j], test_cuboid[i,j])
+#				add_vectors(self.best_dir[j], self.best_dir[j], test_cuboid[i,j])
 		while True:
 			con = 0
 			max_try += 1
@@ -315,7 +326,7 @@ cdef class Trilinear(Interpolation):
 			for i in range(8):
 				for j in range(3):
 					mult_with_scalar(test_cuboid[i, permute_poss[best[4 * i], j]], best[4 * i + k + 1], test_cuboid[i, permute_poss[best[4 * i], j]])
-					add_vectors(self.best_dir[j], self.best_dir[j], test_cuboid[i, permute_poss[best[4*i],j]])
+#					add_vectors(self.best_dir[j], self.best_dir[j], test_cuboid[i, permute_poss[best[4*i],j]])
 
 			if max_try == 1000:
 				con = 0
@@ -323,7 +334,7 @@ cdef class Trilinear(Interpolation):
 				break
 
 		self.set_new_poss()
-		return int(con) 
+		return int(con)
 
 
 
