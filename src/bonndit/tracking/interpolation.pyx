@@ -331,7 +331,7 @@ cdef class Trilinear(Interpolation):
 					self.cache[self.floor[0], self.floor[1], self.floor[2], i] = int(best[i])
 				self.set_new_poss()
 				break
-			set_zero_matrix(self.best_dir)
+	#		set_zero_matrix(self.best_dir)
 #			for i in range(8):
 #				for j in range(3):
 #					mult_with_scalar(test_cuboid[i, permute_poss[best[4 * i], j]], best[4 * i + k + 1], test_cuboid[i, permute_poss[best[4 * i], j]])
@@ -342,7 +342,7 @@ cdef class Trilinear(Interpolation):
 				with gil: print('I do not converge')
 				break
 
-
+		set_zero_matrix(self.best_dir)
 		return int(con)
 
 
