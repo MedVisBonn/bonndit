@@ -275,6 +275,7 @@ cdef class Trilinear(Interpolation):
 				# Does not work with mult_with_scalar dont understand :(
 				for k in range(3):
 					test_cuboid[i,j,k] = exponent *  self.vector_field[1 + k, j, int(self.floor_point[i, 0]),int(self.floor_point[i, 1]),int(self.floor_point[i, 2])]
+
 				if norm(self.best_dir[j])!=0 and norm(test_cuboid[i,k])!=0:
 					test_angle = angle_deg(self.best_dir[j], test_cuboid[i,j])
 					if test_angle > 90:
@@ -308,6 +309,7 @@ cdef class Trilinear(Interpolation):
 				con += fabs(best[4*i] - old_best[i])
 				old_best[i] = best[4*i]
 			if con == 0:
+				con = 1
 				break
 			set_zero_matrix(self.best_dir)
 			for i in range(8):
@@ -316,11 +318,12 @@ cdef class Trilinear(Interpolation):
 					add_vectors(self.best_dir[j], self.best_dir[j], test_cuboid[i, permute_poss[best[4*i],j]])
 
 			if max_try == 1000:
+				con = 0
 				with gil: print('I do not converge')
 				break
 
 		self.set_new_poss()
-
+		return int(con) 
 
 
 

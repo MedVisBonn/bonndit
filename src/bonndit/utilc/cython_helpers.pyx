@@ -45,6 +45,7 @@ cdef bint point_validator(double v, int a) nogil:
 			return False
 	if v != v:
 		return False
+	return True
 
 @cython.cdivision(True)
 cdef double angle_deg(double[:] vec1, double[:] vec2) nogil:
