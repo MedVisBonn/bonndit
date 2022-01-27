@@ -317,7 +317,7 @@ cdef class Trilinear(Interpolation):
 
 				for j in range(3):
 					if norm(self.best_dir[j]) == 0:
-						add_vectors(self.best_dir[j], self.best_dir[j], test_cuboid[j, permute_poss[best[4*i, j]]])
+						add_vectors(self.best_dir[j], self.best_dir[j], test_cuboid[i, permute_poss[best[4*i], j]])
 			for i in range(8):
 				con += fabs(best[4*i] - old_best[i])
 				old_best[i] = best[4*i]

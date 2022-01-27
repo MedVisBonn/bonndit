@@ -85,7 +85,6 @@ cdef void forward_tracking(double[:,:] paths,  Interpolation interpolate,
 		# Check next step is valid. If it is: Integrate. else break
 		if validator.next_point_checker(interpolate.next_dir):
 			break
-
 		integrate.integrate(interpolate.next_dir, paths[k])
 		# update old dir
 		paths[k+1] = integrate.next_point
