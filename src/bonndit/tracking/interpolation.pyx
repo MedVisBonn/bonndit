@@ -452,7 +452,11 @@ cdef class Trilinear(Interpolation):
                         for k in range(3):
                             best[4 * i + k + 1] = minus[k]
 
-
+                for j in range(3):
+                    if norm(self.best_dir[j]) == 0:
+                        add_vectors(
+                            self.best_dir[j], self.best_dir[j],
+                            test_cuboid[j, permute_poss[best[4 * i, j]]])
             for i in range(8):
                 con += fabs(best[4 * i] - old_best[i])
                 old_best[i] = best[4 * i]
@@ -471,7 +475,7 @@ cdef class Trilinear(Interpolation):
 # add_vectors(self.best_dir[j], self.best_dir[j], test_cuboid[i,
 # permute_poss[best[4*i],j]])
 
-            if max_try == 1000:
+            if max_try == 100:
                 con = 0
                 with gil: print('I do not converge')
                 break
