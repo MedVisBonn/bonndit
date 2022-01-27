@@ -287,7 +287,7 @@ cdef class Trilinear(Interpolation):
         if sum_c_int(
             self.cache[
                 self.floor[0], self.floor[1], self.floor[2],
-                :]) == 0:
+                :]) != 0:
             self.permute(point)
         else:
             con = self.kmeans(point)
@@ -357,22 +357,49 @@ cdef class Trilinear(Interpolation):
 
 		"""
         cdef int i, index, k, l
+        cdef double exponent = 0
         for index in range(8):
             for i in range(3):
-                mult_with_scalar(
-                    self.dir[index, i],
-                    self.cache[
-                        int(point[0]), int(point[1]), int(point[2]),
-                        index * 4 + 1 + i],
-                    self.cuboid[
-                        index,
+                if point_validator(
+                    self.vector_field[
+                        0,
                         permute_poss[
                             self.cache[
                                 int(point[0]),
-                                int(point[1]), int(point[2]), index * 4], i]])
-        for index in range(8):
-            for i in range(3):
-                mult_with_scalar(self.cuboid[index, i], 1, self.dir[index, i])
+                                int(point[1]), int(point[2]), index * 4],
+                            i], int(self.floor_point[index, 0]),
+                        int(self.floor_point[index, 1]),
+                        int(self.floor_point[index, 2])], 1):
+                    exponent = pow(
+                        fabs(
+                            self.vector_field[
+                                0,
+                                permute_poss[
+                                    self.cache[
+                                        int(point[0]),
+                                        int(point[1]), int(point[2]),
+                                        index * 4], i],
+                                int(self.floor_point[index, 0]),
+                                int(self.floor_point[index, 1]),
+                                int(self.floor_point[index, 2])]), 1 / 4)
+                else:
+                    exponent = 0
+                for k in range(3):
+                    self.cuboid[
+                        index, i,
+                        k] = exponent * self.cache[
+                        int(point[0]),
+                        int(point[1]), int(point[2]),
+                        index * 4 + 1 + i] * self.vector_field[
+                        1 + k,
+                        permute_poss[
+                            self.cache[
+                                int(point[0]),
+                                int(point[1]), int(point[2]), index * 4],
+                            i], int(self.floor_point[i, 0]),
+                        int(self.floor_point[i, 1]),
+                        int(self.floor_point[i, 2])]
+
 
     cdef void set_new_poss(self) nogil except *:
         cdef int i, j, k
@@ -419,15 +446,10 @@ cdef class Trilinear(Interpolation):
                         int(self.floor_point[i, 1]),
                         int(self.floor_point[i, 2])]
 
-                if norm(self.best_dir[j]) != 0 and norm(
-                    test_cuboid[
-                        i,
-                        k]) != 0:
-                    test_angle = angle_deg(self.best_dir[j], test_cuboid[i, j])
-                    if test_angle > 90:
-                        mult_with_scalar(
-                            test_cuboid[i, j], -1,
-                            test_cuboid[i, j])
+            #	if norm(self.best_dir[j])!=0 and norm(test_cuboid[i,k])!=0:
+            # test_angle = angle_deg(self.best_dir[j], test_cuboid[i,j])
+            #		if test_angle > 90:
+            # mult_with_scalar(test_cuboid[i,j], -1, test_cuboid[i,j])
 # add_vectors(self.best_dir[j], self.best_dir[j], test_cuboid[i,j])
         while True:
             con = 0
