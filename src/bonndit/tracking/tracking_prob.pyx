@@ -8,7 +8,7 @@ from .ItoW cimport Trafo
 from .stopping cimport Validator
 from .integration cimport  Euler, Integration
 from .interpolation cimport  FACT, Trilinear, Interpolation
-from bonndit.utilc.cython_helpers cimport mult_with_scalar, sum_c, set_zero_matrix, set_zero_vector, sub_vectors, \
+from bonndit.utilc.cython_helpers cimport mult_with_scalar, sum_c, point_validator, set_zero_vector, sub_vectors, \
 	angle_deg, norm
 import numpy as np
 from tqdm import tqdm
@@ -99,22 +99,24 @@ cdef void forward_tracking(double[:,:] paths,  Interpolation interpolate,
 			validator.set_path_zero(paths, features)
 			return
 		integrate.old_dir = interpolate.next_dir
-	if k == 0:
-		trafo.itow(paths[k])
-		paths[k] = trafo.point_itow
-	if k == max_track_length - 2:
-		if norm(paths[k+1]) == 0:
-			with gil:
-				print('1 Fehler')
-		trafo.itow(paths[k+1])
-		paths[k+1] = trafo.point_itow
-	else:
-		if norm(paths[k]) == 0:
-			with gil:
-				print(k, 'Ne oder')
-		else:
-			trafo.itow(paths[k])
-			paths[k] = trafo.point_itow
+	if not point_validator(norm(paths[k]), 1):
+		set_zero_vector(paths[k])
+#	if k == 0:
+#		trafo.itow(paths[k])
+#		paths[k] = trafo.point_itow
+#	if k == max_track_length - 2:
+#		if norm(paths[k+1]) == 0:
+#			with gil:
+#				print('1 Fehler')
+#		trafo.itow(paths[k+1])
+#		paths[k+1] = trafo.point_itow
+#	else:
+#		if norm(paths[k]) == 0:
+#			with gil:
+#				print(k, 'Ne oder')
+#		else:
+#			trafo.itow(paths[k])
+#			paths[k] = trafo.point_itow
 
 
 
