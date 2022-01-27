@@ -11,7 +11,7 @@
         ],
         "depends": [],
         "include_dirs": [
-            "/tmp/pip-build-env-ymw_dl8p/overlay/lib/python3.8/site-packages/numpy/core/include",
+            "/tmp/pip-build-env-1gdaw2h7/overlay/lib/python3.8/site-packages/numpy/core/include",
             "."
         ],
         "name": "bonndit.tracking.interpolation",
@@ -6168,7 +6168,7 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_9Trilinear_permute(struct
  * 				else:
  * 					exponent = 0             # <<<<<<<<<<<<<<
  * 				for k in range(3):
- * 					self.cuboid[index,i,k] = exponent * self.cache[int(point[0]), int(point[1]),int(point[2]), index*4 + 1 +i] * self.vector_field[1 +k, permute_poss[self.cache[int(point[0]), int(point[1]),int(point[2]), index*4], i], int(self.floor_point[i, 0]),int(self.floor_point[i, 1]),int(self.floor_point[i, 2])]
+ * 					self.cuboid[index,i,k] = exponent * self.cache[int(point[0]), int(point[1]),int(point[2]), index*4 + 1 +i] * self.vector_field[1 +k, permute_poss[self.cache[int(point[0]), int(point[1]),int(point[2]), index*4], i], int(self.floor_point[index, 0]),int(self.floor_point[index, 1]),int(self.floor_point[index, 2])]
  */
       /*else*/ {
         __pyx_v_exponent = 0.0;
@@ -6179,7 +6179,7 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_9Trilinear_permute(struct
  * 				else:
  * 					exponent = 0
  * 				for k in range(3):             # <<<<<<<<<<<<<<
- * 					self.cuboid[index,i,k] = exponent * self.cache[int(point[0]), int(point[1]),int(point[2]), index*4 + 1 +i] * self.vector_field[1 +k, permute_poss[self.cache[int(point[0]), int(point[1]),int(point[2]), index*4], i], int(self.floor_point[i, 0]),int(self.floor_point[i, 1]),int(self.floor_point[i, 2])]
+ * 					self.cuboid[index,i,k] = exponent * self.cache[int(point[0]), int(point[1]),int(point[2]), index*4 + 1 +i] * self.vector_field[1 +k, permute_poss[self.cache[int(point[0]), int(point[1]),int(point[2]), index*4], i], int(self.floor_point[index, 0]),int(self.floor_point[index, 1]),int(self.floor_point[index, 2])]
  * 
  */
       for (__pyx_t_24 = 0; __pyx_t_24 < 3; __pyx_t_24+=1) {
@@ -6188,7 +6188,7 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_9Trilinear_permute(struct
         /* "bonndit/tracking/interpolation.pyx":264
  * 					exponent = 0
  * 				for k in range(3):
- * 					self.cuboid[index,i,k] = exponent * self.cache[int(point[0]), int(point[1]),int(point[2]), index*4 + 1 +i] * self.vector_field[1 +k, permute_poss[self.cache[int(point[0]), int(point[1]),int(point[2]), index*4], i], int(self.floor_point[i, 0]),int(self.floor_point[i, 1]),int(self.floor_point[i, 2])]             # <<<<<<<<<<<<<<
+ * 					self.cuboid[index,i,k] = exponent * self.cache[int(point[0]), int(point[1]),int(point[2]), index*4 + 1 +i] * self.vector_field[1 +k, permute_poss[self.cache[int(point[0]), int(point[1]),int(point[2]), index*4], i], int(self.floor_point[index, 0]),int(self.floor_point[index, 1]),int(self.floor_point[index, 2])]             # <<<<<<<<<<<<<<
  * 
  * 
  */
@@ -6213,13 +6213,13 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_9Trilinear_permute(struct
         __pyx_t_4 = (*((int *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->cache.data + __pyx_t_12 * __pyx_v_self->cache.strides[0]) ) + __pyx_t_13 * __pyx_v_self->cache.strides[1]) ) + __pyx_t_14 * __pyx_v_self->cache.strides[2]) ) + __pyx_t_3 * __pyx_v_self->cache.strides[3]) )));
         __pyx_t_18 = __pyx_v_i;
         if (unlikely(!__pyx_v_self->__pyx_base.floor_point.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 264, __pyx_L1_error)}
-        __pyx_t_19 = __pyx_v_i;
+        __pyx_t_19 = __pyx_v_index;
         __pyx_t_20 = 0;
         if (unlikely(!__pyx_v_self->__pyx_base.floor_point.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 264, __pyx_L1_error)}
-        __pyx_t_21 = __pyx_v_i;
+        __pyx_t_21 = __pyx_v_index;
         __pyx_t_22 = 1;
         if (unlikely(!__pyx_v_self->__pyx_base.floor_point.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 264, __pyx_L1_error)}
-        __pyx_t_25 = __pyx_v_i;
+        __pyx_t_25 = __pyx_v_index;
         __pyx_t_26 = 2;
         __pyx_t_27 = (1 + __pyx_v_k);
         __pyx_t_28 = (*((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_7bonndit_8tracking_13interpolation_permute_poss.data + __pyx_t_4 * __pyx_v_7bonndit_8tracking_13interpolation_permute_poss.strides[0]) ) + __pyx_t_18 * __pyx_v_7bonndit_8tracking_13interpolation_permute_poss.strides[1]) )));
