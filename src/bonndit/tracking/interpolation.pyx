@@ -396,9 +396,9 @@ cdef class Trilinear(Interpolation):
                             self.cache[
                                 int(point[0]),
                                 int(point[1]), int(point[2]), index * 4],
-                            i], int(self.floor_point[i, 0]),
-                        int(self.floor_point[i, 1]),
-                        int(self.floor_point[i, 2])]
+                            i], int(self.floor_point[index, 0]),
+                        int(self.floor_point[index, 1]),
+                        int(self.floor_point[index, 2])]
 
 
     cdef void set_new_poss(self) nogil except *:
