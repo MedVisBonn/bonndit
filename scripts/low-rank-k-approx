@@ -68,8 +68,7 @@ def main():
     output = np.zeros((4, int(args.r), NUM))
     # check format:
     approx_all_spherical(
-        output, np.float64(data),
-        np.float64(fodfs),
+        output, np.float64(fodfs),
         np.int(0),
         np.float32(0),
         np.int(args.r),

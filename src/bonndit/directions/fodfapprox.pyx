@@ -46,8 +46,8 @@ cdef void get_neighbor_for_coor(
 
 
 cpdef approx_all_spherical(
-    double[:, :, :] output, double[:, :] data,
-    double[:, :, :, :] fodf, int nearest, double nu, int rank, verbose
+    double[:, :, :] output, double[:, :, :, :] fodf,
+    int nearest, double nu, int rank, verbose
 ):
     """ This function calculates the best tensor approximation with spherical approximation as described in xy.
 
@@ -56,8 +56,7 @@ cpdef approx_all_spherical(
     output The output
     data tensor data
     fodf TODO this can be replaced with a shape
-    nearest integer. How many neighbours should be used for the calculation. Given a point x all neighbours with
-                        norm(x,y) < nearest are used
+    nearest integer. How many neighbours should be used for the calculation. Given a point x all neighbours with norm(x,y) < nearest are used
     nu [0,inf) regularization strength
     run_all True or False. If True it regularizes. If False it calculates just the average
 
@@ -68,7 +67,7 @@ cpdef approx_all_spherical(
     # Number of threads to allocate memory to each thread and prevent
     # interference.
     cdef int thread_num = psutil.cpu_count()
-    cdef int i, j, k, num = data.shape[1]
+    cdef int i, j, k, num = fodf.shape[1] * fodf.shape[2] * fodf.shape[3]
     # Neighbors of each voxel with absolut norm leq nearest
     cdef int[:, :] neighbors = np.array(
         [
