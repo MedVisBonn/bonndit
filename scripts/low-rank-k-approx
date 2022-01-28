@@ -60,7 +60,7 @@ def main():
 	NUM = data.shape[1]
 	output = np.zeros((4, int(args.r), NUM))
 	# check format:
-	approx_all_spherical(output, np.float64(data), np.float64(fodfs), np.int(0), np.float32(0), np.int(args.r), args.verbose)
+	approx_all_spherical(output, np.float64(fodfs), np.int(0), np.float32(0), np.int(args.r), args.verbose)
 	logging.info(f"Low-rank {args.r} approximation is calculated")
 
 
