@@ -133,6 +133,8 @@ cdef class ROIInValidator(ROIInNotValidator):
 			points = points[:,:3]
 			points = np.vstack((np.min(points, axis=0), np.max(points, axis=0)))
 			output[2*i:2*(i+1)] = points
+		with gil:
+			print(points, len(cubes))
 		self.inclusion = output
 		self.inclusion_num = len(cubes)
 		self.inclusion_check = np.zeros(len(cubes))
@@ -148,6 +150,7 @@ cdef class ROIInValidator(ROIInNotValidator):
 			if bigger(point, self.inclusion[2*i + 1]):
 				continue
 			self.inclusion_check[i] = 1
+			break
 
 
 
