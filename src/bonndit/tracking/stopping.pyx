@@ -167,7 +167,6 @@ cdef class ROIInValidator(ROIInNotValidator):
                     np.min(points, axis=0),
                     np.max(points, axis=0)))
             output[2 * i:2 * (i + 1)] = points
-        with gil:
             print(points, len(cubes))
         self.inclusion = output
         self.inclusion_num = len(cubes)
