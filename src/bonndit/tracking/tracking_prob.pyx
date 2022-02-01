@@ -92,7 +92,7 @@ cdef void forward_tracking(double[:,:] paths,  Interpolation interpolate,
 
 		trafo.itow(paths[k])
 		paths[k] = trafo.point_itow
-		validator.ROIIn.included(paths[k])
+		features[k, 2] = validator.ROIIn.included(paths[k])
 		# Check curvature between current point and point 30mm ago
 		if validator.Curve.curvature_checker(paths[:k + 1], features[k:k+1,1]):
 			validator.set_path_zero(paths, features)
@@ -198,7 +198,7 @@ cpdef tracking_all(double[:,:,:,:,:] vector_field, meta, double[:,:,:] wm_mask, 
 	# Array to save Polygons
 	cdef double[:,:,:,:,:] paths = np.zeros((m, samples, max_track_length, 2, 3),dtype=np.float64)
 	# Array to save features belonging to polygons
-	cdef double[:,:,:,:,:] features = np.zeros((m, samples, max_track_length, 2, 2),dtype=np.float64)
+	cdef double[:,:,:,:,:] features = np.zeros((m, samples, max_track_length, 2, 3),dtype=np.float64)
 	# loop through all seeds.
 	tracks = []
 	tracks_len = []
