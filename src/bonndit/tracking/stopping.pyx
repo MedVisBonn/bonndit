@@ -116,7 +116,7 @@ cdef class ROIInNotValidator:
 
 
 	cdef void included(self, double[:] point) nogil except *:
-		pass
+		return
 
 	cdef bint included_checker(self) nogil except *:
 		return False
@@ -133,13 +133,11 @@ cdef class ROIInValidator(ROIInNotValidator):
 			points = points[:,:3]
 			points = np.vstack((np.min(points, axis=0), np.max(points, axis=0)))
 			output[2*i:2*(i+1)] = points
-		with gil:
-			print(points, len(cubes))
 		self.inclusion = output
 		self.inclusion_num = len(cubes)
 		self.inclusion_check = np.zeros(len(cubes))
 
-	cdef void included(self, double[:] point) nogil except *:
+	cdef int included(self, double[:] point) nogil except *:
 		cdef int i
 		if sum_c(self.inclusion_check) == self.inclusion_num:
 			return
@@ -150,7 +148,7 @@ cdef class ROIInValidator(ROIInNotValidator):
 			if bigger(point, self.inclusion[2*i + 1]):
 				continue
 			self.inclusion_check[i] = 1
-			break
+			return i
 
 
 
