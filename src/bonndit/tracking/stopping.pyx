@@ -115,8 +115,8 @@ cdef class ROIInNotValidator:
 		self.inclusion_check = np.zeros(1)
 
 
-	cdef void included(self, double[:] point) nogil except *:
-		return
+	cdef int included(self, double[:] point) nogil except *:
+		return 0
 
 	cdef bint included_checker(self) nogil except *:
 		return False
@@ -129,11 +129,10 @@ cdef class ROIInValidator(ROIInNotValidator):
 			points = open(cube)
 			points = np.array([list(map(float, point.split())) for point in points])
 			points = np.hstack((points, np.ones((points.shape[0], 1))))
-			points = points @ np.linalg.inv(trafo) @ np.linalg.inv(trafo_fsl) @ trafo
+			points = trafo @ np.linalg.inv(trafo_fsl) @ np.linalg.inv(trafo) @ points
 			points = points[:,:3]
 			points = np.vstack((np.min(points, axis=0), np.max(points, axis=0)))
 			output[2*i:2*(i+1)] = points
-			print(points, len(cubes))
 		self.inclusion = output
 		self.inclusion_num = len(cubes)
 		self.inclusion_check = np.zeros(len(cubes))
@@ -141,16 +140,16 @@ cdef class ROIInValidator(ROIInNotValidator):
 	cdef int included(self, double[:] point) nogil except *:
 		cdef int i
 		if sum_c(self.inclusion_check) == self.inclusion_num:
-			return
+			return 0 
 
 		for i in range(self.inclusion_num):
-			if smaller(point, self.inclusion[2*i]):
+			if not bigger(point, self.inclusion[2*i]):
 				continue
-			if bigger(point, self.inclusion[2*i + 1]):
+			if not smaller(point, self.inclusion[2*i + 1]):
 				continue
 			self.inclusion_check[i] = 1
-			return i
-
+			return i + 1 
+		return 0 
 
 
 	cdef bint included_checker(self) nogil except *:
