@@ -104,7 +104,7 @@ cdef void forward_tracking(
 
         trafo.itow(paths[k])
         paths[k] = trafo.point_itow
-        validator.ROIIn.included(paths[k])
+        features[k, 2] = validator.ROIIn.included(paths[k])
         # Check curvature between current point and point 30mm ago
         if validator.Curve.curvature_checker(
             paths[:k + 1],
@@ -228,7 +228,7 @@ cpdef tracking_all(
     cdef double[
         :, :, :, :,
         :] features = np.zeros(
-        (m, samples, max_track_length, 2, 2),
+        (m, samples, max_track_length, 2, 3),
         dtype=np.float64)
     # loop through all seeds.
     tracks = []
