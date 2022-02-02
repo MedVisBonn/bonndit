@@ -150,7 +150,8 @@ def main():
                    ('y', 'f4'),
                    ('z', 'f4'),
                    ('seedpoint', 'f4'),
-                   ('angle', 'f4')]),
+                   ('angle', 'f4'),
+                   ('test', 'f4')]),
         'vertices', comments=[])
     endindex = PlyElement.describe(
         np.array(paths_len, dtype=[('endindex', 'i4')]), 'fiber')
