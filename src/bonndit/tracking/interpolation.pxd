@@ -9,6 +9,7 @@ cdef class Interpolation:
 	cdef double[:,:,:] cuboid
 	cdef double[:,:]  floor_point
 	cdef double[:,:] best_dir
+	cdef int[:,:,:,:] cache
 	cdef double chosen_angle
 	cdef Trafo trafo
 	cdef Probabilities prob
@@ -29,7 +30,7 @@ cdef class Trilinear(Interpolation):
 	cdef int[:,:] not_check
 	cdef double[:] point
 	cdef double[:,:,:] dir
-	cdef int[:,:,:,:] cache
+#	cdef int[:,:,:,:] cache
 	cdef int[:] floor
 	cdef int[:] permutation
 	cdef void set_array(self, int, int, int) nogil

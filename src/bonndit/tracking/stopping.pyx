@@ -140,7 +140,7 @@ cdef class ROIInValidator(ROIInNotValidator):
 	cdef int included(self, double[:] point) nogil except *:
 		cdef int i
 		if sum_c(self.inclusion_check) == self.inclusion_num:
-			return 0 
+			return 0
 
 		for i in range(self.inclusion_num):
 			if not bigger(point, self.inclusion[2*i]):
@@ -148,8 +148,8 @@ cdef class ROIInValidator(ROIInNotValidator):
 			if not smaller(point, self.inclusion[2*i + 1]):
 				continue
 			self.inclusion_check[i] = 1
-			return i + 1 
-		return 0 
+			return i + 1
+		return 0
 
 
 	cdef bint included_checker(self) nogil except *:
@@ -190,7 +190,7 @@ cdef class ROIInValidator(ROIInNotValidator):
 #		cdef int i
 #		for i in range(self.exclusion_num):
 #			if bigger(point, self.exclusion_cube[2*i]) and smaller(point, self.exclusion_cube[2*i + 1]):
-#				return True
+#				return Truepip in
 #		return False
 
 
