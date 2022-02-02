@@ -2,13 +2,14 @@
 #cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True,
 # warn.unused_results=True
 import sys
+import nrrd
 sys.path.append('.')
 from .alignedDirection cimport  Gaussian, Laplacian, ScalarOld, ScalarNew, Probabilities
 from .ItoW cimport Trafo
 from .stopping cimport Validator
 from .integration cimport  Euler, Integration
 from .interpolation cimport  FACT, Trilinear, Interpolation
-from bonndit.utilc.cython_helpers cimport mult_with_scalar, sum_c, point_validator, set_zero_vector, sub_vectors, \
+from bonndit.utilc.cython_helpers cimport mult_with_scalar, sum_c, sum_c_int, set_zero_vector, sub_vectors, \
 	angle_deg, norm
 import numpy as np
 from tqdm import tqdm
@@ -226,6 +227,24 @@ cpdef tracking_all(double[:,:,:,:,:] vector_field, meta, double[:,:,:] wm_mask, 
 				tracks_len.append(path.shape[0])
 				tracks += [tuple(x) for x in path]
 
+#	test = np.zeros(np.array(vector_field).shape, dtype=np.float32)
+#	k_start = 83
+#	i_start = 52
+#	j_start = 89
+#	for i in range(9):
+#		for j in range(8):
+#			for k in range(9):
+#				if sum_c_int(interpolate.cache[i_start + i,k_start + k,j_start + j]):
+#					for l in range(10):
+#						for m in range(10):
+#							for n in range(10):
+#								interpolate.interpolate(np.array([i_start + i+0.1*l,k_start + k +0.1*n ,j_start + j+0.1*m], dtype=np.float64), np.array([0,0,0], dtype=np.float64))
+#								for o in range(3):
+#									test[1:,o, 10*i + l,k*10+n, 10*j + m] = np.array(interpolate.best_dir[o])/norm(interpolate.best_dir[o])
+#									test[0,o, 10*i + l,k*10+n, 10*j + m] = pow(norm(interpolate.best_dir[o]),4)
+#					#for l in range(3):
+#					#	test[:, l, 10*i,k, 10*j] = vector_field[:,interpolate.cache[i_start + i,k,j_start + j, 4*l],i_start + i, k, j_start + j]
+#	nrrd.write("test.nrrd", test, meta)
 	return tracks, tracks_len
 
 

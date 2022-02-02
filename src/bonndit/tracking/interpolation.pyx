@@ -24,6 +24,8 @@ cdef int[:] minus = np.array((3,), dtype=np.int32)
 cdef int[:,:] neigh_int = np.array([[x, y, z] for x in range(2) for y in range(2) for z in range(2)], dtype=np.int32)
 cdef int[:] best = np.zeros((4*8,), dtype=np.int32),  old_best = np.zeros((8,), dtype=np.int32)
 cdef double[:,:,:] test_cuboid = np.zeros((8, 3, 3), dtype=DTYPE)
+cdef double[:] placeholder = np.zeros((3,), dtype=DTYPE)
+
 
 cdef class Interpolation:
 
@@ -34,6 +36,7 @@ cdef class Interpolation:
 		self.floor_point = np.zeros((8, 3), dtype=DTYPE)
 		self.best_dir  = np.zeros((3,3), dtype=DTYPE)
 		self.next_dir = np.zeros((3,), dtype=DTYPE)
+		self.cache = np.zeros((grid[0], grid[1], grid[2], 4 * 8), dtype=np.int32)
 		self.best_ind = 0
 		self.trafo = trafo
 		self.prob = prob
@@ -143,7 +146,7 @@ cdef class Trilinear(Interpolation):
 		self.point = np.zeros((3,), dtype=DTYPE)
 		self.dir = np.zeros((8, 3, 3), dtype=DTYPE)
 		self.new_best_dir = np.zeros((3, 3), dtype=DTYPE)
-		self.cache = np.zeros((grid[0], grid[1], grid[2], 4*8), dtype=np.int32)
+		#self.cache = np.zeros((grid[0], grid[1], grid[2], 4*8), dtype=np.int32)
 		self.permutation = np.zeros((16,), dtype=np.int32)
 		self.not_check = np.zeros((3,2), dtype=np.int32)
 		self.floor = np.zeros((3,), dtype=np.int32)
@@ -211,20 +214,20 @@ cdef class Trilinear(Interpolation):
 			for i in range(3):
 				# interpolate in x direction
 				for j in range(4):
-					mult_with_scalar(self.array[0], 1 - self.point[0], self.cuboid[4+j, i])
-					mult_with_scalar(self.array[1], self.point[0], self.cuboid[j, i])
+					mult_with_scalar(self.array[0], self.point[0], self.cuboid[4+j, i])
+					mult_with_scalar(self.array[1], 1-self.point[0], self.cuboid[j, i])
 					add_vectors(self.x_array[j], self.array[0], self.array[1])
 
 				# then in y direction
 				mult_with_scalar(self.x_array[0], 1-self.point[1], self.x_array[0])
-				mult_with_scalar(self.x_array[1], self.point[1], self.x_array[1])
-				add_vectors(self.array[0], self.x_array[0], self.x_array[1])
-				mult_with_scalar(self.x_array[2], 1 - self.point[1], self.x_array[2])
+				mult_with_scalar(self.x_array[2], self.point[1], self.x_array[2])
+				add_vectors(self.array[0], self.x_array[0], self.x_array[2])
+				mult_with_scalar(self.x_array[1], 1-self.point[1], self.x_array[1])
 				mult_with_scalar(self.x_array[3], self.point[1], self.x_array[3])
-				add_vectors(self.array[1], self.x_array[2], self.x_array[3])
+				add_vectors(self.array[1], self.x_array[1], self.x_array[3])
 
 				# then z direction
-				mult_with_scalar(self.array[0], 1 - self.point[2], self.array[0])
+				mult_with_scalar(self.array[0], 1-self.point[2], self.array[0])
 				mult_with_scalar(self.array[1], self.point[2], self.array[1])
 				add_vectors(self.best_dir[i], self.array[0], self.array[1])
 
@@ -252,7 +255,7 @@ cdef class Trilinear(Interpolation):
 		-------
 
 		"""
-		cdef int i, index, k, l
+		cdef int i, index, k, l, z = 1
 		cdef double exponent = 0
 		for index in range(8):
 			for i in range(3):
@@ -261,7 +264,15 @@ cdef class Trilinear(Interpolation):
 				else:
 					exponent = 0
 				for k in range(3):
-					self.cuboid[index,i,k] = exponent * self.cache[int(point[0]), int(point[1]),int(point[2]), index*4 + 1 +i] * self.vector_field[1 +k, permute_poss[self.cache[int(point[0]), int(point[1]),int(point[2]), index*4], i], int(self.floor_point[index, 0]),int(self.floor_point[index, 1]),int(self.floor_point[index, 2])]
+					placeholder[k] = self.vector_field[1 + k, permute_poss[self.cache[int(point[0]), int(point[1]),int(point[2]), index*4], i], int(self.floor_point[index, 0]),int(self.floor_point[index, 1]),int(self.floor_point[index, 2])]
+				if index > 0:
+					ang = angle_deg(self.cuboid[0,i] , placeholder)
+					if ang > 90:
+						z=-1
+					else:
+						z=1
+				for k in range(3):
+					self.cuboid[index,i,k] = exponent * z * self.vector_field[1 +k, permute_poss[self.cache[int(point[0]), int(point[1]),int(point[2]), index*4], i], int(self.floor_point[index, 0]),int(self.floor_point[index, 1]),int(self.floor_point[index, 2])]
 
 
 	cdef void set_new_poss(self) nogil except *:
@@ -275,7 +286,7 @@ cdef class Trilinear(Interpolation):
 
 	cdef int kmeans(self, double[:] point) nogil except *:
 		cdef int i, j, k, l, max_try=0, best_min=0
-		cdef double exponent = 0, best_angle=0, min_angle=0, con=0
+		cdef double exponent = 0, best_angle=0, min_angle=0, con=0, test_angle=0
 		for i in range(8):
 			set_zero_matrix(test_cuboid[i])
 
@@ -287,15 +298,10 @@ cdef class Trilinear(Interpolation):
 				                                       int(self.floor_point[i, 2])]), 1/4)
 				else:
 					exponent = 0
-				# Does not work with mult_with_scalar dont understand :(
+
 				for k in range(3):
 					test_cuboid[i,j,k] = exponent *  self.vector_field[1 + k, j, int(self.floor_point[i, 0]),int(self.floor_point[i, 1]),int(self.floor_point[i, 2])]
 
-			#	if norm(self.best_dir[j])!=0 and norm(test_cuboid[i,k])!=0:
-			#		test_angle = angle_deg(self.best_dir[j], test_cuboid[i,j])
-			#		if test_angle > 90:
-			#			mult_with_scalar(test_cuboid[i,j], -1, test_cuboid[i,j])
-#				add_vectors(self.best_dir[j], self.best_dir[j], test_cuboid[i,j])
 		while True:
 			con = 0
 			max_try += 1
@@ -303,25 +309,32 @@ cdef class Trilinear(Interpolation):
 			for i in range(8):
 				min_angle = 0
 				for j in range(6):
+					test_angle=0
 					set_zero_vector_int(minus)
 					for k in range(3):
-						if norm(test_cuboid[i,permute_poss[j,k]]) != 0 and norm(self.best_dir[k]) != 0:
-							ang = angle_deg(self.best_dir[k], test_cuboid[i, permute_poss[j,k]])
-							if ang > 90:
-								test_angle += 180 - ang
-								minus[k] = -1
-							else:
-								test_angle = ang
-								minus[k] = 1
+
+						ang = angle_deg(self.best_dir[k], test_cuboid[i, permute_poss[j,k]])
+						if ang > 90:
+							mult_with_scalar(placeholder, -1, test_cuboid[i, permute_poss[j, k]])
+							minus[k] = -1
+						else:
+							mult_with_scalar(placeholder, 1, test_cuboid[i, permute_poss[j, k]])
+							minus[k] = 1
+						sub_vectors(placeholder, placeholder, self.best_dir[k])
+						test_angle += pow(norm(placeholder),4)
 					if min_angle == 0 or test_angle < min_angle:
 						min_angle = test_angle
+					#	with gil: print(test_angle, min_angle)
 						best[4*i] = j
 						for k in range(3):
 							best[4*i + k + 1] = minus[k]
 
-				for j in range(3):
-					if norm(self.best_dir[j]) == 0:
-						add_vectors(self.best_dir[j], self.best_dir[j], test_cuboid[i, permute_poss[best[4*i], j]])
+		#	set_zero_matrix(self.best_dir)
+		#	for i in range(8):
+					for j in range(3):
+						if norm(self.best_dir[j]) == 0:
+							mult_with_scalar(placeholder, best[4*i+ 1 +j]/8, test_cuboid[i, permute_poss[best[4*i], j]])
+							add_vectors(self.best_dir[j], self.best_dir[j], placeholder)
 			for i in range(8):
 				con += fabs(best[4*i] - old_best[i])
 				old_best[i] = best[4*i]
@@ -331,17 +344,11 @@ cdef class Trilinear(Interpolation):
 					self.cache[self.floor[0], self.floor[1], self.floor[2], i] = int(best[i])
 				self.set_new_poss()
 				break
-	#		set_zero_matrix(self.best_dir)
-#			for i in range(8):
-#				for j in range(3):
-#					mult_with_scalar(test_cuboid[i, permute_poss[best[4 * i], j]], best[4 * i + k + 1], test_cuboid[i, permute_poss[best[4 * i], j]])
-#					add_vectors(self.best_dir[j], self.best_dir[j], test_cuboid[i, permute_poss[best[4*i],j]])
 
 			if max_try == 1000:
 				con = 0
 				with gil: print('I do not converge')
 				break
-
 		set_zero_matrix(self.best_dir)
 		return int(con)
 
