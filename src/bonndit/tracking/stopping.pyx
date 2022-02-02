@@ -225,5 +225,5 @@ cdef class ROIInValidator(ROIInNotValidator):
 # cdef int i
 # for i in range(self.exclusion_num):
 #			if bigger(point, self.exclusion_cube[2*i]) and smaller(point, self.exclusion_cube[2*i + 1]):
-# return True
+# return Truepip in
 # return False
