@@ -210,11 +210,12 @@ cpdef tracking_all(double[:,:,:,:,:] vector_field, meta, double[:,:,:] wm_mask, 
 		#Convert seedpoint
 		trafo.wtoi(seeds[i][:3])
 		for j in range(samples):
-			paths[i, j, 0, 0] = trafo.point_wtoi
-			paths[i, j, 0, 1] = trafo.point_wtoi
 			if prob == "Deterministic":
-				paths[i, j, 0, 0] += np.random.normal(0,1,(3,))
-				paths[i, j, 0, 1] += np.random.normal(0,1,(3,))
+				paths[i, j, 0, 0] = trafo.point_wtoi +  np.random.normal(0,1,(3,))
+				paths[i, j, 0, 1] = trafo.point_wtoi +  np.random.normal(0,1,(3,))
+			else:
+				paths[i, j, 0, 0] = trafo.point_wtoi
+				paths[i, j, 0, 1] = trafo.point_wtoi
 		features[i, :, 0, 0, 0] = 1
 		features[i, :, 0, 1, 0] = 1
 		#Do the tracking for this seed with the direction
