@@ -72,8 +72,8 @@ cdef class Probabilities:
 		cdef double best_choice = rand() / RAND_MAX
 		if sum_c(self.probability) != 0:
 			mult_with_scalar(self.probability, 1/sum_c(self.probability), self.probability)
-			with gil:
-				print(np.array(self.probability))
+	#		with gil:
+	#			print(np.array(self.probability))
 			if best_choice < self.probability[0]:
 				mult_with_scalar(self.best_fit, 1, self.test_vectors[0])
 				self.chosen_prob = self.probability[0]
