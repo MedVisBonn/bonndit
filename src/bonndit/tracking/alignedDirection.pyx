@@ -182,11 +182,11 @@ cdef class Deterministic(Probabilities):
 		@return:
 		"""
 		cdef int i, min_index
-		cdef double s, min_angle
+		cdef double s, min_angle=0
 		self.aligned_direction(vectors, direction)
 		for i in range(3):
 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:
-				if self.angles[i] < min_angle:
+				if self.angles[i] < min_angle or i==0:
 					min_angle=self.angles[i]
 					min_index=i
 		mult_with_scalar(self.best_fit, 1, self.test_vectors[min_index])
