@@ -72,8 +72,11 @@ cdef class Probabilities:
 		cdef double best_choice = rand() / RAND_MAX
 		if sum_c(self.probability) != 0:
 			mult_with_scalar(self.probability, 1/sum_c(self.probability), self.probability)
+<<<<<<< HEAD
 	#		with gil:
 	#			print(np.array(self.probability))
+=======
+>>>>>>> a0ce66c1a19fa96c1372c1dbd4ebd04475226938
 			if best_choice < self.probability[0]:
 				mult_with_scalar(self.best_fit, 1, self.test_vectors[0])
 				self.chosen_prob = self.probability[0]
@@ -146,10 +149,8 @@ cdef class ScalarOld(Probabilities):
 		#	print(*self.angles)
 		for i in range(3):
 			if sum_c(self.test_vectors[i]) == sum_c(self.test_vectors[i])  and pow(180/60*1/pow(
-					2*pi,0.5)*self.angles[i]/180*pi,
-					2) <= 1/2*pi:
-				self.probability[i] = pow(cos(pow(180/60*1/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)*exp(
-					-pow(norm(self.test_vectors[i])-self.old_fa,2)/self.expectation)
+					2*pi,0.5)*self.angles[i]/180*pi,2) <= 1/2*pi:
+				self.probability[i]=pow(cos(pow(180/60*1/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)*norm(self.test_vectors[i])
 			else:
 				self.probability[i] = 0
 		self.random_choice(direction)
