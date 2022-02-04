@@ -23,3 +23,6 @@ cdef class ScalarOld(Probabilities):
 
 cdef class ScalarNew(Probabilities):
 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+
+cdef class Deterministic(Probabilities):
+	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *

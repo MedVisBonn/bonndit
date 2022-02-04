@@ -72,11 +72,7 @@ cdef class Probabilities:
 		cdef double best_choice = rand() / RAND_MAX
 		if sum_c(self.probability) != 0:
 			mult_with_scalar(self.probability, 1/sum_c(self.probability), self.probability)
-<<<<<<< HEAD
-	#		with gil:
-	#			print(np.array(self.probability))
-=======
->>>>>>> a0ce66c1a19fa96c1372c1dbd4ebd04475226938
+
 			if best_choice < self.probability[0]:
 				mult_with_scalar(self.best_fit, 1, self.test_vectors[0])
 				self.chosen_prob = self.probability[0]
@@ -176,5 +172,25 @@ cdef class ScalarNew(Probabilities):
 				self.probability[i] = 0
 
 		self.random_choice(direction)
+
+cdef class Deterministic(Probabilities):
+	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil  except *:
+		"""
+
+		@param vectors:
+		@param direction:
+		@return:
+		"""
+		cdef int i, min_index
+		cdef double s, min_angle
+		self.aligned_direction(vectors, direction)
+		for i in range(3):
+			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:
+				if self.angles[i] < min_angle:
+					min_angle=self.angles[i]
+					min_index=i
+		mult_with_scalar(self.best_fit, 1, self.test_vectors[min_index])
+		self.chosen_prob = 0
+		self.chosen_angle = self.angles[min_index]
 
 
