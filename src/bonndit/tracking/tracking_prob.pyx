@@ -5,7 +5,7 @@ import sys
 import nrrd
 sys.path.append('.')
 from .alignedDirection cimport Gaussian, Laplacian, ScalarOld, ScalarNew, \
-    Probabilities
+    Probabilities, Deterministic
 from .ItoW cimport Trafo
 from .stopping cimport Validator
 from .integration cimport Euler, Integration
@@ -188,6 +188,8 @@ cpdef tracking_all(
         directionGetter = ScalarOld(expectation, variance)
     elif prob == "ScalarNew":
         directionGetter = ScalarNew(expectation, variance)
+    elif prob == "Deterministic":
+        directionGetter = Deterministic(expectation, variance)
     else:
         logging.error('Gaussian or Laplacian or Scalar are available so far. ')
         return 0

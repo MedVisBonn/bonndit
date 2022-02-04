@@ -38,3 +38,9 @@ cdef class ScalarNew(Probabilities):
         self, double[:, :],
         double[:]
     ) nogil except *
+
+cdef class Deterministic(Probabilities):
+    cdef void calculate_probabilities(
+        self, double[:, :],
+        double[:]
+    ) nogil except *
