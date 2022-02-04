@@ -11,7 +11,7 @@
         ],
         "depends": [],
         "include_dirs": [
-            "/tmp/pip-build-env-ivei0wz7/overlay/lib/python3.8/site-packages/numpy/core/include",
+            "/tmp/pip-build-env-jv6g8o5t/overlay/lib/python3.8/site-packages/numpy/core/include",
             "."
         ],
         "name": "bonndit.tracking.interpolation",
