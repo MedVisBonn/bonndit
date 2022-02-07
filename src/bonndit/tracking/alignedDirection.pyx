@@ -191,7 +191,7 @@ cdef class Deterministic(Probabilities):
 					min_index=i
 		for i in range(3):
 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:
-				if self.angles[i] < min_angle + 10:
+				if self.angles[i] < min_angle + self.sigma:
 					self.probability[i] = 1
 
 		self.random_choice(direction)
