@@ -189,9 +189,14 @@ cdef class Deterministic(Probabilities):
 				if self.angles[i] < min_angle or i==0:
 					min_angle=self.angles[i]
 					min_index=i
+		for i in range(3):
+			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:
+				if self.angles[i] < min_angle + 10:
+					self.probability[i] = 1
 
-		mult_with_scalar(self.best_fit, 1, self.test_vectors[min_index])
-		self.chosen_prob = 0
-		self.chosen_angle = self.angles[min_index]
+
+#		mult_with_scalar(self.best_fit, 1, self.test_vectors[min_index])
+#		self.chosen_prob = 0
+#		self.chosen_angle = self.angles[min_index]
 
 
