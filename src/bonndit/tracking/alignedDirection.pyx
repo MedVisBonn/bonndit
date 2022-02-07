@@ -220,7 +220,7 @@ cdef class ScalarNew(Probabilities):
 
         self.random_choice(direction)
 
-cdef class Deterministic(Probabilities):
+cdef class Deterministic2(Probabilities):
     cdef void calculate_probabilities(
         self, double[:, :] vectors,
         double[:] direction
@@ -252,3 +252,28 @@ cdef class Deterministic(Probabilities):
 # mult_with_scalar(self.best_fit, 1, self.test_vectors[min_index])
 # self.chosen_prob = 0
 # self.chosen_angle = self.angles[min_index]
+
+cdef class Deterministic(Probabilities):
+    cdef void calculate_probabilities(
+        self, double[:, :] vectors,
+        double[:] direction
+    ) nogil except *:
+        """
+
+		@param vectors:
+		@param direction:
+		@return:
+		"""
+        cdef int i, min_index = 0
+        cdef double s, min_angle = 0
+        self.aligned_direction(vectors, direction)
+        for i in range(3):
+            if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i]) \
+                != 0:
+                if self.angles[i] < min_angle or i == 0:
+                    min_angle = self.angles[i]
+                    min_index = i
+
+        mult_with_scalar(self.best_fit, 1, self.test_vectors[min_index])
+        self.chosen_prob = 0
+        self.chosen_angle = self.angles[min_index]
