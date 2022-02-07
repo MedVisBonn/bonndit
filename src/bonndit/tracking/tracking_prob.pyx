@@ -213,7 +213,7 @@ cpdef tracking_all(double[:,:,:,:,:] vector_field, meta, double[:,:,:] wm_mask, 
 		trafo.wtoi(seeds[i][:3])
 		for j in range(samples):
 			paths[i, j, 0, 0] = trafo.point_wtoi
-	#		paths[i, j, 0, 1] = trafo.point_wtoi
+			paths[i, j, 0, 1] = trafo.point_wtoi
 			if prob == "Deterministic":
 				for k in range(3):
 					paths[i, j, 0, 0,k] +=  np.random.normal(0,1,1)
