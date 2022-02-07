@@ -193,6 +193,8 @@ cdef class Deterministic(Probabilities):
 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:
 				if self.angles[i] < min_angle + self.sigma:
 					self.probability[i] = 1
+				else:
+					self.probability[i] = 0
 
 		self.random_choice(direction)
 #		mult_with_scalar(self.best_fit, 1, self.test_vectors[min_index])
