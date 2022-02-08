@@ -172,26 +172,6 @@ cdef class ScalarNew(Probabilities):
 
 		self.random_choice(direction)
 
-cdef class ScalarNew(Probabilities):
-	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil  except *:
-		"""
-
-		@param vectors:
-		@param direction:
-		@return:
-		"""
-		cdef int i
-		cdef double s
-		self.aligned_direction(vectors, direction)
-		#with gil:
-		#	print(*self.angles)
-		for i in range(3):
-			if sum_c(vectors[i]) == sum_c(vectors[i]):
-				self.probability[i] = pow(cos(self.angles[i]/180*pi),self.sigma)*norm(self.test_vectors[i])
-			else:
-				self.probability[i] = 0
-
-		self.random_choice(direction)
 
 cdef class Deterministic2(Probabilities):
 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil  except *:
