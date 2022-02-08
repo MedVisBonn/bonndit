@@ -144,9 +144,8 @@ cdef class ScalarOld(Probabilities):
 		#with gil:
 		#	print(*self.angles)
 		for i in range(3):
-			if sum_c(self.test_vectors[i]) == sum_c(self.test_vectors[i])  and pow(180/60*1/pow(
-					2*pi,0.5)*self.angles[i]/180*pi,2) <= 1/2*pi:
-				self.probability[i]=pow(cos(pow(180/60*1/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)*norm(self.test_vectors[i])
+			if sum_c(self.test_vectors[i]) == sum_c(self.test_vectors[i])  and pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2) <= 1/2*pi:
+				self.probability[i]=pow(cos(pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)*norm(self.test_vectors[i])
 			else:
 				self.probability[i] = 0
 		self.random_choice(direction)
@@ -167,7 +166,28 @@ cdef class ScalarNew(Probabilities):
 		#	print(*self.angles)
 		for i in range(3):
 			if sum_c(vectors[i]) == sum_c(vectors[i]):
-				self.probability[i] = pow(cos(self.angles[i]/180*pi),self.sigma)*exp(-pow(norm(self.test_vectors[i])-self.old_fa,2)/self.expectation)
+				self.probability[i] = pow(cos(self.angles[i]/180*pi),self.sigma)*norm(self.test_vectors[i])
+			else:
+				self.probability[i] = 0
+
+		self.random_choice(direction)
+
+cdef class ScalarNew(Probabilities):
+	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil  except *:
+		"""
+
+		@param vectors:
+		@param direction:
+		@return:
+		"""
+		cdef int i
+		cdef double s
+		self.aligned_direction(vectors, direction)
+		#with gil:
+		#	print(*self.angles)
+		for i in range(3):
+			if sum_c(vectors[i]) == sum_c(vectors[i]):
+				self.probability[i] = pow(cos(self.angles[i]/180*pi),self.sigma)*norm(self.test_vectors[i])
 			else:
 				self.probability[i] = 0
 
