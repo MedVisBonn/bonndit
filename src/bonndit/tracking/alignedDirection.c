@@ -11,7 +11,7 @@
         ],
         "depends": [],
         "include_dirs": [
-            "/tmp/pip-build-env-jv6g8o5t/overlay/lib/python3.8/site-packages/numpy/core/include",
+            "/tmp/pip-build-env-4gd7e0rw/overlay/lib/python3.8/site-packages/numpy/core/include",
             "."
         ],
         "name": "bonndit.tracking.alignedDirection",
@@ -1034,6 +1034,8 @@ struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Gaussian;
 struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Laplacian;
 struct __pyx_obj_7bonndit_8tracking_16alignedDirection_ScalarOld;
 struct __pyx_obj_7bonndit_8tracking_16alignedDirection_ScalarNew;
+struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic;
+struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic2;
 struct __pyx_array_obj;
 struct __pyx_MemviewEnum_obj;
 struct __pyx_memoryview_obj;
@@ -1102,8 +1104,32 @@ struct __pyx_obj_7bonndit_8tracking_16alignedDirection_ScalarOld {
  * 
  * cdef class ScalarNew(Probabilities):             # <<<<<<<<<<<<<<
  * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 
  */
 struct __pyx_obj_7bonndit_8tracking_16alignedDirection_ScalarNew {
+  struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities __pyx_base;
+};
+
+
+/* "bonndit/tracking/alignedDirection.pxd":27
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 
+ * cdef class Deterministic(Probabilities):             # <<<<<<<<<<<<<<
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 
+ */
+struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic {
+  struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities __pyx_base;
+};
+
+
+/* "bonndit/tracking/alignedDirection.pxd":30
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 
+ * cdef class Deterministic2(Probabilities):             # <<<<<<<<<<<<<<
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ */
+struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic2 {
   struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities __pyx_base;
 };
 
@@ -1202,7 +1228,7 @@ struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Probabilities {
 static struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Probabilities *__pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Probabilities;
 
 
-/* "bonndit/tracking/alignedDirection.pyx":101
+/* "bonndit/tracking/alignedDirection.pyx":102
  * 
  * 
  * cdef class Gaussian(Probabilities):             # <<<<<<<<<<<<<<
@@ -1216,7 +1242,7 @@ struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Gaussian {
 static struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Gaussian *__pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Gaussian;
 
 
-/* "bonndit/tracking/alignedDirection.pyx":116
+/* "bonndit/tracking/alignedDirection.pyx":117
  * 
  * 
  * cdef class Laplacian(Probabilities):             # <<<<<<<<<<<<<<
@@ -1230,7 +1256,7 @@ struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Laplacian {
 static struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Laplacian *__pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Laplacian;
 
 
-/* "bonndit/tracking/alignedDirection.pyx":132
+/* "bonndit/tracking/alignedDirection.pyx":133
  * 
  * 
  * cdef class ScalarOld(Probabilities):             # <<<<<<<<<<<<<<
@@ -1256,6 +1282,34 @@ struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_ScalarNew {
   struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Probabilities __pyx_base;
 };
 static struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_ScalarNew *__pyx_vtabptr_7bonndit_8tracking_16alignedDirection_ScalarNew;
+
+
+/* "bonndit/tracking/alignedDirection.pyx":204
+ * #		self.chosen_angle = self.angles[min_index]
+ * 
+ * cdef class Deterministic(Probabilities):             # <<<<<<<<<<<<<<
+ * 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil  except *:
+ * 		"""
+ */
+
+struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Deterministic {
+  struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Probabilities __pyx_base;
+};
+static struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Deterministic *__pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Deterministic;
+
+
+/* "bonndit/tracking/alignedDirection.pyx":176
+ * 
+ * 
+ * cdef class Deterministic2(Probabilities):             # <<<<<<<<<<<<<<
+ * 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil  except *:
+ * 		"""
+ */
+
+struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Deterministic2 {
+  struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Probabilities __pyx_base;
+};
+static struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Deterministic2 *__pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Deterministic2;
 
 
 /* "View.MemoryView":105
@@ -1933,6 +1987,8 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_8Gaussian_calculate_pr
 static void __pyx_f_7bonndit_8tracking_16alignedDirection_9Laplacian_calculate_probabilities(struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Laplacian *__pyx_v_self, __Pyx_memviewslice __pyx_v_vectors, __Pyx_memviewslice __pyx_v_direction); /* proto*/
 static void __pyx_f_7bonndit_8tracking_16alignedDirection_9ScalarOld_calculate_probabilities(struct __pyx_obj_7bonndit_8tracking_16alignedDirection_ScalarOld *__pyx_v_self, __Pyx_memviewslice __pyx_v_vectors, __Pyx_memviewslice __pyx_v_direction); /* proto*/
 static void __pyx_f_7bonndit_8tracking_16alignedDirection_9ScalarNew_calculate_probabilities(struct __pyx_obj_7bonndit_8tracking_16alignedDirection_ScalarNew *__pyx_v_self, __Pyx_memviewslice __pyx_v_vectors, __Pyx_memviewslice __pyx_v_direction); /* proto*/
+static void __pyx_f_7bonndit_8tracking_16alignedDirection_14Deterministic2_calculate_probabilities(struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic2 *__pyx_v_self, __Pyx_memviewslice __pyx_v_vectors, __Pyx_memviewslice __pyx_v_direction); /* proto*/
+static void __pyx_f_7bonndit_8tracking_16alignedDirection_13Deterministic_calculate_probabilities(struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic *__pyx_v_self, __Pyx_memviewslice __pyx_v_vectors, __Pyx_memviewslice __pyx_v_direction); /* proto*/
 static PyObject *__pyx_array_get_memview(struct __pyx_array_obj *__pyx_v_self); /* proto*/
 static char *__pyx_memoryview_get_item_pointer(struct __pyx_memoryview_obj *__pyx_v_self, PyObject *__pyx_v_index); /* proto*/
 static PyObject *__pyx_memoryview_is_slice(struct __pyx_memoryview_obj *__pyx_v_self, PyObject *__pyx_v_obj); /* proto*/
@@ -1971,6 +2027,8 @@ static PyTypeObject *__pyx_ptype_7bonndit_8tracking_16alignedDirection_Gaussian 
 static PyTypeObject *__pyx_ptype_7bonndit_8tracking_16alignedDirection_Laplacian = 0;
 static PyTypeObject *__pyx_ptype_7bonndit_8tracking_16alignedDirection_ScalarOld = 0;
 static PyTypeObject *__pyx_ptype_7bonndit_8tracking_16alignedDirection_ScalarNew = 0;
+static PyTypeObject *__pyx_ptype_7bonndit_8tracking_16alignedDirection_Deterministic = 0;
+static PyTypeObject *__pyx_ptype_7bonndit_8tracking_16alignedDirection_Deterministic2 = 0;
 static PyTypeObject *__pyx_array_type = 0;
 static PyTypeObject *__pyx_MemviewEnum_type = 0;
 static PyTypeObject *__pyx_memoryview_type = 0;
@@ -2090,9 +2148,11 @@ static const char __pyx_k_PickleError[] = "PickleError";
 static const char __pyx_k_expectation[] = "expectation";
 static const char __pyx_k_pyx_checksum[] = "__pyx_checksum";
 static const char __pyx_k_stringsource[] = "stringsource";
+static const char __pyx_k_Deterministic[] = "Deterministic";
 static const char __pyx_k_Probabilities[] = "Probabilities";
 static const char __pyx_k_pyx_getbuffer[] = "__pyx_getbuffer";
 static const char __pyx_k_reduce_cython[] = "__reduce_cython__";
+static const char __pyx_k_Deterministic2[] = "Deterministic2";
 static const char __pyx_k_View_MemoryView[] = "View.MemoryView";
 static const char __pyx_k_allocate_buffer[] = "allocate_buffer";
 static const char __pyx_k_dtype_is_object[] = "dtype_is_object";
@@ -2130,6 +2190,8 @@ static PyObject *__pyx_kp_s_Can_only_create_a_buffer_that_is;
 static PyObject *__pyx_kp_s_Cannot_assign_to_read_only_memor;
 static PyObject *__pyx_kp_s_Cannot_create_writable_memory_vi;
 static PyObject *__pyx_kp_s_Cannot_index_with_type_s;
+static PyObject *__pyx_n_s_Deterministic;
+static PyObject *__pyx_n_s_Deterministic2;
 static PyObject *__pyx_n_s_Ellipsis;
 static PyObject *__pyx_kp_s_Empty_shape_tuple_for_cython_arr;
 static PyObject *__pyx_n_s_Gaussian;
@@ -2232,6 +2294,10 @@ static PyObject *__pyx_pf_7bonndit_8tracking_16alignedDirection_9ScalarOld___red
 static PyObject *__pyx_pf_7bonndit_8tracking_16alignedDirection_9ScalarOld_2__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_7bonndit_8tracking_16alignedDirection_ScalarOld *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
 static PyObject *__pyx_pf_7bonndit_8tracking_16alignedDirection_9ScalarNew___reduce_cython__(CYTHON_UNUSED struct __pyx_obj_7bonndit_8tracking_16alignedDirection_ScalarNew *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_7bonndit_8tracking_16alignedDirection_9ScalarNew_2__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_7bonndit_8tracking_16alignedDirection_ScalarNew *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
+static PyObject *__pyx_pf_7bonndit_8tracking_16alignedDirection_14Deterministic2___reduce_cython__(CYTHON_UNUSED struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic2 *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_7bonndit_8tracking_16alignedDirection_14Deterministic2_2__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic2 *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
+static PyObject *__pyx_pf_7bonndit_8tracking_16alignedDirection_13Deterministic___reduce_cython__(CYTHON_UNUSED struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_7bonndit_8tracking_16alignedDirection_13Deterministic_2__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __pyx_array_obj *__pyx_v_self, PyObject *__pyx_v_shape, Py_ssize_t __pyx_v_itemsize, PyObject *__pyx_v_format, PyObject *__pyx_v_mode, int __pyx_v_allocate_buffer); /* proto */
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array_2__getbuffer__(struct __pyx_array_obj *__pyx_v_self, Py_buffer *__pyx_v_info, int __pyx_v_flags); /* proto */
 static void __pyx_array___pyx_pf_15View_dot_MemoryView_5array_4__dealloc__(struct __pyx_array_obj *__pyx_v_self); /* proto */
@@ -2279,6 +2345,8 @@ static PyObject *__pyx_tp_new_7bonndit_8tracking_16alignedDirection_Gaussian(PyT
 static PyObject *__pyx_tp_new_7bonndit_8tracking_16alignedDirection_Laplacian(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_7bonndit_8tracking_16alignedDirection_ScalarOld(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_7bonndit_8tracking_16alignedDirection_ScalarNew(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
+static PyObject *__pyx_tp_new_7bonndit_8tracking_16alignedDirection_Deterministic(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
+static PyObject *__pyx_tp_new_7bonndit_8tracking_16alignedDirection_Deterministic2(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_array(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_Enum(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_memoryview(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
@@ -2297,7 +2365,7 @@ static PyObject *__pyx_tuple__6;
 static PyObject *__pyx_tuple__7;
 static PyObject *__pyx_tuple__8;
 static PyObject *__pyx_tuple__9;
-static PyObject *__pyx_slice__27;
+static PyObject *__pyx_slice__31;
 static PyObject *__pyx_tuple__10;
 static PyObject *__pyx_tuple__11;
 static PyObject *__pyx_tuple__12;
@@ -2315,16 +2383,20 @@ static PyObject *__pyx_tuple__23;
 static PyObject *__pyx_tuple__24;
 static PyObject *__pyx_tuple__25;
 static PyObject *__pyx_tuple__26;
+static PyObject *__pyx_tuple__27;
 static PyObject *__pyx_tuple__28;
 static PyObject *__pyx_tuple__29;
 static PyObject *__pyx_tuple__30;
-static PyObject *__pyx_tuple__31;
 static PyObject *__pyx_tuple__32;
 static PyObject *__pyx_tuple__33;
 static PyObject *__pyx_tuple__34;
 static PyObject *__pyx_tuple__35;
 static PyObject *__pyx_tuple__36;
-static PyObject *__pyx_codeobj__37;
+static PyObject *__pyx_tuple__37;
+static PyObject *__pyx_tuple__38;
+static PyObject *__pyx_tuple__39;
+static PyObject *__pyx_tuple__40;
+static PyObject *__pyx_codeobj__41;
 /* Late includes */
 
 /* "bonndit/tracking/alignedDirection.pyx":19
@@ -3184,7 +3256,7 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_13Probabilities_random
  * 		cdef double best_choice = rand() / RAND_MAX
  * 		if sum_c(self.probability) != 0:             # <<<<<<<<<<<<<<
  * 			mult_with_scalar(self.probability, 1/sum_c(self.probability), self.probability)
- * 			if best_choice < self.probability[0]:
+ * 
  */
   if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 73, __pyx_L1_error)}
   __pyx_t_2 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_v_self->probability) != 0.0) != 0);
@@ -3194,8 +3266,8 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_13Probabilities_random
  * 		cdef double best_choice = rand() / RAND_MAX
  * 		if sum_c(self.probability) != 0:
  * 			mult_with_scalar(self.probability, 1/sum_c(self.probability), self.probability)             # <<<<<<<<<<<<<<
+ * 
  * 			if best_choice < self.probability[0]:
- * 				mult_with_scalar(self.best_fit, 1, self.test_vectors[0])
  */
     if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 74, __pyx_L1_error)}
     if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 74, __pyx_L1_error)}
@@ -3213,28 +3285,28 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_13Probabilities_random
     if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 74, __pyx_L1_error)}
     __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_self->probability, (1.0 / __pyx_t_3), __pyx_v_self->probability);
 
-    /* "bonndit/tracking/alignedDirection.pyx":75
- * 		if sum_c(self.probability) != 0:
+    /* "bonndit/tracking/alignedDirection.pyx":76
  * 			mult_with_scalar(self.probability, 1/sum_c(self.probability), self.probability)
+ * 
  * 			if best_choice < self.probability[0]:             # <<<<<<<<<<<<<<
  * 				mult_with_scalar(self.best_fit, 1, self.test_vectors[0])
  * 				self.chosen_prob = self.probability[0]
  */
-    if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 75, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 76, __pyx_L1_error)}
     __pyx_t_4 = 0;
     if (__pyx_t_4 < 0) __pyx_t_4 += __pyx_v_self->probability.shape[0];
     __pyx_t_2 = ((__pyx_v_best_choice < (*((double *) ( /* dim=0 */ (__pyx_v_self->probability.data + __pyx_t_4 * __pyx_v_self->probability.strides[0]) )))) != 0);
     if (__pyx_t_2) {
 
-      /* "bonndit/tracking/alignedDirection.pyx":76
- * 			mult_with_scalar(self.probability, 1/sum_c(self.probability), self.probability)
+      /* "bonndit/tracking/alignedDirection.pyx":77
+ * 
  * 			if best_choice < self.probability[0]:
  * 				mult_with_scalar(self.best_fit, 1, self.test_vectors[0])             # <<<<<<<<<<<<<<
  * 				self.chosen_prob = self.probability[0]
  * 				self.chosen_angle = self.angles[0]
  */
-      if (unlikely(!__pyx_v_self->best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 76, __pyx_L1_error)}
-      if (unlikely(!__pyx_v_self->test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 76, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 77, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 77, __pyx_L1_error)}
       __pyx_t_5.data = __pyx_v_self->test_vectors.data;
       __pyx_t_5.memview = __pyx_v_self->test_vectors.memview;
       __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
@@ -3256,33 +3328,33 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_self->best_fit
       __pyx_t_5.memview = NULL;
       __pyx_t_5.data = NULL;
 
-      /* "bonndit/tracking/alignedDirection.pyx":77
+      /* "bonndit/tracking/alignedDirection.pyx":78
  * 			if best_choice < self.probability[0]:
  * 				mult_with_scalar(self.best_fit, 1, self.test_vectors[0])
  * 				self.chosen_prob = self.probability[0]             # <<<<<<<<<<<<<<
  * 				self.chosen_angle = self.angles[0]
  * 			elif best_choice < self.probability[0] + self.probability[1]:
  */
-      if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 77, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 78, __pyx_L1_error)}
       __pyx_t_4 = 0;
       if (__pyx_t_4 < 0) __pyx_t_4 += __pyx_v_self->probability.shape[0];
       __pyx_v_self->chosen_prob = (*((double *) ( /* dim=0 */ (__pyx_v_self->probability.data + __pyx_t_4 * __pyx_v_self->probability.strides[0]) )));
 
-      /* "bonndit/tracking/alignedDirection.pyx":78
+      /* "bonndit/tracking/alignedDirection.pyx":79
  * 				mult_with_scalar(self.best_fit, 1, self.test_vectors[0])
  * 				self.chosen_prob = self.probability[0]
  * 				self.chosen_angle = self.angles[0]             # <<<<<<<<<<<<<<
  * 			elif best_choice < self.probability[0] + self.probability[1]:
  * 				mult_with_scalar(self.best_fit, 1, self.test_vectors[1])
  */
-      if (unlikely(!__pyx_v_self->angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 78, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 79, __pyx_L1_error)}
       __pyx_t_4 = 0;
       if (__pyx_t_4 < 0) __pyx_t_4 += __pyx_v_self->angles.shape[0];
       __pyx_v_self->chosen_angle = (*((double *) ( /* dim=0 */ (__pyx_v_self->angles.data + __pyx_t_4 * __pyx_v_self->angles.strides[0]) )));
 
-      /* "bonndit/tracking/alignedDirection.pyx":75
- * 		if sum_c(self.probability) != 0:
+      /* "bonndit/tracking/alignedDirection.pyx":76
  * 			mult_with_scalar(self.probability, 1/sum_c(self.probability), self.probability)
+ * 
  * 			if best_choice < self.probability[0]:             # <<<<<<<<<<<<<<
  * 				mult_with_scalar(self.best_fit, 1, self.test_vectors[0])
  * 				self.chosen_prob = self.probability[0]
@@ -3290,31 +3362,31 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_self->best_fit
       goto __pyx_L4;
     }
 
-    /* "bonndit/tracking/alignedDirection.pyx":79
+    /* "bonndit/tracking/alignedDirection.pyx":80
  * 				self.chosen_prob = self.probability[0]
  * 				self.chosen_angle = self.angles[0]
  * 			elif best_choice < self.probability[0] + self.probability[1]:             # <<<<<<<<<<<<<<
  * 				mult_with_scalar(self.best_fit, 1, self.test_vectors[1])
  * 				self.chosen_prob = self.probability[1]
  */
-    if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 79, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 80, __pyx_L1_error)}
     __pyx_t_4 = 0;
     if (__pyx_t_4 < 0) __pyx_t_4 += __pyx_v_self->probability.shape[0];
-    if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 79, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 80, __pyx_L1_error)}
     __pyx_t_6 = 1;
     if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_self->probability.shape[0];
     __pyx_t_2 = ((__pyx_v_best_choice < ((*((double *) ( /* dim=0 */ (__pyx_v_self->probability.data + __pyx_t_4 * __pyx_v_self->probability.strides[0]) ))) + (*((double *) ( /* dim=0 */ (__pyx_v_self->probability.data + __pyx_t_6 * __pyx_v_self->probability.strides[0]) ))))) != 0);
     if (__pyx_t_2) {
 
-      /* "bonndit/tracking/alignedDirection.pyx":80
+      /* "bonndit/tracking/alignedDirection.pyx":81
  * 				self.chosen_angle = self.angles[0]
  * 			elif best_choice < self.probability[0] + self.probability[1]:
  * 				mult_with_scalar(self.best_fit, 1, self.test_vectors[1])             # <<<<<<<<<<<<<<
  * 				self.chosen_prob = self.probability[1]
  * 				self.chosen_angle = self.angles[1]
  */
-      if (unlikely(!__pyx_v_self->best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 80, __pyx_L1_error)}
-      if (unlikely(!__pyx_v_self->test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 80, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 81, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 81, __pyx_L1_error)}
       __pyx_t_5.data = __pyx_v_self->test_vectors.data;
       __pyx_t_5.memview = __pyx_v_self->test_vectors.memview;
       __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
@@ -3336,31 +3408,31 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_self->best_fit
       __pyx_t_5.memview = NULL;
       __pyx_t_5.data = NULL;
 
-      /* "bonndit/tracking/alignedDirection.pyx":81
+      /* "bonndit/tracking/alignedDirection.pyx":82
  * 			elif best_choice < self.probability[0] + self.probability[1]:
  * 				mult_with_scalar(self.best_fit, 1, self.test_vectors[1])
  * 				self.chosen_prob = self.probability[1]             # <<<<<<<<<<<<<<
  * 				self.chosen_angle = self.angles[1]
  * 			else:
  */
-      if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 81, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 82, __pyx_L1_error)}
       __pyx_t_6 = 1;
       if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_self->probability.shape[0];
       __pyx_v_self->chosen_prob = (*((double *) ( /* dim=0 */ (__pyx_v_self->probability.data + __pyx_t_6 * __pyx_v_self->probability.strides[0]) )));
 
-      /* "bonndit/tracking/alignedDirection.pyx":82
+      /* "bonndit/tracking/alignedDirection.pyx":83
  * 				mult_with_scalar(self.best_fit, 1, self.test_vectors[1])
  * 				self.chosen_prob = self.probability[1]
  * 				self.chosen_angle = self.angles[1]             # <<<<<<<<<<<<<<
  * 			else:
  * 				mult_with_scalar(self.best_fit, 1, self.test_vectors[2])
  */
-      if (unlikely(!__pyx_v_self->angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 82, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 83, __pyx_L1_error)}
       __pyx_t_6 = 1;
       if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_self->angles.shape[0];
       __pyx_v_self->chosen_angle = (*((double *) ( /* dim=0 */ (__pyx_v_self->angles.data + __pyx_t_6 * __pyx_v_self->angles.strides[0]) )));
 
-      /* "bonndit/tracking/alignedDirection.pyx":79
+      /* "bonndit/tracking/alignedDirection.pyx":80
  * 				self.chosen_prob = self.probability[0]
  * 				self.chosen_angle = self.angles[0]
  * 			elif best_choice < self.probability[0] + self.probability[1]:             # <<<<<<<<<<<<<<
@@ -3370,7 +3442,7 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_self->best_fit
       goto __pyx_L4;
     }
 
-    /* "bonndit/tracking/alignedDirection.pyx":84
+    /* "bonndit/tracking/alignedDirection.pyx":85
  * 				self.chosen_angle = self.angles[1]
  * 			else:
  * 				mult_with_scalar(self.best_fit, 1, self.test_vectors[2])             # <<<<<<<<<<<<<<
@@ -3378,8 +3450,8 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_self->best_fit
  * 				self.chosen_angle = self.angles[2]
  */
     /*else*/ {
-      if (unlikely(!__pyx_v_self->best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 84, __pyx_L1_error)}
-      if (unlikely(!__pyx_v_self->test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 84, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 85, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 85, __pyx_L1_error)}
       __pyx_t_5.data = __pyx_v_self->test_vectors.data;
       __pyx_t_5.memview = __pyx_v_self->test_vectors.memview;
       __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
@@ -3401,40 +3473,40 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_self->best_fit
       __pyx_t_5.memview = NULL;
       __pyx_t_5.data = NULL;
 
-      /* "bonndit/tracking/alignedDirection.pyx":85
+      /* "bonndit/tracking/alignedDirection.pyx":86
  * 			else:
  * 				mult_with_scalar(self.best_fit, 1, self.test_vectors[2])
  * 				self.chosen_prob = self.probability[2]             # <<<<<<<<<<<<<<
  * 				self.chosen_angle = self.angles[2]
  * 			self.old_fa = norm(self.best_fit)
  */
-      if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 85, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 86, __pyx_L1_error)}
       __pyx_t_6 = 2;
       if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_self->probability.shape[0];
       __pyx_v_self->chosen_prob = (*((double *) ( /* dim=0 */ (__pyx_v_self->probability.data + __pyx_t_6 * __pyx_v_self->probability.strides[0]) )));
 
-      /* "bonndit/tracking/alignedDirection.pyx":86
+      /* "bonndit/tracking/alignedDirection.pyx":87
  * 				mult_with_scalar(self.best_fit, 1, self.test_vectors[2])
  * 				self.chosen_prob = self.probability[2]
  * 				self.chosen_angle = self.angles[2]             # <<<<<<<<<<<<<<
  * 			self.old_fa = norm(self.best_fit)
  * 		else:
  */
-      if (unlikely(!__pyx_v_self->angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 86, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 87, __pyx_L1_error)}
       __pyx_t_6 = 2;
       if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_self->angles.shape[0];
       __pyx_v_self->chosen_angle = (*((double *) ( /* dim=0 */ (__pyx_v_self->angles.data + __pyx_t_6 * __pyx_v_self->angles.strides[0]) )));
     }
     __pyx_L4:;
 
-    /* "bonndit/tracking/alignedDirection.pyx":87
+    /* "bonndit/tracking/alignedDirection.pyx":88
  * 				self.chosen_prob = self.probability[2]
  * 				self.chosen_angle = self.angles[2]
  * 			self.old_fa = norm(self.best_fit)             # <<<<<<<<<<<<<<
  * 		else:
  * 		#	with gil:
  */
-    if (unlikely(!__pyx_v_self->best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 87, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 88, __pyx_L1_error)}
     __pyx_v_self->old_fa = __pyx_f_7bonndit_5utilc_14cython_helpers_norm(__pyx_v_self->best_fit);
 
     /* "bonndit/tracking/alignedDirection.pyx":73
@@ -3442,12 +3514,12 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_self->best_fit
  * 		cdef double best_choice = rand() / RAND_MAX
  * 		if sum_c(self.probability) != 0:             # <<<<<<<<<<<<<<
  * 			mult_with_scalar(self.probability, 1/sum_c(self.probability), self.probability)
- * 			if best_choice < self.probability[0]:
+ * 
  */
     goto __pyx_L3;
   }
 
-  /* "bonndit/tracking/alignedDirection.pyx":92
+  /* "bonndit/tracking/alignedDirection.pyx":93
  * 		#		print(*direction, *self.test_vectors[0], *self.test_vectors[1],
  * 		#		      *self.test_vectors[2])
  * 			mult_with_scalar(self.best_fit, 0, self.test_vectors[2])             # <<<<<<<<<<<<<<
@@ -3455,8 +3527,8 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_self->best_fit
  * 			self.chosen_prob = 0
  */
   /*else*/ {
-    if (unlikely(!__pyx_v_self->best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 92, __pyx_L1_error)}
-    if (unlikely(!__pyx_v_self->test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 92, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 93, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 93, __pyx_L1_error)}
     __pyx_t_5.data = __pyx_v_self->test_vectors.data;
     __pyx_t_5.memview = __pyx_v_self->test_vectors.memview;
     __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
@@ -3478,7 +3550,7 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_self->best_fit
     __pyx_t_5.memview = NULL;
     __pyx_t_5.data = NULL;
 
-    /* "bonndit/tracking/alignedDirection.pyx":93
+    /* "bonndit/tracking/alignedDirection.pyx":94
  * 		#		      *self.test_vectors[2])
  * 			mult_with_scalar(self.best_fit, 0, self.test_vectors[2])
  * 			self.chosen_angle = 0             # <<<<<<<<<<<<<<
@@ -3487,7 +3559,7 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_self->best_fit
  */
     __pyx_v_self->chosen_angle = 0.0;
 
-    /* "bonndit/tracking/alignedDirection.pyx":94
+    /* "bonndit/tracking/alignedDirection.pyx":95
  * 			mult_with_scalar(self.best_fit, 0, self.test_vectors[2])
  * 			self.chosen_angle = 0
  * 			self.chosen_prob = 0             # <<<<<<<<<<<<<<
@@ -3522,7 +3594,7 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_self->best_fit
   __pyx_L0:;
 }
 
-/* "bonndit/tracking/alignedDirection.pyx":97
+/* "bonndit/tracking/alignedDirection.pyx":98
  * 
  * 
  * 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil except *:             # <<<<<<<<<<<<<<
@@ -3648,7 +3720,7 @@ static PyObject *__pyx_pf_7bonndit_8tracking_16alignedDirection_13Probabilities_
   return __pyx_r;
 }
 
-/* "bonndit/tracking/alignedDirection.pyx":102
+/* "bonndit/tracking/alignedDirection.pyx":103
  * 
  * cdef class Gaussian(Probabilities):
  * 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil except *:             # <<<<<<<<<<<<<<
@@ -3665,16 +3737,16 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_8Gaussian_calculate_pr
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
 
-  /* "bonndit/tracking/alignedDirection.pyx":110
+  /* "bonndit/tracking/alignedDirection.pyx":111
  * 		"""
  * 		cdef int i
  * 		self.aligned_direction(vectors, direction)             # <<<<<<<<<<<<<<
  * 		for i in range(3):
  * 			self.probability[i] = exp(-1/2*((self.angles[i] - self.expectation)/self.sigma)**2)
  */
-  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Gaussian *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.aligned_direction(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_vectors, __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 110, __pyx_L1_error)
+  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Gaussian *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.aligned_direction(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_vectors, __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 111, __pyx_L1_error)
 
-  /* "bonndit/tracking/alignedDirection.pyx":111
+  /* "bonndit/tracking/alignedDirection.pyx":112
  * 		cdef int i
  * 		self.aligned_direction(vectors, direction)
  * 		for i in range(3):             # <<<<<<<<<<<<<<
@@ -3684,14 +3756,14 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_8Gaussian_calculate_pr
   for (__pyx_t_1 = 0; __pyx_t_1 < 3; __pyx_t_1+=1) {
     __pyx_v_i = __pyx_t_1;
 
-    /* "bonndit/tracking/alignedDirection.pyx":112
+    /* "bonndit/tracking/alignedDirection.pyx":113
  * 		self.aligned_direction(vectors, direction)
  * 		for i in range(3):
  * 			self.probability[i] = exp(-1/2*((self.angles[i] - self.expectation)/self.sigma)**2)             # <<<<<<<<<<<<<<
  * 		self.random_choice(direction)
  * 
  */
-    if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 112, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 113, __pyx_L1_error)}
     __pyx_t_2 = __pyx_v_i;
     if (__pyx_t_2 < 0) __pyx_t_2 += __pyx_v_self->__pyx_base.angles.shape[0];
     __pyx_t_3 = ((*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.angles.data + __pyx_t_2 * __pyx_v_self->__pyx_base.angles.strides[0]) ))) - __pyx_v_self->__pyx_base.expectation);
@@ -3703,24 +3775,24 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_8Gaussian_calculate_pr
       #ifdef WITH_THREAD
       __Pyx_PyGILState_Release(__pyx_gilstate_save);
       #endif
-      __PYX_ERR(0, 112, __pyx_L1_error)
+      __PYX_ERR(0, 113, __pyx_L1_error)
     }
-    if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 112, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 113, __pyx_L1_error)}
     __pyx_t_2 = __pyx_v_i;
     if (__pyx_t_2 < 0) __pyx_t_2 += __pyx_v_self->__pyx_base.probability.shape[0];
     *((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.probability.data + __pyx_t_2 * __pyx_v_self->__pyx_base.probability.strides[0]) )) = exp(((-1.0 / 2.0) * pow((__pyx_t_3 / __pyx_v_self->__pyx_base.sigma), 2.0)));
   }
 
-  /* "bonndit/tracking/alignedDirection.pyx":113
+  /* "bonndit/tracking/alignedDirection.pyx":114
  * 		for i in range(3):
  * 			self.probability[i] = exp(-1/2*((self.angles[i] - self.expectation)/self.sigma)**2)
  * 		self.random_choice(direction)             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Gaussian *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.random_choice(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 113, __pyx_L1_error)
+  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Gaussian *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.random_choice(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 114, __pyx_L1_error)
 
-  /* "bonndit/tracking/alignedDirection.pyx":102
+  /* "bonndit/tracking/alignedDirection.pyx":103
  * 
  * cdef class Gaussian(Probabilities):
  * 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil except *:             # <<<<<<<<<<<<<<
@@ -3856,7 +3928,7 @@ static PyObject *__pyx_pf_7bonndit_8tracking_16alignedDirection_8Gaussian_2__set
   return __pyx_r;
 }
 
-/* "bonndit/tracking/alignedDirection.pyx":117
+/* "bonndit/tracking/alignedDirection.pyx":118
  * 
  * cdef class Laplacian(Probabilities):
  * 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil except *:             # <<<<<<<<<<<<<<
@@ -3873,16 +3945,16 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_9Laplacian_calculate_p
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
 
-  /* "bonndit/tracking/alignedDirection.pyx":125
+  /* "bonndit/tracking/alignedDirection.pyx":126
  * 		"""
  * 		cdef int i
  * 		self.aligned_direction(vectors, direction)             # <<<<<<<<<<<<<<
  * 		for i in range(3):
  * 			self.probability[i] = 1/2 * exp(- (fabs(self.angles[i] - self.expectation) /
  */
-  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Laplacian *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.aligned_direction(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_vectors, __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 125, __pyx_L1_error)
+  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Laplacian *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.aligned_direction(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_vectors, __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 126, __pyx_L1_error)
 
-  /* "bonndit/tracking/alignedDirection.pyx":126
+  /* "bonndit/tracking/alignedDirection.pyx":127
  * 		cdef int i
  * 		self.aligned_direction(vectors, direction)
  * 		for i in range(3):             # <<<<<<<<<<<<<<
@@ -3892,19 +3964,19 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_9Laplacian_calculate_p
   for (__pyx_t_1 = 0; __pyx_t_1 < 3; __pyx_t_1+=1) {
     __pyx_v_i = __pyx_t_1;
 
-    /* "bonndit/tracking/alignedDirection.pyx":127
+    /* "bonndit/tracking/alignedDirection.pyx":128
  * 		self.aligned_direction(vectors, direction)
  * 		for i in range(3):
  * 			self.probability[i] = 1/2 * exp(- (fabs(self.angles[i] - self.expectation) /             # <<<<<<<<<<<<<<
  * 			                                             self.sigma))
  * 		self.random_choice(direction)
  */
-    if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 127, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 128, __pyx_L1_error)}
     __pyx_t_2 = __pyx_v_i;
     if (__pyx_t_2 < 0) __pyx_t_2 += __pyx_v_self->__pyx_base.angles.shape[0];
     __pyx_t_3 = fabs(((*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.angles.data + __pyx_t_2 * __pyx_v_self->__pyx_base.angles.strides[0]) ))) - __pyx_v_self->__pyx_base.expectation));
 
-    /* "bonndit/tracking/alignedDirection.pyx":128
+    /* "bonndit/tracking/alignedDirection.pyx":129
  * 		for i in range(3):
  * 			self.probability[i] = 1/2 * exp(- (fabs(self.angles[i] - self.expectation) /
  * 			                                             self.sigma))             # <<<<<<<<<<<<<<
@@ -3919,32 +3991,32 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_9Laplacian_calculate_p
       #ifdef WITH_THREAD
       __Pyx_PyGILState_Release(__pyx_gilstate_save);
       #endif
-      __PYX_ERR(0, 127, __pyx_L1_error)
+      __PYX_ERR(0, 128, __pyx_L1_error)
     }
 
-    /* "bonndit/tracking/alignedDirection.pyx":127
+    /* "bonndit/tracking/alignedDirection.pyx":128
  * 		self.aligned_direction(vectors, direction)
  * 		for i in range(3):
  * 			self.probability[i] = 1/2 * exp(- (fabs(self.angles[i] - self.expectation) /             # <<<<<<<<<<<<<<
  * 			                                             self.sigma))
  * 		self.random_choice(direction)
  */
-    if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 127, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 128, __pyx_L1_error)}
     __pyx_t_2 = __pyx_v_i;
     if (__pyx_t_2 < 0) __pyx_t_2 += __pyx_v_self->__pyx_base.probability.shape[0];
     *((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.probability.data + __pyx_t_2 * __pyx_v_self->__pyx_base.probability.strides[0]) )) = ((1.0 / 2.0) * exp((-(__pyx_t_3 / __pyx_v_self->__pyx_base.sigma))));
   }
 
-  /* "bonndit/tracking/alignedDirection.pyx":129
+  /* "bonndit/tracking/alignedDirection.pyx":130
  * 			self.probability[i] = 1/2 * exp(- (fabs(self.angles[i] - self.expectation) /
  * 			                                             self.sigma))
  * 		self.random_choice(direction)             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Laplacian *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.random_choice(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 129, __pyx_L1_error)
+  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Laplacian *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.random_choice(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 130, __pyx_L1_error)
 
-  /* "bonndit/tracking/alignedDirection.pyx":117
+  /* "bonndit/tracking/alignedDirection.pyx":118
  * 
  * cdef class Laplacian(Probabilities):
  * 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil except *:             # <<<<<<<<<<<<<<
@@ -4080,7 +4152,7 @@ static PyObject *__pyx_pf_7bonndit_8tracking_16alignedDirection_9Laplacian_2__se
   return __pyx_r;
 }
 
-/* "bonndit/tracking/alignedDirection.pyx":133
+/* "bonndit/tracking/alignedDirection.pyx":134
  * 
  * cdef class ScalarOld(Probabilities):
  * 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil except *:             # <<<<<<<<<<<<<<
@@ -4096,40 +4168,39 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_9ScalarOld_calculate_p
   __Pyx_memviewslice __pyx_t_4 = { 0, 0, { 0 }, { 0 }, { 0 } };
   int __pyx_t_5;
   double __pyx_t_6;
-  double __pyx_t_7;
+  Py_ssize_t __pyx_t_7;
   Py_ssize_t __pyx_t_8;
-  Py_ssize_t __pyx_t_9;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
 
-  /* "bonndit/tracking/alignedDirection.pyx":142
+  /* "bonndit/tracking/alignedDirection.pyx":143
  * 		cdef int i
  * 		cdef double s
  * 		self.aligned_direction(vectors, direction)             # <<<<<<<<<<<<<<
  * 		#with gil:
  * 		#	print(*self.angles)
  */
-  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_ScalarOld *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.aligned_direction(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_vectors, __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 142, __pyx_L1_error)
+  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_ScalarOld *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.aligned_direction(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_vectors, __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 143, __pyx_L1_error)
 
-  /* "bonndit/tracking/alignedDirection.pyx":145
+  /* "bonndit/tracking/alignedDirection.pyx":146
  * 		#with gil:
  * 		#	print(*self.angles)
  * 		for i in range(3):             # <<<<<<<<<<<<<<
- * 			if sum_c(self.test_vectors[i]) == sum_c(self.test_vectors[i])  and pow(180/60*1/pow(
- * 					2*pi,0.5)*self.angles[i]/180*pi,2) <= 1/2*pi:
+ * 			if sum_c(self.test_vectors[i]) == sum_c(self.test_vectors[i])  and pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2) <= 1/2*pi:
+ * 				self.probability[i]=pow(cos(pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)*norm(self.test_vectors[i])
  */
   for (__pyx_t_1 = 0; __pyx_t_1 < 3; __pyx_t_1+=1) {
     __pyx_v_i = __pyx_t_1;
 
-    /* "bonndit/tracking/alignedDirection.pyx":146
+    /* "bonndit/tracking/alignedDirection.pyx":147
  * 		#	print(*self.angles)
  * 		for i in range(3):
- * 			if sum_c(self.test_vectors[i]) == sum_c(self.test_vectors[i])  and pow(180/60*1/pow(             # <<<<<<<<<<<<<<
- * 					2*pi,0.5)*self.angles[i]/180*pi,2) <= 1/2*pi:
- * 				self.probability[i]=pow(cos(pow(180/60*1/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)*norm(self.test_vectors[i])
+ * 			if sum_c(self.test_vectors[i]) == sum_c(self.test_vectors[i])  and pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2) <= 1/2*pi:             # <<<<<<<<<<<<<<
+ * 				self.probability[i]=pow(cos(pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)*norm(self.test_vectors[i])
+ * 			else:
  */
-    if (unlikely(!__pyx_v_self->__pyx_base.test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 146, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->__pyx_base.test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 147, __pyx_L1_error)}
     __pyx_t_3.data = __pyx_v_self->__pyx_base.test_vectors.data;
     __pyx_t_3.memview = __pyx_v_self->__pyx_base.test_vectors.memview;
     __PYX_INC_MEMVIEW(&__pyx_t_3, 0);
@@ -4146,7 +4217,7 @@ __pyx_t_3.shape[0] = __pyx_v_self->__pyx_base.test_vectors.shape[1];
 __pyx_t_3.strides[0] = __pyx_v_self->__pyx_base.test_vectors.strides[1];
     __pyx_t_3.suboffsets[0] = -1;
 
-if (unlikely(!__pyx_v_self->__pyx_base.test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 146, __pyx_L1_error)}
+if (unlikely(!__pyx_v_self->__pyx_base.test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 147, __pyx_L1_error)}
     __pyx_t_4.data = __pyx_v_self->__pyx_base.test_vectors.data;
     __pyx_t_4.memview = __pyx_v_self->__pyx_base.test_vectors.memview;
     __PYX_INC_MEMVIEW(&__pyx_t_4, 0);
@@ -4175,25 +4246,8 @@ __pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_3) == __pyx
       __pyx_t_2 = __pyx_t_5;
       goto __pyx_L6_bool_binop_done;
     }
-
-    /* "bonndit/tracking/alignedDirection.pyx":147
- * 		for i in range(3):
- * 			if sum_c(self.test_vectors[i]) == sum_c(self.test_vectors[i])  and pow(180/60*1/pow(
- * 					2*pi,0.5)*self.angles[i]/180*pi,2) <= 1/2*pi:             # <<<<<<<<<<<<<<
- * 				self.probability[i]=pow(cos(pow(180/60*1/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)*norm(self.test_vectors[i])
- * 			else:
- */
-    __pyx_t_6 = ((180.0 / 60.0) * 1.0);
-
-    /* "bonndit/tracking/alignedDirection.pyx":146
- * 		#	print(*self.angles)
- * 		for i in range(3):
- * 			if sum_c(self.test_vectors[i]) == sum_c(self.test_vectors[i])  and pow(180/60*1/pow(             # <<<<<<<<<<<<<<
- * 					2*pi,0.5)*self.angles[i]/180*pi,2) <= 1/2*pi:
- * 				self.probability[i]=pow(cos(pow(180/60*1/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)*norm(self.test_vectors[i])
- */
-    __pyx_t_7 = pow((2.0 * M_PI), 0.5);
-    if (unlikely(__pyx_t_7 == 0)) {
+    __pyx_t_6 = pow((2.0 * M_PI), 0.5);
+    if (unlikely(__pyx_t_6 == 0)) {
       #ifdef WITH_THREAD
       PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
       #endif
@@ -4201,40 +4255,23 @@ __pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_3) == __pyx
       #ifdef WITH_THREAD
       __Pyx_PyGILState_Release(__pyx_gilstate_save);
       #endif
-      __PYX_ERR(0, 146, __pyx_L1_error)
+      __PYX_ERR(0, 147, __pyx_L1_error)
     }
-
-    /* "bonndit/tracking/alignedDirection.pyx":147
- * 		for i in range(3):
- * 			if sum_c(self.test_vectors[i]) == sum_c(self.test_vectors[i])  and pow(180/60*1/pow(
- * 					2*pi,0.5)*self.angles[i]/180*pi,2) <= 1/2*pi:             # <<<<<<<<<<<<<<
- * 				self.probability[i]=pow(cos(pow(180/60*1/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)*norm(self.test_vectors[i])
- * 			else:
- */
     if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 147, __pyx_L1_error)}
-    __pyx_t_8 = __pyx_v_i;
-    if (__pyx_t_8 < 0) __pyx_t_8 += __pyx_v_self->__pyx_base.angles.shape[0];
-
-    /* "bonndit/tracking/alignedDirection.pyx":146
- * 		#	print(*self.angles)
- * 		for i in range(3):
- * 			if sum_c(self.test_vectors[i]) == sum_c(self.test_vectors[i])  and pow(180/60*1/pow(             # <<<<<<<<<<<<<<
- * 					2*pi,0.5)*self.angles[i]/180*pi,2) <= 1/2*pi:
- * 				self.probability[i]=pow(cos(pow(180/60*1/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)*norm(self.test_vectors[i])
- */
-    __pyx_t_5 = ((pow(((((__pyx_t_6 / __pyx_t_7) * (*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.angles.data + __pyx_t_8 * __pyx_v_self->__pyx_base.angles.strides[0]) )))) / 180.0) * M_PI), 2.0) <= ((1.0 / 2.0) * M_PI)) != 0);
+    __pyx_t_7 = __pyx_v_i;
+    if (__pyx_t_7 < 0) __pyx_t_7 += __pyx_v_self->__pyx_base.angles.shape[0];
+    __pyx_t_5 = ((pow(((((__pyx_v_self->__pyx_base.expectation / __pyx_t_6) * (*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.angles.data + __pyx_t_7 * __pyx_v_self->__pyx_base.angles.strides[0]) )))) / 180.0) * M_PI), 2.0) <= ((1.0 / 2.0) * M_PI)) != 0);
     __pyx_t_2 = __pyx_t_5;
     __pyx_L6_bool_binop_done:;
     if (__pyx_t_2) {
 
       /* "bonndit/tracking/alignedDirection.pyx":148
- * 			if sum_c(self.test_vectors[i]) == sum_c(self.test_vectors[i])  and pow(180/60*1/pow(
- * 					2*pi,0.5)*self.angles[i]/180*pi,2) <= 1/2*pi:
- * 				self.probability[i]=pow(cos(pow(180/60*1/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)*norm(self.test_vectors[i])             # <<<<<<<<<<<<<<
+ * 		for i in range(3):
+ * 			if sum_c(self.test_vectors[i]) == sum_c(self.test_vectors[i])  and pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2) <= 1/2*pi:
+ * 				self.probability[i]=pow(cos(pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)*norm(self.test_vectors[i])             # <<<<<<<<<<<<<<
  * 			else:
  * 				self.probability[i] = 0
  */
-      __pyx_t_7 = ((180.0 / 60.0) * 1.0);
       __pyx_t_6 = pow((2.0 * M_PI), 0.5);
       if (unlikely(__pyx_t_6 == 0)) {
         #ifdef WITH_THREAD
@@ -4247,8 +4284,8 @@ __pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_3) == __pyx
         __PYX_ERR(0, 148, __pyx_L1_error)
       }
       if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 148, __pyx_L1_error)}
-      __pyx_t_8 = __pyx_v_i;
-      if (__pyx_t_8 < 0) __pyx_t_8 += __pyx_v_self->__pyx_base.angles.shape[0];
+      __pyx_t_7 = __pyx_v_i;
+      if (__pyx_t_7 < 0) __pyx_t_7 += __pyx_v_self->__pyx_base.angles.shape[0];
       if (unlikely(!__pyx_v_self->__pyx_base.test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 148, __pyx_L1_error)}
       __pyx_t_4.data = __pyx_v_self->__pyx_base.test_vectors.data;
       __pyx_t_4.memview = __pyx_v_self->__pyx_base.test_vectors.memview;
@@ -4267,25 +4304,25 @@ __pyx_t_4.strides[0] = __pyx_v_self->__pyx_base.test_vectors.strides[1];
     __pyx_t_4.suboffsets[0] = -1;
 
 if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 148, __pyx_L1_error)}
-      __pyx_t_9 = __pyx_v_i;
-      if (__pyx_t_9 < 0) __pyx_t_9 += __pyx_v_self->__pyx_base.probability.shape[0];
-      *((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.probability.data + __pyx_t_9 * __pyx_v_self->__pyx_base.probability.strides[0]) )) = (pow(cos(pow(((((__pyx_t_7 / __pyx_t_6) * (*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.angles.data + __pyx_t_8 * __pyx_v_self->__pyx_base.angles.strides[0]) )))) / 180.0) * M_PI), 2.0)), __pyx_v_self->__pyx_base.sigma) * __pyx_f_7bonndit_5utilc_14cython_helpers_norm(__pyx_t_4));
+      __pyx_t_8 = __pyx_v_i;
+      if (__pyx_t_8 < 0) __pyx_t_8 += __pyx_v_self->__pyx_base.probability.shape[0];
+      *((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.probability.data + __pyx_t_8 * __pyx_v_self->__pyx_base.probability.strides[0]) )) = (pow(cos(pow(((((__pyx_v_self->__pyx_base.expectation / __pyx_t_6) * (*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.angles.data + __pyx_t_7 * __pyx_v_self->__pyx_base.angles.strides[0]) )))) / 180.0) * M_PI), 2.0)), __pyx_v_self->__pyx_base.sigma) * __pyx_f_7bonndit_5utilc_14cython_helpers_norm(__pyx_t_4));
       __PYX_XDEC_MEMVIEW(&__pyx_t_4, 0);
       __pyx_t_4.memview = NULL;
       __pyx_t_4.data = NULL;
 
-      /* "bonndit/tracking/alignedDirection.pyx":146
+      /* "bonndit/tracking/alignedDirection.pyx":147
  * 		#	print(*self.angles)
  * 		for i in range(3):
- * 			if sum_c(self.test_vectors[i]) == sum_c(self.test_vectors[i])  and pow(180/60*1/pow(             # <<<<<<<<<<<<<<
- * 					2*pi,0.5)*self.angles[i]/180*pi,2) <= 1/2*pi:
- * 				self.probability[i]=pow(cos(pow(180/60*1/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)*norm(self.test_vectors[i])
+ * 			if sum_c(self.test_vectors[i]) == sum_c(self.test_vectors[i])  and pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2) <= 1/2*pi:             # <<<<<<<<<<<<<<
+ * 				self.probability[i]=pow(cos(pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)*norm(self.test_vectors[i])
+ * 			else:
  */
       goto __pyx_L5;
     }
 
     /* "bonndit/tracking/alignedDirection.pyx":150
- * 				self.probability[i]=pow(cos(pow(180/60*1/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)*norm(self.test_vectors[i])
+ * 				self.probability[i]=pow(cos(pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)*norm(self.test_vectors[i])
  * 			else:
  * 				self.probability[i] = 0             # <<<<<<<<<<<<<<
  * 		self.random_choice(direction)
@@ -4293,9 +4330,9 @@ if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(Py
  */
     /*else*/ {
       if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 150, __pyx_L1_error)}
-      __pyx_t_8 = __pyx_v_i;
-      if (__pyx_t_8 < 0) __pyx_t_8 += __pyx_v_self->__pyx_base.probability.shape[0];
-      *((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.probability.data + __pyx_t_8 * __pyx_v_self->__pyx_base.probability.strides[0]) )) = 0.0;
+      __pyx_t_7 = __pyx_v_i;
+      if (__pyx_t_7 < 0) __pyx_t_7 += __pyx_v_self->__pyx_base.probability.shape[0];
+      *((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.probability.data + __pyx_t_7 * __pyx_v_self->__pyx_base.probability.strides[0]) )) = 0.0;
     }
     __pyx_L5:;
   }
@@ -4309,7 +4346,7 @@ if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(Py
  */
   ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_ScalarOld *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.random_choice(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 151, __pyx_L1_error)
 
-  /* "bonndit/tracking/alignedDirection.pyx":133
+  /* "bonndit/tracking/alignedDirection.pyx":134
  * 
  * cdef class ScalarOld(Probabilities):
  * 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil except *:             # <<<<<<<<<<<<<<
@@ -4462,8 +4499,7 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_9ScalarNew_calculate_p
   __Pyx_memviewslice __pyx_t_3 = { 0, 0, { 0 }, { 0 }, { 0 } };
   int __pyx_t_4;
   Py_ssize_t __pyx_t_5;
-  double __pyx_t_6;
-  Py_ssize_t __pyx_t_7;
+  Py_ssize_t __pyx_t_6;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -4482,7 +4518,7 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_9ScalarNew_calculate_p
  * 		#	print(*self.angles)
  * 		for i in range(3):             # <<<<<<<<<<<<<<
  * 			if sum_c(vectors[i]) == sum_c(vectors[i]):
- * 				self.probability[i] = pow(cos(self.angles[i]/180*pi),self.sigma)*exp(-pow(norm(self.test_vectors[i])-self.old_fa,2)/self.expectation)
+ * 				self.probability[i] = pow(cos(self.angles[i]/180*pi),self.sigma)*norm(self.test_vectors[i])
  */
   for (__pyx_t_1 = 0; __pyx_t_1 < 3; __pyx_t_1+=1) {
     __pyx_v_i = __pyx_t_1;
@@ -4491,7 +4527,7 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_9ScalarNew_calculate_p
  * 		#	print(*self.angles)
  * 		for i in range(3):
  * 			if sum_c(vectors[i]) == sum_c(vectors[i]):             # <<<<<<<<<<<<<<
- * 				self.probability[i] = pow(cos(self.angles[i]/180*pi),self.sigma)*exp(-pow(norm(self.test_vectors[i])-self.old_fa,2)/self.expectation)
+ * 				self.probability[i] = pow(cos(self.angles[i]/180*pi),self.sigma)*norm(self.test_vectors[i])
  * 			else:
  */
     __pyx_t_2.data = __pyx_v_vectors.data;
@@ -4538,7 +4574,7 @@ __pyx_t_4 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_2) == __pyx
       /* "bonndit/tracking/alignedDirection.pyx":169
  * 		for i in range(3):
  * 			if sum_c(vectors[i]) == sum_c(vectors[i]):
- * 				self.probability[i] = pow(cos(self.angles[i]/180*pi),self.sigma)*exp(-pow(norm(self.test_vectors[i])-self.old_fa,2)/self.expectation)             # <<<<<<<<<<<<<<
+ * 				self.probability[i] = pow(cos(self.angles[i]/180*pi),self.sigma)*norm(self.test_vectors[i])             # <<<<<<<<<<<<<<
  * 			else:
  * 				self.probability[i] = 0
  */
@@ -4562,37 +4598,26 @@ __pyx_t_3.shape[0] = __pyx_v_self->__pyx_base.test_vectors.shape[1];
 __pyx_t_3.strides[0] = __pyx_v_self->__pyx_base.test_vectors.strides[1];
     __pyx_t_3.suboffsets[0] = -1;
 
-__pyx_t_6 = (-pow((__pyx_f_7bonndit_5utilc_14cython_helpers_norm(__pyx_t_3) - __pyx_v_self->__pyx_base.old_fa), 2.0));
+if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 169, __pyx_L1_error)}
+      __pyx_t_6 = __pyx_v_i;
+      if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_self->__pyx_base.probability.shape[0];
+      *((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.probability.data + __pyx_t_6 * __pyx_v_self->__pyx_base.probability.strides[0]) )) = (pow(cos((((*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.angles.data + __pyx_t_5 * __pyx_v_self->__pyx_base.angles.strides[0]) ))) / 180.0) * M_PI)), __pyx_v_self->__pyx_base.sigma) * __pyx_f_7bonndit_5utilc_14cython_helpers_norm(__pyx_t_3));
       __PYX_XDEC_MEMVIEW(&__pyx_t_3, 0);
       __pyx_t_3.memview = NULL;
       __pyx_t_3.data = NULL;
-      if (unlikely(__pyx_v_self->__pyx_base.expectation == 0)) {
-        #ifdef WITH_THREAD
-        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-        #endif
-        PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-        #ifdef WITH_THREAD
-        __Pyx_PyGILState_Release(__pyx_gilstate_save);
-        #endif
-        __PYX_ERR(0, 169, __pyx_L1_error)
-      }
-      if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 169, __pyx_L1_error)}
-      __pyx_t_7 = __pyx_v_i;
-      if (__pyx_t_7 < 0) __pyx_t_7 += __pyx_v_self->__pyx_base.probability.shape[0];
-      *((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.probability.data + __pyx_t_7 * __pyx_v_self->__pyx_base.probability.strides[0]) )) = (pow(cos((((*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.angles.data + __pyx_t_5 * __pyx_v_self->__pyx_base.angles.strides[0]) ))) / 180.0) * M_PI)), __pyx_v_self->__pyx_base.sigma) * exp((__pyx_t_6 / __pyx_v_self->__pyx_base.expectation)));
 
       /* "bonndit/tracking/alignedDirection.pyx":168
  * 		#	print(*self.angles)
  * 		for i in range(3):
  * 			if sum_c(vectors[i]) == sum_c(vectors[i]):             # <<<<<<<<<<<<<<
- * 				self.probability[i] = pow(cos(self.angles[i]/180*pi),self.sigma)*exp(-pow(norm(self.test_vectors[i])-self.old_fa,2)/self.expectation)
+ * 				self.probability[i] = pow(cos(self.angles[i]/180*pi),self.sigma)*norm(self.test_vectors[i])
  * 			else:
  */
       goto __pyx_L5;
     }
 
     /* "bonndit/tracking/alignedDirection.pyx":171
- * 				self.probability[i] = pow(cos(self.angles[i]/180*pi),self.sigma)*exp(-pow(norm(self.test_vectors[i])-self.old_fa,2)/self.expectation)
+ * 				self.probability[i] = pow(cos(self.angles[i]/180*pi),self.sigma)*norm(self.test_vectors[i])
  * 			else:
  * 				self.probability[i] = 0             # <<<<<<<<<<<<<<
  * 
@@ -4748,6 +4773,896 @@ static PyObject *__pyx_pf_7bonndit_8tracking_16alignedDirection_9ScalarNew_2__se
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_AddTraceback("bonndit.tracking.alignedDirection.ScalarNew.__setstate_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "bonndit/tracking/alignedDirection.pyx":177
+ * 
+ * cdef class Deterministic2(Probabilities):
+ * 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil  except *:             # <<<<<<<<<<<<<<
+ * 		"""
+ * 
+ */
+
+static void __pyx_f_7bonndit_8tracking_16alignedDirection_14Deterministic2_calculate_probabilities(struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic2 *__pyx_v_self, __Pyx_memviewslice __pyx_v_vectors, __Pyx_memviewslice __pyx_v_direction) {
+  int __pyx_v_i;
+  int __pyx_v_min_index;
+  double __pyx_v_min_angle;
+  int __pyx_t_1;
+  int __pyx_t_2;
+  __Pyx_memviewslice __pyx_t_3 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  __Pyx_memviewslice __pyx_t_4 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  int __pyx_t_5;
+  Py_ssize_t __pyx_t_6;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+
+  /* "bonndit/tracking/alignedDirection.pyx":184
+ * 		@return:
+ * 		"""
+ * 		cdef int i, min_index=0             # <<<<<<<<<<<<<<
+ * 		cdef double s, min_angle=0
+ * 		self.aligned_direction(vectors, direction)
+ */
+  __pyx_v_min_index = 0;
+
+  /* "bonndit/tracking/alignedDirection.pyx":185
+ * 		"""
+ * 		cdef int i, min_index=0
+ * 		cdef double s, min_angle=0             # <<<<<<<<<<<<<<
+ * 		self.aligned_direction(vectors, direction)
+ * 		for i in range(3):
+ */
+  __pyx_v_min_angle = 0.0;
+
+  /* "bonndit/tracking/alignedDirection.pyx":186
+ * 		cdef int i, min_index=0
+ * 		cdef double s, min_angle=0
+ * 		self.aligned_direction(vectors, direction)             # <<<<<<<<<<<<<<
+ * 		for i in range(3):
+ * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:
+ */
+  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Deterministic2 *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.aligned_direction(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_vectors, __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 186, __pyx_L1_error)
+
+  /* "bonndit/tracking/alignedDirection.pyx":187
+ * 		cdef double s, min_angle=0
+ * 		self.aligned_direction(vectors, direction)
+ * 		for i in range(3):             # <<<<<<<<<<<<<<
+ * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:
+ * 				if self.angles[i] < min_angle or i==0:
+ */
+  for (__pyx_t_1 = 0; __pyx_t_1 < 3; __pyx_t_1+=1) {
+    __pyx_v_i = __pyx_t_1;
+
+    /* "bonndit/tracking/alignedDirection.pyx":188
+ * 		self.aligned_direction(vectors, direction)
+ * 		for i in range(3):
+ * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:             # <<<<<<<<<<<<<<
+ * 				if self.angles[i] < min_angle or i==0:
+ * 					min_angle=self.angles[i]
+ */
+    __pyx_t_3.data = __pyx_v_vectors.data;
+    __pyx_t_3.memview = __pyx_v_vectors.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_3, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_i;
+        Py_ssize_t __pyx_tmp_shape = __pyx_v_vectors.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_vectors.strides[0];
+        if (__pyx_tmp_idx < 0)
+            __pyx_tmp_idx += __pyx_tmp_shape;
+        __pyx_t_3.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_3.shape[0] = __pyx_v_vectors.shape[1];
+__pyx_t_3.strides[0] = __pyx_v_vectors.strides[1];
+    __pyx_t_3.suboffsets[0] = -1;
+
+__pyx_t_4.data = __pyx_v_vectors.data;
+    __pyx_t_4.memview = __pyx_v_vectors.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_4, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_i;
+        Py_ssize_t __pyx_tmp_shape = __pyx_v_vectors.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_vectors.strides[0];
+        if (__pyx_tmp_idx < 0)
+            __pyx_tmp_idx += __pyx_tmp_shape;
+        __pyx_t_4.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_4.shape[0] = __pyx_v_vectors.shape[1];
+__pyx_t_4.strides[0] = __pyx_v_vectors.strides[1];
+    __pyx_t_4.suboffsets[0] = -1;
+
+__pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_3) == __pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_4)) != 0);
+    __PYX_XDEC_MEMVIEW(&__pyx_t_3, 0);
+    __pyx_t_3.memview = NULL;
+    __pyx_t_3.data = NULL;
+    __PYX_XDEC_MEMVIEW(&__pyx_t_4, 0);
+    __pyx_t_4.memview = NULL;
+    __pyx_t_4.data = NULL;
+    if (__pyx_t_5) {
+    } else {
+      __pyx_t_2 = __pyx_t_5;
+      goto __pyx_L6_bool_binop_done;
+    }
+    __pyx_t_4.data = __pyx_v_vectors.data;
+    __pyx_t_4.memview = __pyx_v_vectors.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_4, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_i;
+        Py_ssize_t __pyx_tmp_shape = __pyx_v_vectors.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_vectors.strides[0];
+        if (__pyx_tmp_idx < 0)
+            __pyx_tmp_idx += __pyx_tmp_shape;
+        __pyx_t_4.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_4.shape[0] = __pyx_v_vectors.shape[1];
+__pyx_t_4.strides[0] = __pyx_v_vectors.strides[1];
+    __pyx_t_4.suboffsets[0] = -1;
+
+__pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_4) != 0.0) != 0);
+    __PYX_XDEC_MEMVIEW(&__pyx_t_4, 0);
+    __pyx_t_4.memview = NULL;
+    __pyx_t_4.data = NULL;
+    __pyx_t_2 = __pyx_t_5;
+    __pyx_L6_bool_binop_done:;
+    if (__pyx_t_2) {
+
+      /* "bonndit/tracking/alignedDirection.pyx":189
+ * 		for i in range(3):
+ * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:
+ * 				if self.angles[i] < min_angle or i==0:             # <<<<<<<<<<<<<<
+ * 					min_angle=self.angles[i]
+ * 					min_index=i
+ */
+      if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 189, __pyx_L1_error)}
+      __pyx_t_6 = __pyx_v_i;
+      if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_self->__pyx_base.angles.shape[0];
+      __pyx_t_5 = (((*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.angles.data + __pyx_t_6 * __pyx_v_self->__pyx_base.angles.strides[0]) ))) < __pyx_v_min_angle) != 0);
+      if (!__pyx_t_5) {
+      } else {
+        __pyx_t_2 = __pyx_t_5;
+        goto __pyx_L9_bool_binop_done;
+      }
+      __pyx_t_5 = ((__pyx_v_i == 0) != 0);
+      __pyx_t_2 = __pyx_t_5;
+      __pyx_L9_bool_binop_done:;
+      if (__pyx_t_2) {
+
+        /* "bonndit/tracking/alignedDirection.pyx":190
+ * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:
+ * 				if self.angles[i] < min_angle or i==0:
+ * 					min_angle=self.angles[i]             # <<<<<<<<<<<<<<
+ * 					min_index=i
+ * 		for i in range(3):
+ */
+        if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 190, __pyx_L1_error)}
+        __pyx_t_6 = __pyx_v_i;
+        if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_self->__pyx_base.angles.shape[0];
+        __pyx_v_min_angle = (*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.angles.data + __pyx_t_6 * __pyx_v_self->__pyx_base.angles.strides[0]) )));
+
+        /* "bonndit/tracking/alignedDirection.pyx":191
+ * 				if self.angles[i] < min_angle or i==0:
+ * 					min_angle=self.angles[i]
+ * 					min_index=i             # <<<<<<<<<<<<<<
+ * 		for i in range(3):
+ * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:
+ */
+        __pyx_v_min_index = __pyx_v_i;
+
+        /* "bonndit/tracking/alignedDirection.pyx":189
+ * 		for i in range(3):
+ * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:
+ * 				if self.angles[i] < min_angle or i==0:             # <<<<<<<<<<<<<<
+ * 					min_angle=self.angles[i]
+ * 					min_index=i
+ */
+      }
+
+      /* "bonndit/tracking/alignedDirection.pyx":188
+ * 		self.aligned_direction(vectors, direction)
+ * 		for i in range(3):
+ * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:             # <<<<<<<<<<<<<<
+ * 				if self.angles[i] < min_angle or i==0:
+ * 					min_angle=self.angles[i]
+ */
+    }
+  }
+
+  /* "bonndit/tracking/alignedDirection.pyx":192
+ * 					min_angle=self.angles[i]
+ * 					min_index=i
+ * 		for i in range(3):             # <<<<<<<<<<<<<<
+ * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:
+ * 				if self.angles[i] < min_angle + self.sigma and min_angle < 30:
+ */
+  for (__pyx_t_1 = 0; __pyx_t_1 < 3; __pyx_t_1+=1) {
+    __pyx_v_i = __pyx_t_1;
+
+    /* "bonndit/tracking/alignedDirection.pyx":193
+ * 					min_index=i
+ * 		for i in range(3):
+ * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:             # <<<<<<<<<<<<<<
+ * 				if self.angles[i] < min_angle + self.sigma and min_angle < 30:
+ * 					self.probability[i] = 1
+ */
+    __pyx_t_4.data = __pyx_v_vectors.data;
+    __pyx_t_4.memview = __pyx_v_vectors.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_4, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_i;
+        Py_ssize_t __pyx_tmp_shape = __pyx_v_vectors.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_vectors.strides[0];
+        if (__pyx_tmp_idx < 0)
+            __pyx_tmp_idx += __pyx_tmp_shape;
+        __pyx_t_4.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_4.shape[0] = __pyx_v_vectors.shape[1];
+__pyx_t_4.strides[0] = __pyx_v_vectors.strides[1];
+    __pyx_t_4.suboffsets[0] = -1;
+
+__pyx_t_3.data = __pyx_v_vectors.data;
+    __pyx_t_3.memview = __pyx_v_vectors.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_3, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_i;
+        Py_ssize_t __pyx_tmp_shape = __pyx_v_vectors.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_vectors.strides[0];
+        if (__pyx_tmp_idx < 0)
+            __pyx_tmp_idx += __pyx_tmp_shape;
+        __pyx_t_3.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_3.shape[0] = __pyx_v_vectors.shape[1];
+__pyx_t_3.strides[0] = __pyx_v_vectors.strides[1];
+    __pyx_t_3.suboffsets[0] = -1;
+
+__pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_4) == __pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_3)) != 0);
+    __PYX_XDEC_MEMVIEW(&__pyx_t_4, 0);
+    __pyx_t_4.memview = NULL;
+    __pyx_t_4.data = NULL;
+    __PYX_XDEC_MEMVIEW(&__pyx_t_3, 0);
+    __pyx_t_3.memview = NULL;
+    __pyx_t_3.data = NULL;
+    if (__pyx_t_5) {
+    } else {
+      __pyx_t_2 = __pyx_t_5;
+      goto __pyx_L14_bool_binop_done;
+    }
+    __pyx_t_3.data = __pyx_v_vectors.data;
+    __pyx_t_3.memview = __pyx_v_vectors.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_3, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_i;
+        Py_ssize_t __pyx_tmp_shape = __pyx_v_vectors.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_vectors.strides[0];
+        if (__pyx_tmp_idx < 0)
+            __pyx_tmp_idx += __pyx_tmp_shape;
+        __pyx_t_3.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_3.shape[0] = __pyx_v_vectors.shape[1];
+__pyx_t_3.strides[0] = __pyx_v_vectors.strides[1];
+    __pyx_t_3.suboffsets[0] = -1;
+
+__pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_3) != 0.0) != 0);
+    __PYX_XDEC_MEMVIEW(&__pyx_t_3, 0);
+    __pyx_t_3.memview = NULL;
+    __pyx_t_3.data = NULL;
+    __pyx_t_2 = __pyx_t_5;
+    __pyx_L14_bool_binop_done:;
+    if (__pyx_t_2) {
+
+      /* "bonndit/tracking/alignedDirection.pyx":194
+ * 		for i in range(3):
+ * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:
+ * 				if self.angles[i] < min_angle + self.sigma and min_angle < 30:             # <<<<<<<<<<<<<<
+ * 					self.probability[i] = 1
+ * 				else:
+ */
+      if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 194, __pyx_L1_error)}
+      __pyx_t_6 = __pyx_v_i;
+      if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_self->__pyx_base.angles.shape[0];
+      __pyx_t_5 = (((*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.angles.data + __pyx_t_6 * __pyx_v_self->__pyx_base.angles.strides[0]) ))) < (__pyx_v_min_angle + __pyx_v_self->__pyx_base.sigma)) != 0);
+      if (__pyx_t_5) {
+      } else {
+        __pyx_t_2 = __pyx_t_5;
+        goto __pyx_L17_bool_binop_done;
+      }
+      __pyx_t_5 = ((__pyx_v_min_angle < 30.0) != 0);
+      __pyx_t_2 = __pyx_t_5;
+      __pyx_L17_bool_binop_done:;
+      if (__pyx_t_2) {
+
+        /* "bonndit/tracking/alignedDirection.pyx":195
+ * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:
+ * 				if self.angles[i] < min_angle + self.sigma and min_angle < 30:
+ * 					self.probability[i] = 1             # <<<<<<<<<<<<<<
+ * 				else:
+ * 					self.probability[i] = 0
+ */
+        if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 195, __pyx_L1_error)}
+        __pyx_t_6 = __pyx_v_i;
+        if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_self->__pyx_base.probability.shape[0];
+        *((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.probability.data + __pyx_t_6 * __pyx_v_self->__pyx_base.probability.strides[0]) )) = 1.0;
+
+        /* "bonndit/tracking/alignedDirection.pyx":194
+ * 		for i in range(3):
+ * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:
+ * 				if self.angles[i] < min_angle + self.sigma and min_angle < 30:             # <<<<<<<<<<<<<<
+ * 					self.probability[i] = 1
+ * 				else:
+ */
+        goto __pyx_L16;
+      }
+
+      /* "bonndit/tracking/alignedDirection.pyx":197
+ * 					self.probability[i] = 1
+ * 				else:
+ * 					self.probability[i] = 0             # <<<<<<<<<<<<<<
+ * 		self.probability[min_index] = 1
+ * 		self.random_choice(direction)
+ */
+      /*else*/ {
+        if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 197, __pyx_L1_error)}
+        __pyx_t_6 = __pyx_v_i;
+        if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_self->__pyx_base.probability.shape[0];
+        *((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.probability.data + __pyx_t_6 * __pyx_v_self->__pyx_base.probability.strides[0]) )) = 0.0;
+      }
+      __pyx_L16:;
+
+      /* "bonndit/tracking/alignedDirection.pyx":193
+ * 					min_index=i
+ * 		for i in range(3):
+ * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:             # <<<<<<<<<<<<<<
+ * 				if self.angles[i] < min_angle + self.sigma and min_angle < 30:
+ * 					self.probability[i] = 1
+ */
+    }
+  }
+
+  /* "bonndit/tracking/alignedDirection.pyx":198
+ * 				else:
+ * 					self.probability[i] = 0
+ * 		self.probability[min_index] = 1             # <<<<<<<<<<<<<<
+ * 		self.random_choice(direction)
+ * #		mult_with_scalar(self.best_fit, 1, self.test_vectors[min_index])
+ */
+  if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 198, __pyx_L1_error)}
+  __pyx_t_6 = __pyx_v_min_index;
+  if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_self->__pyx_base.probability.shape[0];
+  *((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.probability.data + __pyx_t_6 * __pyx_v_self->__pyx_base.probability.strides[0]) )) = 1.0;
+
+  /* "bonndit/tracking/alignedDirection.pyx":199
+ * 					self.probability[i] = 0
+ * 		self.probability[min_index] = 1
+ * 		self.random_choice(direction)             # <<<<<<<<<<<<<<
+ * #		mult_with_scalar(self.best_fit, 1, self.test_vectors[min_index])
+ * #		self.chosen_prob = 0
+ */
+  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Deterministic2 *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.random_choice(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 199, __pyx_L1_error)
+
+  /* "bonndit/tracking/alignedDirection.pyx":177
+ * 
+ * cdef class Deterministic2(Probabilities):
+ * 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil  except *:             # <<<<<<<<<<<<<<
+ * 		"""
+ * 
+ */
+
+  /* function exit code */
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __PYX_XDEC_MEMVIEW(&__pyx_t_3, 0);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_4, 0);
+  {
+    #ifdef WITH_THREAD
+    PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+    #endif
+    __Pyx_AddTraceback("bonndit.tracking.alignedDirection.Deterministic2.calculate_probabilities", __pyx_clineno, __pyx_lineno, __pyx_filename);
+    #ifdef WITH_THREAD
+    __Pyx_PyGILState_Release(__pyx_gilstate_save);
+    #endif
+  }
+  __pyx_L0:;
+}
+
+/* "(tree fragment)":1
+ * def __reduce_cython__(self):             # <<<<<<<<<<<<<<
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ * def __setstate_cython__(self, __pyx_state):
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_7bonndit_8tracking_16alignedDirection_14Deterministic2_1__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_7bonndit_8tracking_16alignedDirection_14Deterministic2_1__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__reduce_cython__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_7bonndit_8tracking_16alignedDirection_14Deterministic2___reduce_cython__(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic2 *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_7bonndit_8tracking_16alignedDirection_14Deterministic2___reduce_cython__(CYTHON_UNUSED struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic2 *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__reduce_cython__", 0);
+
+  /* "(tree fragment)":2
+ * def __reduce_cython__(self):
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
+ * def __setstate_cython__(self, __pyx_state):
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ */
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__13, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_Raise(__pyx_t_1, 0, 0, 0);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __PYX_ERR(1, 2, __pyx_L1_error)
+
+  /* "(tree fragment)":1
+ * def __reduce_cython__(self):             # <<<<<<<<<<<<<<
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ * def __setstate_cython__(self, __pyx_state):
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("bonndit.tracking.alignedDirection.Deterministic2.__reduce_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "(tree fragment)":3
+ * def __reduce_cython__(self):
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ * def __setstate_cython__(self, __pyx_state):             # <<<<<<<<<<<<<<
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_7bonndit_8tracking_16alignedDirection_14Deterministic2_3__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state); /*proto*/
+static PyObject *__pyx_pw_7bonndit_8tracking_16alignedDirection_14Deterministic2_3__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__setstate_cython__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_7bonndit_8tracking_16alignedDirection_14Deterministic2_2__setstate_cython__(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic2 *)__pyx_v_self), ((PyObject *)__pyx_v___pyx_state));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_7bonndit_8tracking_16alignedDirection_14Deterministic2_2__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic2 *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__setstate_cython__", 0);
+
+  /* "(tree fragment)":4
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ * def __setstate_cython__(self, __pyx_state):
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
+ */
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__14, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_Raise(__pyx_t_1, 0, 0, 0);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __PYX_ERR(1, 4, __pyx_L1_error)
+
+  /* "(tree fragment)":3
+ * def __reduce_cython__(self):
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ * def __setstate_cython__(self, __pyx_state):             # <<<<<<<<<<<<<<
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("bonndit.tracking.alignedDirection.Deterministic2.__setstate_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "bonndit/tracking/alignedDirection.pyx":205
+ * 
+ * cdef class Deterministic(Probabilities):
+ * 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil  except *:             # <<<<<<<<<<<<<<
+ * 		"""
+ * 
+ */
+
+static void __pyx_f_7bonndit_8tracking_16alignedDirection_13Deterministic_calculate_probabilities(struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic *__pyx_v_self, __Pyx_memviewslice __pyx_v_vectors, __Pyx_memviewslice __pyx_v_direction) {
+  int __pyx_v_i;
+  int __pyx_v_min_index;
+  double __pyx_v_min_angle;
+  int __pyx_t_1;
+  int __pyx_t_2;
+  __Pyx_memviewslice __pyx_t_3 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  __Pyx_memviewslice __pyx_t_4 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  int __pyx_t_5;
+  Py_ssize_t __pyx_t_6;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+
+  /* "bonndit/tracking/alignedDirection.pyx":212
+ * 		@return:
+ * 		"""
+ * 		cdef int i, min_index=0             # <<<<<<<<<<<<<<
+ * 		cdef double s, min_angle=0
+ * 		self.aligned_direction(vectors, direction)
+ */
+  __pyx_v_min_index = 0;
+
+  /* "bonndit/tracking/alignedDirection.pyx":213
+ * 		"""
+ * 		cdef int i, min_index=0
+ * 		cdef double s, min_angle=0             # <<<<<<<<<<<<<<
+ * 		self.aligned_direction(vectors, direction)
+ * 		for i in range(3):
+ */
+  __pyx_v_min_angle = 0.0;
+
+  /* "bonndit/tracking/alignedDirection.pyx":214
+ * 		cdef int i, min_index=0
+ * 		cdef double s, min_angle=0
+ * 		self.aligned_direction(vectors, direction)             # <<<<<<<<<<<<<<
+ * 		for i in range(3):
+ * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:
+ */
+  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Deterministic *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.aligned_direction(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_vectors, __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 214, __pyx_L1_error)
+
+  /* "bonndit/tracking/alignedDirection.pyx":215
+ * 		cdef double s, min_angle=0
+ * 		self.aligned_direction(vectors, direction)
+ * 		for i in range(3):             # <<<<<<<<<<<<<<
+ * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:
+ * 				if self.angles[i] < min_angle or i==0:
+ */
+  for (__pyx_t_1 = 0; __pyx_t_1 < 3; __pyx_t_1+=1) {
+    __pyx_v_i = __pyx_t_1;
+
+    /* "bonndit/tracking/alignedDirection.pyx":216
+ * 		self.aligned_direction(vectors, direction)
+ * 		for i in range(3):
+ * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:             # <<<<<<<<<<<<<<
+ * 				if self.angles[i] < min_angle or i==0:
+ * 					min_angle=self.angles[i]
+ */
+    __pyx_t_3.data = __pyx_v_vectors.data;
+    __pyx_t_3.memview = __pyx_v_vectors.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_3, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_i;
+        Py_ssize_t __pyx_tmp_shape = __pyx_v_vectors.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_vectors.strides[0];
+        if (__pyx_tmp_idx < 0)
+            __pyx_tmp_idx += __pyx_tmp_shape;
+        __pyx_t_3.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_3.shape[0] = __pyx_v_vectors.shape[1];
+__pyx_t_3.strides[0] = __pyx_v_vectors.strides[1];
+    __pyx_t_3.suboffsets[0] = -1;
+
+__pyx_t_4.data = __pyx_v_vectors.data;
+    __pyx_t_4.memview = __pyx_v_vectors.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_4, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_i;
+        Py_ssize_t __pyx_tmp_shape = __pyx_v_vectors.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_vectors.strides[0];
+        if (__pyx_tmp_idx < 0)
+            __pyx_tmp_idx += __pyx_tmp_shape;
+        __pyx_t_4.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_4.shape[0] = __pyx_v_vectors.shape[1];
+__pyx_t_4.strides[0] = __pyx_v_vectors.strides[1];
+    __pyx_t_4.suboffsets[0] = -1;
+
+__pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_3) == __pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_4)) != 0);
+    __PYX_XDEC_MEMVIEW(&__pyx_t_3, 0);
+    __pyx_t_3.memview = NULL;
+    __pyx_t_3.data = NULL;
+    __PYX_XDEC_MEMVIEW(&__pyx_t_4, 0);
+    __pyx_t_4.memview = NULL;
+    __pyx_t_4.data = NULL;
+    if (__pyx_t_5) {
+    } else {
+      __pyx_t_2 = __pyx_t_5;
+      goto __pyx_L6_bool_binop_done;
+    }
+    __pyx_t_4.data = __pyx_v_vectors.data;
+    __pyx_t_4.memview = __pyx_v_vectors.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_4, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_i;
+        Py_ssize_t __pyx_tmp_shape = __pyx_v_vectors.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_vectors.strides[0];
+        if (__pyx_tmp_idx < 0)
+            __pyx_tmp_idx += __pyx_tmp_shape;
+        __pyx_t_4.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_4.shape[0] = __pyx_v_vectors.shape[1];
+__pyx_t_4.strides[0] = __pyx_v_vectors.strides[1];
+    __pyx_t_4.suboffsets[0] = -1;
+
+__pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_4) != 0.0) != 0);
+    __PYX_XDEC_MEMVIEW(&__pyx_t_4, 0);
+    __pyx_t_4.memview = NULL;
+    __pyx_t_4.data = NULL;
+    __pyx_t_2 = __pyx_t_5;
+    __pyx_L6_bool_binop_done:;
+    if (__pyx_t_2) {
+
+      /* "bonndit/tracking/alignedDirection.pyx":217
+ * 		for i in range(3):
+ * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:
+ * 				if self.angles[i] < min_angle or i==0:             # <<<<<<<<<<<<<<
+ * 					min_angle=self.angles[i]
+ * 					min_index=i
+ */
+      if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 217, __pyx_L1_error)}
+      __pyx_t_6 = __pyx_v_i;
+      if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_self->__pyx_base.angles.shape[0];
+      __pyx_t_5 = (((*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.angles.data + __pyx_t_6 * __pyx_v_self->__pyx_base.angles.strides[0]) ))) < __pyx_v_min_angle) != 0);
+      if (!__pyx_t_5) {
+      } else {
+        __pyx_t_2 = __pyx_t_5;
+        goto __pyx_L9_bool_binop_done;
+      }
+      __pyx_t_5 = ((__pyx_v_i == 0) != 0);
+      __pyx_t_2 = __pyx_t_5;
+      __pyx_L9_bool_binop_done:;
+      if (__pyx_t_2) {
+
+        /* "bonndit/tracking/alignedDirection.pyx":218
+ * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:
+ * 				if self.angles[i] < min_angle or i==0:
+ * 					min_angle=self.angles[i]             # <<<<<<<<<<<<<<
+ * 					min_index=i
+ * 
+ */
+        if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 218, __pyx_L1_error)}
+        __pyx_t_6 = __pyx_v_i;
+        if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_self->__pyx_base.angles.shape[0];
+        __pyx_v_min_angle = (*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.angles.data + __pyx_t_6 * __pyx_v_self->__pyx_base.angles.strides[0]) )));
+
+        /* "bonndit/tracking/alignedDirection.pyx":219
+ * 				if self.angles[i] < min_angle or i==0:
+ * 					min_angle=self.angles[i]
+ * 					min_index=i             # <<<<<<<<<<<<<<
+ * 
+ * 		mult_with_scalar(self.best_fit, 1, self.test_vectors[min_index])
+ */
+        __pyx_v_min_index = __pyx_v_i;
+
+        /* "bonndit/tracking/alignedDirection.pyx":217
+ * 		for i in range(3):
+ * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:
+ * 				if self.angles[i] < min_angle or i==0:             # <<<<<<<<<<<<<<
+ * 					min_angle=self.angles[i]
+ * 					min_index=i
+ */
+      }
+
+      /* "bonndit/tracking/alignedDirection.pyx":216
+ * 		self.aligned_direction(vectors, direction)
+ * 		for i in range(3):
+ * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:             # <<<<<<<<<<<<<<
+ * 				if self.angles[i] < min_angle or i==0:
+ * 					min_angle=self.angles[i]
+ */
+    }
+  }
+
+  /* "bonndit/tracking/alignedDirection.pyx":221
+ * 					min_index=i
+ * 
+ * 		mult_with_scalar(self.best_fit, 1, self.test_vectors[min_index])             # <<<<<<<<<<<<<<
+ * 		self.chosen_prob = 0
+ * 		self.chosen_angle = self.angles[min_index]
+ */
+  if (unlikely(!__pyx_v_self->__pyx_base.best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 221, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->__pyx_base.test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 221, __pyx_L1_error)}
+  __pyx_t_4.data = __pyx_v_self->__pyx_base.test_vectors.data;
+  __pyx_t_4.memview = __pyx_v_self->__pyx_base.test_vectors.memview;
+  __PYX_INC_MEMVIEW(&__pyx_t_4, 0);
+  {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_min_index;
+        Py_ssize_t __pyx_tmp_shape = __pyx_v_self->__pyx_base.test_vectors.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_self->__pyx_base.test_vectors.strides[0];
+        if (__pyx_tmp_idx < 0)
+            __pyx_tmp_idx += __pyx_tmp_shape;
+        __pyx_t_4.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_4.shape[0] = __pyx_v_self->__pyx_base.test_vectors.shape[1];
+__pyx_t_4.strides[0] = __pyx_v_self->__pyx_base.test_vectors.strides[1];
+    __pyx_t_4.suboffsets[0] = -1;
+
+__pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_self->__pyx_base.best_fit, 1.0, __pyx_t_4);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_4, 0);
+  __pyx_t_4.memview = NULL;
+  __pyx_t_4.data = NULL;
+
+  /* "bonndit/tracking/alignedDirection.pyx":222
+ * 
+ * 		mult_with_scalar(self.best_fit, 1, self.test_vectors[min_index])
+ * 		self.chosen_prob = 0             # <<<<<<<<<<<<<<
+ * 		self.chosen_angle = self.angles[min_index]
+ * 
+ */
+  __pyx_v_self->__pyx_base.chosen_prob = 0.0;
+
+  /* "bonndit/tracking/alignedDirection.pyx":223
+ * 		mult_with_scalar(self.best_fit, 1, self.test_vectors[min_index])
+ * 		self.chosen_prob = 0
+ * 		self.chosen_angle = self.angles[min_index]             # <<<<<<<<<<<<<<
+ * 
+ */
+  if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 223, __pyx_L1_error)}
+  __pyx_t_6 = __pyx_v_min_index;
+  if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_self->__pyx_base.angles.shape[0];
+  __pyx_v_self->__pyx_base.chosen_angle = (*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.angles.data + __pyx_t_6 * __pyx_v_self->__pyx_base.angles.strides[0]) )));
+
+  /* "bonndit/tracking/alignedDirection.pyx":205
+ * 
+ * cdef class Deterministic(Probabilities):
+ * 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil  except *:             # <<<<<<<<<<<<<<
+ * 		"""
+ * 
+ */
+
+  /* function exit code */
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __PYX_XDEC_MEMVIEW(&__pyx_t_3, 0);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_4, 0);
+  {
+    #ifdef WITH_THREAD
+    PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+    #endif
+    __Pyx_AddTraceback("bonndit.tracking.alignedDirection.Deterministic.calculate_probabilities", __pyx_clineno, __pyx_lineno, __pyx_filename);
+    #ifdef WITH_THREAD
+    __Pyx_PyGILState_Release(__pyx_gilstate_save);
+    #endif
+  }
+  __pyx_L0:;
+}
+
+/* "(tree fragment)":1
+ * def __reduce_cython__(self):             # <<<<<<<<<<<<<<
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ * def __setstate_cython__(self, __pyx_state):
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_7bonndit_8tracking_16alignedDirection_13Deterministic_1__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_7bonndit_8tracking_16alignedDirection_13Deterministic_1__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__reduce_cython__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_7bonndit_8tracking_16alignedDirection_13Deterministic___reduce_cython__(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_7bonndit_8tracking_16alignedDirection_13Deterministic___reduce_cython__(CYTHON_UNUSED struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__reduce_cython__", 0);
+
+  /* "(tree fragment)":2
+ * def __reduce_cython__(self):
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
+ * def __setstate_cython__(self, __pyx_state):
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ */
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__15, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_Raise(__pyx_t_1, 0, 0, 0);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __PYX_ERR(1, 2, __pyx_L1_error)
+
+  /* "(tree fragment)":1
+ * def __reduce_cython__(self):             # <<<<<<<<<<<<<<
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ * def __setstate_cython__(self, __pyx_state):
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("bonndit.tracking.alignedDirection.Deterministic.__reduce_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "(tree fragment)":3
+ * def __reduce_cython__(self):
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ * def __setstate_cython__(self, __pyx_state):             # <<<<<<<<<<<<<<
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_7bonndit_8tracking_16alignedDirection_13Deterministic_3__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state); /*proto*/
+static PyObject *__pyx_pw_7bonndit_8tracking_16alignedDirection_13Deterministic_3__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__setstate_cython__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_7bonndit_8tracking_16alignedDirection_13Deterministic_2__setstate_cython__(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic *)__pyx_v_self), ((PyObject *)__pyx_v___pyx_state));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_7bonndit_8tracking_16alignedDirection_13Deterministic_2__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__setstate_cython__", 0);
+
+  /* "(tree fragment)":4
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ * def __setstate_cython__(self, __pyx_state):
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
+ */
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__16, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_Raise(__pyx_t_1, 0, 0, 0);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __PYX_ERR(1, 4, __pyx_L1_error)
+
+  /* "(tree fragment)":3
+ * def __reduce_cython__(self):
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ * def __setstate_cython__(self, __pyx_state):             # <<<<<<<<<<<<<<
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("bonndit.tracking.alignedDirection.Deterministic.__setstate_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
@@ -4957,7 +5872,7 @@ static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __
  * 
  *         if itemsize <= 0:
  */
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__13, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 133, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__17, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 133, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -4989,7 +5904,7 @@ static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __
  * 
  *         if not isinstance(format, bytes):
  */
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__14, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 136, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__18, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 136, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -5116,7 +6031,7 @@ static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __
  * 
  * 
  */
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_MemoryError, __pyx_tuple__15, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 148, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_MemoryError, __pyx_tuple__19, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 148, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -5390,7 +6305,7 @@ static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __
  * 
  *             if self.dtype_is_object:
  */
-      __pyx_t_10 = __Pyx_PyObject_Call(__pyx_builtin_MemoryError, __pyx_tuple__16, NULL); if (unlikely(!__pyx_t_10)) __PYX_ERR(1, 176, __pyx_L1_error)
+      __pyx_t_10 = __Pyx_PyObject_Call(__pyx_builtin_MemoryError, __pyx_tuple__20, NULL); if (unlikely(!__pyx_t_10)) __PYX_ERR(1, 176, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_10);
       __Pyx_Raise(__pyx_t_10, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
@@ -5634,7 +6549,7 @@ static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array_2__getbuffer__(stru
  *         info.buf = self.data
  *         info.len = self.len
  */
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__17, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 192, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__21, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 192, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -6368,7 +7283,7 @@ static PyObject *__pyx_pf___pyx_array___reduce_cython__(CYTHON_UNUSED struct __p
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__18, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__22, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -6424,7 +7339,7 @@ static PyObject *__pyx_pf___pyx_array_2__setstate_cython__(CYTHON_UNUSED struct 
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__19, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__23, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -8134,7 +9049,7 @@ static int __pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_6__setit
  * 
  *         have_slices, index = _unellipsify(index, self.view.ndim)
  */
-    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__20, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 418, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__24, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 418, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_Raise(__pyx_t_2, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -9182,7 +10097,7 @@ static PyObject *__pyx_memoryview_convert_item_to_object(struct __pyx_memoryview
  *         else:
  *             if len(self.view.format) == 1:
  */
-      __pyx_t_6 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__21, NULL); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 495, __pyx_L5_except_error)
+      __pyx_t_6 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__25, NULL); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 495, __pyx_L5_except_error)
       __Pyx_GOTREF(__pyx_t_6);
       __Pyx_Raise(__pyx_t_6, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
@@ -9544,7 +10459,7 @@ static int __pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_8__getbu
  * 
  *         if flags & PyBUF_ND:
  */
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__22, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 520, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__26, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 520, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -10093,7 +11008,7 @@ static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_7strides___get__(st
  * 
  *         return tuple([stride for stride in self.view.strides[:self.view.ndim]])
  */
-    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__23, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 570, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__27, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 570, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_Raise(__pyx_t_2, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -10210,7 +11125,7 @@ static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_10suboffsets___get_
     __Pyx_XDECREF(__pyx_r);
     __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_self->view.ndim); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 577, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_3 = PyNumber_Multiply(__pyx_tuple__24, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 577, __pyx_L1_error)
+    __pyx_t_3 = PyNumber_Multiply(__pyx_tuple__28, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 577, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_r = __pyx_t_3;
@@ -11248,7 +12163,7 @@ static PyObject *__pyx_pf___pyx_memoryview___reduce_cython__(CYTHON_UNUSED struc
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__25, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__29, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -11304,7 +12219,7 @@ static PyObject *__pyx_pf___pyx_memoryview_2__setstate_cython__(CYTHON_UNUSED st
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__26, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__30, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -11661,9 +12576,9 @@ static PyObject *_unellipsify(PyObject *__pyx_v_index, int __pyx_v_ndim) {
         __Pyx_GOTREF(__pyx_t_7);
         { Py_ssize_t __pyx_temp;
           for (__pyx_temp=0; __pyx_temp < ((__pyx_v_ndim - __pyx_t_8) + 1); __pyx_temp++) {
-            __Pyx_INCREF(__pyx_slice__27);
-            __Pyx_GIVEREF(__pyx_slice__27);
-            PyList_SET_ITEM(__pyx_t_7, __pyx_temp, __pyx_slice__27);
+            __Pyx_INCREF(__pyx_slice__31);
+            __Pyx_GIVEREF(__pyx_slice__31);
+            PyList_SET_ITEM(__pyx_t_7, __pyx_temp, __pyx_slice__31);
           }
         }
         __pyx_t_9 = __Pyx_PyList_Extend(__pyx_v_result, __pyx_t_7); if (unlikely(__pyx_t_9 == ((int)-1))) __PYX_ERR(1, 682, __pyx_L1_error)
@@ -11696,7 +12611,7 @@ static PyObject *_unellipsify(PyObject *__pyx_v_index, int __pyx_v_ndim) {
  *         else:
  */
       /*else*/ {
-        __pyx_t_9 = __Pyx_PyList_Append(__pyx_v_result, __pyx_slice__27); if (unlikely(__pyx_t_9 == ((int)-1))) __PYX_ERR(1, 685, __pyx_L1_error)
+        __pyx_t_9 = __Pyx_PyList_Append(__pyx_v_result, __pyx_slice__31); if (unlikely(__pyx_t_9 == ((int)-1))) __PYX_ERR(1, 685, __pyx_L1_error)
       }
       __pyx_L7:;
 
@@ -11836,9 +12751,9 @@ static PyObject *_unellipsify(PyObject *__pyx_v_index, int __pyx_v_ndim) {
     __Pyx_GOTREF(__pyx_t_3);
     { Py_ssize_t __pyx_temp;
       for (__pyx_temp=0; __pyx_temp < __pyx_v_nslices; __pyx_temp++) {
-        __Pyx_INCREF(__pyx_slice__27);
-        __Pyx_GIVEREF(__pyx_slice__27);
-        PyList_SET_ITEM(__pyx_t_3, __pyx_temp, __pyx_slice__27);
+        __Pyx_INCREF(__pyx_slice__31);
+        __Pyx_GIVEREF(__pyx_slice__31);
+        PyList_SET_ITEM(__pyx_t_3, __pyx_temp, __pyx_slice__31);
       }
     }
     __pyx_t_9 = __Pyx_PyList_Extend(__pyx_v_result, __pyx_t_3); if (unlikely(__pyx_t_9 == ((int)-1))) __PYX_ERR(1, 696, __pyx_L1_error)
@@ -11965,7 +12880,7 @@ static PyObject *assert_direct_dimensions(Py_ssize_t *__pyx_v_suboffsets, int __
  * 
  * 
  */
-      __pyx_t_5 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__28, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 703, __pyx_L1_error)
+      __pyx_t_5 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__32, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 703, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
       __Pyx_Raise(__pyx_t_5, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
@@ -14149,7 +15064,7 @@ static PyObject *__pyx_pf___pyx_memoryviewslice___reduce_cython__(CYTHON_UNUSED 
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__29, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__33, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -14205,7 +15120,7 @@ static PyObject *__pyx_pf___pyx_memoryviewslice_2__setstate_cython__(CYTHON_UNUS
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__30, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__34, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -18242,6 +19157,182 @@ static PyTypeObject __pyx_type_7bonndit_8tracking_16alignedDirection_ScalarNew =
   0, /*tp_pypy_flags*/
   #endif
 };
+static struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Deterministic __pyx_vtable_7bonndit_8tracking_16alignedDirection_Deterministic;
+
+static PyObject *__pyx_tp_new_7bonndit_8tracking_16alignedDirection_Deterministic(PyTypeObject *t, PyObject *a, PyObject *k) {
+  struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic *p;
+  PyObject *o = __pyx_tp_new_7bonndit_8tracking_16alignedDirection_Probabilities(t, a, k);
+  if (unlikely(!o)) return 0;
+  p = ((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic *)o);
+  p->__pyx_base.__pyx_vtab = (struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Probabilities*)__pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Deterministic;
+  return o;
+}
+
+static PyMethodDef __pyx_methods_7bonndit_8tracking_16alignedDirection_Deterministic[] = {
+  {"__reduce_cython__", (PyCFunction)__pyx_pw_7bonndit_8tracking_16alignedDirection_13Deterministic_1__reduce_cython__, METH_NOARGS, 0},
+  {"__setstate_cython__", (PyCFunction)__pyx_pw_7bonndit_8tracking_16alignedDirection_13Deterministic_3__setstate_cython__, METH_O, 0},
+  {0, 0, 0, 0}
+};
+
+static PyTypeObject __pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic = {
+  PyVarObject_HEAD_INIT(0, 0)
+  "bonndit.tracking.alignedDirection.Deterministic", /*tp_name*/
+  sizeof(struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic), /*tp_basicsize*/
+  0, /*tp_itemsize*/
+  __pyx_tp_dealloc_7bonndit_8tracking_16alignedDirection_Probabilities, /*tp_dealloc*/
+  #if PY_VERSION_HEX < 0x030800b4
+  0, /*tp_print*/
+  #endif
+  #if PY_VERSION_HEX >= 0x030800b4
+  0, /*tp_vectorcall_offset*/
+  #endif
+  0, /*tp_getattr*/
+  0, /*tp_setattr*/
+  #if PY_MAJOR_VERSION < 3
+  0, /*tp_compare*/
+  #endif
+  #if PY_MAJOR_VERSION >= 3
+  0, /*tp_as_async*/
+  #endif
+  0, /*tp_repr*/
+  0, /*tp_as_number*/
+  0, /*tp_as_sequence*/
+  0, /*tp_as_mapping*/
+  0, /*tp_hash*/
+  0, /*tp_call*/
+  0, /*tp_str*/
+  0, /*tp_getattro*/
+  0, /*tp_setattro*/
+  0, /*tp_as_buffer*/
+  Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE, /*tp_flags*/
+  0, /*tp_doc*/
+  0, /*tp_traverse*/
+  0, /*tp_clear*/
+  0, /*tp_richcompare*/
+  0, /*tp_weaklistoffset*/
+  0, /*tp_iter*/
+  0, /*tp_iternext*/
+  __pyx_methods_7bonndit_8tracking_16alignedDirection_Deterministic, /*tp_methods*/
+  0, /*tp_members*/
+  0, /*tp_getset*/
+  0, /*tp_base*/
+  0, /*tp_dict*/
+  0, /*tp_descr_get*/
+  0, /*tp_descr_set*/
+  0, /*tp_dictoffset*/
+  0, /*tp_init*/
+  0, /*tp_alloc*/
+  __pyx_tp_new_7bonndit_8tracking_16alignedDirection_Deterministic, /*tp_new*/
+  0, /*tp_free*/
+  0, /*tp_is_gc*/
+  0, /*tp_bases*/
+  0, /*tp_mro*/
+  0, /*tp_cache*/
+  0, /*tp_subclasses*/
+  0, /*tp_weaklist*/
+  0, /*tp_del*/
+  0, /*tp_version_tag*/
+  #if PY_VERSION_HEX >= 0x030400a1
+  0, /*tp_finalize*/
+  #endif
+  #if PY_VERSION_HEX >= 0x030800b1 && (!CYTHON_COMPILING_IN_PYPY || PYPY_VERSION_NUM >= 0x07030800)
+  0, /*tp_vectorcall*/
+  #endif
+  #if PY_VERSION_HEX >= 0x030800b4 && PY_VERSION_HEX < 0x03090000
+  0, /*tp_print*/
+  #endif
+  #if CYTHON_COMPILING_IN_PYPY && PY_VERSION_HEX >= 0x03090000
+  0, /*tp_pypy_flags*/
+  #endif
+};
+static struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Deterministic2 __pyx_vtable_7bonndit_8tracking_16alignedDirection_Deterministic2;
+
+static PyObject *__pyx_tp_new_7bonndit_8tracking_16alignedDirection_Deterministic2(PyTypeObject *t, PyObject *a, PyObject *k) {
+  struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic2 *p;
+  PyObject *o = __pyx_tp_new_7bonndit_8tracking_16alignedDirection_Probabilities(t, a, k);
+  if (unlikely(!o)) return 0;
+  p = ((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic2 *)o);
+  p->__pyx_base.__pyx_vtab = (struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Probabilities*)__pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Deterministic2;
+  return o;
+}
+
+static PyMethodDef __pyx_methods_7bonndit_8tracking_16alignedDirection_Deterministic2[] = {
+  {"__reduce_cython__", (PyCFunction)__pyx_pw_7bonndit_8tracking_16alignedDirection_14Deterministic2_1__reduce_cython__, METH_NOARGS, 0},
+  {"__setstate_cython__", (PyCFunction)__pyx_pw_7bonndit_8tracking_16alignedDirection_14Deterministic2_3__setstate_cython__, METH_O, 0},
+  {0, 0, 0, 0}
+};
+
+static PyTypeObject __pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic2 = {
+  PyVarObject_HEAD_INIT(0, 0)
+  "bonndit.tracking.alignedDirection.Deterministic2", /*tp_name*/
+  sizeof(struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic2), /*tp_basicsize*/
+  0, /*tp_itemsize*/
+  __pyx_tp_dealloc_7bonndit_8tracking_16alignedDirection_Probabilities, /*tp_dealloc*/
+  #if PY_VERSION_HEX < 0x030800b4
+  0, /*tp_print*/
+  #endif
+  #if PY_VERSION_HEX >= 0x030800b4
+  0, /*tp_vectorcall_offset*/
+  #endif
+  0, /*tp_getattr*/
+  0, /*tp_setattr*/
+  #if PY_MAJOR_VERSION < 3
+  0, /*tp_compare*/
+  #endif
+  #if PY_MAJOR_VERSION >= 3
+  0, /*tp_as_async*/
+  #endif
+  0, /*tp_repr*/
+  0, /*tp_as_number*/
+  0, /*tp_as_sequence*/
+  0, /*tp_as_mapping*/
+  0, /*tp_hash*/
+  0, /*tp_call*/
+  0, /*tp_str*/
+  0, /*tp_getattro*/
+  0, /*tp_setattro*/
+  0, /*tp_as_buffer*/
+  Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE, /*tp_flags*/
+  0, /*tp_doc*/
+  0, /*tp_traverse*/
+  0, /*tp_clear*/
+  0, /*tp_richcompare*/
+  0, /*tp_weaklistoffset*/
+  0, /*tp_iter*/
+  0, /*tp_iternext*/
+  __pyx_methods_7bonndit_8tracking_16alignedDirection_Deterministic2, /*tp_methods*/
+  0, /*tp_members*/
+  0, /*tp_getset*/
+  0, /*tp_base*/
+  0, /*tp_dict*/
+  0, /*tp_descr_get*/
+  0, /*tp_descr_set*/
+  0, /*tp_dictoffset*/
+  0, /*tp_init*/
+  0, /*tp_alloc*/
+  __pyx_tp_new_7bonndit_8tracking_16alignedDirection_Deterministic2, /*tp_new*/
+  0, /*tp_free*/
+  0, /*tp_is_gc*/
+  0, /*tp_bases*/
+  0, /*tp_mro*/
+  0, /*tp_cache*/
+  0, /*tp_subclasses*/
+  0, /*tp_weaklist*/
+  0, /*tp_del*/
+  0, /*tp_version_tag*/
+  #if PY_VERSION_HEX >= 0x030400a1
+  0, /*tp_finalize*/
+  #endif
+  #if PY_VERSION_HEX >= 0x030800b1 && (!CYTHON_COMPILING_IN_PYPY || PYPY_VERSION_NUM >= 0x07030800)
+  0, /*tp_vectorcall*/
+  #endif
+  #if PY_VERSION_HEX >= 0x030800b4 && PY_VERSION_HEX < 0x03090000
+  0, /*tp_print*/
+  #endif
+  #if CYTHON_COMPILING_IN_PYPY && PY_VERSION_HEX >= 0x03090000
+  0, /*tp_pypy_flags*/
+  #endif
+};
 static struct __pyx_vtabstruct_array __pyx_vtable_array;
 
 static PyObject *__pyx_tp_new_array(PyTypeObject *t, PyObject *a, PyObject *k) {
@@ -19022,6 +20113,8 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_s_Cannot_assign_to_read_only_memor, __pyx_k_Cannot_assign_to_read_only_memor, sizeof(__pyx_k_Cannot_assign_to_read_only_memor), 0, 0, 1, 0},
   {&__pyx_kp_s_Cannot_create_writable_memory_vi, __pyx_k_Cannot_create_writable_memory_vi, sizeof(__pyx_k_Cannot_create_writable_memory_vi), 0, 0, 1, 0},
   {&__pyx_kp_s_Cannot_index_with_type_s, __pyx_k_Cannot_index_with_type_s, sizeof(__pyx_k_Cannot_index_with_type_s), 0, 0, 1, 0},
+  {&__pyx_n_s_Deterministic, __pyx_k_Deterministic, sizeof(__pyx_k_Deterministic), 0, 0, 1, 1},
+  {&__pyx_n_s_Deterministic2, __pyx_k_Deterministic2, sizeof(__pyx_k_Deterministic2), 0, 0, 1, 1},
   {&__pyx_n_s_Ellipsis, __pyx_k_Ellipsis, sizeof(__pyx_k_Ellipsis), 0, 0, 1, 1},
   {&__pyx_kp_s_Empty_shape_tuple_for_cython_arr, __pyx_k_Empty_shape_tuple_for_cython_arr, sizeof(__pyx_k_Empty_shape_tuple_for_cython_arr), 0, 0, 1, 0},
   {&__pyx_n_s_Gaussian, __pyx_k_Gaussian, sizeof(__pyx_k_Gaussian), 0, 0, 1, 1},
@@ -19250,6 +20343,44 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__12);
   __Pyx_GIVEREF(__pyx_tuple__12);
 
+  /* "(tree fragment)":2
+ * def __reduce_cython__(self):
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
+ * def __setstate_cython__(self, __pyx_state):
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ */
+  __pyx_tuple__13 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__13)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__13);
+  __Pyx_GIVEREF(__pyx_tuple__13);
+
+  /* "(tree fragment)":4
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ * def __setstate_cython__(self, __pyx_state):
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
+ */
+  __pyx_tuple__14 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__14)) __PYX_ERR(1, 4, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__14);
+  __Pyx_GIVEREF(__pyx_tuple__14);
+
+  /* "(tree fragment)":2
+ * def __reduce_cython__(self):
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
+ * def __setstate_cython__(self, __pyx_state):
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ */
+  __pyx_tuple__15 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__15)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__15);
+  __Pyx_GIVEREF(__pyx_tuple__15);
+
+  /* "(tree fragment)":4
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ * def __setstate_cython__(self, __pyx_state):
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
+ */
+  __pyx_tuple__16 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__16)) __PYX_ERR(1, 4, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__16);
+  __Pyx_GIVEREF(__pyx_tuple__16);
+
   /* "View.MemoryView":133
  * 
  *         if not self.ndim:
@@ -19257,9 +20388,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  *         if itemsize <= 0:
  */
-  __pyx_tuple__13 = PyTuple_Pack(1, __pyx_kp_s_Empty_shape_tuple_for_cython_arr); if (unlikely(!__pyx_tuple__13)) __PYX_ERR(1, 133, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__13);
-  __Pyx_GIVEREF(__pyx_tuple__13);
+  __pyx_tuple__17 = PyTuple_Pack(1, __pyx_kp_s_Empty_shape_tuple_for_cython_arr); if (unlikely(!__pyx_tuple__17)) __PYX_ERR(1, 133, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__17);
+  __Pyx_GIVEREF(__pyx_tuple__17);
 
   /* "View.MemoryView":136
  * 
@@ -19268,9 +20399,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  *         if not isinstance(format, bytes):
  */
-  __pyx_tuple__14 = PyTuple_Pack(1, __pyx_kp_s_itemsize_0_for_cython_array); if (unlikely(!__pyx_tuple__14)) __PYX_ERR(1, 136, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__14);
-  __Pyx_GIVEREF(__pyx_tuple__14);
+  __pyx_tuple__18 = PyTuple_Pack(1, __pyx_kp_s_itemsize_0_for_cython_array); if (unlikely(!__pyx_tuple__18)) __PYX_ERR(1, 136, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__18);
+  __Pyx_GIVEREF(__pyx_tuple__18);
 
   /* "View.MemoryView":148
  * 
@@ -19279,9 +20410,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  * 
  */
-  __pyx_tuple__15 = PyTuple_Pack(1, __pyx_kp_s_unable_to_allocate_shape_and_str); if (unlikely(!__pyx_tuple__15)) __PYX_ERR(1, 148, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__15);
-  __Pyx_GIVEREF(__pyx_tuple__15);
+  __pyx_tuple__19 = PyTuple_Pack(1, __pyx_kp_s_unable_to_allocate_shape_and_str); if (unlikely(!__pyx_tuple__19)) __PYX_ERR(1, 148, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__19);
+  __Pyx_GIVEREF(__pyx_tuple__19);
 
   /* "View.MemoryView":176
  *             self.data = <char *>malloc(self.len)
@@ -19290,9 +20421,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  *             if self.dtype_is_object:
  */
-  __pyx_tuple__16 = PyTuple_Pack(1, __pyx_kp_s_unable_to_allocate_array_data); if (unlikely(!__pyx_tuple__16)) __PYX_ERR(1, 176, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__16);
-  __Pyx_GIVEREF(__pyx_tuple__16);
+  __pyx_tuple__20 = PyTuple_Pack(1, __pyx_kp_s_unable_to_allocate_array_data); if (unlikely(!__pyx_tuple__20)) __PYX_ERR(1, 176, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__20);
+  __Pyx_GIVEREF(__pyx_tuple__20);
 
   /* "View.MemoryView":192
  *             bufmode = PyBUF_F_CONTIGUOUS | PyBUF_ANY_CONTIGUOUS
@@ -19301,9 +20432,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *         info.buf = self.data
  *         info.len = self.len
  */
-  __pyx_tuple__17 = PyTuple_Pack(1, __pyx_kp_s_Can_only_create_a_buffer_that_is); if (unlikely(!__pyx_tuple__17)) __PYX_ERR(1, 192, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__17);
-  __Pyx_GIVEREF(__pyx_tuple__17);
+  __pyx_tuple__21 = PyTuple_Pack(1, __pyx_kp_s_Can_only_create_a_buffer_that_is); if (unlikely(!__pyx_tuple__21)) __PYX_ERR(1, 192, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__21);
+  __Pyx_GIVEREF(__pyx_tuple__21);
 
   /* "(tree fragment)":2
  * def __reduce_cython__(self):
@@ -19311,18 +20442,18 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  */
-  __pyx_tuple__18 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__18)) __PYX_ERR(1, 2, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__18);
-  __Pyx_GIVEREF(__pyx_tuple__18);
+  __pyx_tuple__22 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__22)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__22);
+  __Pyx_GIVEREF(__pyx_tuple__22);
 
   /* "(tree fragment)":4
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
  */
-  __pyx_tuple__19 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__19)) __PYX_ERR(1, 4, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__19);
-  __Pyx_GIVEREF(__pyx_tuple__19);
+  __pyx_tuple__23 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__23)) __PYX_ERR(1, 4, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__23);
+  __Pyx_GIVEREF(__pyx_tuple__23);
 
   /* "View.MemoryView":418
  *     def __setitem__(memoryview self, object index, object value):
@@ -19331,9 +20462,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  *         have_slices, index = _unellipsify(index, self.view.ndim)
  */
-  __pyx_tuple__20 = PyTuple_Pack(1, __pyx_kp_s_Cannot_assign_to_read_only_memor); if (unlikely(!__pyx_tuple__20)) __PYX_ERR(1, 418, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__20);
-  __Pyx_GIVEREF(__pyx_tuple__20);
+  __pyx_tuple__24 = PyTuple_Pack(1, __pyx_kp_s_Cannot_assign_to_read_only_memor); if (unlikely(!__pyx_tuple__24)) __PYX_ERR(1, 418, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__24);
+  __Pyx_GIVEREF(__pyx_tuple__24);
 
   /* "View.MemoryView":495
  *             result = struct.unpack(self.view.format, bytesitem)
@@ -19342,9 +20473,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *         else:
  *             if len(self.view.format) == 1:
  */
-  __pyx_tuple__21 = PyTuple_Pack(1, __pyx_kp_s_Unable_to_convert_item_to_object); if (unlikely(!__pyx_tuple__21)) __PYX_ERR(1, 495, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__21);
-  __Pyx_GIVEREF(__pyx_tuple__21);
+  __pyx_tuple__25 = PyTuple_Pack(1, __pyx_kp_s_Unable_to_convert_item_to_object); if (unlikely(!__pyx_tuple__25)) __PYX_ERR(1, 495, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__25);
+  __Pyx_GIVEREF(__pyx_tuple__25);
 
   /* "View.MemoryView":520
  *     def __getbuffer__(self, Py_buffer *info, int flags):
@@ -19353,9 +20484,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  *         if flags & PyBUF_ND:
  */
-  __pyx_tuple__22 = PyTuple_Pack(1, __pyx_kp_s_Cannot_create_writable_memory_vi); if (unlikely(!__pyx_tuple__22)) __PYX_ERR(1, 520, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__22);
-  __Pyx_GIVEREF(__pyx_tuple__22);
+  __pyx_tuple__26 = PyTuple_Pack(1, __pyx_kp_s_Cannot_create_writable_memory_vi); if (unlikely(!__pyx_tuple__26)) __PYX_ERR(1, 520, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__26);
+  __Pyx_GIVEREF(__pyx_tuple__26);
 
   /* "View.MemoryView":570
  *         if self.view.strides == NULL:
@@ -19364,9 +20495,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  *         return tuple([stride for stride in self.view.strides[:self.view.ndim]])
  */
-  __pyx_tuple__23 = PyTuple_Pack(1, __pyx_kp_s_Buffer_view_does_not_expose_stri); if (unlikely(!__pyx_tuple__23)) __PYX_ERR(1, 570, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__23);
-  __Pyx_GIVEREF(__pyx_tuple__23);
+  __pyx_tuple__27 = PyTuple_Pack(1, __pyx_kp_s_Buffer_view_does_not_expose_stri); if (unlikely(!__pyx_tuple__27)) __PYX_ERR(1, 570, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__27);
+  __Pyx_GIVEREF(__pyx_tuple__27);
 
   /* "View.MemoryView":577
  *     def suboffsets(self):
@@ -19375,52 +20506,11 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  *         return tuple([suboffset for suboffset in self.view.suboffsets[:self.view.ndim]])
  */
-  __pyx_tuple__24 = PyTuple_New(1); if (unlikely(!__pyx_tuple__24)) __PYX_ERR(1, 577, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__24);
+  __pyx_tuple__28 = PyTuple_New(1); if (unlikely(!__pyx_tuple__28)) __PYX_ERR(1, 577, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__28);
   __Pyx_INCREF(__pyx_int_neg_1);
   __Pyx_GIVEREF(__pyx_int_neg_1);
-  PyTuple_SET_ITEM(__pyx_tuple__24, 0, __pyx_int_neg_1);
-  __Pyx_GIVEREF(__pyx_tuple__24);
-
-  /* "(tree fragment)":2
- * def __reduce_cython__(self):
- *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
- * def __setstate_cython__(self, __pyx_state):
- *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
- */
-  __pyx_tuple__25 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__25)) __PYX_ERR(1, 2, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__25);
-  __Pyx_GIVEREF(__pyx_tuple__25);
-
-  /* "(tree fragment)":4
- *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
- * def __setstate_cython__(self, __pyx_state):
- *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
- */
-  __pyx_tuple__26 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__26)) __PYX_ERR(1, 4, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__26);
-  __Pyx_GIVEREF(__pyx_tuple__26);
-
-  /* "View.MemoryView":682
- *         if item is Ellipsis:
- *             if not seen_ellipsis:
- *                 result.extend([slice(None)] * (ndim - len(tup) + 1))             # <<<<<<<<<<<<<<
- *                 seen_ellipsis = True
- *             else:
- */
-  __pyx_slice__27 = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice__27)) __PYX_ERR(1, 682, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_slice__27);
-  __Pyx_GIVEREF(__pyx_slice__27);
-
-  /* "View.MemoryView":703
- *     for suboffset in suboffsets[:ndim]:
- *         if suboffset >= 0:
- *             raise ValueError("Indirect dimensions not supported")             # <<<<<<<<<<<<<<
- * 
- * 
- */
-  __pyx_tuple__28 = PyTuple_Pack(1, __pyx_kp_s_Indirect_dimensions_not_supporte); if (unlikely(!__pyx_tuple__28)) __PYX_ERR(1, 703, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__28);
+  PyTuple_SET_ITEM(__pyx_tuple__28, 0, __pyx_int_neg_1);
   __Pyx_GIVEREF(__pyx_tuple__28);
 
   /* "(tree fragment)":2
@@ -19442,6 +20532,47 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__30);
   __Pyx_GIVEREF(__pyx_tuple__30);
 
+  /* "View.MemoryView":682
+ *         if item is Ellipsis:
+ *             if not seen_ellipsis:
+ *                 result.extend([slice(None)] * (ndim - len(tup) + 1))             # <<<<<<<<<<<<<<
+ *                 seen_ellipsis = True
+ *             else:
+ */
+  __pyx_slice__31 = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice__31)) __PYX_ERR(1, 682, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_slice__31);
+  __Pyx_GIVEREF(__pyx_slice__31);
+
+  /* "View.MemoryView":703
+ *     for suboffset in suboffsets[:ndim]:
+ *         if suboffset >= 0:
+ *             raise ValueError("Indirect dimensions not supported")             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __pyx_tuple__32 = PyTuple_Pack(1, __pyx_kp_s_Indirect_dimensions_not_supporte); if (unlikely(!__pyx_tuple__32)) __PYX_ERR(1, 703, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__32);
+  __Pyx_GIVEREF(__pyx_tuple__32);
+
+  /* "(tree fragment)":2
+ * def __reduce_cython__(self):
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
+ * def __setstate_cython__(self, __pyx_state):
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ */
+  __pyx_tuple__33 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__33)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__33);
+  __Pyx_GIVEREF(__pyx_tuple__33);
+
+  /* "(tree fragment)":4
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ * def __setstate_cython__(self, __pyx_state):
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
+ */
+  __pyx_tuple__34 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__34)) __PYX_ERR(1, 4, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__34);
+  __Pyx_GIVEREF(__pyx_tuple__34);
+
   /* "View.MemoryView":286
  *         return self.name
  * 
@@ -19449,9 +20580,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * cdef strided = Enum("<strided and direct>") # default
  * cdef indirect = Enum("<strided and indirect>")
  */
-  __pyx_tuple__31 = PyTuple_Pack(1, __pyx_kp_s_strided_and_direct_or_indirect); if (unlikely(!__pyx_tuple__31)) __PYX_ERR(1, 286, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__31);
-  __Pyx_GIVEREF(__pyx_tuple__31);
+  __pyx_tuple__35 = PyTuple_Pack(1, __pyx_kp_s_strided_and_direct_or_indirect); if (unlikely(!__pyx_tuple__35)) __PYX_ERR(1, 286, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__35);
+  __Pyx_GIVEREF(__pyx_tuple__35);
 
   /* "View.MemoryView":287
  * 
@@ -19460,9 +20591,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * cdef indirect = Enum("<strided and indirect>")
  * 
  */
-  __pyx_tuple__32 = PyTuple_Pack(1, __pyx_kp_s_strided_and_direct); if (unlikely(!__pyx_tuple__32)) __PYX_ERR(1, 287, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__32);
-  __Pyx_GIVEREF(__pyx_tuple__32);
+  __pyx_tuple__36 = PyTuple_Pack(1, __pyx_kp_s_strided_and_direct); if (unlikely(!__pyx_tuple__36)) __PYX_ERR(1, 287, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__36);
+  __Pyx_GIVEREF(__pyx_tuple__36);
 
   /* "View.MemoryView":288
  * cdef generic = Enum("<strided and direct or indirect>")
@@ -19471,9 +20602,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  * 
  */
-  __pyx_tuple__33 = PyTuple_Pack(1, __pyx_kp_s_strided_and_indirect); if (unlikely(!__pyx_tuple__33)) __PYX_ERR(1, 288, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__33);
-  __Pyx_GIVEREF(__pyx_tuple__33);
+  __pyx_tuple__37 = PyTuple_Pack(1, __pyx_kp_s_strided_and_indirect); if (unlikely(!__pyx_tuple__37)) __PYX_ERR(1, 288, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__37);
+  __Pyx_GIVEREF(__pyx_tuple__37);
 
   /* "View.MemoryView":291
  * 
@@ -19482,9 +20613,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * cdef indirect_contiguous = Enum("<contiguous and indirect>")
  * 
  */
-  __pyx_tuple__34 = PyTuple_Pack(1, __pyx_kp_s_contiguous_and_direct); if (unlikely(!__pyx_tuple__34)) __PYX_ERR(1, 291, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__34);
-  __Pyx_GIVEREF(__pyx_tuple__34);
+  __pyx_tuple__38 = PyTuple_Pack(1, __pyx_kp_s_contiguous_and_direct); if (unlikely(!__pyx_tuple__38)) __PYX_ERR(1, 291, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__38);
+  __Pyx_GIVEREF(__pyx_tuple__38);
 
   /* "View.MemoryView":292
  * 
@@ -19493,19 +20624,19 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  * 
  */
-  __pyx_tuple__35 = PyTuple_Pack(1, __pyx_kp_s_contiguous_and_indirect); if (unlikely(!__pyx_tuple__35)) __PYX_ERR(1, 292, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__35);
-  __Pyx_GIVEREF(__pyx_tuple__35);
+  __pyx_tuple__39 = PyTuple_Pack(1, __pyx_kp_s_contiguous_and_indirect); if (unlikely(!__pyx_tuple__39)) __PYX_ERR(1, 292, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__39);
+  __Pyx_GIVEREF(__pyx_tuple__39);
 
   /* "(tree fragment)":1
  * def __pyx_unpickle_Enum(__pyx_type, long __pyx_checksum, __pyx_state):             # <<<<<<<<<<<<<<
  *     cdef object __pyx_PickleError
  *     cdef object __pyx_result
  */
-  __pyx_tuple__36 = PyTuple_Pack(5, __pyx_n_s_pyx_type, __pyx_n_s_pyx_checksum, __pyx_n_s_pyx_state, __pyx_n_s_pyx_PickleError, __pyx_n_s_pyx_result); if (unlikely(!__pyx_tuple__36)) __PYX_ERR(1, 1, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__36);
-  __Pyx_GIVEREF(__pyx_tuple__36);
-  __pyx_codeobj__37 = (PyObject*)__Pyx_PyCode_New(3, 0, 5, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__36, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_pyx_unpickle_Enum, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__37)) __PYX_ERR(1, 1, __pyx_L1_error)
+  __pyx_tuple__40 = PyTuple_Pack(5, __pyx_n_s_pyx_type, __pyx_n_s_pyx_checksum, __pyx_n_s_pyx_state, __pyx_n_s_pyx_PickleError, __pyx_n_s_pyx_result); if (unlikely(!__pyx_tuple__40)) __PYX_ERR(1, 1, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__40);
+  __Pyx_GIVEREF(__pyx_tuple__40);
+  __pyx_codeobj__41 = (PyObject*)__Pyx_PyCode_New(3, 0, 5, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__40, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_pyx_unpickle_Enum, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__41)) __PYX_ERR(1, 1, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -19588,46 +20719,46 @@ static int __Pyx_modinit_type_init_code(void) {
   __pyx_vtable_7bonndit_8tracking_16alignedDirection_Gaussian.__pyx_base = *__pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Probabilities;
   __pyx_vtable_7bonndit_8tracking_16alignedDirection_Gaussian.__pyx_base.calculate_probabilities = (void (*)(struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *, __Pyx_memviewslice, __Pyx_memviewslice))__pyx_f_7bonndit_8tracking_16alignedDirection_8Gaussian_calculate_probabilities;
   __pyx_type_7bonndit_8tracking_16alignedDirection_Gaussian.tp_base = __pyx_ptype_7bonndit_8tracking_16alignedDirection_Probabilities;
-  if (PyType_Ready(&__pyx_type_7bonndit_8tracking_16alignedDirection_Gaussian) < 0) __PYX_ERR(0, 101, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_7bonndit_8tracking_16alignedDirection_Gaussian) < 0) __PYX_ERR(0, 102, __pyx_L1_error)
   #if PY_VERSION_HEX < 0x030800B1
   __pyx_type_7bonndit_8tracking_16alignedDirection_Gaussian.tp_print = 0;
   #endif
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_7bonndit_8tracking_16alignedDirection_Gaussian.tp_dictoffset && __pyx_type_7bonndit_8tracking_16alignedDirection_Gaussian.tp_getattro == PyObject_GenericGetAttr)) {
     __pyx_type_7bonndit_8tracking_16alignedDirection_Gaussian.tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
-  if (__Pyx_SetVtable(__pyx_type_7bonndit_8tracking_16alignedDirection_Gaussian.tp_dict, __pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Gaussian) < 0) __PYX_ERR(0, 101, __pyx_L1_error)
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_Gaussian, (PyObject *)&__pyx_type_7bonndit_8tracking_16alignedDirection_Gaussian) < 0) __PYX_ERR(0, 101, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_7bonndit_8tracking_16alignedDirection_Gaussian) < 0) __PYX_ERR(0, 101, __pyx_L1_error)
+  if (__Pyx_SetVtable(__pyx_type_7bonndit_8tracking_16alignedDirection_Gaussian.tp_dict, __pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Gaussian) < 0) __PYX_ERR(0, 102, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_Gaussian, (PyObject *)&__pyx_type_7bonndit_8tracking_16alignedDirection_Gaussian) < 0) __PYX_ERR(0, 102, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_7bonndit_8tracking_16alignedDirection_Gaussian) < 0) __PYX_ERR(0, 102, __pyx_L1_error)
   __pyx_ptype_7bonndit_8tracking_16alignedDirection_Gaussian = &__pyx_type_7bonndit_8tracking_16alignedDirection_Gaussian;
   __pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Laplacian = &__pyx_vtable_7bonndit_8tracking_16alignedDirection_Laplacian;
   __pyx_vtable_7bonndit_8tracking_16alignedDirection_Laplacian.__pyx_base = *__pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Probabilities;
   __pyx_vtable_7bonndit_8tracking_16alignedDirection_Laplacian.__pyx_base.calculate_probabilities = (void (*)(struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *, __Pyx_memviewslice, __Pyx_memviewslice))__pyx_f_7bonndit_8tracking_16alignedDirection_9Laplacian_calculate_probabilities;
   __pyx_type_7bonndit_8tracking_16alignedDirection_Laplacian.tp_base = __pyx_ptype_7bonndit_8tracking_16alignedDirection_Probabilities;
-  if (PyType_Ready(&__pyx_type_7bonndit_8tracking_16alignedDirection_Laplacian) < 0) __PYX_ERR(0, 116, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_7bonndit_8tracking_16alignedDirection_Laplacian) < 0) __PYX_ERR(0, 117, __pyx_L1_error)
   #if PY_VERSION_HEX < 0x030800B1
   __pyx_type_7bonndit_8tracking_16alignedDirection_Laplacian.tp_print = 0;
   #endif
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_7bonndit_8tracking_16alignedDirection_Laplacian.tp_dictoffset && __pyx_type_7bonndit_8tracking_16alignedDirection_Laplacian.tp_getattro == PyObject_GenericGetAttr)) {
     __pyx_type_7bonndit_8tracking_16alignedDirection_Laplacian.tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
-  if (__Pyx_SetVtable(__pyx_type_7bonndit_8tracking_16alignedDirection_Laplacian.tp_dict, __pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Laplacian) < 0) __PYX_ERR(0, 116, __pyx_L1_error)
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_Laplacian, (PyObject *)&__pyx_type_7bonndit_8tracking_16alignedDirection_Laplacian) < 0) __PYX_ERR(0, 116, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_7bonndit_8tracking_16alignedDirection_Laplacian) < 0) __PYX_ERR(0, 116, __pyx_L1_error)
+  if (__Pyx_SetVtable(__pyx_type_7bonndit_8tracking_16alignedDirection_Laplacian.tp_dict, __pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Laplacian) < 0) __PYX_ERR(0, 117, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_Laplacian, (PyObject *)&__pyx_type_7bonndit_8tracking_16alignedDirection_Laplacian) < 0) __PYX_ERR(0, 117, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_7bonndit_8tracking_16alignedDirection_Laplacian) < 0) __PYX_ERR(0, 117, __pyx_L1_error)
   __pyx_ptype_7bonndit_8tracking_16alignedDirection_Laplacian = &__pyx_type_7bonndit_8tracking_16alignedDirection_Laplacian;
   __pyx_vtabptr_7bonndit_8tracking_16alignedDirection_ScalarOld = &__pyx_vtable_7bonndit_8tracking_16alignedDirection_ScalarOld;
   __pyx_vtable_7bonndit_8tracking_16alignedDirection_ScalarOld.__pyx_base = *__pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Probabilities;
   __pyx_vtable_7bonndit_8tracking_16alignedDirection_ScalarOld.__pyx_base.calculate_probabilities = (void (*)(struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *, __Pyx_memviewslice, __Pyx_memviewslice))__pyx_f_7bonndit_8tracking_16alignedDirection_9ScalarOld_calculate_probabilities;
   __pyx_type_7bonndit_8tracking_16alignedDirection_ScalarOld.tp_base = __pyx_ptype_7bonndit_8tracking_16alignedDirection_Probabilities;
-  if (PyType_Ready(&__pyx_type_7bonndit_8tracking_16alignedDirection_ScalarOld) < 0) __PYX_ERR(0, 132, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_7bonndit_8tracking_16alignedDirection_ScalarOld) < 0) __PYX_ERR(0, 133, __pyx_L1_error)
   #if PY_VERSION_HEX < 0x030800B1
   __pyx_type_7bonndit_8tracking_16alignedDirection_ScalarOld.tp_print = 0;
   #endif
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_7bonndit_8tracking_16alignedDirection_ScalarOld.tp_dictoffset && __pyx_type_7bonndit_8tracking_16alignedDirection_ScalarOld.tp_getattro == PyObject_GenericGetAttr)) {
     __pyx_type_7bonndit_8tracking_16alignedDirection_ScalarOld.tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
-  if (__Pyx_SetVtable(__pyx_type_7bonndit_8tracking_16alignedDirection_ScalarOld.tp_dict, __pyx_vtabptr_7bonndit_8tracking_16alignedDirection_ScalarOld) < 0) __PYX_ERR(0, 132, __pyx_L1_error)
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_ScalarOld, (PyObject *)&__pyx_type_7bonndit_8tracking_16alignedDirection_ScalarOld) < 0) __PYX_ERR(0, 132, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_7bonndit_8tracking_16alignedDirection_ScalarOld) < 0) __PYX_ERR(0, 132, __pyx_L1_error)
+  if (__Pyx_SetVtable(__pyx_type_7bonndit_8tracking_16alignedDirection_ScalarOld.tp_dict, __pyx_vtabptr_7bonndit_8tracking_16alignedDirection_ScalarOld) < 0) __PYX_ERR(0, 133, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_ScalarOld, (PyObject *)&__pyx_type_7bonndit_8tracking_16alignedDirection_ScalarOld) < 0) __PYX_ERR(0, 133, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_7bonndit_8tracking_16alignedDirection_ScalarOld) < 0) __PYX_ERR(0, 133, __pyx_L1_error)
   __pyx_ptype_7bonndit_8tracking_16alignedDirection_ScalarOld = &__pyx_type_7bonndit_8tracking_16alignedDirection_ScalarOld;
   __pyx_vtabptr_7bonndit_8tracking_16alignedDirection_ScalarNew = &__pyx_vtable_7bonndit_8tracking_16alignedDirection_ScalarNew;
   __pyx_vtable_7bonndit_8tracking_16alignedDirection_ScalarNew.__pyx_base = *__pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Probabilities;
@@ -19644,6 +20775,36 @@ static int __Pyx_modinit_type_init_code(void) {
   if (PyObject_SetAttr(__pyx_m, __pyx_n_s_ScalarNew, (PyObject *)&__pyx_type_7bonndit_8tracking_16alignedDirection_ScalarNew) < 0) __PYX_ERR(0, 154, __pyx_L1_error)
   if (__Pyx_setup_reduce((PyObject*)&__pyx_type_7bonndit_8tracking_16alignedDirection_ScalarNew) < 0) __PYX_ERR(0, 154, __pyx_L1_error)
   __pyx_ptype_7bonndit_8tracking_16alignedDirection_ScalarNew = &__pyx_type_7bonndit_8tracking_16alignedDirection_ScalarNew;
+  __pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Deterministic = &__pyx_vtable_7bonndit_8tracking_16alignedDirection_Deterministic;
+  __pyx_vtable_7bonndit_8tracking_16alignedDirection_Deterministic.__pyx_base = *__pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Probabilities;
+  __pyx_vtable_7bonndit_8tracking_16alignedDirection_Deterministic.__pyx_base.calculate_probabilities = (void (*)(struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *, __Pyx_memviewslice, __Pyx_memviewslice))__pyx_f_7bonndit_8tracking_16alignedDirection_13Deterministic_calculate_probabilities;
+  __pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic.tp_base = __pyx_ptype_7bonndit_8tracking_16alignedDirection_Probabilities;
+  if (PyType_Ready(&__pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic) < 0) __PYX_ERR(0, 204, __pyx_L1_error)
+  #if PY_VERSION_HEX < 0x030800B1
+  __pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic.tp_print = 0;
+  #endif
+  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic.tp_dictoffset && __pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic.tp_getattro == PyObject_GenericGetAttr)) {
+    __pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic.tp_getattro = __Pyx_PyObject_GenericGetAttr;
+  }
+  if (__Pyx_SetVtable(__pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic.tp_dict, __pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Deterministic) < 0) __PYX_ERR(0, 204, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_Deterministic, (PyObject *)&__pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic) < 0) __PYX_ERR(0, 204, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic) < 0) __PYX_ERR(0, 204, __pyx_L1_error)
+  __pyx_ptype_7bonndit_8tracking_16alignedDirection_Deterministic = &__pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic;
+  __pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Deterministic2 = &__pyx_vtable_7bonndit_8tracking_16alignedDirection_Deterministic2;
+  __pyx_vtable_7bonndit_8tracking_16alignedDirection_Deterministic2.__pyx_base = *__pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Probabilities;
+  __pyx_vtable_7bonndit_8tracking_16alignedDirection_Deterministic2.__pyx_base.calculate_probabilities = (void (*)(struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *, __Pyx_memviewslice, __Pyx_memviewslice))__pyx_f_7bonndit_8tracking_16alignedDirection_14Deterministic2_calculate_probabilities;
+  __pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic2.tp_base = __pyx_ptype_7bonndit_8tracking_16alignedDirection_Probabilities;
+  if (PyType_Ready(&__pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic2) < 0) __PYX_ERR(0, 176, __pyx_L1_error)
+  #if PY_VERSION_HEX < 0x030800B1
+  __pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic2.tp_print = 0;
+  #endif
+  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic2.tp_dictoffset && __pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic2.tp_getattro == PyObject_GenericGetAttr)) {
+    __pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic2.tp_getattro = __Pyx_PyObject_GenericGetAttr;
+  }
+  if (__Pyx_SetVtable(__pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic2.tp_dict, __pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Deterministic2) < 0) __PYX_ERR(0, 176, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_Deterministic2, (PyObject *)&__pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic2) < 0) __PYX_ERR(0, 176, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic2) < 0) __PYX_ERR(0, 176, __pyx_L1_error)
+  __pyx_ptype_7bonndit_8tracking_16alignedDirection_Deterministic2 = &__pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic2;
   __pyx_vtabptr_array = &__pyx_vtable_array;
   __pyx_vtable_array.get_memview = (PyObject *(*)(struct __pyx_array_obj *))__pyx_array_get_memview;
   if (PyType_Ready(&__pyx_type___pyx_array) < 0) __PYX_ERR(1, 105, __pyx_L1_error)
@@ -19994,7 +21155,7 @@ if (!__Pyx_RefNanny) {
  * cdef strided = Enum("<strided and direct>") # default
  * cdef indirect = Enum("<strided and indirect>")
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__31, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 286, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__35, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 286, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_XGOTREF(generic);
   __Pyx_DECREF_SET(generic, __pyx_t_1);
@@ -20008,7 +21169,7 @@ if (!__Pyx_RefNanny) {
  * cdef indirect = Enum("<strided and indirect>")
  * 
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__32, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 287, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__36, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 287, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_XGOTREF(strided);
   __Pyx_DECREF_SET(strided, __pyx_t_1);
@@ -20022,7 +21183,7 @@ if (!__Pyx_RefNanny) {
  * 
  * 
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__33, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 288, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__37, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 288, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_XGOTREF(indirect);
   __Pyx_DECREF_SET(indirect, __pyx_t_1);
@@ -20036,7 +21197,7 @@ if (!__Pyx_RefNanny) {
  * cdef indirect_contiguous = Enum("<contiguous and indirect>")
  * 
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__34, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 291, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__38, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 291, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_XGOTREF(contiguous);
   __Pyx_DECREF_SET(contiguous, __pyx_t_1);
@@ -20050,7 +21211,7 @@ if (!__Pyx_RefNanny) {
  * 
  * 
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__35, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 292, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__39, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 292, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_XGOTREF(indirect_contiguous);
   __Pyx_DECREF_SET(indirect_contiguous, __pyx_t_1);
