@@ -16,7 +16,7 @@ cdef class Probabilities:
 
 
 
-	def __cinit__(self, int thread_num, double expectation=0, double sigma=9):
+	def __cinit__(self, double expectation=0, double sigma=9):
 		self.sigma = sigma
 		self.expectation = expectation
 		self.chosen_prob = 0
@@ -152,6 +152,8 @@ cdef class ScalarOld(Probabilities):
 		#	print(*self.angles)
 		for i in range(3):
 			if sum_c(self.test_vectors[i]) == sum_c(self.test_vectors[i])  and pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2) <= 1/2*pi:
+				with gil:
+					print(pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2))
 				self.probability[i]=pow(cos(pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)*norm(self.test_vectors[i])
 			else:
 				self.probability[i] = 0
