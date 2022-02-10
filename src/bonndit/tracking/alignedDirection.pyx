@@ -97,7 +97,7 @@ cdef class Probabilities:
 			self.chosen_angle = 0
 			self.chosen_prob = 0
 		with gil:
-			print(*self.probability, ' and I chose ', self.chosen_angle)
+			print(*self.probability, ' and I chose ', self.chosen_prob, ' where the angle are ', *self.angles, ' I chose ', self.chosen_angle)
 
 
 
