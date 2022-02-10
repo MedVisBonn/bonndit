@@ -11,7 +11,7 @@
         ],
         "depends": [],
         "include_dirs": [
-            "/tmp/pip-build-env-jv6g8o5t/overlay/lib/python3.8/site-packages/numpy/core/include",
+            "/tmp/pip-build-env-4gd7e0rw/overlay/lib/python3.8/site-packages/numpy/core/include",
             "."
         ],
         "name": "bonndit.tracking.interpolation",
@@ -1035,6 +1035,8 @@ struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Gaussian;
 struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Laplacian;
 struct __pyx_obj_7bonndit_8tracking_16alignedDirection_ScalarOld;
 struct __pyx_obj_7bonndit_8tracking_16alignedDirection_ScalarNew;
+struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic;
+struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic2;
 struct __pyx_obj_7bonndit_8tracking_13interpolation_Interpolation;
 struct __pyx_obj_7bonndit_8tracking_13interpolation_FACT;
 struct __pyx_obj_7bonndit_8tracking_13interpolation_Trilinear;
@@ -1125,8 +1127,32 @@ struct __pyx_obj_7bonndit_8tracking_16alignedDirection_ScalarOld {
  * 
  * cdef class ScalarNew(Probabilities):             # <<<<<<<<<<<<<<
  * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 
  */
 struct __pyx_obj_7bonndit_8tracking_16alignedDirection_ScalarNew {
+  struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities __pyx_base;
+};
+
+
+/* "alignedDirection.pxd":27
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 
+ * cdef class Deterministic(Probabilities):             # <<<<<<<<<<<<<<
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 
+ */
+struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic {
+  struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities __pyx_base;
+};
+
+
+/* "alignedDirection.pxd":30
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 
+ * cdef class Deterministic2(Probabilities):             # <<<<<<<<<<<<<<
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ */
+struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic2 {
   struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities __pyx_base;
 };
 
@@ -1345,12 +1371,40 @@ static struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_ScalarOld *
  * 
  * cdef class ScalarNew(Probabilities):             # <<<<<<<<<<<<<<
  * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 
  */
 
 struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_ScalarNew {
   struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Probabilities __pyx_base;
 };
 static struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_ScalarNew *__pyx_vtabptr_7bonndit_8tracking_16alignedDirection_ScalarNew;
+
+
+/* "alignedDirection.pxd":27
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 
+ * cdef class Deterministic(Probabilities):             # <<<<<<<<<<<<<<
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 
+ */
+
+struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Deterministic {
+  struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Probabilities __pyx_base;
+};
+static struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Deterministic *__pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Deterministic;
+
+
+/* "alignedDirection.pxd":30
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 
+ * cdef class Deterministic2(Probabilities):             # <<<<<<<<<<<<<<
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ */
+
+struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Deterministic2 {
+  struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Probabilities __pyx_base;
+};
+static struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Deterministic2 *__pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Deterministic2;
 
 
 /* "bonndit/tracking/interpolation.pyx":30
@@ -2150,6 +2204,8 @@ static PyTypeObject *__pyx_ptype_7bonndit_8tracking_16alignedDirection_Gaussian 
 static PyTypeObject *__pyx_ptype_7bonndit_8tracking_16alignedDirection_Laplacian = 0;
 static PyTypeObject *__pyx_ptype_7bonndit_8tracking_16alignedDirection_ScalarOld = 0;
 static PyTypeObject *__pyx_ptype_7bonndit_8tracking_16alignedDirection_ScalarNew = 0;
+static PyTypeObject *__pyx_ptype_7bonndit_8tracking_16alignedDirection_Deterministic = 0;
+static PyTypeObject *__pyx_ptype_7bonndit_8tracking_16alignedDirection_Deterministic2 = 0;
 
 /* Module declarations from 'bonndit.utilc.cython_helpers' */
 static double (*__pyx_f_7bonndit_5utilc_14cython_helpers_clip)(double, double, double); /*proto*/
@@ -22667,6 +22723,12 @@ static int __Pyx_modinit_type_import_code(void) {
   __pyx_ptype_7bonndit_8tracking_16alignedDirection_ScalarNew = __Pyx_ImportType(__pyx_t_1, "bonndit.tracking.alignedDirection", "ScalarNew", sizeof(struct __pyx_obj_7bonndit_8tracking_16alignedDirection_ScalarNew), __Pyx_ImportType_CheckSize_Warn);
    if (!__pyx_ptype_7bonndit_8tracking_16alignedDirection_ScalarNew) __PYX_ERR(3, 24, __pyx_L1_error)
   __pyx_vtabptr_7bonndit_8tracking_16alignedDirection_ScalarNew = (struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_ScalarNew*)__Pyx_GetVtable(__pyx_ptype_7bonndit_8tracking_16alignedDirection_ScalarNew->tp_dict); if (unlikely(!__pyx_vtabptr_7bonndit_8tracking_16alignedDirection_ScalarNew)) __PYX_ERR(3, 24, __pyx_L1_error)
+  __pyx_ptype_7bonndit_8tracking_16alignedDirection_Deterministic = __Pyx_ImportType(__pyx_t_1, "bonndit.tracking.alignedDirection", "Deterministic", sizeof(struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic), __Pyx_ImportType_CheckSize_Warn);
+   if (!__pyx_ptype_7bonndit_8tracking_16alignedDirection_Deterministic) __PYX_ERR(3, 27, __pyx_L1_error)
+  __pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Deterministic = (struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Deterministic*)__Pyx_GetVtable(__pyx_ptype_7bonndit_8tracking_16alignedDirection_Deterministic->tp_dict); if (unlikely(!__pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Deterministic)) __PYX_ERR(3, 27, __pyx_L1_error)
+  __pyx_ptype_7bonndit_8tracking_16alignedDirection_Deterministic2 = __Pyx_ImportType(__pyx_t_1, "bonndit.tracking.alignedDirection", "Deterministic2", sizeof(struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic2), __Pyx_ImportType_CheckSize_Warn);
+   if (!__pyx_ptype_7bonndit_8tracking_16alignedDirection_Deterministic2) __PYX_ERR(3, 30, __pyx_L1_error)
+  __pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Deterministic2 = (struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Deterministic2*)__Pyx_GetVtable(__pyx_ptype_7bonndit_8tracking_16alignedDirection_Deterministic2->tp_dict); if (unlikely(!__pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Deterministic2)) __PYX_ERR(3, 30, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_RefNannyFinishContext();
   return 0;
