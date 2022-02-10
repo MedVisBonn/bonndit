@@ -189,7 +189,7 @@ cdef class ScalarOld(Probabilities):
                 / pow(2 * pi, 0.5) * self.angles[i] / 180 * pi,
                 2) <= 1 / 2 * pi:
                 with gil:
-                    print(
+                    print('First angle ', self.angles[i],
                         pow(
                             self.expectation / pow(
                                 2 * pi,
