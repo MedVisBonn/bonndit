@@ -154,7 +154,7 @@ cdef class ScalarOld(Probabilities):
 			if sum_c(self.test_vectors[i]) == sum_c(self.test_vectors[i])  and pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2) <= 1/2*pi:
 		#		with gil:
 		#			print('First angle ' , self.angles[i], self.expectation, pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2), pow(cos(pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma))
-				self.probability[i]=pow(cos(pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)*pow(norm(self.test_vectors[i]), 0.5)
+				self.probability[i]=pow(cos(pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)*norm(self.test_vectors[i])
 			else:
 				self.probability[i] = 0
 		self.random_choice(direction)

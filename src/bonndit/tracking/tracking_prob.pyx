@@ -107,8 +107,9 @@ cdef void forward_tracking(double[:,:] paths,  Interpolation interpolate,
 		if norm(paths[k+1]) == 0:
 			with gil:
 				print('1 Fehler')
-		trafo.itow(paths[k+1])
-		paths[k+1] = trafo.point_itow
+		else:
+			trafo.itow(paths[k+1])
+			paths[k+1] = trafo.point_itow
 	else:
 		if norm(paths[k]) == 0:
 			with gil:
