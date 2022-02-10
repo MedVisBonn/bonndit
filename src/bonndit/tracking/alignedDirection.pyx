@@ -73,8 +73,7 @@ cdef class Probabilities:
 
 		if sum_c(self.probability) != 0:
 			mult_with_scalar(self.probability, 1/sum_c(self.probability), self.probability)
-			with gil:
-				print(*self.probability)
+
 
 			if best_choice < self.probability[0]:
 				mult_with_scalar(self.best_fit, 1, self.test_vectors[0])
@@ -90,14 +89,16 @@ cdef class Probabilities:
 				self.chosen_angle = self.angles[2]
 			self.old_fa = norm(self.best_fit)
 		else:
-			with gil:
-				print(*self.probability)
+
 		#	with gil:
 		#		print(*direction, *self.test_vectors[0], *self.test_vectors[1],
 		#		      *self.test_vectors[2])
 			mult_with_scalar(self.best_fit, 0, self.test_vectors[2])
 			self.chosen_angle = 0
 			self.chosen_prob = 0
+		with gil:
+			print(*self.probability, ' and I chose ', self.chosen_angle)
+
 
 
 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil except *:
