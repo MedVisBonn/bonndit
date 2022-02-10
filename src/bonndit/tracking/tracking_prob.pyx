@@ -94,10 +94,7 @@ cdef void forward_tracking(double[:,:] paths,  Interpolation interpolate,
 		trafo.itow(paths[k])
 		paths[k] = trafo.point_itow
 		features[k, 2] = validator.ROIIn.included(paths[k])
-		if angle_deg(paths[k], interpolate.next_dir) > 90:
-			features[k,3] = 180 -angle_deg(paths[k], interpolate.next_dir) 
-		else: 
-			features[k,3] = angle_deg(paths[k], interpolate.next_dir)
+		features[k,3] = interpolate.prob.chosen_angle
 		# Check curvature between current point and point 30mm ago
 		if validator.Curve.curvature_checker(paths[:k + 1], features[k:k+1,1]):
 			validator.set_path_zero(paths, features)
