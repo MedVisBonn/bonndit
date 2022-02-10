@@ -18,7 +18,7 @@ cdef class Probabilities:
 
 
 
-    def __cinit__(self, int thread_num, double expectation=0, double sigma=9):
+    def __cinit__(self, double expectation=0, double sigma=9):
         self.sigma = sigma
         self.expectation = expectation
         self.chosen_prob = 0
@@ -188,6 +188,12 @@ cdef class ScalarOld(Probabilities):
                 self.expectation
                 / pow(2 * pi, 0.5) * self.angles[i] / 180 * pi,
                 2) <= 1 / 2 * pi:
+                with gil:
+                    print(
+                        pow(
+                            self.expectation / pow(
+                                2 * pi,
+                                0.5) * self.angles[i] / 180 * pi, 2))
                 self.probability[i] \
                     = pow(
                     cos(
