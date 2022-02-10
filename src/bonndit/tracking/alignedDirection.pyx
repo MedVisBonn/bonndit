@@ -70,7 +70,8 @@ cdef class Probabilities:
 		@return:
 		"""
 		cdef double best_choice = rand() / RAND_MAX
-
+		with gil:
+			print(*self.probability)
 		if sum_c(self.probability) != 0:
 			mult_with_scalar(self.probability, 1/sum_c(self.probability), self.probability)
 
