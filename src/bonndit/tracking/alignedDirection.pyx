@@ -81,8 +81,8 @@ cdef class Probabilities:
 		@return:
 		"""
         cdef double best_choice = rand() / RAND_MAX
-        with gil:
-            print(*self.probability)
+    # with gil:
+    # print(*self.probability)
         if sum_c(self.probability) != 0:
             mult_with_scalar(
                 self.probability, 1 / sum_c(self.probability),
@@ -110,10 +110,9 @@ cdef class Probabilities:
             mult_with_scalar(self.best_fit, 0, self.test_vectors[2])
             self.chosen_angle = 0
             self.chosen_prob = 0
-        with gil:
-            print(*self.probability, ' and I chose ', self.chosen_prob,
-                ' where the angle are ', *self.angles, ' I chose ',
-                self.chosen_angle)
+        # with gil:
+        # print(*self.probability, ' and I chose ', self.chosen_prob, ' where
+        # the angle are ', *self.angles, ' I chose ', self.chosen_angle)
 
 
 
@@ -188,19 +187,10 @@ cdef class ScalarOld(Probabilities):
                 self.expectation
                 / pow(2 * pi, 0.5) * self.angles[i] / 180 * pi,
                 2) <= 1 / 2 * pi:
-                with gil:
-                    print('First angle ', self.angles[i], self.expectation,
-                        pow(
-                            self.expectation / pow(
-                                2 * pi,
-                                0.5) * self.angles[i] / 180 * pi, 2),
-                        pow(
-                            cos(
-                                pow(
-                                    self.expectation / pow(
-                                        2 * pi,
-                                        0.5) * self.angles[i] / 180 * pi,
-                                    2)), self.sigma))
+        # with gil:
+        # print('First angle ' , self.angles[i], self.expectation,
+        # pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2),
+        # pow(cos(pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma))
                 self.probability[i] \
                     = pow(
                     cos(
