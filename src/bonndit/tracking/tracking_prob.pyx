@@ -77,6 +77,8 @@ cdef void forward_tracking(double[:,:] paths,  Interpolation interpolate,
 		if validator.index_checker(paths[k]):
 			break
 		if validator.wm_checker(paths[k]):
+			trafo.itow(paths[k])
+			paths[k] = trafo.point_itow
 			break
 		# find matching directions
 		if sum_c(integrate.old_dir) == 0:
@@ -103,26 +105,6 @@ cdef void forward_tracking(double[:,:] paths,  Interpolation interpolate,
 	if k == 0:
 		trafo.itow(paths[k])
 		paths[k] = trafo.point_itow
-	if k == max_track_length - 2:
-		with gil:
-			print(k+1)
-		if norm(paths[k+1]) == 0:
-			with gil:
-				print('1 Fehler')
-		else:
-			trafo.itow(paths[k+1])
-			paths[k+1] = trafo.point_itow
-	else:
-		if norm(paths[k]) == 0:
-			with gil:
-				print(k, 'Ne oder')
-		else:
-			trafo.itow(paths[k])
-			paths[k] = trafo.point_itow
-
-
-
-
 
 
 cpdef tracking_all(double[:,:,:,:,:] vector_field, meta, double[:,:,:] wm_mask, double[:,:] seeds, integration,
