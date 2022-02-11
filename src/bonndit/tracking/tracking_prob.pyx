@@ -87,6 +87,7 @@ cdef void forward_tracking(
     for k in range(max_track_length - 1):
         # validate indey and wm density.
         if validator.index_checker(paths[k]):
+            set_zero_vector(paths[k])
             break
         if validator.wm_checker(paths[k]):
             trafo.itow(paths[k])
