@@ -83,11 +83,14 @@ cdef void forward_tracking(double[:,:] paths,  Interpolation interpolate,
 			break
 		# find matching directions
 		if sum_c(integrate.old_dir) == 0:
+			trafo.itow(paths[k])
+			paths[k] = trafo.point_itow
 			break
 		interpolate.interpolate(paths[k], integrate.old_dir)
 
 		# Check next step is valid. If it is: Integrate. else break
 		if validator.next_point_checker(interpolate.next_dir):
+			set_zero_vector(paths[k])
 			break
 		integrate.integrate(interpolate.next_dir, paths[k])
 		# update old dir
@@ -103,6 +106,9 @@ cdef void forward_tracking(double[:,:] paths,  Interpolation interpolate,
 			validator.set_path_zero(paths, features)
 			return
 		integrate.old_dir = interpolate.next_dir
+	else:
+		trafo.itow(paths[k+1])
+		paths[k+1] = trafo.point_itow
 	if k == 0:
 		trafo.itow(paths[k])
 		paths[k] = trafo.point_itow
