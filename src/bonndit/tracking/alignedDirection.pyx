@@ -254,9 +254,9 @@ cdef class Deterministic2(Probabilities):
         for i in range(3):
             if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i]) \
                 != 0:
-                if self.angles[i] < 30 or (
+                if self.angles[i] < self.expectation or (
                     self.angles[i]
-                    == min_angle and min_angle < 45):
+                    == min_angle and min_angle < self.sigma):
                     self.probability[i] = 1
                 else:
                     self.probability[i] = 0
