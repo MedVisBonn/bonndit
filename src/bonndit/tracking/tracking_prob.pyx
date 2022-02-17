@@ -72,7 +72,7 @@ cdef void tracking(
                     features[j, :, 0, :])
             else:
                 break
-            if k == 50:
+            if k == 5:
                 break
 
 cdef void forward_tracking(
