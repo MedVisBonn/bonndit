@@ -59,7 +59,7 @@ cdef void tracking(double[:,:,:,:] paths, double[:] seed,
 				validator.set_path_zero(paths[j, :, 0, :], features[j, :, 0, :])
 			else:
 				break
-			if k==50:
+			if k==5:
 				break
 
 cdef void forward_tracking(double[:,:] paths,  Interpolation interpolate,
