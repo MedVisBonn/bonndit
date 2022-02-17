@@ -35,26 +35,29 @@ cdef void tracking(double[:,:,:,:] paths, double[:] seed,
 	"""
 	cdef int j
 	for j in range(samples):
-		# set zero inclusion check
-		set_zero_vector(validator.ROIIn.inclusion_check)
-		if seed_shape == 3:
-			interpolate.main_dir(paths[j, 0, 0])
-			integrate.old_dir = interpolate.next_dir
-		else:
-			integrate.old_dir = seed[3:]
-		forward_tracking(paths[j,:,0, :], interpolate, integrate, trafo, validator, max_track_length,
-		                 features[j,:,0, :])
-		if seed_shape == 3:
-			interpolate.main_dir(paths[j, 0, 1])
-			mult_with_scalar(integrate.old_dir, -1.0 ,interpolate.next_dir)
-		else:
-			mult_with_scalar(integrate.old_dir, -1.0 ,seed[3:])
-		forward_tracking(paths[j,:,1,:], interpolate, integrate, trafo, validator, max_track_length,
-		                 features[j,:,1, :])
-		# if not found bot regions of interest delete path.
-		if validator.ROIIn.included_checker():
-			validator.set_path_zero(paths[j,:,1,:], features[j,:,1, :])
-			validator.set_path_zero(paths[j, :, 0, :], features[j, :, 0, :])
+		while True:
+			# set zero inclusion check
+			set_zero_vector(validator.ROIIn.inclusion_check)
+			if seed_shape == 3:
+				interpolate.main_dir(paths[j, 0, 0])
+				integrate.old_dir = interpolate.next_dir
+			else:
+				integrate.old_dir = seed[3:]
+			forward_tracking(paths[j,:,0, :], interpolate, integrate, trafo, validator, max_track_length,
+			                 features[j,:,0, :])
+			if seed_shape == 3:
+				interpolate.main_dir(paths[j, 0, 1])
+				mult_with_scalar(integrate.old_dir, -1.0 ,interpolate.next_dir)
+			else:
+				mult_with_scalar(integrate.old_dir, -1.0 ,seed[3:])
+			forward_tracking(paths[j,:,1,:], interpolate, integrate, trafo, validator, max_track_length,
+			                 features[j,:,1, :])
+			# if not found bot regions of interest delete path.
+			if validator.ROIIn.included_checker():
+				validator.set_path_zero(paths[j,:,1,:], features[j,:,1, :])
+				validator.set_path_zero(paths[j, :, 0, :], features[j, :, 0, :])
+			else:
+				break
 
 cdef void forward_tracking(double[:,:] paths,  Interpolation interpolate,
                        Integration integrate, Trafo trafo, Validator validator, int max_track_length, double[:,:] features) nogil except *:
