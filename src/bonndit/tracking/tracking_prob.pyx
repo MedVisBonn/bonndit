@@ -33,9 +33,10 @@ cdef void tracking(double[:,:,:,:] paths, double[:] seed,
 	@param samples:
 	@param features:
 	"""
-	cdef int j
+	cdef int k=0, j
 	for j in range(samples):
 		while True:
+			k+=1
 			# set zero inclusion check
 			set_zero_vector(validator.ROIIn.inclusion_check)
 			if seed_shape == 3:
@@ -57,6 +58,8 @@ cdef void tracking(double[:,:,:,:] paths, double[:] seed,
 				validator.set_path_zero(paths[j,:,1,:], features[j,:,1, :])
 				validator.set_path_zero(paths[j, :, 0, :], features[j, :, 0, :])
 			else:
+				break
+			if k==1000:
 				break
 
 cdef void forward_tracking(double[:,:] paths,  Interpolation interpolate,
