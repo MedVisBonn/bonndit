@@ -160,9 +160,6 @@ cdef class ROIInValidator(ROIInNotValidator):
                             float,
                             point.split())) for point in points])
             points = np.hstack((points, np.ones((points.shape[0], 1)))).T
-            print(
-                np.array(trafo).shape, np.linalg.inv(trafo_fsl).shape,
-                points.shape)
             points = (np.array(trafo) @ np.linalg.inv(trafo_fsl) @ np.linalg.inv(trafo) @ points).T
             points = points[:, :3]
             points = np.vstack(
@@ -170,6 +167,7 @@ cdef class ROIInValidator(ROIInNotValidator):
                     np.min(points, axis=0),
                     np.max(points, axis=0)))
             output[2 * i:2 * (i + 1)] = points
+            print(points)
         self.inclusion = output
         self.inclusion_num = len(cubes)
         self.inclusion_check = np.zeros(len(cubes))
