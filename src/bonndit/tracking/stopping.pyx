@@ -162,7 +162,7 @@ cdef class ROIInValidator(ROIInNotValidator):
             points = np.hstack((points, np.ones((points.shape[0], 1)))).T
             # points = (np.array(trafo) @ np.linalg.inv(trafo_fsl) @
             # np.linalg.inv(trafo)@ points).T
-            points = (np.linalg.inv(trafo_fsl) @ points).T
+            points = (np.array(trafo_fsl) @ points).T
             points = points[:, :3]
             points = np.vstack(
                 (
