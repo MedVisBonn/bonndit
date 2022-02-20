@@ -149,7 +149,7 @@ cpdef tracking_all(
     interpolation, prob, stepsize, double variance, int samples,
     int max_track_length, double wmmin,
     double expectation, verbose, logging, inclusion, double max_angle,
-    double[:, :] trafo_fsl, str file
+    double[:, :] trafo_fsl, file
 ):
     """
 	@param vector_field: Array (4,3,x,y,z)
@@ -283,8 +283,8 @@ cpdef tracking_all(
                 with open(file + 'len', 'a') as f:
                     f.write(str(path.shape[0]) + '\n')
                 with open(file, 'a') as f:
-                    for x in path:
-                        f.write(' '.join(tuple(x)) + "\n")
+                    for i in range(path.shape[0]):
+                        f.write(' '.join(map(str, path[i])) + "\n")
 
 
 # return tracks, tracks_len

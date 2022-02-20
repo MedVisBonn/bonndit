@@ -151,7 +151,7 @@ def main():
 
     tracks = PlyElement.describe(
         np.array(
-            paths,
+            [tuple(x) for x in paths],
             dtype=[('x', 'f4'),
                    ('y', 'f4'),
                    ('z', 'f4'),
