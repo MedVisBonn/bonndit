@@ -115,7 +115,7 @@ def main():
 	os.remove(filename + 'len')
 	paths_len = [sum(paths_len[:i + 1]) for i in range(len(paths_len))]
 
-	tracks = PlyElement.describe(np.array(paths, dtype=[('x', 'f4'), ('y', 'f4'), ('z', 'f4'),
+	tracks = PlyElement.describe(np.array([tuple(x) for x in paths], dtype=[('x', 'f4'), ('y', 'f4'), ('z', 'f4'),
 														('seedpoint', 'f4'), ('angle', 'f4'), ('test', 'f4'), ('tes1t', 'f4')]), 'vertices',
 								 comments=[])
 	endindex = PlyElement.describe(np.array(paths_len, dtype=[('endindex', 'i4')]), 'fiber')

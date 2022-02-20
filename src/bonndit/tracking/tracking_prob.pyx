@@ -127,7 +127,7 @@ cdef void forward_tracking(double[:,:] paths,  Interpolation interpolate,
 
 cpdef tracking_all(double[:,:,:,:,:] vector_field, meta, double[:,:,:] wm_mask, double[:,:] seeds, integration,
                    interpolation, prob, stepsize, double variance, int samples, int max_track_length, double wmmin,
-                   double expectation, verbose, logging, inclusion, double max_angle, double[:,:] trafo_fsl, str file):
+                   double expectation, verbose, logging, inclusion, double max_angle, double[:,:] trafo_fsl, file):
 	"""
 	@param vector_field: Array (4,3,x,y,z)
 		Where the first dimension contains the length and direction, the second
@@ -243,8 +243,8 @@ cpdef tracking_all(double[:,:,:,:,:] vector_field, meta, double[:,:,:] wm_mask, 
 				with open(file + 'len', 'a') as f:
 					f.write(str(path.shape[0]) +'\n')
 				with open(file, 'a') as f:
-					for x in path:
-						f.write(' '.join(tuple(x)) + "\n")
+					for i in range(path.shape[0]):
+						f.write(' '.join(map(str, path[i])) + "\n")
 
 
 #	return tracks, tracks_len
