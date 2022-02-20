@@ -57,6 +57,11 @@ cdef void tracking(double[:,:,:,:] paths, double[:] seed,
 			if validator.ROIIn.included_checker():
 				validator.set_path_zero(paths[j,:,1,:], features[j,:,1, :])
 				validator.set_path_zero(paths[j, :, 0, :], features[j, :, 0, :])
+				trafo.wtoi(seed[:3])
+				paths[j, 0, 0] = trafo.point_wtoi
+				paths[j, 0, 1] = trafo.point_wtoi
+				features[j, 0, 0, 0] = 1
+				features[j, 0, 1, 0] = 1
 			else:
 				break
 			if k==5:
@@ -122,7 +127,7 @@ cdef void forward_tracking(double[:,:] paths,  Interpolation interpolate,
 
 cpdef tracking_all(double[:,:,:,:,:] vector_field, meta, double[:,:,:] wm_mask, double[:,:] seeds, integration,
                    interpolation, prob, stepsize, double variance, int samples, int max_track_length, double wmmin,
-                   double expectation, verbose, logging, inclusion, double max_angle, double[:,:] trafo_fsl):
+                   double expectation, verbose, logging, inclusion, double max_angle, double[:,:] trafo_fsl, str file):
 	"""
 	@param vector_field: Array (4,3,x,y,z)
 		Where the first dimension contains the length and direction, the second
@@ -200,9 +205,9 @@ cpdef tracking_all(double[:,:,:,:,:] vector_field, meta, double[:,:,:] wm_mask, 
 		return 0
 	cdef int i, j, k, m = seeds.shape[0]
 	# Array to save Polygons
-	cdef double[:,:,:,:,:] paths = np.zeros((m, samples, max_track_length, 2, 3),dtype=np.float64)
+	cdef double[:,:,:,:] paths = np.zeros((samples, max_track_length, 2, 3),dtype=np.float64)
 	# Array to save features belonging to polygons
-	cdef double[:,:,:,:,:] features = np.zeros((m, samples, max_track_length, 2, 4),dtype=np.float64)
+	cdef double[:,:,:,:] features = np.zeros((samples, max_track_length, 2, 4),dtype=np.float64)
 	# loop through all seeds.
 	tracks = []
 	tracks_len = []
@@ -211,49 +216,37 @@ cpdef tracking_all(double[:,:,:,:,:] vector_field, meta, double[:,:,:] wm_mask, 
 		#Convert seedpoint
 		trafo.wtoi(seeds[i][:3])
 		for j in range(samples):
-			paths[i, j, 0, 0] = trafo.point_wtoi
-			paths[i, j, 0, 1] = trafo.point_wtoi
+			validator.set_path_zero(paths[j, :, 1, :], features[j, :, 1, :])
+			validator.set_path_zero(paths[j, :, 0, :], features[j, :, 0, :])
+			paths[j, 0, 0] = trafo.point_wtoi
+			paths[j, 0, 1] = trafo.point_wtoi
 			if "Deterministic" in prob:
 				for k in range(3):
-					paths[i, j, 0, 0,k] +=  np.random.normal(0,1,1)
-					paths[i, j, 0, 1,k] = paths[i, j, 0, 0,k]
+					paths[j, 0, 0,k] +=  np.random.normal(0,1,1)
+					paths[j, 0, 1,k] = paths[j, 0, 0,k]
 
 
-		features[i, :, 0, 0, 0] = 1
-		features[i, :, 0, 1, 0] = 1
+		features[:, 0, 0, 0] = 1
+		features[:, 0, 1, 0] = 1
 		#Do the tracking for this seed with the direction
-		tracking(paths[i], seeds[i], seeds[i].shape[0], interpolate, integrate, trafo, validator,
-		         max_track_length, samples, features[i])
+		tracking(paths, seeds[i], seeds[i].shape[0], interpolate, integrate, trafo, validator,
+		         max_track_length, samples, features)
 		# delete all zero arrays.
 		for j in range(samples):
-			path = np.concatenate((np.asarray(paths[i,j]),np.asarray(features[i,j])), axis=-1)
+			path = np.concatenate((np.asarray(paths[j]),np.asarray(features[j])), axis=-1)
 			path = np.concatenate((path[:,0][::-1], path[:,1]))
 			to_exclude = np.all(path[:,:4] == 0, axis=1)
 			path = path[~to_exclude]
 			if sum_c(path[:,3]) == 2:
 				path = np.delete(path, np.argwhere(path[:,3]==1)[0], axis=0)
 			if path.shape[0]>5:
-				tracks_len.append(path.shape[0])
-				tracks += [tuple(x) for x in path]
+				with open(file + 'len', 'a') as f:
+					f.write(str(path.shape[0]) +'\n')
+				with open(file, 'a') as f:
+					for x in path:
+						f.write(' '.join(tuple(x)) + "\n")
 
-#	test = np.zeros(np.array(vector_field).shape, dtype=np.float32)
-#	k_start = 83
-#	i_start = 52
-#	j_start = 89
-#	for i in range(9):
-#		for j in range(8):
-#			for k in range(9):
-#				if sum_c_int(interpolate.cache[i_start + i,k_start + k,j_start + j]):
-#					for l in range(10):
-#						for m in range(10):
-#							for n in range(10):
-#								interpolate.interpolate(np.array([i_start + i+0.1*l,k_start + k +0.1*n ,j_start + j+0.1*m], dtype=np.float64), np.array([0,0,0], dtype=np.float64))
-#								for o in range(3):
-#									test[1:,o, 10*i + l,k*10+n, 10*j + m] = np.array(interpolate.best_dir[o])/norm(interpolate.best_dir[o])
-#									test[0,o, 10*i + l,k*10+n, 10*j + m] = pow(norm(interpolate.best_dir[o]),4)
-#					#for l in range(3):
-#					#	test[:, l, 10*i,k, 10*j] = vector_field[:,interpolate.cache[i_start + i,k,j_start + j, 4*l],i_start + i, k, j_start + j]
-#	nrrd.write("test.nrrd", test, meta)
-	return tracks, tracks_len
+
+#	return tracks, tracks_len
 
 
