@@ -31,6 +31,12 @@ def main():
 	parser.add_argument('-o', help='Outfile is in ply format.', required=True, default=argparse.SUPPRESS)
 	parser.add_argument('-mtlength', help='Maximum track steps.', default=300)
 	parser.add_argument('-samples', help='Samples per seed.', default=1)
+	parser.add_argument('-ram', help='Write streamlines to file instead of using ram')
+	parser.add_argument('-file', help='Needed for large bundles.',
+	                    default='.stream' + ''.join(random.choice([chr(i) for i in range(ord('a'),ord('z'))]) for _ in
+	                                            range(10)))
+	parser.add_argument('-file_delete', 'Delete file after finish. Otherwise further Streamlines can be appended if '
+	                                    'more streamlines are needed.')
 	parser.add_argument('-maxangle', help='Max angle over the last 30 mm of the streamline', default=130)
 	parser.add_argument('-var', help='Variance for probabilistic direction selection..', default=1)
 	parser.add_argument('-exp', help='Expectation for probabilistic direction selection.', default=0)
@@ -42,7 +48,8 @@ def main():
 	parser.add_argument('-prob', '--prob', help='Decide between Laplacian and Gaussian. '
 												, default='Gaussian')
 	parser.add_argument('-v', '--verbose', default=True)
-	parser.add_argument('-r', '--restriction')
+	parser.add_argument('-r', '--exclusion')
+	parser.add_argument('-ri', '--inclusion')
 	parser.add_argument('-fsl')
 	args = parser.parse_args()
 
@@ -102,20 +109,24 @@ def main():
 		trafo_fsl = np.loadtxt(args.fsl)
 	else:
 		trafo_fsl = np.identity(4)
-	filename = ''.join(random.choice([chr(i) for i in range(ord('a'),ord('z'))]) for _ in range(10))
-	tracking_all(np.float64(vector_field), meta, np.float64(wm_mask), np.float64(seeds),
+
+	paths, paths_len = tracking_all(np.float64(vector_field), meta, np.float64(wm_mask), np.float64(seeds),
 									args.integration,
 									args.interpolation, args.prob, args.sw, float(args.var),
 									int(args.samples),
 									int(args.mtlength), float(args.wmmin), float(args.exp or 1), args.verbose,
-									logging, args.restriction, float(args.maxangle), trafo_fsl, filename)
-	paths_len = np.loadtxt(filename + 'len')
-	paths = np.loadtxt(filename)
-	os.remove(filename)
-	os.remove(filename + 'len')
+									logging, args.inclusion, args.exclusion, float(args.maxangle), trafo_fsl,
+									"" if args.ram else args.file)
+	if not args.ram:
+		paths_len = np.loadtxt(args.file + 'len')
+		paths = np.loadtxt(args.file)
+		paths = [tuple(x) for x in paths]
+		if args.file_delete:
+			os.remove(args.file)
+			os.remove(args.file + 'len')
 	paths_len = [sum(paths_len[:i + 1]) for i in range(len(paths_len))]
 
-	tracks = PlyElement.describe(np.array([tuple(x) for x in paths], dtype=[('x', 'f4'), ('y', 'f4'), ('z', 'f4'),
+	tracks = PlyElement.describe(np.array(paths, dtype=[('x', 'f4'), ('y', 'f4'), ('z', 'f4'),
 														('seedpoint', 'f4'), ('angle', 'f4'), ('test', 'f4'), ('tes1t', 'f4')]), 'vertices',
 								 comments=[])
 	endindex = PlyElement.describe(np.array(paths_len, dtype=[('endindex', 'i4')]), 'fiber')

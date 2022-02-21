@@ -35,6 +35,7 @@ cdef void tracking(double[:,:,:,:] paths, double[:] seed,
 	"""
 	cdef int k=0, j
 	for j in range(samples):
+		k=0
 		while True:
 			k+=1
 			# set zero inclusion check
@@ -44,17 +45,17 @@ cdef void tracking(double[:,:,:,:] paths, double[:] seed,
 				integrate.old_dir = interpolate.next_dir
 			else:
 				integrate.old_dir = seed[3:]
-			forward_tracking(paths[j,:,0, :], interpolate, integrate, trafo, validator, max_track_length,
+			status1 = forward_tracking(paths[j,:,0, :], interpolate, integrate, trafo, validator, max_track_length,
 			                 features[j,:,0, :])
 			if seed_shape == 3:
 				interpolate.main_dir(paths[j, 0, 1])
 				mult_with_scalar(integrate.old_dir, -1.0 ,interpolate.next_dir)
 			else:
 				mult_with_scalar(integrate.old_dir, -1.0 ,seed[3:])
-			forward_tracking(paths[j,:,1,:], interpolate, integrate, trafo, validator, max_track_length,
+			status2 =forward_tracking(paths[j,:,1,:], interpolate, integrate, trafo, validator, max_track_length,
 			                 features[j,:,1, :])
 			# if not found bot regions of interest delete path.
-			if validator.ROIIn.included_checker():
+			if validator.ROIIn.included_checker() or not status1 or not status2:
 				validator.set_path_zero(paths[j,:,1,:], features[j,:,1, :])
 				validator.set_path_zero(paths[j, :, 0, :], features[j, :, 0, :])
 				trafo.wtoi(seed[:3])
@@ -67,7 +68,7 @@ cdef void tracking(double[:,:,:,:] paths, double[:] seed,
 			if k==5:
 				break
 
-cdef void forward_tracking(double[:,:] paths,  Interpolation interpolate,
+cdef bint forward_tracking(double[:,:] paths,  Interpolation interpolate,
                        Integration integrate, Trafo trafo, Validator validator, int max_track_length, double[:,:] features) nogil except *:
 	"""
         This function do the tracking into one direction.
@@ -111,11 +112,12 @@ cdef void forward_tracking(double[:,:] paths,  Interpolation interpolate,
 		trafo.itow(paths[k])
 		paths[k] = trafo.point_itow
 		features[k, 2] = validator.ROIIn.included(paths[k])
+		if validator.ROIEx.excluded(paths[k]):
+			return False
 		features[k,3] = interpolate.prob.chosen_angle
 		# Check curvature between current point and point 30mm ago
 		if validator.Curve.curvature_checker(paths[:k + 1], features[k:k+1,1]):
-			validator.set_path_zero(paths, features)
-			return
+			return False
 		integrate.old_dir = interpolate.next_dir
 	else:
 		trafo.itow(paths[k+1])
@@ -123,11 +125,12 @@ cdef void forward_tracking(double[:,:] paths,  Interpolation interpolate,
 	if k == 0:
 		trafo.itow(paths[k])
 		paths[k] = trafo.point_itow
-
+	return True
 
 cpdef tracking_all(double[:,:,:,:,:] vector_field, meta, double[:,:,:] wm_mask, double[:,:] seeds, integration,
                    interpolation, prob, stepsize, double variance, int samples, int max_track_length, double wmmin,
-                   double expectation, verbose, logging, inclusion, double max_angle, double[:,:] trafo_fsl, file):
+                   double expectation, verbose, logging, inclusion, exclusion, double max_angle, double[:,:] trafo_fsl,
+                   file):
 	"""
 	@param vector_field: Array (4,3,x,y,z)
 		Where the first dimension contains the length and direction, the second
@@ -186,7 +189,8 @@ cpdef tracking_all(double[:,:,:,:,:] vector_field, meta, double[:,:,:] wm_mask, 
 	trafo_matrix[:3,:3] = meta['space directions'][2:]
 	trafo_matrix[:3,3] = meta['space origin']
 	trafo_matrix[3,3] = 1
-	validator = Validator(wm_mask,np.array(wm_mask.shape, dtype=np.intc), wmmin, inclusion, max_angle, trafo, trafo_matrix, trafo_fsl)
+	validator = Validator(wm_mask,np.array(wm_mask.shape, dtype=np.intc), wmmin, inclusion, exlusion, max_angle, trafo,
+	                      trafo_fsl)
 	#cdef Integration integrate
 	if integration == "Euler":
 		integrate = Euler(meta['space directions'][2:], meta['space origin'], trafo, float(stepsize))
@@ -205,48 +209,53 @@ cpdef tracking_all(double[:,:,:,:,:] vector_field, meta, double[:,:,:] wm_mask, 
 		return 0
 	cdef int i, j, k, m = seeds.shape[0]
 	# Array to save Polygons
-	cdef double[:,:,:,:] paths = np.zeros((samples, max_track_length, 2, 3),dtype=np.float64)
+	cdef double[:,,:,:,:] paths = np.zeros((1 if file else m, samples, max_track_length, 2, 3),dtype=np.float64)
 	# Array to save features belonging to polygons
-	cdef double[:,:,:,:] features = np.zeros((samples, max_track_length, 2, 4),dtype=np.float64)
+	cdef double[:,:,:,:,:] features = np.zeros((1 if file else m, samples, max_track_length, 2, 4),dtype=np.float64)
 	# loop through all seeds.
 	tracks = []
 	tracks_len = []
-
+	cdef int k = 0
 	for i in tqdm(range(m), disable=not verbose):
+		k = 0 if file else k+=1
 		#Convert seedpoint
 		trafo.wtoi(seeds[i][:3])
 		for j in range(samples):
-			validator.set_path_zero(paths[j, :, 1, :], features[j, :, 1, :])
-			validator.set_path_zero(paths[j, :, 0, :], features[j, :, 0, :])
-			paths[j, 0, 0] = trafo.point_wtoi
-			paths[j, 0, 1] = trafo.point_wtoi
+			validator.set_path_zero(paths[k,j, :, 1, :], features[k,j, :, 1, :])
+			validator.set_path_zero(paths[k,j, :, 0, :], features[k,j, :, 0, :])
+			paths[k,j, 0, 0] = trafo.point_wtoi
+			paths[k,j, 0, 1] = trafo.point_wtoi
 			if "Deterministic" in prob:
 				for k in range(3):
-					paths[j, 0, 0,k] +=  np.random.normal(0,1,1)
-					paths[j, 0, 1,k] = paths[j, 0, 0,k]
+					paths[k,j, 0, 0,k] +=  np.random.normal(0,1,1)
+					paths[k,j, 0, 1,k] = paths[k,j, 0, 0,k]
 
 
-		features[:, 0, 0, 0] = 1
-		features[:, 0, 1, 0] = 1
+		features[k,:, 0, 0, 0] = 1
+		features[k,:, 0, 1, 0] = 1
 		#Do the tracking for this seed with the direction
-		tracking(paths, seeds[i], seeds[i].shape[0], interpolate, integrate, trafo, validator,
-		         max_track_length, samples, features)
+		tracking(paths[k], seeds[i], seeds[i].shape[0], interpolate, integrate, trafo, validator,
+		         max_track_length, samples, features[k])
 		# delete all zero arrays.
 		for j in range(samples):
-			path = np.concatenate((np.asarray(paths[j]),np.asarray(features[j])), axis=-1)
+			path = np.concatenate((np.asarray(paths[k,j]),np.asarray(features[k,j])), axis=-1)
 			path = np.concatenate((path[:,0][::-1], path[:,1]))
 			to_exclude = np.all(path[:,:4] == 0, axis=1)
 			path = path[~to_exclude]
 			if sum_c(path[:,3]) == 2:
 				path = np.delete(path, np.argwhere(path[:,3]==1)[0], axis=0)
 			if path.shape[0]>5:
-				with open(file + 'len', 'a') as f:
-					f.write(str(path.shape[0]) +'\n')
-				with open(file, 'a') as f:
-					for i in range(path.shape[0]):
-						f.write(' '.join(map(str, path[i])) + "\n")
+				# Work on disk or ram. Ram might be faster but for large files disk is preferable.
+				if file:
+					with open(file + 'len', 'a') as f:
+						f.write(str(path.shape[0]) +'\n')
+					with open(file, 'a') as f:
+						for i in range(path.shape[0]):
+							f.write(' '.join(map(str, path[i])) + "\n")
+				else:
+					tracks_len.append(path.shape[0])
+					tracks += [tuple(x) for x in path]
 
-
-#	return tracks, tracks_len
+	return tracks, tracks_len
 
 
