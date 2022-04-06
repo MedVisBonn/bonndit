@@ -8,11 +8,15 @@ from bonndit.utilc.cython_helpers cimport add_pointwise, floor_pointwise_matrix,
 import numpy as np
 from .ItoW cimport Trafo
 cdef int[:,:] permute_poss = np.array([[0,1,2],[0,2,1], [1,0,2], [1,2,0], [2,1,0], [2,0,1]], dtype=np.int32)
-
+from .kalman.model cimport AbstractModel, fODFModel, MultiTensorModel
+from .kalman.kalman cimport Kalman
 from .alignedDirection cimport Probabilities
 from libc.math cimport pow, pi, acos, floor, fabs,fmax
 from libc.stdio cimport printf
+from bonndit.utilc.cython_helpers cimport fa, dctov, dinit
+from bonndit.utilc.blas_lapack cimport *
 DTYPE = np.float64
+cdef double _lambda_min = 0.1
 ###
 # Given the ItoW trafo matrix and a cuboid of 8 points shape [2, 2, 2, 3] with a vector for each edge compute the
 # trilinear
@@ -29,7 +33,7 @@ cdef double[:] placeholder = np.zeros((3,), dtype=DTYPE)
 
 cdef class Interpolation:
 
-	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Trafo trafo, Probabilities prob):
+	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities prob):
 		self.vector_field = vector_field
 		self.vector = np.zeros((3,), dtype=DTYPE)
 		self.cuboid = np.zeros((8, 3, 3), dtype=DTYPE)
@@ -38,7 +42,6 @@ cdef class Interpolation:
 		self.next_dir = np.zeros((3,), dtype=DTYPE)
 		self.cache = np.zeros((grid[0], grid[1], grid[2], 4 * 8), dtype=np.int32)
 		self.best_ind = 0
-		self.trafo = trafo
 		self.prob = prob
 
 
@@ -96,18 +99,19 @@ cdef class Interpolation:
 
 	#@Cython.cdivision(True)
 	cdef void main_dir(self, double[:] point) nogil:
+			cdef double zero = 0
 			self.nearest_neigh(point)
 			self.set_vector(self.best_ind, 0)
 			mult_with_scalar(self.next_dir, pow(self.vector_field[0, 0, int(self.floor_point[			                                                                                            self.best_ind, 0]),
 			                                                   int(self.floor_point[ self.best_ind, 1]),
 			                                                  int(self.floor_point[self.best_ind, 2])], 0.25), self.vector)
 
-	cdef void interpolate(self,double[:] point, double[:] old_dir) nogil except *:
+	cdef int interpolate(self,double[:] point, double[:] old_dir, int r) nogil except *:
 		pass
 
 
 cdef class FACT(Interpolation):
-	cdef void interpolate(self, double[:] point, double[:] old_dir) nogil except *:
+	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) nogil except *:
 		cdef int i
 		cdef double l, max_value
 		self.nearest_neigh(point)
@@ -139,8 +143,8 @@ cdef class FACT(Interpolation):
 
 
 cdef class Trilinear(Interpolation):
-	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Trafo trafo, Probabilities prob):
-		super(Trilinear, self).__init__(vector_field, grid, trafo, prob)
+	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities prob):
+		super(Trilinear, self).__init__(vector_field, grid, prob)
 		self.array = np.zeros((2,3), dtype=DTYPE)
 		self.x_array = np.zeros((4,3), dtype=DTYPE)
 		self.point = np.zeros((3,), dtype=DTYPE)
@@ -168,7 +172,7 @@ cdef class Trilinear(Interpolation):
 
 
 
-	cdef void interpolate(self, double[:] point, double[:] old_dir) nogil except *:
+	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) nogil except *:
 		""" This function calculates the interpolation based on https://en.wikipedia.org/wiki/Trilinear_interpolation
 		for each vectorfield. Afterwards the we chose randomly from the 3 vectors.
 
@@ -352,6 +356,96 @@ cdef class Trilinear(Interpolation):
 		set_zero_matrix(self.best_dir)
 		return int(con)
 
+cdef class UKF(Interpolation):
+	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities prob, **kwargs):
+		super(UKF, self).__init__(vector_field, grid, prob)
+		self.mean = np.zeros((kwargs['dim_model'],), dtype=np.float64)
+		self.mlinear  = np.zeros((kwargs['dim_model'],kwargs['dim_model']), dtype=np.float64)
+		self.P = np.zeros((kwargs['dim_model'],kwargs['dim_model']), dtype=np.float64)
+		self.y = np.zeros((kwargs['data'].shape[0],), dtype=np.float64)
+		self.data = kwargs['data']
+		if kwargs['model'] == 'fodf':
+			self._model = fODFModel(kwargs)
+		else:
+			self._model = MultiTensorModel(kwargs)
+		self._kalman = Kalman()
+
+cdef class UKFFodf(UKF):
+	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities prob, **kwargs):
+		super(UKFFodf, self).__init__(vector_field, grid, prob, **kwargs)
+
+	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) nogil except *:
+		cdef int i, info = 0
+		# Interpolate current point
+		self._kalman.linear(point, self.y, self.mlinear, self.data)
+		# If we are at the seed. Initialize the Kalmanfilter
+		if restart == 0:
+			with gil:
+				self._model.kinit(self.mean, point, old_dir, self.P)
+		# Run Kalmannfilter
+		info = self._kalman.update_kalman_parameters(self.mean, self.P, self.y)
+		# Order directions by length an
+		if info != 0:
+			return info
+		for i in range(self._model.num_tensors):
+			cblas_dscal(3, 1 / cblas_dnrm2(3, &self.mean[5*i], 1), &self.mean[5*i], 1)
+			if cblas_ddot(3, &self.mean[5*i], 1, &old_dir[0],1) < 0:
+				cblas_dscal(3, -1, &self.mean[5*i], 1)
+			self.mean[5*i+3] = max(self.mean[5*i+3],_lambda_min)
+			self.mean[5*i+4] = max(self.mean[5*i+4],_lambda_min)
+
+
+		if cblas_ddot(3, &self.mean[0], 1, &old_dir[0],1) < cblas_ddot(3, &self.mean[5], 1, &old_dir[0],1):
+			cblas_dswap(5, &self.mean[0], 1, &self.mean[5], 1)
+			for i in range(5):
+				cblas_dswap(5, &self.P[i,0], 1, &self.P[i+5,5], 1)
+				cblas_dswap(5, &self.P[i,5], 1, &self.P[i+5,0], 1)
+		dctov(&self.mean[0], self.next_dir)
+		#with gil: print('dir', np.array(self.next_dir))
+		if fa(self.mean[5+3],self.mean[5+4],self.mean[5+4]) < 1/2:
+			with gil:
+				print("nooo")
+			return 1
+		return info
+
+
+
+
+cdef class UKFMultiTensor(UKF):
+	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities prob, **kwargs):
+		super(UKFMultiTensor, self).__init__(vector_field, grid, prob, **kwargs)
+
+	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) nogil except *:
+		cdef int i, info = 0
+		# Interpolate current point
+		self._kalman.linear(point, self.y, self.mlinear, self.data)
+		# If we are at the seed. Initialize the Kalmanfilter
+		if restart == 0:
+			with gil:
+				self._model.kinit(self.mean, point, old_dir, self.P)
+		# Run Kalmannfilter
+		info = self._kalman.update_kalman_parameters(self.mean, self.P, self.y)
+		#cblas_dcopy(self.mean.shape[0], &self.mean[0], 1, &self.tmpmean[0], 1)
+		for i in range(self._model.num_tensors):
+			cblas_dscal(3, 1 / cblas_dnrm2(3, &self.mean[5*i], 1), &self.mean[5*i], 1)
+			if cblas_ddot(3, &self.mean[5*i], 1, &old_dir[0],1) < 0:
+				cblas_dscal(3, -1, &self.mean[5*i], 1)
+			self.mean[5*i+3] = max(self.mean[5*i+3],_lambda_min)
+			self.mean[5*i+4] = max(self.mean[5*i+4],_lambda_min)
+
+
+		if cblas_ddot(3, &self.mean[0], 1, &old_dir[0],1) < cblas_ddot(3, &self.mean[5], 1, &old_dir[0],1):
+			cblas_dswap(5, &self.mean[0], 1, &self.mean[5], 1)
+			for i in range(5):
+				cblas_dswap(5, &self.P[i,0], 1, &self.P[i+5,5], 1)
+				cblas_dswap(5, &self.P[i,5], 1, &self.P[i+5,0], 1)
+		dctov(&self.mean[0], self.next_dir)
+		#with gil: print('dir', np.array(self.next_dir))
+		if fa(self.mean[5+3],self.mean[5+4],self.mean[5+4]) < 1/2:
+			with gil:
+				print("nooo")
+			return 1
+		return info
 
 
 

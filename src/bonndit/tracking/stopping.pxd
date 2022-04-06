@@ -9,7 +9,7 @@ cdef class Validator:
 		int[:] shape
 		CurvatureNotValidator Curve
 		ROIInNotValidator ROIIn
-
+		ROIExNotValidator ROIEx
 
 	cdef bint wm_checker(self, double[:]) nogil except *
 	cdef bint index_checker(self, double[:]) nogil except *
@@ -42,16 +42,17 @@ cdef class ROIInValidator(ROIInNotValidator):
 	cdef bint included_checker(self) nogil except *
 
 
-class ROIExNotValidator:
+cdef class ROIExNotValidator:
 	cdef:
 		double[:,:] exclusion_cube
+		int exclusion_num
 
-	cdef bint exclude_cube(self, double[:]) nogil except *
+	cdef bint excluded(self, double[:]) nogil except *
 
 
 
-class ROIExValidator(ROIExNotValidator):
-	cdef bint exclude_cube(self, double[:]) nogil except *
+cdef class ROIExValidator(ROIExNotValidator):
+	cdef bint excluded(self, double[:]) nogil except *
 
 
 

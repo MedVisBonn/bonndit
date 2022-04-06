@@ -4,6 +4,9 @@
 
 from .ItoW cimport Trafo
 from .alignedDirection cimport Probabilities
+from .kalman.model cimport AbstractModel
+from .kalman.kalman cimport Kalman
+
 cdef class Interpolation:
 	cdef double[:,:,:,:,:] vector_field
 	cdef double[:,:,:] cuboid
@@ -19,10 +22,10 @@ cdef class Interpolation:
 	cdef void calc_cube(self, double[:]) nogil
 	cdef void nearest_neigh(self, double[:]) nogil
 	cdef void set_vector(self, int, int) nogil
-	cdef void interpolate(self, double[:], double[:]) nogil except *
+	cdef int interpolate(self, double[:], double[:], int) nogil except *
 
 cdef class FACT(Interpolation):
-	cdef void interpolate(self, double[:], double[:]) nogil except *
+	cdef int interpolate(self, double[:], double[:], int) nogil except *
 
 
 cdef class Trilinear(Interpolation):
@@ -34,7 +37,32 @@ cdef class Trilinear(Interpolation):
 	cdef int[:] floor
 	cdef int[:] permutation
 	cdef void set_array(self, int, int, int) nogil
-	cdef void interpolate(self, double[:], double[:]) nogil except *
+	cdef int interpolate(self, double[:], double[:], int) nogil except *
 	cdef void set_new_poss(self) nogil except *
 	cdef int kmeans(self, double[:]) nogil except *
 	cdef void permute(self, double[:]) nogil except *
+
+cdef class UKF(Interpolation):
+	cdef double[:] mean
+	cdef double[:,:] P
+	cdef double[:,:,:,:] data
+	cdef double[:,:] mlinear
+	cdef double[:] y
+	cdef Kalman _kalman
+	cdef AbstractModel _model
+	cdef int interpolate(self, double[:], double[:], int) nogil except *
+
+cdef class UKFFodf(UKF):
+	cdef int interpolate(self, double[:], double[:], int) nogil except *
+
+cdef class UKFMultiTensor(UKF):
+	cdef int interpolate(self, double[:], double[:], int) nogil except *
+
+
+
+
+
+
+
+
+

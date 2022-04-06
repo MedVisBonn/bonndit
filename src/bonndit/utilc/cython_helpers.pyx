@@ -1,14 +1,127 @@
 #%%cython --annotate
 #cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, warn.unused_results=True
 cimport cython
+import numpy as np
 from libc.math cimport pow, floor, acos, pi
 from libc.stdio cimport printf
+from .blas_lapack cimport *
 
 cdef double min_c(double a, double b) nogil:
 	if a < b:
 		return a
 	else:
 		return b
+
+cdef void sub_pointwise(double *o, double *a, double *b, int n) nogil except *:
+	cdef int i
+	for i in range(n):
+		o[i] = a[i] - b[i]
+
+cdef void dinit(int n, double *v, double *x, int j) nogil except *:
+	cdef int i
+	for i in range(n):
+		v[i] = x[i%j]
+
+
+cdef void dctov(double * v, double[:] a) nogil except *:
+	cdef int i
+	for i in range(a.shape[0]):
+		a[i] = v[i]
+
+cdef double fa(double l1, double l2, double l3) nogil except *:
+	cdef double mean, a,  b
+	mean=(l1+l2+l3)/3
+	a = pow(l1-mean, 2) + pow(l2-mean, 2) + pow(l3-mean, 2)
+	b = l1 * l1 + l2 * l2 + l3 * l3
+	return pow(3/2, 0.5) * pow(a/b , 0.5)
+
+cdef void dm2toc(double *v, double[:] a, int num) nogil except *:
+	cdef int i
+	for i in range(num):
+		v[i] = a[i]
+
+cdef sphere2world(double r, double sigma, double phi):
+	return r*np.array([np.sin(sigma)*np.cos(phi), np.sin(sigma)*np.sin(phi), np.cos(sigma)])
+
+cdef world2sphere(x,y,z):
+	r = np.sqrt(x**2 + y**2 + z**2)
+	sigma = np.arccos(z/r)
+	if x > 0:
+		phi = np.arctan(y/z)
+	elif x<0 and y >= 0:
+		phi = np.arctan(y / z) + np.pi
+	elif x<0 and y < 0:
+		phi = np.arctan(y / z) - np.pi
+	elif y > 0:
+		phi = np.pi/2
+	elif y < 0:
+		phi = -np.pi/2
+	else:
+		raise Exception()
+	return r, sigma, phi
+
+cdef orthonormal_from_sphere(double sigma, double phi):
+	return [sphere2world(1, sigma, phi),sphere2world(1, sigma + np.pi/2, phi),np.array([-np.sin(sigma)*np.sin(phi),np.sin(sigma)*np.cos(phi), 0])]
+
+
+
+
+cdef int inverse(double[:,:] A, double[:] WORKER, int [:] IPIV) nogil except *:
+	"""
+		Calculates inverse of matrix A. No boundary checks are performed.
+	Parameters
+	----------
+	A: NxN Matrix double
+		Holds the Mattrix to invert and is also the return value with the inverted matrix.
+	Worker: NxN Martix double
+	IPIV: N Matrix int64
+	Returns
+		0 if the matrix is successfully inverted
+		i if there is a singularity.
+	-------
+	"""
+	cdef int INFO = 0
+	cdef int LWORK = A.shape[0] * A.shape[0]
+	INFO = LAPACKE_dgetrf(CblasRowMajor, A.shape[0], A.shape[0], &A[0,0], A.shape[0], &IPIV[0])
+	if INFO != 0:
+		return INFO
+	INFO = LAPACKE_dgetri_work(CblasRowMajor, A.shape[0], &A[0,0], A.shape[0], &IPIV[0], &WORKER[0], LWORK)
+	return 0
+
+
+
+cdef void ddiagonal(double * M, double[:] v, int columns, int rows):
+	for i in range(rows):
+		for j in range(columns):
+			if i == j:
+				M[i*(columns+1)] = v[i%len(v)]
+			else:
+				M[i * columns + j] = 0
+
+
+cdef void special_mat_mul(double[:,:] M, double[:,:] A, double[:] B, double[:,:] C, double scale) nogil except *:
+	"""
+	Calc
+		M = A*diag(B)*C
+	Parameters
+	----------
+	M
+	A
+	B
+	C
+
+	Returns
+	-------
+	"""
+
+	cdef int i, j, k
+	for i in range(M.shape[0]):
+		for j in range(M.shape[1]):
+			M[i,  j] = 0
+			for k in range(A.shape[1]):
+				M[i, j] += scale * A[i, k] * B[k] * C[j, k]
+
+
 
 cdef double max_c(double a, double b) nogil:
 	if a < b:
