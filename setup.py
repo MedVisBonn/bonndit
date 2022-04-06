@@ -16,8 +16,28 @@ with open('HISTORY.rst') as history_file:
 
 ext_modules = [
     Extension(
+        "bonndit.utilc.blas_lapack",
+        ["src/bonndit/utilc/blas_lapack.pyx"],
+        include_dirs=[
+            numpy.get_include(),
+            "/opt/intel/oneapi/mkl/2022.0.2/include"],
+        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m",
+                   "dl"],
+        library_dirs=["/opt/intel/oneapi/mkl/2022.0.2/lib/intel64"],
+        extra_compile_args=["-Wall", "-m64", "-ggdb3"],
+        extra_link_args=["-Wl,--no-as-needed"]
+    ),
+    Extension(
         "bonndit.utilc.cython_helpers",
         ["src/bonndit/utilc/cython_helpers.pyx"],
+        include_dirs=[
+            numpy.get_include(),
+            "/opt/intel/oneapi/mkl/2022.0.2/include"],
+        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m",
+                   "dl"],
+        library_dirs=["/opt/intel/oneapi/mkl/2022.0.2/lib/intel64"],
+        extra_compile_args=["-Wall", "-m64", "-ggdb3"],
+        extra_link_args=["-Wl,--no-as-needed"]
     ),
     Extension(
         "bonndit.utilc.hota",
@@ -52,12 +72,46 @@ ext_modules = [
         ["src/bonndit/tracking/alignedDirection.pyx"],
         include_dirs=[numpy.get_include(), '.'],
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
+    ), Extension(
+        "bonndit.tracking.kalman.model",
+        ["src/bonndit/tracking/kalman/model.pyx"],
+        define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
+        include_dirs=[
+            numpy.get_include(),
+            "/opt/intel/oneapi/mkl/2022.0.2/include"],
+        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m",
+                   "dl"],
+        library_dirs=["/opt/intel/oneapi/mkl/2022.0.2/lib/intel64"],
+        extra_compile_args=["-Wall", "-m64", "-ggdb3"],
+        extra_link_args=["-Wl,--no-as-needed"]
+
+    ),
+    Extension(
+        "bonndit.tracking.kalman.kalman",
+        ["src/bonndit/tracking/kalman/kalman.pyx"],
+        define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
+        include_dirs=[
+            numpy.get_include(),
+            "/opt/intel/oneapi/mkl/2022.0.2/include"],
+        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m",
+                   "dl"],
+        library_dirs=["/opt/intel/oneapi/mkl/2022.0.2/lib/intel64"],
+        extra_compile_args=["-Wall", "-m64", "-ggdb3"],
+        extra_link_args=["-Wl,--no-as-needed"]
+
     ),
     Extension(
         "bonndit.tracking.interpolation",
         ["src/bonndit/tracking/interpolation.pyx"],
-        include_dirs=[numpy.get_include(), '.'],
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
+        include_dirs=[
+            numpy.get_include(),
+            "/opt/intel/oneapi/mkl/2022.0.2/include"],
+        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m",
+                   "dl"],
+        library_dirs=["/opt/intel/oneapi/mkl/2022.0.2/lib/intel64"],
+        extra_compile_args=["-Wall", "-m64", "-ggdb3"],
+        extra_link_args=["-Wl,--no-as-needed"]
     ),
     Extension(
         "bonndit.tracking.integration",
