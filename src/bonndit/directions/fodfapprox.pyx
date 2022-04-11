@@ -10,7 +10,7 @@ from bonndit.utilc.penalty_spherical cimport calc_norm_spherical, \
 from bonndit.utilc.cython_helpers cimport mult_with_scalar, sub_vectors, \
     set_zero_vector, set_zero_matrix, add_vectors
 from tqdm import tqdm
-cimport numpy as np
+# cimport numpy as np
 from cython.parallel cimport threadid
 
 DTYPE = np.float64
@@ -133,11 +133,3 @@ cpdef approx_all_spherical(
             val[:, threadid()],
             der[:, threadid()], testv[:, threadid()],
             anisoten[:, threadid()], isoten[:, threadid()])
-
-
-
-# cpdef approx_all(fodf):
-# num = fodf.shape
-# for i in range(num):
-#        if
-# _candidates_3d_d
