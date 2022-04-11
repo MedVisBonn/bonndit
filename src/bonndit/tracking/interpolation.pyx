@@ -1,11 +1,12 @@
 #%%cython --annotate
-#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True,
+#cython: language_level=3, boundscheck=True, wraparound=True, warn.unused=True, warn.unused_args=True,
 # warn.unused_results=True
 import Cython
 from bonndit.utilc.cython_helpers cimport add_pointwise, floor_pointwise_matrix, norm, mult_with_scalar,\
 	add_vectors, sub_vectors, scalar, clip, set_zero_vector, set_zero_matrix, sum_c, sum_c_int, set_zero_vector_int, \
 	angle_deg, set_zero_matrix_int, point_validator
 import numpy as np
+import time
 from .ItoW cimport Trafo
 cdef int[:,:] permute_poss = np.array([[0,1,2],[0,2,1], [1,0,2], [1,2,0], [2,1,0], [2,0,1]], dtype=np.int32)
 from .kalman.model cimport AbstractModel, fODFModel, MultiTensorModel
@@ -24,7 +25,7 @@ cdef double _lambda_min = 0.1
 
 cdef int[:] permutation = np.array([0,1,2]*8, dtype=np.int32)
 cdef double[:,:] neigh = np.array([[x, y, z] for x in range(2) for y in range(2) for z in range(2)], dtype=DTYPE)
-cdef int[:] minus = np.array((3,), dtype=np.int32)
+cdef int[:] minus = np.zeros((3,), dtype=np.int32)
 cdef int[:,:] neigh_int = np.array([[x, y, z] for x in range(2) for y in range(2) for z in range(2)], dtype=np.int32)
 cdef int[:] best = np.zeros((4*8,), dtype=np.int32),  old_best = np.zeros((8,), dtype=np.int32)
 cdef double[:,:,:] test_cuboid = np.zeros((8, 3, 3), dtype=DTYPE)
@@ -33,7 +34,7 @@ cdef double[:] placeholder = np.zeros((3,), dtype=DTYPE)
 
 cdef class Interpolation:
 
-	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities prob):
+	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities prob, **kwargs):
 		self.vector_field = vector_field
 		self.vector = np.zeros((3,), dtype=DTYPE)
 		self.cuboid = np.zeros((8, 3, 3), dtype=DTYPE)
@@ -139,12 +140,13 @@ cdef class FACT(Interpolation):
 		#printf('%i \n', thread_id)
 		self.prob.calculate_probabilities(self.best_dir, old_dir)
 		mult_with_scalar(self.next_dir, 1, self.prob.best_fit)
+		return 0
 
 
 
 cdef class Trilinear(Interpolation):
-	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities prob):
-		super(Trilinear, self).__init__(vector_field, grid, prob)
+	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities prob, **kwargs):
+		super(Trilinear, self).__init__(vector_field, grid, prob, **kwargs)
 		self.array = np.zeros((2,3), dtype=DTYPE)
 		self.x_array = np.zeros((4,3), dtype=DTYPE)
 		self.point = np.zeros((3,), dtype=DTYPE)
@@ -241,6 +243,7 @@ cdef class Trilinear(Interpolation):
 
 		else:
 			mult_with_scalar(self.next_dir, 0, self.prob.best_fit)
+		return 0
 
 #	### TODO is here a better way?
 	cdef void permute(self, double[:] point) nogil except *:
@@ -316,7 +319,6 @@ cdef class Trilinear(Interpolation):
 					test_angle=0
 					set_zero_vector_int(minus)
 					for k in range(3):
-
 						ang = angle_deg(self.best_dir[k], test_cuboid[i, permute_poss[j,k]])
 						if ang > 90:
 							mult_with_scalar(placeholder, -1, test_cuboid[i, permute_poss[j, k]])
@@ -358,17 +360,20 @@ cdef class Trilinear(Interpolation):
 
 cdef class UKF(Interpolation):
 	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities prob, **kwargs):
-		super(UKF, self).__init__(vector_field, grid, prob)
+		super(UKF, self).__init__(vector_field, grid, prob, **kwargs)
 		self.mean = np.zeros((kwargs['dim_model'],), dtype=np.float64)
-		self.mlinear  = np.zeros((kwargs['dim_model'],kwargs['dim_model']), dtype=np.float64)
+		self.mlinear  = np.zeros((kwargs['dim_model'],kwargs['data'].shape[-1]), dtype=np.float64)
 		self.P = np.zeros((kwargs['dim_model'],kwargs['dim_model']), dtype=np.float64)
-		self.y = np.zeros((kwargs['data'].shape[0],), dtype=np.float64)
-		self.data = kwargs['data']
-		if kwargs['model'] == 'fodf':
-			self._model = fODFModel(kwargs)
+		self.y = np.zeros((kwargs['data'].shape[-1],), dtype=np.float64)
+		if kwargs['baseline'] != "" and kwargs['model'] != 'fodf':
+			self.data = kwargs['data']/kwargs['baseline'][:,:,:,np.newaxis]
 		else:
-			self._model = MultiTensorModel(kwargs)
-		self._kalman = Kalman()
+			self.data = kwargs['data']
+		if kwargs['model'] == 'fodf':
+			self._model = fODFModel(vector_field=vector_field, **kwargs)
+		else:
+			self._model = MultiTensorModel(**kwargs)
+		self._kalman = Kalman(kwargs['data'].shape[-1], kwargs['dim_model'], self._model)
 
 cdef class UKFFodf(UKF):
 	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities prob, **kwargs):
@@ -381,31 +386,27 @@ cdef class UKFFodf(UKF):
 		# If we are at the seed. Initialize the Kalmanfilter
 		if restart == 0:
 			with gil:
-				self._model.kinit(self.mean, point, old_dir, self.P)
+				self._model.kinit(self.mean, point, old_dir, self.P, self.y)
 		# Run Kalmannfilter
+
 		info = self._kalman.update_kalman_parameters(self.mean, self.P, self.y)
 		# Order directions by length an
 		if info != 0:
 			return info
 		for i in range(self._model.num_tensors):
-			cblas_dscal(3, 1 / cblas_dnrm2(3, &self.mean[5*i], 1), &self.mean[5*i], 1)
-			if cblas_ddot(3, &self.mean[5*i], 1, &old_dir[0],1) < 0:
-				cblas_dscal(3, -1, &self.mean[5*i], 1)
-			self.mean[5*i+3] = max(self.mean[5*i+3],_lambda_min)
-			self.mean[5*i+4] = max(self.mean[5*i+4],_lambda_min)
+			cblas_dscal(3, 1 / cblas_dnrm2(3, &self.mean[4*i], 1), &self.mean[4*i], 1)
+			if cblas_ddot(3, &self.mean[4*i], 1, &old_dir[0],1) < 0:
+				cblas_dscal(3, -1, &self.mean[4*i], 1)
+			self.mean[4*i+3] = max(self.mean[4*i+3],_lambda_min)
 
 
-		if cblas_ddot(3, &self.mean[0], 1, &old_dir[0],1) < cblas_ddot(3, &self.mean[5], 1, &old_dir[0],1):
-			cblas_dswap(5, &self.mean[0], 1, &self.mean[5], 1)
-			for i in range(5):
-				cblas_dswap(5, &self.P[i,0], 1, &self.P[i+5,5], 1)
-				cblas_dswap(5, &self.P[i,5], 1, &self.P[i+5,0], 1)
+		if cblas_ddot(3, &self.mean[0], 1, &old_dir[0],1) < cblas_ddot(3, &self.mean[4], 1, &old_dir[0],1):
+			cblas_dswap(4, &self.mean[0], 1, &self.mean[4], 1)
+			for i in range(4):
+				cblas_dswap(4, &self.P[i,0], 1, &self.P[i+4,4], 1)
+				cblas_dswap(4, &self.P[i,4], 1, &self.P[i+4,0], 1)
 		dctov(&self.mean[0], self.next_dir)
-		#with gil: print('dir', np.array(self.next_dir))
-		if fa(self.mean[5+3],self.mean[5+4],self.mean[5+4]) < 1/2:
-			with gil:
-				print("nooo")
-			return 1
+	#with gil: print('dir', np.array(self.next_dir))
 		return info
 
 
@@ -416,13 +417,14 @@ cdef class UKFMultiTensor(UKF):
 		super(UKFMultiTensor, self).__init__(vector_field, grid, prob, **kwargs)
 
 	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) nogil except *:
-		cdef int i, info = 0
+		cdef int z, i, info = 0
 		# Interpolate current point
 		self._kalman.linear(point, self.y, self.mlinear, self.data)
 		# If we are at the seed. Initialize the Kalmanfilter
 		if restart == 0:
 			with gil:
-				self._model.kinit(self.mean, point, old_dir, self.P)
+				##print(np.array(self.y))
+				self._model.kinit(self.mean, point, old_dir, self.P, self.y)
 		# Run Kalmannfilter
 		info = self._kalman.update_kalman_parameters(self.mean, self.P, self.y)
 		#cblas_dcopy(self.mean.shape[0], &self.mean[0], 1, &self.tmpmean[0], 1)
@@ -433,17 +435,26 @@ cdef class UKFMultiTensor(UKF):
 			self.mean[5*i+3] = max(self.mean[5*i+3],_lambda_min)
 			self.mean[5*i+4] = max(self.mean[5*i+4],_lambda_min)
 
-
-		if cblas_ddot(3, &self.mean[0], 1, &old_dir[0],1) < cblas_ddot(3, &self.mean[5], 1, &old_dir[0],1):
-			cblas_dswap(5, &self.mean[0], 1, &self.mean[5], 1)
-			for i in range(5):
-				cblas_dswap(5, &self.P[i,0], 1, &self.P[i+5,5], 1)
-				cblas_dswap(5, &self.P[i,5], 1, &self.P[i+5,0], 1)
-		dctov(&self.mean[0], self.next_dir)
-		#with gil: print('dir', np.array(self.next_dir))
-		if fa(self.mean[5+3],self.mean[5+4],self.mean[5+4]) < 1/2:
-			with gil:
-				print("nooo")
+		# Use alw
+#		for i in range(self._model.num_tensors):
+#			self.best_dir[3*i: 3*(i+1)] = self.mean[5*i: 5*i + 3]
+#		self.prob.calculate_probabilities(self.best_dir, old_dir)
+#		self.next_dir = self.prob.best_fit
+#		if self._model.num_tensors == 1:
+#			dctov(&self.mean[0], self.next_dir)
+		if self._model.num_tensors == 2:
+			if cblas_ddot(3, &self.mean[0], 1, &old_dir[0],1) < cblas_ddot(3, &self.mean[5], 1, &old_dir[0],1):
+				cblas_dswap(5, &self.mean[0], 1, &self.mean[5], 1)
+				for i in range(5):
+					cblas_dswap(5, &self.P[i,0], 1, &self.P[i+5,5], 1)
+					cblas_dswap(5, &self.P[i,5], 1, &self.P[i+5,0], 1)
+			dctov(&self.mean[0], self.next_dir)
+#		#with gil: print('dir', np.array(self.next_dir))
+		z = 0
+		for i in range(self._model.num_tensors):
+			if fa(self.mean[5*i + 3],self.mean[5*i + 4],self.mean[5*i + 4]) < 1/2:
+				z += 1
+		if z == self._model.num_tensors:
 			return 1
 		return info
 

@@ -1,27 +1,31 @@
+#cython: language_level=3, boundscheck=True, wraparound=True, warn.unused=True, warn.unused_args=True,
+# warn.unused_results=True
 from bonndit.utilc.blas_lapack cimport *
 from bonndit.utilc.hota cimport hota_4o3d_sym_eval
 from bonndit.utilc.cython_helpers cimport special_mat_mul, orthonormal_from_sphere, dinit, sphere2world, ddiagonal
 from scipy.optimize import least_squares
-from .kalman cimport Kalman
 import numpy as np
-
+from libc.math cimport pow
 
 cdef class AbstractModel:
 	def __cinit__(self, **kwargs):
-		self.MEASUREMENT_NOISE =  np.zeros((kwargs['b'].shape[0],kwargs['b'].shape[0]), dtype=np.float64)
-		self.PROCESS_NOISE =  np.zeros((kwargs['model_dim'].shape[0],kwargs['model_dim'].shape[0]), dtype=np.float64)
+		self.MEASUREMENT_NOISE =  np.zeros((kwargs['data'].shape[-1],kwargs['data'].shape[-1]), dtype=np.float64)
+		self.PROCESS_NOISE =  np.zeros((kwargs['dim_model'],kwargs['dim_model']), dtype=np.float64)
 		self._lambda_min = 0
-		self.GLOBAL_TENSOR_UNPACK_VALUE = 0
-		ddiagonal(&self.PROCESS_NOISE[0, 0], kwargs['process noise'], self.PROCESS_NOISE.shape[0],
-				  self.PROCESS_NOISE.shape[1])
-		ddiagonal(&self.MEASUREMENT_NOISE[0, 0], kwargs['measurement noise'], self.MEASUREMENT_NOISE.shape[0],
-				  self.MEASUREMENT_NOISE.shape[1])
+		self.num_tensors = 0
+		self.GLOBAL_TENSOR_UNPACK_VALUE = 1e-6
+		if kwargs['process noise']:
+			ddiagonal(&self.PROCESS_NOISE[0, 0], kwargs['process noise'], self.PROCESS_NOISE.shape[0],
+					  self.PROCESS_NOISE.shape[1])
+		if kwargs['measurement noise']:
+			ddiagonal(&self.MEASUREMENT_NOISE[0, 0], kwargs['measurement noise'], self.MEASUREMENT_NOISE.shape[0],
+					  self.MEASUREMENT_NOISE.shape[1])
 
 	cdef void normalize(self, double[:] m, double[:] v, int incr) nogil except *:
 		pass
 	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points) nogil except *:
 		pass
-	cdef bint kinit(self, double[:] mean, double[:] point, double[:] init_dir, double[:,:] P):
+	cdef bint kinit(self, double[:] mean, double[:] point, double[:] init_dir, double[:,:] P, double[:] y):
 		pass
 	cdef void constrain(self, double[:,:] X) nogil except *:
 		pass
@@ -29,10 +33,18 @@ cdef class AbstractModel:
 
 cdef class fODFModel(AbstractModel):
 	def __cinit__(self, **kwargs):
+		super(fODFModel, self).__init__(**kwargs)
 		self.m = np.zeros((3,))
+		self.vector_field = kwargs['vector_field']
 		self.res = np.zeros((15, ))
-		self.num_tensors = kwargs['dim_model'] //4
-		pass
+		if kwargs['process noise'] == "":
+			ddiagonal(&self.PROCESS_NOISE[0, 0], np.array([0.01,0.01,0.01,0.1]), self.PROCESS_NOISE.shape[0],
+				  self.PROCESS_NOISE.shape[1])
+		if kwargs['measurement noise'] == "":
+			ddiagonal(&self.MEASUREMENT_NOISE[0, 0], np.array([0.001]), self.MEASUREMENT_NOISE.shape[0],
+				  self.MEASUREMENT_NOISE.shape[1])
+		self.num_tensors = <int> (kwargs['dim_model'] / 4)
+
 
 	cdef void normalize(self, double[:] m, double[:] v, int inc) nogil except *:
 		# Calculates m = v/||v||, by doing matrix operation 1/||v||*v*1 + 0*m
@@ -48,43 +60,50 @@ cdef class fODFModel(AbstractModel):
 		for i in range(number_of_tensors):
 			for j in range(sigma_points.shape[1]):
 				self.normalize(self.m, sigma_points[i * 4: i * 4 + 3, j], sigma_points.shape[1])
-				lam = max(sigma_points[i*4 + 4, j], 0.01)
-				hota_4o3d_sym_eval(self.res, lam, self.m)
+				lam = max(sigma_points[i*4 + 3, j], 0.01)
+				hota_4o3d_sym_eval(self.res, pow(lam, 1/4), self.m)
 				cblas_daxpy(observations.shape[0],1,&self.res[0], 1, &observations[0,j], observations.shape[1])
+		#with gil:
+		#	print(np.array(observations))
 
 
-
-	cdef bint kinit(self, double[:] mean, double[:] point, double[:] init_dir, double[:,:] P):
+	cdef bint kinit(self, double[:] mean, double[:] point, double[:] init_dir, double[:,:] P, double[:] y):
 		cdef int i
-		cdef double[:] Pv = np.array([0.01])
+		cdef double[:] Pv = np.array([0.1])
 		ddiagonal(&P[0,0], Pv, P.shape[0], P.shape[1])
 		for i in range(self.vector_field.shape[1]):
-			self.mean[i*4, i*4 +3] = self.vector[1:,i, <int> point[0], <int> point[1], <int> point[2]]
-			self.mean[i*4 + 4] = self.vector[0,i, <int> point[0], <int> point[1], <int> point[2]]
+			mean[i*4: i*4 +3] = self.vector_field[1:,i, <int> point[0], <int> point[1], <int> point[2]]
+			mean[i*4 + 3] = self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]]
 
 	cdef void constrain(self, double[:,:] X) nogil except *:
-		cdef int i, j, n = X.shape[0]//5
+		cdef int i, j, n = X.shape[0]//4
 		for i in range(X.shape[1]):
 			for j in range(n):
-				cblas_dscal(3, 1/cblas_dnrm2(3,&X[5*j, i],X.shape[1]),&X[5*j, i],X.shape[1])
-				X[j * 5 + 3, i] = max(X[j * 5 + 3, i], self._lambda_min)
-				X[j * 5 + 4, i] = max(X[j * 5 + 4, i], self._lambda_min)
+				cblas_dscal(3, 1/cblas_dnrm2(3,&X[4*j, i],X.shape[1]),&X[4*j, i],X.shape[1])
+				X[j * 4 + 3, i] = max(X[j * 4 + 3, i], self._lambda_min)
 
 
 cdef class MultiTensorModel(AbstractModel):
 
 	def __cinit__(self, **kwargs):
+		super(MultiTensorModel, self).__init__(**kwargs)
 		self.m = np.zeros((3,))
 		self.lam = np.zeros((3,))
 		self.q = np.zeros((3,))
 		self.D = np.zeros((3,3))
 		self.M = np.zeros((3,3))
-		self.num_tensors = kwargs['dim_model'] // 5
+		self.num_tensors = <int> (kwargs['dim_model'] / 5)
 		self.gradients = kwargs['gradients']
 		self.c = np.zeros((kwargs['dim_model'],))
-		self.baseline_signal = kwargs['baseline signal']
-		self.acq_spec_const = kwargs['b']
+		self.baseline_signal = kwargs['b']
+		self.acq_spec_const = kwargs['b0']
 		self._lambda_min = 100
+		if kwargs['process noise'] == "":
+			ddiagonal(&self.PROCESS_NOISE[0, 0], np.array([0.01,0.01,0.01,25,25]), self.PROCESS_NOISE.shape[0],
+				  self.PROCESS_NOISE.shape[1])
+		if kwargs['measurement noise'] == "":
+			ddiagonal(&self.MEASUREMENT_NOISE[0, 0], np.array([0.001]), self.MEASUREMENT_NOISE.shape[0],
+				  self.MEASUREMENT_NOISE.shape[1])
 
 	cdef void normalize(self, double[:] m, double[:] v, int inc) nogil except *:
 		# Calculates m = v/||v||, by doing matrix operation 1/||v||*v*1 + 0*m
@@ -143,7 +162,7 @@ cdef class MultiTensorModel(AbstractModel):
 		"""
 		cdef int number_of_tensors = int(sigma_points.shape[0]/5)
 		cblas_dscal(observations.shape[1]*observations.shape[0], 0, &observations[0,0], 1)
-		cdef int  i, j, k
+		cdef int  i, j, MEASUREMENT_NOISEk
 		for i in range(number_of_tensors):
 			for j in range(sigma_points.shape[1]):
 				self.normalize(self.m, sigma_points[i * 5: i * 5 + 3, j], sigma_points.shape[1])
@@ -161,38 +180,41 @@ cdef class MultiTensorModel(AbstractModel):
 
 
 
-	cdef bint kinit(self, double[:] mean, double[:] point, double[:] init_dir, double[:,:] P ):
+	cdef bint kinit(self, double[:] mean, double[:] point, double[:] init_dir, double[:,:] P, double[:] y ):
 		cdef double[:] Pv = np.array([0.01])
 		ddiagonal(&P[0,0], Pv, P.shape[0], P.shape[1])
 
-		#self.linear(point, self.BASELINE_SIGNAL, self.slinear, self.baseline)
-		x = np.array([np.pi/2,0,1000,0,0,500])
-
-
-		res = least_squares(mti, x, args=(np.array(self.y), self.bvecs, 2, self.GLOBAL_TENSOR_UNPACK_VALUE),max_nfev=1000,
-		                    bounds=([-np.inf,-np.inf,0,-np.inf,-np.inf,0], [np.inf, np.inf,np.inf,np.inf,np.inf,
-		                                                                     np.inf]))
+		#self.linear(point, self.BASELINE_SIGNAL, self.slinear, self.basel/ine)
+		x = np.array([0,np.pi/2,1000,0,0,600])
+		res = least_squares(mti, x, method='lm', args=(np.array(y), self.gradients, self.num_tensors, self.GLOBAL_TENSOR_UNPACK_VALUE),max_nfev=1000)
 		b = np.zeros(10)
-		print('init')
-		b[0:3] = sphere2world(1, res.x[0], res.x[1])
-		b[3:5] = res.x[2], res.x[2]/8
-		b[5:8] =sphere2world(1, res.x[3], res.x[4])
-		b[8:10] = res.x[5], res.x[5]/8
+		#print('init')
+		for i in range(self.num_tensors):
+			b[5*i:5*i + 3] = sphere2world(1, res.x[3*i], res.x[3*i + 1])
+			b[5*i + 3:5*(i+1)] = res.x[3*i+2], res.x[3*i+2]/8
 		self.c = b
-		print(res)
-		print(res.cost/np.linalg.norm(self.y))
-		dinit(5, &mean[0], &self.c[0], 10)
-		dinit(5, &mean[5], &self.c[5], 10)
+
+		for i in range(self.num_tensors):#print(res)
+			dinit(5, &mean[5 * i], &self.c[5 * i], 10)
+		#print(res.cost/np.linalg.norm(y))
 		return True
 
-cdef mti(self, x, y, gradients, tensor_num, GLOBAL_TENSOR_UNPACK_VALUE):
+	cdef void constrain(self, double[:,:] X) nogil except *:
+		cdef int i, j, n = X.shape[0]//5
+		for i in range(X.shape[1]):
+			for j in range(n):
+				cblas_dscal(3, 1/cblas_dnrm2(3,&X[5*j, i],X.shape[1]),&X[5*j, i],X.shape[1])
+				X[j * 5 + 3, i] = max(X[j * 5 + 3, i], self._lambda_min)
+				X[j * 5 + 4, i] = max(X[j * 5 + 4, i], self._lambda_min)
+
+cdef mti(x, y, gradients, tensor_num, GLOBAL_TENSOR_UNPACK_VALUE):
 	z = np.copy(y)
 	for i in range(tensor_num):
 		orth = orthonormal_from_sphere(x[i * 3], x[i * 3 + 1])
 		D = x[i * 3 + 2] * (np.outer(orth[0], orth[0])) + x[i * 3 + 2] / 8 * (np.outer(orth[1], orth[1]) + np.outer(orth[2], orth[2]))
 		for j in range(gradients.shape[0]):
 			z[j] -= 1 / tensor_num * np.exp(- 3000 * (gradients[j] @ D @ gradients[j].T) * GLOBAL_TENSOR_UNPACK_VALUE)
-		return z
+	return z
 
 
 

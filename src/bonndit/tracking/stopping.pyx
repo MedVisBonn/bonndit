@@ -12,7 +12,7 @@ DTYPE = np.float64
 ## TODO Mich um die Registrierung kümmern.
 cdef class Validator:
 	def __cinit__(self, double[:,:,:] wm_mask, int[:] shape, double min_wm, str inclusion, str exclusion, double
-		max_angle, Trafo trafo, double[:,:] trafo_fsl):
+		max_angle, Trafo trafo, double[:,:] trafo_fsl, double step_width):
 		self.min_wm = min_wm
 		self.wm_mask = wm_mask
 		self.shape = shape
@@ -25,9 +25,9 @@ cdef class Validator:
 		else:
 			self.ROIEx = ROIExNotValidator(exclusion, trafo_fsl)
 		if max_angle > 0:
-			self.Curve = CurvatureValidator(max_angle, trafo)
+			self.Curve = CurvatureValidator(max_angle, trafo, step_width)
 		else:
-			self.Curve = CurvatureNotValidator(max_angle, trafo)
+			self.Curve = CurvatureNotValidator(max_angle, trafo, step_width)
 
 
 
@@ -72,9 +72,10 @@ cdef class Validator:
 
 
 cdef class CurvatureNotValidator:
-	def __cinit__(self, max_angle, trafo):
+	def __cinit__(self, max_angle, trafo, double step_width):
 		self.max_angle = max_angle
 		self.angle = 0
+		self.step_width = step_width
 		self.points = np.zeros([5,3])
 		self.trafo = trafo
 
@@ -98,7 +99,7 @@ cdef class CurvatureValidator(CurvatureNotValidator):
 			mult_with_scalar(self.points[3], 1, self.trafo.point_itow)
 			sub_vectors(self.points[1], path[k-1], self.points[3])
 			length += norm(self.points[1])
-			while k >= 2 and length < 30 and l < k:
+			while k >= 2 and length < 30/self.step_width and l < k:
 				l += 1
 				sub_vectors(self.points[0], path[k-l], path[k-l+1])
 				length += norm(self.points[0])

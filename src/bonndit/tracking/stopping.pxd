@@ -19,6 +19,7 @@ cdef class Validator:
 
 cdef class CurvatureNotValidator:
 	cdef:
+		double step_width
 		double[:,:] points
 		double angle
 		double max_angle

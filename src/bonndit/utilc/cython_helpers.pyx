@@ -36,6 +36,7 @@ cdef double fa(double l1, double l2, double l3) nogil except *:
 	return pow(3/2, 0.5) * pow(a/b , 0.5)
 
 cdef void dm2toc(double *v, double[:] a, int num) nogil except *:
+
 	cdef int i
 	for i in range(num):
 		v[i] = a[i]
@@ -94,7 +95,7 @@ cdef void ddiagonal(double * M, double[:] v, int columns, int rows):
 	for i in range(rows):
 		for j in range(columns):
 			if i == j:
-				M[i*(columns+1)] = v[i%len(v)]
+				M[i*(columns+1)] = v[i%v.shape[0]]
 			else:
 				M[i * columns + j] = 0
 

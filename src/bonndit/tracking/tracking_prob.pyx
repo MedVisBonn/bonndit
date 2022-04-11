@@ -1,4 +1,3 @@
-#%%cython --annotate
 #cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True,
 # warn.unused_results=True
 import sys
@@ -7,7 +6,7 @@ sys.path.append('.')
 from .alignedDirection cimport  Gaussian, Laplacian, ScalarOld, ScalarNew, Probabilities, Deterministic,Deterministic2
 from .ItoW cimport Trafo
 from .stopping cimport Validator
-from .integration cimport  Euler, Integration
+from .integration cimport  Euler, Integration, EulerUKF
 from .interpolation cimport  FACT, Trilinear, Interpolation, UKFFodf, UKFMultiTensor
 from bonndit.utilc.cython_helpers cimport mult_with_scalar, sum_c, sum_c_int, set_zero_vector, sub_vectors, \
 	angle_deg, norm
@@ -22,7 +21,7 @@ ctypedef struct possible_features:
 
 cdef void tracking(double[:,:,:,:] paths, double[:] seed,
                    int seed_shape, Interpolation interpolate,
-              Integration integrate, Trafo trafo, Validator validator, int max_track_length,
+              Integration integrate, Trafo trafo, Validator validator, int max_track_length, int save_steps,
 	                   int samples, double[:,:,:,:] features, possible_features features_save) nogil except *:
 	"""
         Initializes the tracking for one seed in both directions.
@@ -50,14 +49,14 @@ cdef void tracking(double[:,:,:,:] paths, double[:] seed,
 				integrate.old_dir = interpolate.next_dir
 			else:
 				integrate.old_dir = seed[3:]
-			status1 = forward_tracking(paths[j,:,0, :], interpolate, integrate, trafo, validator, max_track_length,
+			status1 = forward_tracking(paths[j,:,0, :], interpolate, integrate, trafo, validator, max_track_length, save_steps,
 			                 features[j,:,0, :], features_save)
 			if seed_shape == 3:
 				interpolate.main_dir(paths[j, 0, 1])
 				mult_with_scalar(integrate.old_dir, -1.0 ,interpolate.next_dir)
 			else:
 				mult_with_scalar(integrate.old_dir, -1.0 ,seed[3:])
-			status2 = forward_tracking(paths[j,:,1,:], interpolate, integrate, trafo, validator, max_track_length,
+			status2 = forward_tracking(paths[j,:,1,:], interpolate, integrate, trafo, validator, max_track_length, save_steps,
 			                 features[j,:,1, :], features_save)
 			# if not found bot regions of interest delete path.
 			if validator.ROIIn.included_checker() or not status1 or not status2:
@@ -75,7 +74,7 @@ cdef void tracking(double[:,:,:,:] paths, double[:] seed,
 				break
 
 cdef bint forward_tracking(double[:,:] paths,  Interpolation interpolate,
-                       Integration integrate, Trafo trafo, Validator validator, int max_track_length, double[:,:] features, possible_features feature_save) nogil except *:
+                       Integration integrate, Trafo trafo, Validator validator, int max_track_length, int save_steps, double[:,:] features, possible_features feature_save) nogil except *:
 	"""
         This function do the tracking into one direction.
 	@param paths: empty path array to save the streamline points.
@@ -90,48 +89,64 @@ cdef bint forward_tracking(double[:,:] paths,  Interpolation interpolate,
 	cdef int k
 	# thousand is max length for pathway
 	interpolate.prob.old_fa = 1
-	for k in range(max_track_length - 1):
-		# validate indey and wm density.
-		if validator.index_checker(paths[k]):
-			set_zero_vector(paths[k])
+	for k in range(max_track_length*save_steps - 1):
+		# validate index and wm density.
+
+		if validator.index_checker(paths[(k-1)//save_steps + 1]):
+			set_zero_vector(paths[(k-1)//save_steps + 1])
+			with gil:
+				print('i break first at k = ',  str(k))
 			break
-		if validator.wm_checker(paths[k]):
-			trafo.itow(paths[k])
-			paths[k] = trafo.point_itow
+		if validator.wm_checker(paths[(k-1)//save_steps + 1]):
+			trafo.itow(paths[(k-1)//save_steps + 1])
+			paths[(k-1)//save_steps + 1] = trafo.point_itow
+			with gil:
+				print('i break second at k = ',  str(k))
 			break
 		# find matching directions
 		if sum_c(integrate.old_dir) == 0:
-			trafo.itow(paths[k])
-			paths[k] = trafo.point_itow
+			trafo.itow(paths[(k-1)//save_steps + 1])
+			paths[(k-1)//save_steps + 1] = trafo.point_itow
+			with gil:
+				print('i break third at k = ',  str(k))
 			break
-		interpolate.interpolate(paths[k], integrate.old_dir, k)
+		if interpolate.interpolate(paths[(k-1)//save_steps + 1], integrate.old_dir, (k-1)//save_steps + 1) != 0:
+			trafo.itow(paths[(k-1)//save_steps + 1])
+			paths[(k-1)//save_steps + 1] = trafo.point_itow
+			with gil:
+				print('i break fourth at k = ',  str(k))
+			break
 
 		# Check next step is valid. If it is: Integrate. else break
 		if validator.next_point_checker(interpolate.next_dir):
-			set_zero_vector(paths[k])
+			set_zero_vector(paths[(k-1)//save_steps + 1])
 			break
-		integrate.integrate(interpolate.next_dir, paths[k])
+		integrate.integrate(interpolate.next_dir, paths[(k-1)//save_steps + 1])
 		# update old dir
-		paths[k+1] = integrate.next_point
+		paths[k//save_steps + 1] = integrate.next_point
 		# check if next dir is near region of interest:
 
-		trafo.itow(paths[k])
-		paths[k] = trafo.point_itow
-		features[k, 2] = validator.ROIIn.included(paths[k])
-		if validator.ROIEx.excluded(paths[k]):
+
+		if k%save_steps == 0:
+			trafo.itow(paths[k//save_steps])
+			paths[k//save_steps] = trafo.point_itow
+		features[k//save_steps, 2] = validator.ROIIn.included(paths[k//save_steps])
+		if validator.ROIEx.excluded(paths[k//save_steps]):
 			return False
 		if feature_save.chosen_angle:
-			features[k,feature_save.chosen_angle] = interpolate.prob.chosen_angle
+			features[k//save_steps,feature_save.chosen_angle] = interpolate.prob.chosen_angle
 		# Check curvature between current point and point 30mm ago
-		if validator.Curve.curvature_checker(paths[:k + 1], features[k:k+1,1]):
+		if validator.Curve.curvature_checker(paths[:k//save_steps], features[k//save_steps:k//save_steps + 1,1]):
 			return False
 		integrate.old_dir = interpolate.next_dir
 	else:
-		trafo.itow(paths[k+1])
-		paths[k+1] = trafo.point_itow
+		trafo.itow(paths[k//save_steps + 1])
+		paths[k//save_steps + 1] = trafo.point_itow
 	if k == 0:
-		trafo.itow(paths[k])
-		paths[k] = trafo.point_itow
+		trafo.itow(paths[k//save_steps])
+		paths[k//save_steps] = trafo.point_itow
+#	with gil:
+#		print(np.array(paths))
 	return True
 #double[:,:,:,:,:] vector_field, meta, double[:,:,:] wm_mask, double[:,:] seeds, integration,
 #                   interpolation, prob, stepsize, double variance, int samples, int max_track_length, double wmmin,
@@ -196,28 +211,32 @@ cpdef tracking_all(vector_field, wm_mask, seeds, tracking_parameters, postproces
 	trafo_matrix[:3,:3] = tracking_parameters['space directions']
 	trafo_matrix[:3,3] = tracking_parameters['space origin']
 	trafo_matrix[3,3] = 1
-	validator = Validator(wm_mask,np.array(wm_mask.shape, dtype=np.intc), tracking_parameters['wmmin'], postprocessing['inclusion'], postprocessing['exlusion'], tracking_parameters['max_angle'], trafo,
-	                      tracking_parameters['trafo_fsl'])
-	#cdef Integration integrate
-	if tracking_parameters['integration'] == "Euler":
+	validator = Validator(wm_mask,np.array(wm_mask.shape, dtype=np.intc), tracking_parameters['wmmin'], postprocessing['inclusion'], postprocessing['exclusion'], tracking_parameters['max_angle'], trafo,
+	                      tracking_parameters['trafo_fsl'], tracking_parameters['stepsize'])
+
+	if tracking_parameters['ukf'] == "MultiTensor":
+		integrate = EulerUKF(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo,
+							 float(tracking_parameters['stepsize']))
+	elif tracking_parameters['integration'] == "Euler":
 		integrate = Euler(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo, float(tracking_parameters['stepsize']))
 	else:
 		logging.error('Only Euler is available so far. Hence set Euler as argument.')
 		return 0
 
 	cdef int[:] dim = np.array(vector_field.shape, dtype=np.int32)
-	if tracking_parameters['interpolation'] == "FACT":
-		interpolate = FACT(vector_field, dim[2:5], directionGetter)
+
+	if tracking_parameters['ukf'] == "MultiTensor":
+		interpolate = UKFMultiTensor(vector_field, dim[2:5], directionGetter, **ukf_parameters)
+	elif tracking_parameters['ukf'] == "LowRank":
+		interpolate = UKFFodf(vector_field, dim[2:5], directionGetter, **ukf_parameters)
+	elif tracking_parameters['interpolation'] == "FACT":
+		interpolate = FACT(vector_field, dim[2:5], directionGetter )
 	elif tracking_parameters['interpolation'] == "Trilinear":
 		interpolate = Trilinear(vector_field, dim[2:5], directionGetter)
-	elif tracking_parameters['interpolation'] == "UKF MultiTensor":
-		interpolate = UKFMultiTensor(vector_field, dim[2:5], directionGetter, ukf_parameters)
-	elif tracking_parameters['interpolation'] == "UKF low rank":
-		interpolate = UKFFodf(vector_field, dim[2:5], directionGetter, ukf_parameters)
 	else:
 		logging.error('FACT, Triliniear or UKF for MultiTensor and low rank approximation are available so far.')
 		return 0
-	cdef int i, j, k, m = tracking_parameters['seeds'].shape[0]
+	cdef int i, j, k, m = seeds.shape[0]
 	# Array to save Polygons
 	cdef double[:,:,:,:,:] paths = np.zeros((1 if saving['file'] else m, tracking_parameters['samples'], tracking_parameters['max_track_length'], 2, 3),dtype=np.float64)
 	# Array to save features belonging to polygons
@@ -247,12 +266,12 @@ cpdef tracking_all(vector_field, wm_mask, seeds, tracking_parameters, postproces
 			features[k,:, 0, 0, saving['features']['seedpoint']] = 1
 			features[k,:, 0, 1, saving['features']['seedpoint']] = 1
 		#Do the tracking for this seed with the direction
-		tracking(paths[k], seeds[i], seeds[i].shape[0], interpolate, integrate, trafo, validator, tracking_parameters['max_track_length'], tracking_parameters['samples'], features[k], saving['features'])
+		tracking(paths[k], seeds[i], seeds[i].shape[0], interpolate, integrate, trafo, validator, tracking_parameters['max_track_length'], tracking_parameters['sw_save'], tracking_parameters['samples'], features[k], saving['features'])
 		# delete all zero arrays.
 		for j in range(tracking_parameters['samples']):
 			path = np.concatenate((np.asarray(paths[k,j]),np.asarray(features[k,j])), axis=-1)
 			path = np.concatenate((path[:,0][::-1], path[:,1]))
-			to_exclude = np.all(path[:,:4] == 0, axis=1)
+			to_exclude = np.all(path[:,:3] == 0, axis=1)
 			path = path[~to_exclude]
 			if sum_c(path[:,3]) == 2:
 				path = np.delete(path, np.argwhere(path[:,3]==1)[0], axis=0)

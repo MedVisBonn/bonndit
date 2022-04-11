@@ -13,46 +13,141 @@ from plyfile import PlyElement, PlyData
 path_tree = []
 
 
+def load(key, args, filename, path, logging, func):
+	if key in args:
+		print(key, getattr(args, key))
+		if os.path.exists(getattr(args, key)):
+			try:
+				data = func(getattr(args, key))
+			except:
+				logging.error(
+					'Something went wrong for the file {}. Maybe the data is corrupted or has wrong format.'.format(
+						key))
+				raise Exception()
+		else:
+			logging.error('-{} flag is set incorrectly'.format(key))
+			raise Exception()
+	else:
+		if os.path.exists(os.path.join(path, filename)):
+			try:
+				data = func(os.path.join(path, filename))
+			except:
+				logging.error(
+					'Something went wrong for the file {}. Maybe the data is corrupted or has wrong format.'.format(
+						filename))
+				raise Exception()
+		else:
+			logging.error(
+				'Neither {} is set as argument nor the {} is present in the input folder. Please specify'.format(key,
+																												 filename))
+			raise Exception()
+	return data
+
+
 def main():
 	parser = argparse.ArgumentParser(
 		description='This script performs tracking along a multi vector field as described in '
 					'Reducing Model Uncertainty in Crossing Fiber Tractography, Gruen et al. (2021)',
-		formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+		formatter_class=argparse.RawTextHelpFormatter)
+	# All files needed
+	parser.add_argument('--i', help='Inputfolder should contain: \n'
+									'	- rank3.nrrd \n'
+									'		Multidirectionfield, where the first dimension defines the length and the \n'
+									'		unit direction of the vector, second dimension defines different directions \n'
+									'		and remaining dimensions diffine the coordinate. \n '
+									'		If the file is named differently, use the --infile argument \n'
+									'	- wmvolume.nrrd \n'
+									'		The white matter mask, which is an output of mtdeconv. \n'
+									'		If the File is named differently, use the --wmmask argument \n'
+									'	- seedpoint.pts \n '
+									'		The seed point file in world coordinates. First 3 dimensions of row give \n'
+									'		world coordinates. Additionally a initial direction can be set by appending \n'
+									'		3 columns to each row denoting the direction in (x,y,z) space. \n '
+									'		If the file is named differently, use the --seedpoint argument. \n\n'
+									'If the -ukf flag is set, the input folder should also contain: \n '
+									'	- bvals \n'
+									'		A text file which contains the bvals for each gradient direction. \n '
+									'		If the file is namend differenty, use the --ukf_bvals argument \n'
+									'	- bvecs \n'
+									'		A text file which contains all gradient directions in the format Ax3 \n '
+									'		If the file is named differently, use the --ukf_bvecs argument \n'
+									'	- data.nrrd \n'
+									'		The file with the data. If the ukfmethod flag is set to \n '
+									'			- MultiTensor it should be the raw data. \n'
+									'			- LowRank it should be the fodf.nrrd output from mtdeconv \n'
+									'		If the file is named differently, use the --ukf_data argument. \n'
+									'	- baseline.nrrd \n'
+									'		File with b0 measurements.'
+									'		If the file is named differently, use the --ukf_baseline argument'
+									'If the -disk flag is set and we want to append to a file, the inputfolder should contain \n'
+									'	- output.txt \n'
+									'		A textfile with the streamlines generated so far. \n'
+									'		If the file is named differently, use the --disk_append argument.',
+						default=argparse.SUPPRESS)
 
-	parser.add_argument('-i', help='5D (4,3,x,y,z) Multivectorfield, where the first dimension gives the length '
-								   'and the direction of the vector, the second dimension denots different directions',
-						required=True, default=argparse.SUPPRESS)
-
-	parser.add_argument('-wm', help='WM Mask', required=True, default=argparse.SUPPRESS)
-	parser.add_argument('-wmmin', help='Minimum WM density befor tracking stops', default=0.15)
-	parser.add_argument('-s', help='Seedspointfile: Each row denots a seedpoint 3 columns an initial direction can '
-								   'also be given as 3 additional columns. Columns should be seperated by whitespace.',  required=True, default=argparse.SUPPRESS)
-	parser.add_argument('-sw', help='Stepwidth for Eulerintegration', default=0.9)
-	parser.add_argument('-o', help='Outfile is in ply format.', required=True, default=argparse.SUPPRESS)
+	parser.add_argument('--infile',
+						help='5D (4,3,x,y,z) Multivectorfield, where the first dimension gives the length \n'
+							 'and the direction of the vector, the second dimension denotes different directions',
+						default=argparse.SUPPRESS)
+	parser.add_argument('--wmvolume', help='WM Mask - output of mtdeconv', default=argparse.SUPPRESS)
+	parser.add_argument('--seedpoit',
+						help='Seedspointfile: Each row denotes a seed point, where the first  3 columns give the \n'
+							 ' seed point in (x,y,z). Further 3 additional columns can specified to define a initial \n'
+							 'direction. Columns should be seperated by whitespace.',
+						default=argparse.SUPPRESS)
+	# General Tracking Parameters
+	parser.add_argument('--wmmin', help='Minimum WM density before tracking stops', default=0.15)
+	parser.add_argument('--sw_save',
+						help="Only each x step is saved. Default everystep is saved. Reduces memoryconsumption greatly",
+						default=1)
+	parser.add_argument('-sw', help='Stepwidth for Euler integration', default=0.9)
+	parser.add_argument('-o', help='Filename for output file in ply format.', required=True, default=argparse.SUPPRESS)
 	parser.add_argument('-mtlength', help='Maximum track steps.', default=300)
-	parser.add_argument('-samples', help='Samples per seed.', default=1)
-	parser.add_argument('-ram', help='Write streamlines to file instead of using ram')
-	parser.add_argument('-file', help='Needed for large bundles.',
-	                    default='.stream' + ''.join(random.choice([chr(i) for i in range(ord('a'),ord('z'))]) for _ in
-	                                            range(10)))
-	parser.add_argument('-file_delete', 'Delete file after finish. Otherwise further Streamlines can be appended if '
-	                                    'more streamlines are needed.')
+	parser.add_argument('--samples', help='Samples per seed.', default=1)
 	parser.add_argument('-maxangle', help='Max angle over the last 30 mm of the streamline', default=130)
-	parser.add_argument('-var', help='Variance for probabilistic direction selection..', default=1)
-	parser.add_argument('-exp', help='Expectation for probabilistic direction selection.', default=0)
-	parser.add_argument('-interpolation', '--interpolation',
+	parser.add_argument('--var', help='Variance for probabilistic direction selection..', default=1)
+	parser.add_argument('--exp', help='Expectation for probabilistic direction selection.', default=0)
+	parser.add_argument('--interpolation', '--interpolation',
 						help='decide between FACT interpolation and Trilinear interpolation.',
 						default='Trilinear')
-	parser.add_argument('-integration', '--integration', help='Decide between Euler integration and Euler integration. '
-															  , default='Euler')
-	parser.add_argument('-prob', '--prob', help='Decide between Laplacian and Gaussian. '
-												, default='Gaussian')
+	parser.add_argument('--integration', '--integration',
+						help='Decide between Euler integration and Euler integration. '
+						, default='Euler')
+	parser.add_argument('-prob', '--prob',
+						help='Decide between Laplacian, Gaussian, Scalar, ScalarNew, Deterministic and Deterministic2 '
+						, default='Gaussian')
+
+	# Arguments for saving each streamline on disk
+	parser.add_argument('--disk', help='Write streamlines to file instead of using ram', action='store_false')
+	parser.add_argument('--disk_file', help='Name of disk file. If not set a random filename is chosen',
+						default='.stream' + ''.join(
+							random.choice([chr(i) for i in range(ord('a'), ord('z'))]) for _ in
+							range(10)))
+	parser.add_argument('--disk_delete',
+						help='Delete file after finish. Otherwise further Streamlines can be appended if \n'
+							 'more streamlines are needed.', action='store_false')
+
+	# Arguments for ukf
+	parser.add_argument('--ukf',
+						help='The following arguments are just important if the --ukf flag is set to MultiTensor or LowRank',
+						default=argparse.SUPPRESS)
+	parser.add_argument('--ukf_data', help='File containing the raw data for ukf.', default=argparse.SUPPRESS)
+	parser.add_argument('--ukf_bvals', help='File containg the bvals for each gradient direction',
+						default=argparse.SUPPRESS)
+	parser.add_argument('--ukf_bvecs', help='File containg the bvecs ', default=argparse.SUPPRESS)
+	parser.add_argument('--ukf_baseline', help='File containg the baseline', default=argparse.SUPPRESS)
+	parser.add_argument('--ukf_dim_model', help='Dimensions of model', default=argparse.SUPPRESS)
+	parser.add_argument('--ukf_pnoise', help='Process noise', nargs='+', default=argparse.SUPPRESS)
+	parser.add_argument('--ukf_mnoise', help='Measurement noise', nargs='+', default=argparse.SUPPRESS)
+	# subsubparser = parser_ukf.add_subparsers(help = 'Decide between low-rank and Multitensor model')
+
 	parser.add_argument('-v', '--verbose', default=True)
 	parser.add_argument('-r', '--exclusion')
 	parser.add_argument('-ri', '--inclusion')
-	parser.add_argument('-fsl')
+	parser.add_argument('-fsl', default="")
+	parser.add_argument('--features', nargs='+', default="")
 	args = parser.parse_args()
-
+	print(args)
 	logging.basicConfig(filename=os.path.join("./", 'prob-tracking.log'),
 						format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
 						datefmt='%y-%m-%d %H:%M',
@@ -70,9 +165,16 @@ def main():
 		console.setFormatter(formatter)
 		# add the handler to the root logger
 		logging.getLogger('').addHandler(console)
-
-	# Open files and do various error checking
-	vector_field, meta = nrrd.read(args.i)
+	# Load all data needed
+	if 'i' not in args:
+		logging.error('-i has to be set. ')
+		raise Exception()
+	if not os.path.exists(args.i):
+		logging.error('Path to input folder is not correct.')
+		raise Exception()
+	# Load data
+	vector_field, meta, = load('infile', args, 'rank3.nrrd', args.i, logging, nrrd.read)
+	print(meta)
 	if vector_field.shape[0] != 4:
 		logging.error("Wrong dimension on first axis. Has to contain 4 values.")
 		raise Exception()
@@ -82,52 +184,106 @@ def main():
 	if len(vector_field.shape) != 5:
 		logging.error("The input multivector field has to have 5 dimensions.")
 		raise Exception()
-
 	logging.info("Multivectorfield loaded")
-
-	wm_mask, _ = nrrd.read(args.wm)
-	if vector_field.shape[2:] != wm_mask.shape:
+	wm_mask, _ = load('wmvolume', args, 'wmvolume.nrrd', args.i, logging, nrrd.read)
+	if vector_field.shape[-3:] != wm_mask.shape:
 		logging.error("Vectorfield (x,y,z) and wm mask have to have same dimensions.")
 		raise Exception()
 	logging.info("WM Mask loaded")
-	#restrictions = ""
-#if args.restriction:
-#
-#	for iinclusion, file in enumerate(args.restriction):
-#		a = open(file)
-#		restrictions.extend(np.array([[i, *list(map(float, f.split()))] for f in a]))
-#	print(np.array(restrictions))
-	seeds = open(args.s)
-	seeds = [list(map(float, point.split())) for point in seeds]
-	if [1 for seed in seeds if len(seed) not in [3, 6]]:
-		logging.error("The seedfile is corrupted. Has to have ether 3 or 6 entries per row.")
-		raise Exception()
-	seeds = np.float64(seeds)
+	seeds = load('seedpoints', args, 'seedpoints.pts', args.i, logging, np.loadtxt)
 	logging.info("Seedfile loaded")
-	logging.info("Start fiber tracking")
+	if 'ukf' in args:
+		logging.info("UKF Flag is set. Continue with loading UKF data")
+		logging.info("raw data loaded")
+		if args.ukf == 'MultiTensor':
+			data, _ = load('ukf_data', args, 'data.nrrd', args.i, logging, nrrd.read)
+			bvals = load('ukf_bvals', args, 'bvals', args.i, logging, np.loadtxt)
+			logging.info("bvals loaded")
+			bvecs = load('ukf_bvecs', args, 'bvecs', args.i, logging, np.loadtxt)
+			logging.info("bvecs loaded")
+			baseline, _ = load('ukf_baseline', args, 'baseline.nrrd', args.i, logging, nrrd.read)
+			logging.info("b0 loaded")
+		elif args.ukf == 'LowRank':
+			data, _ = load('ukf_data', args, 'fodf.nrrd', args.i, logging, nrrd.read)
+			data = np.moveaxis(data, 0,-1)
+			data = data[:,:,:,1:]
+			print(data.shape)
+			bvals = ""
+			bvecs = ""
+			baseline = ""
+			#data = ""
+		else:
+			logging.error('Only LowRank and MultiTensor are possible options for the ukf flag.')
+	if 'disk' in args:
+		logging.info(
+			'Streamlines are temporarily written to {} which is {} after creating streamines'.format(args.disk_file,
+																									 'kept' if not args.disk_delete else 'deleted'))
 	if os.path.exists(args.fsl):
 		trafo_fsl = np.loadtxt(args.fsl)
 	else:
 		trafo_fsl = np.identity(4)
 
-	paths, paths_len = tracking_all(np.float64(vector_field), meta, np.float64(wm_mask), np.float64(seeds),
-									args.integration,
-									args.interpolation, args.prob, args.sw, float(args.var),
-									int(args.samples),
-									int(args.mtlength), float(args.wmmin), float(args.exp or 1), args.verbose,
-									logging, args.inclusion, args.exclusion, float(args.maxangle), trafo_fsl,
-									"" if args.ram else args.file)
-	if not args.ram:
-		paths_len = np.loadtxt(args.file + 'len')
-		paths = np.loadtxt(args.file)
+	logging.info("Start fiber tracking")
+
+	tracking_parameters = {
+		'prob': args.prob,
+		'space directions': meta['space directions'][-3:],
+		'space origin': meta['space origin'],
+		'trafo_fsl': trafo_fsl,
+		'ukf': args.ukf if 'ukf' in args else False,
+		'variance': float(args.var),
+		'expectation': float(args.exp),
+		'stepsize': float(args.sw),
+		'max_track_length': int(args.mtlength),
+		'integration': args.integration,
+		'interpolation': args.interpolation,
+		'max_angle': float(args.maxangle),
+		'samples': int(args.samples),
+		'wmmin': float(args.wmmin),
+		'verbose': args.verbose,
+		'sw_save': int(args.sw_save)
+	}
+	postprocessing = {
+		'inclusion': args.inclusion if "inclusion" in args else "",
+		'exclusion': args.exclusion if "exclusion" in args else "",
+	}
+	ukf_parameter = {}
+	if "ukf" in args:
+		ukf_parameter = {
+			'data': np.array(data, dtype=np.float64),
+			#	'vector_field': np.array(vector_field, dtype=np.float64),
+			'dim_model': int(args.ukf_dim_model),
+			'model': 'fodf' if args.interpolation == "LowRank" else 'MultiTensor',
+			'gradients': bvecs.astype(np.float64).T if bvecs != "" else "",
+			'baseline': baseline,
+			'b': bvals,
+			'b0': 3000,
+			'process noise': np.array(args.ukf_pnoise, dtype=np.float64) if 'ukf_pnoise' in args else "",
+			'measurement noise': np.array(args.ukf_mnoise, dtype=np.float64) if 'ukf_mnoise' in args else ""
+		}
+
+	saving = {
+		'features': {
+			'chosen_angle': args.features.index('angle') if 'angle' in args.features else -2,
+			'seedpoint': args.features.index('seedpoint') if 'seedpoint' in args.features else -2,
+			'len': len(args.features)
+		},
+		'file': args.disk_file if args.disk else "",
+	}
+
+	paths, paths_len = tracking_all(np.float64(vector_field), np.float64(wm_mask), np.float64(seeds),
+									tracking_parameters, postprocessing, ukf_parameter, logging, saving)
+	if 'disk' in args:
+		paths_len = np.loadtxt(args.disk_file + 'len')
+		paths = np.loadtxt(args.disk_file)
 		paths = [tuple(x) for x in paths]
-		if args.file_delete:
-			os.remove(args.file)
-			os.remove(args.file + 'len')
+		if args.disk_delete:
+			os.remove(args.disk_file)
+			os.remove(args.disk_file + 'len')
 	paths_len = [sum(paths_len[:i + 1]) for i in range(len(paths_len))]
 
 	tracks = PlyElement.describe(np.array(paths, dtype=[('x', 'f4'), ('y', 'f4'), ('z', 'f4'),
-														('seedpoint', 'f4'), ('angle', 'f4'), ('test', 'f4'), ('tes1t', 'f4')]), 'vertices',
+														('seedpoint', 'f4'), ('angle', 'f4')]), 'vertices',
 								 comments=[])
 	endindex = PlyElement.describe(np.array(paths_len, dtype=[('endindex', 'i4')]), 'fiber')
 	PlyData([tracks, endindex]).write(args.o)

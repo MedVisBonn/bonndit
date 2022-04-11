@@ -5,7 +5,6 @@ import ctypes
 from bonndit.utilc.cython_helpers cimport ddiagonal,  dm2toc, dinit, sub_pointwise, special_mat_mul,inverse
 from bonndit.utilc.blas_lapack cimport *
 import numpy as np
-cimport numpy as np
 
 from libc.math cimport fabs, floor, pow
 
@@ -16,45 +15,30 @@ from libc.math cimport fabs, floor, pow
 
 cdef class Kalman:
 
-	def __cinit__(self,double[:,:,:,:] data, double[:,:] bvecs, double[:,:,:,:] baseline, double[:] bvals, int dim_model, model):
+	def __cinit__(self, int dim_data, int dim_model, model):
 		self.X = np.zeros((dim_model, 2*dim_model+1), dtype=np.float64)
 		self.X2 = np.zeros((dim_model,2*dim_model+1), dtype=np.float64)
 		self._model = model
 		self.weights = np.zeros((2*dim_model+1,), dtype=np.float64)
-		self.q = np.zeros((3,), dtype=np.float64)
-		self.p = np.zeros((3,), dtype=np.float64)
-		self.outer_q = np.zeros((3,3), dtype=np.float64)
-		self.outer_p = np.zeros((3,3), dtype=np.float64)
-		self.outer_m = np.zeros((3,3), dtype=np.float64)
 		self.pred_X_mean = np.zeros((dim_model, ), dtype=np.float64)
-		self.pred_Y_mean =np.zeros((bvecs.shape[0], ), dtype=np.float64)
-		self.y = np.zeros((bvecs.shape[0], ), dtype=np.float64)
-		self.y_diff = np.zeros((bvecs.shape[0], ), dtype=np.float64)
+		self.pred_Y_mean =np.zeros((dim_data, ), dtype=np.float64)
+		self.y_diff = np.zeros((dim_data, ), dtype=np.float64)
 		self.P_xx = np.zeros((dim_model,dim_model), dtype=np.float64)
-		self.P_yy = np.zeros((bvecs.shape[0],bvecs.shape[0]), dtype=np.float64)
-		self.P_yy_copy = np.zeros((bvecs.shape[0], bvecs.shape[0]), dtype=np.float64)
-		self.P_yy_copy_worker = np.zeros((bvecs.shape[0]* bvecs.shape[0]), dtype=np.float64)
-		self.P_yy_copy_IPIV = np.zeros((bvecs.shape[0]), dtype=np.int32)
-		self.K = np.zeros((dim_model,bvecs.shape[0]), dtype=np.float64)
-		self.P_xy = np.zeros((dim_model, bvecs.shape[0]), dtype=np.float64)
+		self.P_yy = np.zeros((dim_data,dim_data), dtype=np.float64)
+		self.P_yy_copy = np.zeros((dim_data, dim_data), dtype=np.float64)
+		self.P_yy_copy_worker = np.zeros((dim_data* dim_data), dtype=np.float64)
+		self.P_yy_copy_IPIV = np.zeros((dim_data), dtype=np.int32)
+		self.K = np.zeros((dim_model,dim_data), dtype=np.float64)
+		self.P_xy = np.zeros((dim_model, dim_data), dtype=np.float64)
 		self.P_M = np.zeros((dim_model,dim_model), dtype=np.float64)
-		self.gamma =  np.zeros((bvecs.shape[0],2*dim_model+1), dtype=np.float64)
-		self.gamma2 =  np.zeros((bvecs.shape[0],2*dim_model+1), dtype=np.float64)
-
+		self.gamma =  np.zeros((dim_data,2*dim_model+1), dtype=np.float64)
+		self.gamma2 =  np.zeros((dim_data,2*dim_model+1), dtype=np.float64)
 		self.KAPPA = 0.3
-		self.bvecs =  bvecs
-		self.BASELINE_SIGNAL = bvals
-		self.baseline = baseline
-		self.ACQ_SPECIFIC_CONST = 3000
 		self.D =  np.zeros((dim_model,dim_model), dtype=np.float64)
 		#self.c = np.zeros((10,), dtype=np.float64)
-		self.C =  np.zeros((bvecs.shape[0], dim_model), dtype=np.float64)
-		self.mlinear =  np.zeros((8,bvecs.shape[0]), dtype=np.float64)
-		self.slinear =  np.zeros((8,1), dtype=np.float64)
-		self.next_dir = np.zeros((3,), dtype=np.float64)
-		self.d = np.array([0.02], dtype=np.float64)
+		self.C =  np.zeros((dim_data, dim_model), dtype=np.float64)
 
-		self.compute_convex_weights(self.weights, self.mean.shape[0], self.KAPPA)  # weights used in the following equations
+		self.compute_convex_weights(self.weights, dim_model, self.KAPPA)  # weights used in the following equations
 
 
 
@@ -69,7 +53,7 @@ cdef class Kalman:
 			n = <int> point[1] + j
 			o = <int> point[2] + k
 
-			dm2toc(&vlinear[i, 0], self.data[m,n,o],  vlinear.shape[1])
+			dm2toc(&vlinear[i, 0], data[m,n,o],  vlinear.shape[1])
 		for i in range(4):
 			cblas_dscal(vlinear.shape[1], (1 + floor(point[2]) - point[2]), &vlinear[i, 0], 1)
 			cblas_daxpy(vlinear.shape[1], (point[2] - floor(point[2])), &vlinear[4+i, 0], 1, &vlinear[i,0], 1)
@@ -156,7 +140,6 @@ cdef class Kalman:
 		special_mat_mul(self.P_xx, self.X2, self.weights, self.X2, 1)
 
 		cblas_daxpy(self.P_xx.shape[0] * self.P_xx.shape[1], 1, &self._model.PROCESS_NOISE[0,0], 1, &self.P_xx[0, 0], 1)
-
 		self._model.predict_new_observation(self.gamma, self.X) # eq. 23
 
 		cblas_dgemv(CblasRowMajor, CblasNoTrans, self.gamma.shape[0], self.gamma.shape[1], 1, &self.gamma[0, 0],self.gamma.shape[1], &self.weights[0], 1, 0, &self.pred_Y_mean[0], 1)
@@ -171,8 +154,8 @@ cdef class Kalman:
 		inverse(self.P_yy_copy, self.P_yy_copy_worker, self.P_yy_copy_IPIV)
 		cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, self.P_xy.shape[0], self.P_yy_copy.shape[1], self.P_xy.shape[1], 1, &self.P_xy[0,0], self.P_xy.shape[1], &self.P_yy_copy[0,0], self.P_yy_copy.shape[1], 0, &self.K[0,0], self.P_yy_copy.shape[1])
 		sub_pointwise(&self.y_diff[0], &y[0], &self.pred_Y_mean[0], self.pred_Y_mean.shape[0])
-		with gil:
-			print(np.linalg.norm(np.array(self.y_diff))/np.linalg.norm(np.array(self.y)))
+		#with gil:
+		#	print(np.linalg.norm(np.array(self.y_diff))/np.linalg.norm(np.array(y)))
 
 		cblas_dgemv(CblasRowMajor, CblasNoTrans, self.K.shape[0], self.K.shape[1], 1, &self.K[0,0], self.K.shape[1], &self.y_diff[0], 1, 1, &self.pred_X_mean[0], 1)
 		cblas_dcopy(self.pred_X_mean.shape[0], &self.pred_X_mean[0],1, &mean[0], 1)

@@ -14,7 +14,6 @@ cdef class Interpolation:
 	cdef double[:,:] best_dir
 	cdef int[:,:,:,:] cache
 	cdef double chosen_angle
-	cdef Trafo trafo
 	cdef Probabilities prob
 	cdef int best_ind
 	cdef double[:] next_dir, vector

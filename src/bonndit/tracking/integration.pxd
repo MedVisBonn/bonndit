@@ -16,3 +16,6 @@ cdef class Integration:
 
 cdef class Euler(Integration):
 	cdef void integrate(self, double[:], double[:]) nogil
+
+cdef class EulerUKF(Integration):
+	cdef void integrate(self, double[:], double[:]) nogil
