@@ -104,7 +104,7 @@ def main():
         '--wmvolume', help='WM Mask - output of mtdeconv',
         default=argparse.SUPPRESS)
     parser.add_argument(
-        '--seedpoit',
+        '--seedpoints',
         help='Seedspointfile: Each row denotes a seed point, where the first  3 columns give the \n'
         ' seed point in (x,y,z). Further 3 additional columns can specified to define a initial \n'
         'direction. Columns should be seperated by whitespace.',
