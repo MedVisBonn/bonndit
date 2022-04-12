@@ -541,10 +541,10 @@ cdef class UKF(Interpolation):
         super(UKF, self).__init__(vector_field, grid, prob, **kwargs)
         self.mean = np.zeros((kwargs['dim_model'],), dtype=np.float64)
         self.mlinear = np.zeros((kwargs['dim_model'],
-                kwargs['data'].shape[-1]), dtype=np.float64)
+                kwargs['data'].shape[3]), dtype=np.float64)
         self.P = np.zeros((kwargs['dim_model'], kwargs['dim_model']),
             dtype=np.float64)
-        self.y = np.zeros((kwargs['data'].shape[-1],), dtype=np.float64)
+        self.y = np.zeros((kwargs['data'].shape[3],), dtype=np.float64)
         if kwargs['baseline'] != "" and kwargs['model'] != 'fodf':
             self.data = kwargs['data'] / kwargs['baseline'][:, :, :,
                 np.newaxis]
@@ -554,7 +554,7 @@ cdef class UKF(Interpolation):
             self._model = fODFModel(vector_field=vector_field, **kwargs)
         else:
             self._model = MultiTensorModel(**kwargs)
-        self._kalman = Kalman(kwargs['data'].shape[-1], kwargs['dim_model'],
+        self._kalman = Kalman(kwargs['data'].shape[3], kwargs['dim_model'],
             self._model)
 
 cdef class UKFFodf(UKF):
