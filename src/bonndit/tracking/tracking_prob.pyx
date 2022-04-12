@@ -100,8 +100,8 @@ cdef bint forward_tracking(double[:,:] paths,  Interpolation interpolate,
 		if validator.wm_checker(paths[(k-1)//save_steps + 1]):
 			trafo.itow(paths[(k-1)//save_steps + 1])
 			paths[(k-1)//save_steps + 1] = trafo.point_itow
-			with gil:
-				print('i break second at k = ',  str(k))
+		#	with gil:
+		#		print('i break second at k = ',  str(k))
 			break
 		# find matching directions
 		if sum_c(integrate.old_dir) == 0:
