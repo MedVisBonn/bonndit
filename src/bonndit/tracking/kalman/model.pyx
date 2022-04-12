@@ -1,4 +1,4 @@
-#cython: language_level=3, boundscheck=True, wraparound=True, warn.unused=True, warn.unused_args=True,
+#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True,
 # warn.unused_results=True
 from bonndit.utilc.blas_lapack cimport *
 from bonndit.utilc.hota cimport hota_4o3d_sym_eval

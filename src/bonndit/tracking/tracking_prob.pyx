@@ -65,7 +65,7 @@ cdef void tracking(double[:,:,:,:] paths, double[:] seed,
 				trafo.wtoi(seed[:3])
 				paths[j, 0, 0] = trafo.point_wtoi
 				paths[j, 0, 1] = trafo.point_wtoi
-				if features_save.seedpoint:
+				if features_save.seedpoint >= 0:
 					features[j, 0, 0, features_save.seedpoint] = 1
 					features[j, 0, 1, features_save.seedpoint] = 1
 			else:
@@ -133,7 +133,7 @@ cdef bint forward_tracking(double[:,:] paths,  Interpolation interpolate,
 		features[k//save_steps, 2] = validator.ROIIn.included(paths[k//save_steps])
 		if validator.ROIEx.excluded(paths[k//save_steps]):
 			return False
-		if feature_save.chosen_angle:
+		if feature_save.chosen_angle >= 0:
 
 			features[k//save_steps,feature_save.chosen_angle] = interpolate.prob.chosen_angle
 		# Check curvature between current point and point 30mm ago

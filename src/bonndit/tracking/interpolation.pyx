@@ -1,5 +1,5 @@
 #%%cython --annotate
-#cython: language_level=3, boundscheck=True, wraparound=True, warn.unused=True, warn.unused_args=True,
+#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True,
 # warn.unused_results=True
 import Cython
 from bonndit.utilc.cython_helpers cimport add_pointwise, floor_pointwise_matrix, norm, mult_with_scalar,\
