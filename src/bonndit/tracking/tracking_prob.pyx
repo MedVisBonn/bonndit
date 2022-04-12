@@ -94,8 +94,8 @@ cdef bint forward_tracking(double[:,:] paths,  Interpolation interpolate,
 
 		if validator.index_checker(paths[(k-1)//save_steps + 1]):
 			set_zero_vector(paths[(k-1)//save_steps + 1])
-			with gil:
-				print('i break first at k = ',  str(k))
+#			with gil:
+#				print('i break first at k = ',  str(k))
 			break
 		if validator.wm_checker(paths[(k-1)//save_steps + 1]):
 			trafo.itow(paths[(k-1)//save_steps + 1])
