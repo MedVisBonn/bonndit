@@ -261,14 +261,15 @@ def main():
 			'process noise': np.array(args.ukf_pnoise, dtype=np.float64) if 'ukf_pnoise' in args else "",
 			'measurement noise': np.array(args.ukf_mnoise, dtype=np.float64) if 'ukf_mnoise' in args else ""
 		}
-		if ukf_parameter['data'].shape[-1] != ukf_parameter['gradients'].shape[0]:
-			if ukf_parameter['data'].shape[-1] != ukf_parameter['gradients'].T.shape[1]:
-				logging.error('Data has to have the same dimension in the last column of bvecs')
+		if args.ukf == "MultiTensor":
+			if ukf_parameter['data'].shape[-1] != ukf_parameter['gradients'].shape[0]:
+				if ukf_parameter['data'].shape[-1] != ukf_parameter['gradients'].T.shape[1]:
+					logging.error('Data has to have the same dimension in the last column of bvecs')
+					raise Exception()
+				ukf_parameter['gradients'] = ukf_parameter['gradients'].T
+			if ukf_parameter['gradients'].shape[0] != ukf_parameter['b'].shape[0]:
+				logging.error('bvals have to have the same dimension in the last column of bvecs')
 				raise Exception()
-			ukf_parameter['gradients'] = ukf_parameter['gradients'].T
-		if ukf_parameter['gradients'].shape[0] != ukf_parameter['b'].shape[0]:
-			logging.error('bvals have to have the same dimension in the last column of bvecs')
-			raise Exception()
 	saving = {
 		'features': {
 			'chosen_angle': args.features.index('angle') if 'angle' in args.features else -2,
