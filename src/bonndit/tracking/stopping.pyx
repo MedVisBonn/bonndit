@@ -99,7 +99,7 @@ cdef class CurvatureValidator(CurvatureNotValidator):
 			mult_with_scalar(self.points[3], 1, self.trafo.point_itow)
 			sub_vectors(self.points[1], path[k-1], self.points[3])
 			length += norm(self.points[1])
-			while k >= 2 and length < 30/self.step_width and l < k:
+			while k >= 2 and length < 30 and l < k:
 				l += 1
 				sub_vectors(self.points[0], path[k-l], path[k-l+1])
 				length += norm(self.points[0])
