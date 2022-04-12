@@ -134,9 +134,12 @@ cdef bint forward_tracking(double[:,:] paths,  Interpolation interpolate,
 		if validator.ROIEx.excluded(paths[k//save_steps]):
 			return False
 		if feature_save.chosen_angle:
+
 			features[k//save_steps,feature_save.chosen_angle] = interpolate.prob.chosen_angle
 		# Check curvature between current point and point 30mm ago
 		if validator.Curve.curvature_checker(paths[:k//save_steps], features[k//save_steps:k//save_steps + 1,1]):
+			with gil:
+				print('Angle to big')
 			return False
 		integrate.old_dir = interpolate.next_dir
 	else:
