@@ -9,7 +9,7 @@ from libc.math cimport pow
 
 cdef class AbstractModel:
 	def __cinit__(self, **kwargs):
-		self.MEASUREMENT_NOISE =  np.zeros((kwargs['data'].shape[-1],kwargs['data'].shape[-1]), dtype=np.float64)
+		self.MEASUREMENT_NOISE =  np.zeros((kwargs['data'].shape[3],kwargs['data'].shape[3]), dtype=np.float64)
 		self.PROCESS_NOISE =  np.zeros((kwargs['dim_model'],kwargs['dim_model']), dtype=np.float64)
 		self._lambda_min = 0
 		self.num_tensors = 0
