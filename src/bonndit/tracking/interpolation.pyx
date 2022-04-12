@@ -440,16 +440,34 @@ cdef class UKFMultiTensor(UKF):
 #			self.best_dir[3*i: 3*(i+1)] = self.mean[5*i: 5*i + 3]
 #		self.prob.calculate_probabilities(self.best_dir, old_dir)
 #		self.next_dir = self.prob.best_fit
-#		if self._model.num_tensors == 1:
-#			dctov(&self.mean[0], self.next_dir)
-		if self._model.num_tensors == 2:
-			if cblas_ddot(3, &self.mean[0], 1, &old_dir[0],1) < cblas_ddot(3, &self.mean[5], 1, &old_dir[0],1):
-				cblas_dswap(5, &self.mean[0], 1, &self.mean[5], 1)
-				for i in range(5):
-					cblas_dswap(5, &self.P[i,0], 1, &self.P[i+5,5], 1)
-					cblas_dswap(5, &self.P[i,5], 1, &self.P[i+5,0], 1)
-			dctov(&self.mean[0], self.next_dir)
-#		#with gil: print('dir', np.array(self.next_dir))
+	#	if self._model.num_tensors == 1:
+	#		dctov(&self.mean[0], self.next_dir)
+	#	if self._model.num_tensors == 2:
+	#		if cblas_ddot(3, &self.mean[0], 1, &old_dir[0],1) < cblas_ddot(3, &self.mean[5], 1, &old_dir[0],1):
+	#			cblas_dswap(5, &self.mean[0], 1, &self.mean[5], 1)
+	#			for i in range(5):
+	#				cblas_dswap(5, &self.P[i,0], 1, &self.P[i+5,5], 1)
+	#				cblas_dswap(5, &self.P[i,5], 1, &self.P[i+5,0], 1)
+	#		dctov(&self.mean[0], self.next_dir)
+	#	if self._model.num_tensors == 3:
+	#		dot1 = cblas_ddot(3, &self.mean[0], 1, &old_dir[0], 1)
+	#		dot2 = cblas_ddot(3, &self.mean[5], 1, &old_dir[0], 1)
+	#		dot3 = cblas_ddot(3, &self.mean[10], 1, &old_dir[0], 1)
+	#		if dot1 < dot3:
+	#			if dot2 > dot3:
+	#				#turn second and third direction
+	#			elif dot2 < dot1:
+	#				# turn first and second direction
+	#		else:
+	#			# turn first and third direction
+	#			if dot2 > dot3:
+	#				# turn second and third direction
+	#				pass
+	#			elif dot2 < dot1:
+	#				# turn first and second direction
+
+
+		#		#with gil: print('dir', np.array(self.next_dir))
 		z = 0
 		for i in range(self._model.num_tensors):
 			if fa(self.mean[5*i + 3],self.mean[5*i + 4],self.mean[5*i + 4]) < 1/2:
