@@ -44,15 +44,15 @@ cdef void dm2toc(double *v, double[:] a, int num) nogil except *:
 cdef sphere2world(double r, double sigma, double phi):
 	return r*np.array([np.sin(sigma)*np.cos(phi), np.sin(sigma)*np.sin(phi), np.cos(sigma)])
 
-cdef world2sphere(x,y,z):
+cdef world2sphere(double x,double y, double z):
 	r = np.sqrt(x**2 + y**2 + z**2)
 	sigma = np.arccos(z/r)
 	if x > 0:
-		phi = np.arctan(y/z)
+		phi = np.arctan(y/x)
 	elif x<0 and y >= 0:
-		phi = np.arctan(y / z) + np.pi
+		phi = np.arctan(y / x) + np.pi
 	elif x<0 and y < 0:
-		phi = np.arctan(y / z) - np.pi
+		phi = np.arctan(y / x) - np.pi
 	elif y > 0:
 		phi = np.pi/2
 	elif y < 0:

@@ -8,6 +8,7 @@ cdef:
 	int inverse(double[:,:], double[:], int [:]) nogil except *
 	void dinit(int , double *, double *, int) nogil except *
 	void dctov(double *, double[:]) nogil except *
+	world2sphere(double, double, double)
 	sphere2world(double, double, double)
 	orthonormal_from_sphere(double sigma, double phi)
 	void dm2toc(double *, double[:], int) nogil except *

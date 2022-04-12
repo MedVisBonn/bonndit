@@ -2,7 +2,7 @@
 # warn.unused_results=True
 from bonndit.utilc.blas_lapack cimport *
 from bonndit.utilc.hota cimport hota_4o3d_sym_eval
-from bonndit.utilc.cython_helpers cimport special_mat_mul, orthonormal_from_sphere, dinit, sphere2world, ddiagonal
+from bonndit.utilc.cython_helpers cimport special_mat_mul, orthonormal_from_sphere, dinit, sphere2world, ddiagonal, world2sphere
 from scipy.optimize import least_squares
 import numpy as np
 from libc.math cimport pow
@@ -182,11 +182,13 @@ cdef class MultiTensorModel(AbstractModel):
 
 	cdef bint kinit(self, double[:] mean, double[:] point, double[:] init_dir, double[:,:] P, double[:] y ):
 		cdef double[:] Pv = np.array([0.01])
+
 		ddiagonal(&P[0,0], Pv, P.shape[0], P.shape[1])
+		_, sigma, phi = world2sphere(init_dir[0], init_dir[1], init_dir[2])
 
 		#self.linear(point, self.BASELINE_SIGNAL, self.slinear, self.basel/ine)
-		x = np.array([0,np.pi/2,1000,0,0,600])
-		res = least_squares(mti, x, method='lm', args=(np.array(y), self.gradients, self.num_tensors, self.GLOBAL_TENSOR_UNPACK_VALUE),max_nfev=1000)
+		x = np.array([sigma,phi,1000,sigma + np.pi/2,phi,600])
+		res = least_squares(mti, x, method='lm', args=(np.array(y), self.gradients, self.num_tensors, self.GLOBAL_TENSOR_UNPACK_VALUE),max_nfev=100)
 		b = np.zeros(10)
 		#print('init')
 		for i in range(self.num_tensors):
