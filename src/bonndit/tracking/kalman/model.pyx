@@ -13,11 +13,11 @@ cdef class AbstractModel:
 		self.PROCESS_NOISE =  np.zeros((kwargs['dim_model'],kwargs['dim_model']), dtype=np.float64)
 		self._lambda_min = 0
 		self.num_tensors = 0
-		self.GLOBAL_TENSOR_UNPACK_VALUE = 1e-6
-		if kwargs['process noise']:
+		self.GLOBAL_TENSOR_UNPACK_VALUE = 0.000001
+		if kwargs['process noise'] != "":
 			ddiagonal(&self.PROCESS_NOISE[0, 0], kwargs['process noise'], self.PROCESS_NOISE.shape[0],
 					  self.PROCESS_NOISE.shape[1])
-		if kwargs['measurement noise']:
+		if kwargs['measurement noise'] != "":
 			ddiagonal(&self.MEASUREMENT_NOISE[0, 0], kwargs['measurement noise'], self.MEASUREMENT_NOISE.shape[0],
 					  self.MEASUREMENT_NOISE.shape[1])
 
@@ -38,10 +38,10 @@ cdef class fODFModel(AbstractModel):
 		self.vector_field = kwargs['vector_field']
 		self.res = np.zeros((15, ))
 		if kwargs['process noise'] == "":
-			ddiagonal(&self.PROCESS_NOISE[0, 0], np.array([0.01,0.01,0.01,0.1]), self.PROCESS_NOISE.shape[0],
+			ddiagonal(&self.PROCESS_NOISE[0, 0], np.array([0.005,0.005,0.005,0.1]), self.PROCESS_NOISE.shape[0],
 				  self.PROCESS_NOISE.shape[1])
 		if kwargs['measurement noise'] == "":
-			ddiagonal(&self.MEASUREMENT_NOISE[0, 0], np.array([0.001]), self.MEASUREMENT_NOISE.shape[0],
+			ddiagonal(&self.MEASUREMENT_NOISE[0, 0], np.array([0.006]), self.MEASUREMENT_NOISE.shape[0],
 				  self.MEASUREMENT_NOISE.shape[1])
 		self.num_tensors = <int> (kwargs['dim_model'] / 4)
 
@@ -68,12 +68,23 @@ cdef class fODFModel(AbstractModel):
 
 
 	cdef bint kinit(self, double[:] mean, double[:] point, double[:] init_dir, double[:,:] P, double[:] y):
+		"""
+		Calculates angle between all possible directions and
+		"""
 		cdef int i
-		cdef double[:] Pv = np.array([0.1])
+		cdef double[:] dot = np.zeros(self.vector_field.shape[1])
+		cdef double[:] Pv = np.array([0.01])
 		ddiagonal(&P[0,0], Pv, P.shape[0], P.shape[1])
 		for i in range(self.vector_field.shape[1]):
-			mean[i*4: i*4 +3] = self.vector_field[1:,i, <int> point[0], <int> point[1], <int> point[2]]
-			mean[i*4 + 3] = self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]]
+			dot[i] = cblas_ddot(3, &self.vector_field[1,i, <int> point[0], <int> point[1], <int> point[2]], 1, &init_dir[0],1)
+		dot1 = sorted(dot, key=lambda x: abs(x))
+		for i in range(self.vector_field.shape[1]):
+			for j in range(self.vector_field.shape[1]):
+				if dot[i] == dot1[j]:
+					mean[j*4: j*4 +3] = self.vector_field[1:,i, <int> point[0], <int> point[1], <int> point[2]]
+					if dot[i] < 0:
+						cblas_dscal(3, -1, &mean[4*j], 1)
+					mean[j*4 + 3] = self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]]
 
 	cdef void constrain(self, double[:,:] X) nogil except *:
 		cdef int i, j, n = X.shape[0]//4
@@ -99,10 +110,10 @@ cdef class MultiTensorModel(AbstractModel):
 		self.acq_spec_const = kwargs['b0']
 		self._lambda_min = 100
 		if kwargs['process noise'] == "":
-			ddiagonal(&self.PROCESS_NOISE[0, 0], np.array([0.01,0.01,0.01,25,25]), self.PROCESS_NOISE.shape[0],
+			ddiagonal(&self.PROCESS_NOISE[0, 0], np.array([0.005,0.005,0.005,25,25]), self.PROCESS_NOISE.shape[0],
 				  self.PROCESS_NOISE.shape[1])
 		if kwargs['measurement noise'] == "":
-			ddiagonal(&self.MEASUREMENT_NOISE[0, 0], np.array([0.001]), self.MEASUREMENT_NOISE.shape[0],
+			ddiagonal(&self.MEASUREMENT_NOISE[0, 0], np.array([0.002]), self.MEASUREMENT_NOISE.shape[0],
 				  self.MEASUREMENT_NOISE.shape[1])
 
 	cdef void normalize(self, double[:] m, double[:] v, int inc) nogil except *:
@@ -162,7 +173,7 @@ cdef class MultiTensorModel(AbstractModel):
 		"""
 		cdef int number_of_tensors = int(sigma_points.shape[0]/5)
 		cblas_dscal(observations.shape[1]*observations.shape[0], 0, &observations[0,0], 1)
-		cdef int  i, j, MEASUREMENT_NOISEk
+		cdef int  i, j, k
 		for i in range(number_of_tensors):
 			for j in range(sigma_points.shape[1]):
 				self.normalize(self.m, sigma_points[i * 5: i * 5 + 3, j], sigma_points.shape[1])
