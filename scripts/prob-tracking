@@ -244,8 +244,8 @@ def main():
 		'sw_save': int(args.sw_save)
 	}
 	postprocessing = {
-		'inclusion': args.inclusion if "inclusion" in args else "",
-		'exclusion': args.exclusion if "exclusion" in args else "",
+		'inclusion': np.loadtxt(args.inclusion) if "inclusion" in args else "",
+		'exclusion': np.loadtxt(args.exclusion) if "exclusion" in args else "",
 	}
 	ukf_parameter = {}
 	if "ukf" in args:
