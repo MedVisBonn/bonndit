@@ -19,11 +19,11 @@ cdef class Validator:
 		if inclusion:
 			self.ROIIn = ROIInValidator(inclusion)
 		else:
-			self.ROIIn = ROIInNotValidator(inclusion)
+			self.ROIIn = ROIInNotValidator(np.zeros((3,3)))
 		if exclusion:
 			self.ROIEx = ROIExValidator(exclusion)
 		else:
-			self.ROIEx = ROIExNotValidator(exclusion)
+			self.ROIEx = ROIExNotValidator(np.zeros((3,3)))
 		if max_angle > 0:
 			print("maxangle", max_angle)
 			self.Curve = CurvatureValidator(max_angle, trafo, step_width)
