@@ -262,12 +262,12 @@ cpdef tracking_all(vector_field, wm_mask, seeds, tracking_parameters, postproces
 			validator.set_path_zero(paths[k,j, :, 0, :], features[k,j, :, 0, :])
 			paths[k,j, 0, 0] = trafo.point_wtoi
 			paths[k,j, 0, 1] = trafo.point_wtoi
-			if "Deterministic" in tracking_parameters['prob'] or :
+			if "Deterministic" in tracking_parameters['prob'] or tracking_parameters['ukf'] == "LowRank":
 				for k in range(3):
-					paths[k,j, 0, 0,k] +=  np.random.normal(0,1,1)
+					paths[k,j, 0, 0,k] +=  np.random.normal(0,1)
 					paths[k,j, 0, 1,k] = paths[k,j, 0, 0,k]
 
-		if saving['features']['seedpoint'] or tracking_parameters['ukf'] == "LowRank":
+		if saving['features']['seedpoint']:
 			features[k,:, 0, 0, saving['features']['seedpoint']] = 1
 			features[k,:, 0, 1, saving['features']['seedpoint']] = 1
 	#	print("1", np.asarray(features[k,j,:,0]))
