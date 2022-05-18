@@ -142,8 +142,8 @@ def main():
 	# subsubparser = parser_ukf.add_subparsers(help = 'Decide between low-rank and Multitensor model')
 
 	parser.add_argument('-v', '--verbose', default=True)
-	parser.add_argument('-r', '--exclusion')
-	parser.add_argument('-ri', '--inclusion')
+	parser.add_argument('-r', '--exclusion', default=argparse.SUPPRESS)
+	parser.add_argument('-ri', '--inclusion', default=argparse.SUPPRESS)
 	parser.add_argument('-fsl', default="")
 	parser.add_argument('--features', nargs='+', default="")
 	args = parser.parse_args()

@@ -410,7 +410,7 @@ cdef class UKFFodf(UKF):
 				cblas_dswap(4, &self.P[i,0], 1, &self.P[i+4,4], 1)
 				cblas_dswap(4, &self.P[i,4], 1, &self.P[i+4,0], 1)
 		dctov(&self.mean[0], self.next_dir)
-		with gil: print('dir', np.array(self.next_dir))
+	#	with gil: print('dir', np.array(self.next_dir))
 		return info
 
 
