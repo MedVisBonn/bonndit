@@ -24,9 +24,12 @@ cdef class Validator:
 			self.ROIEx = ROIExValidator(exclusion, trafo_fsl)
 		else:
 			self.ROIEx = ROIExNotValidator(exclusion, trafo_fsl)
+		print("maxangle", max_angle)
 		if max_angle > 0:
+			print("maxangle", max_angle)
 			self.Curve = CurvatureValidator(max_angle, trafo, step_width)
 		else:
+			print("maxangle", max_angle-1)
 			self.Curve = CurvatureNotValidator(max_angle, trafo, step_width)
 
 
@@ -97,13 +100,16 @@ cdef class CurvatureValidator(CurvatureNotValidator):
 			cdef double length = 0
 			self.trafo.itow(path[k])
 			mult_with_scalar(self.points[3], 1, self.trafo.point_itow)
-			sub_vectors(self.points[1], path[k-1], self.points[3])
+			sub_vectors(self.points[1], path[k-1], path[k])
 			length += norm(self.points[1])
+			#with gil: print(k, length, l)
 			while k >= 2 and length < 30 and l < k:
 				l += 1
 				sub_vectors(self.points[0], path[k-l], path[k-l+1])
 				length += norm(self.points[0])
 				self.angle = angle_deg(self.points[1], self.points[0])
+			#	with gil:
+			#		print("test", self.angle)
 				if self.angle > self.max_angle:
 					return True
 			else:

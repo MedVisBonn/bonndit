@@ -174,13 +174,13 @@ def main():
 		raise Exception()
 	# Load data
 	vector_field, meta, = load('infile', args, 'rank3.nrrd', args.i, logging, nrrd.read)
-	print(meta)
+	#print(meta)
 	if vector_field.shape[0] != 4:
 		logging.error("Wrong dimension on first axis. Has to contain 4 values.")
 		raise Exception()
-	if vector_field.shape[1] != 3:
-		logging.error("Wrong dimension on second axis. Has to contain 3 values.")
-		raise Exception()
+	#if vector_field.shape[1] != 3:
+	#	logging.error("Wrong dimension on second axis. Has to contain 3 values.")
+	#	raise Exception()
 	if len(vector_field.shape) != 5:
 		logging.error("The input multivector field has to have 5 dimensions.")
 		raise Exception()
@@ -278,6 +278,7 @@ def main():
 		},
 		'file': args.disk_file if args.disk else "",
 	}
+	print(tracking_parameters)
 
 	paths, paths_len = tracking_all(np.float64(vector_field), np.float64(wm_mask), np.float64(seeds),
 									tracking_parameters, postprocessing, ukf_parameter, logging, saving)
