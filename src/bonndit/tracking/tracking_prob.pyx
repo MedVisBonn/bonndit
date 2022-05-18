@@ -255,8 +255,8 @@ cpdef tracking_all(
     validator = Validator(
         wm_mask, np.array(wm_mask.shape, dtype=np.intc),
         tracking_parameters['wmmin'], postprocessing['inclusion'],
-        postprocessing['exclusion'], tracking_parameters['max_angle'], trafo,
-        tracking_parameters['trafo_fsl'], tracking_parameters['stepsize'])
+        postprocessing['exclusion'], tracking_parameters['max_angle'],
+        trafo, tracking_parameters['stepsize'])
 
     if tracking_parameters['ukf'] == "MultiTensor":
         integrate = EulerUKF(tracking_parameters['space directions'],
@@ -321,12 +321,13 @@ cpdef tracking_all(
                 features[k, j, :, 0, :])
             paths[k, j, 0, 0] = trafo.point_wtoi
             paths[k, j, 0, 1] = trafo.point_wtoi
-            if "Deterministic" in tracking_parameters['prob']:
+            if "Deterministic" in tracking_parameters['prob'] or :
                 for k in range(3):
                     paths[k, j, 0, 0, k] += np.random.normal(0, 1, 1)
                     paths[k, j, 0, 1, k] = paths[k, j, 0, 0, k]
 
-        if saving['features']['seedpoint']:
+        if saving['features']['seedpoint'] or tracking_parameters['ukf'] \
+            == "LowRank":
             features[k, :, 0, 0, saving['features']['seedpoint']] = 1
             features[k, :, 0, 1, saving['features']['seedpoint']] = 1
         # Do the tracking for this seed with the direction
