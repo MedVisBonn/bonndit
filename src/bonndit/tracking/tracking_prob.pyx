@@ -240,7 +240,7 @@ cpdef tracking_all(vector_field, wm_mask, seeds, tracking_parameters, postproces
 	else:
 		logging.error('FACT, Triliniear or UKF for MultiTensor and low rank approximation are available so far.')
 		return 0
-	cdef int i, j, k, m = seeds.shape[0]
+	cdef int i, j, k, l, m = seeds.shape[0]
 	# Array to save Polygons
 	cdef double[:,:,:,:,:] paths = np.zeros((1 if saving['file'] else m, tracking_parameters['samples'], tracking_parameters['max_track_length'], 2, 3),dtype=np.float64)
 	# Array to save features belonging to polygons
@@ -263,9 +263,9 @@ cpdef tracking_all(vector_field, wm_mask, seeds, tracking_parameters, postproces
 			paths[k,j, 0, 0] = trafo.point_wtoi
 			paths[k,j, 0, 1] = trafo.point_wtoi
 			if "Deterministic" in tracking_parameters['prob'] or tracking_parameters['ukf'] == "LowRank":
-				for k in range(3):
-					paths[k,j, 0, 0,k] +=  np.random.normal(0,1)
-					paths[k,j, 0, 1,k] = paths[k,j, 0, 0,k]
+				for l in range(3):
+					paths[k,j, 0, 0,l] +=  np.random.normal(0,1)
+					paths[k,j, 0, 1,l] = paths[k,j, 0, 0,l]
 
 		if saving['features']['seedpoint']:
 			features[k,:, 0, 0, saving['features']['seedpoint']] = 1
