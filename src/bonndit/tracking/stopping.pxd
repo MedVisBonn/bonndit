@@ -41,6 +41,8 @@ cdef class ROIInNotValidator:
 cdef class ROIInValidator(ROIInNotValidator):
 	cdef int included(self, double[:]) nogil except *
 	cdef bint included_checker(self) nogil except *
+	cpdef int included_p(self, double[:]) except *
+
 
 
 cdef class ROIExNotValidator:
