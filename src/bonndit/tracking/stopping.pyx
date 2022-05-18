@@ -11,20 +11,19 @@ DTYPE = np.float64
 
 ## TODO Mich um die Registrierung kümmern.
 cdef class Validator:
-	def __cinit__(self, double[:,:,:] wm_mask, int[:] shape, double min_wm, str inclusion, str exclusion, double
-		max_angle, Trafo trafo, double[:,:] trafo_fsl, double step_width):
+	def __cinit__(self, double[:,:,:] wm_mask, int[:] shape, double min_wm, inclusion, exclusion,  double
+		max_angle, Trafo trafo, double step_width):
 		self.min_wm = min_wm
 		self.wm_mask = wm_mask
 		self.shape = shape
 		if inclusion:
-			self.ROIIn = ROIInValidator(inclusion, trafo_fsl)
+			self.ROIIn = ROIInValidator(inclusion)
 		else:
-			self.ROIIn = ROIInNotValidator(inclusion, trafo_fsl)
+			self.ROIIn = ROIInNotValidator(inclusion)
 		if exclusion:
-			self.ROIEx = ROIExValidator(exclusion, trafo_fsl)
+			self.ROIEx = ROIExValidator(exclusion)
 		else:
-			self.ROIEx = ROIExNotValidator(exclusion, trafo_fsl)
-		print("maxangle", max_angle)
+			self.ROIEx = ROIExNotValidator(exclusion)
 		if max_angle > 0:
 			print("maxangle", max_angle)
 			self.Curve = CurvatureValidator(max_angle, trafo, step_width)
@@ -117,7 +116,7 @@ cdef class CurvatureValidator(CurvatureNotValidator):
 				return False
 
 cdef class ROIInNotValidator:
-	def __cinit__(self, str inclusion, double[:,:] trafo_fsl):
+	def __cinit__(self, double[:,:] inclusion):
 		self.inclusion = np.zeros([3,3])
 		self.inclusion_num = 0
 		self.inclusion_check = np.zeros(1)
@@ -130,21 +129,10 @@ cdef class ROIInNotValidator:
 		return False
 
 cdef class ROIInValidator(ROIInNotValidator):
-	def __cinit__(self, str inclusion, double[:,:] trafo_fsl):
-		cubes = [os.path.join(inclusion, x) for x in os.listdir(inclusion) if x.endswith('.pts')]
-		output = np.zeros((len(cubes)*2, 3))
-		for i, cube in enumerate(cubes):
-			points = open(cube)
-			points = np.array([list(map(float, point.split())) for point in points])
-			points = np.hstack((points, np.ones((points.shape[0],1)))).T
-		#	points = (np.linalg.inv(trafo_fsl) @  points).T
-			points = (np.array(trafo_fsl) @ points).T
-			points = points[:,:3]
-			points = np.vstack((np.min(points, axis=0), np.max(points, axis=0)))
-			output[2*i:2*(i+1)] = points
-		self.inclusion = output
-		self.inclusion_num = len(cubes)
-		self.inclusion_check = np.zeros(len(cubes))
+	def __cinit__(self, double[:,:] inclusion):
+		self.inclusion = inclusion[:,:3]
+		self.inclusion_num = inclusion.shape[0]
+		self.inclusion_check = np.zeros(len(inclusion.shape[0]))
 
 	cdef int included(self, double[:] point) nogil except *:
 		cdef int i
@@ -158,15 +146,17 @@ cdef class ROIInValidator(ROIInNotValidator):
 				continue
 			self.inclusion_check[i] = 1
 			return i + 1
-		return 0
+		return -1
 
+	cpdef int included_p(self, double[:] point) nogil except *:
+		return self.included(point)
 
 	cdef bint included_checker(self) nogil except *:
 		return sum_c(self.inclusion_check) != self.inclusion_num
 
 
 cdef class ROIExNotValidator:
-	def __cinit__(self, str exclusion, double[:,:] trafo_fsl):
+	def __cinit__(self, double[:,:] exclusion):
 		self.exclusion_cube = np.zeros([3,3])
 		self.exclusion_num = 0
 
@@ -175,19 +165,9 @@ cdef class ROIExNotValidator:
 
 
 cdef class ROIExValidator(ROIExNotValidator):
-	def __cinit__(self, str exclusion, double[:,:] trafo_fsl):
-		cubes = [os.path.join(exclusion, x) for x in os.listdir(exclusion) if x.endswith('.pts')]
-		output = np.zeros((len(cubes)*2, 3))
-		for i, cube in enumerate(cubes):
-			points = open(cube)
-			points = np.array([list(map(float, point.split())) for point in points])
-			points = np.hstack((points, np.ones((points.shape[0], 1))))
-			points = points @ np.linalg.inv(trafo_fsl)
-			points = points[:,:3]
-			points = np.vstack((np.min(points, axis=0), np.max(points, axis=0)))
-			output[2*i:2*(i+1)] = points
-		self.exclusion_cube = output
-		self.exclusion_num = len(cubes)
+	def __cinit__(self, double[:,:] exclusion):
+		self.exclusion_cube = exclusion
+		self.exclusion_num = len(exclusion.shape[0])
 
 	cdef bint excluded(self, double[:] point) nogil except *:
 		cdef int i
