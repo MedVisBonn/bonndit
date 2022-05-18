@@ -44,6 +44,7 @@ cdef void tracking(
 	@param features:
 	"""
     cdef int k = 0, j
+
     for j in range(samples):
         k = 0
         while True:
@@ -152,9 +153,8 @@ cdef bint forward_tracking(
         if k % save_steps == 0:
             trafo.itow(paths[k // save_steps])
             paths[k // save_steps] = trafo.point_itow
-        features[
-            k // save_steps,
-            2] = validator.ROIIn.included(paths[k // save_steps])
+        # features[k//save_steps, 2]
+        validator.ROIIn.included(paths[k // save_steps])
         if validator.ROIEx.excluded(paths[k // save_steps]):
             return False
         if feature_save.chosen_angle >= 0:
@@ -166,8 +166,8 @@ cdef bint forward_tracking(
         if validator.Curve.curvature_checker(
             paths[:k // save_steps],
             features[k // save_steps:k // save_steps + 1, 1]):
-            with gil:
-                print('Angle to big')
+            # with gil:
+            # print('Angle to big')
             return False
         integrate.old_dir = interpolate.next_dir
     else:
@@ -305,6 +305,7 @@ cpdef tracking_all(
     tracks = []
     tracks_len = []
     k = 0
+
     for i in tqdm(range(m), disable=not tracking_parameters['verbose']):
         # k = 0 if saving['file'] else k+=1
         if saving['file']:
@@ -326,9 +327,11 @@ cpdef tracking_all(
                     paths[k, j, 0, 0, k] += np.random.normal(0, 1, 1)
                     paths[k, j, 0, 1, k] = paths[k, j, 0, 0, k]
 
-        if saving['features']['seedpoint']:
+        if saving['features']['seedpoint'] >= 0:
             features[k, :, 0, 0, saving['features']['seedpoint']] = 1
             features[k, :, 0, 1, saving['features']['seedpoint']] = 1
+    # print("1", np.asarray(features[k,j,:,0]))
+    # print("1", np.asarray(features[k,j,:,1]))
         # Do the tracking for this seed with the direction
         tracking(
             paths[k], seeds[i], seeds[i].shape[0], interpolate,
@@ -337,7 +340,11 @@ cpdef tracking_all(
             tracking_parameters['sw_save'], tracking_parameters['samples'],
             features[k], saving['features'])
         # delete all zero arrays.
+
         for j in range(tracking_parameters['samples']):
+        # print(np.asarray(features[k,j,:,0]))
+
+        # print(np.asarray(features[k,j,:,1]))
             path = np.concatenate(
                 (
                     np.asarray(paths[k, j]),
@@ -345,6 +352,9 @@ cpdef tracking_all(
             path = np.concatenate((path[:, 0][::-1], path[:, 1]))
             to_exclude = np.all(path[:, :3] == 0, axis=1)
             path = path[~to_exclude]
+            if path.size == 0:
+                continue
+        # print(path)
             if sum_c(path[:, 3]) == 2:
                 path = np.delete(path, np.argwhere(path[:, 3] == 1)[0], axis=0)
             if path.shape[0] > 5:
@@ -354,8 +364,8 @@ cpdef tracking_all(
                     with open(saving['file'] + 'len', 'a') as f:
                         f.write(str(path.shape[0]) + '\n')
                     with open(saving['file'], 'a') as f:
-                        for i in range(path.shape[0]):
-                            f.write(' '.join(map(str, path[i])) + "\n")
+                        for l in range(path.shape[0]):
+                            f.write(' '.join(map(str, path[l])) + "\n")
                 else:
                     tracks_len.append(path.shape[0])
                     tracks += [tuple(x) for x in path]
