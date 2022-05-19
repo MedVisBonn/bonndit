@@ -179,8 +179,8 @@ cdef class ScalarOld(Probabilities):
         cdef int i
         cdef double s
         self.aligned_direction(vectors, direction)
-        # with gil:
-        # print(*self.angles)
+        with gil:
+            print(*self.angles)
         for i in range(3):
             if sum_c(self.test_vectors[i]) \
                 == sum_c(self.test_vectors[i]) and pow(
