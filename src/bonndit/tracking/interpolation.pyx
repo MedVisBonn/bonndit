@@ -400,7 +400,7 @@ cdef class UKFFodf(UKF):
 			self.mean[4*i+3] = max(self.mean[4*i+3],_lambda_min)
 
 		for i in range(self._model.num_tensors):
-			dctov(self.mean[4*i], self.best_dir[i])
+			dctov(&self.mean[4*i], self.best_dir[i])
 
 		self.prob.calculate_probabilities(self.best_dir, old_dir)
 		with gil:
