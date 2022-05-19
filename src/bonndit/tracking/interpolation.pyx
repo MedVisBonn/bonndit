@@ -403,8 +403,8 @@ cdef class UKFFodf(UKF):
 			dctov(&self.mean[4*i], self.best_dir[i])
 
 		self.prob.calculate_probabilities(self.best_dir, old_dir)
-		with gil:
-			print('dir', np.array(self.prob.best_fit), np.array(self.best_dir[0]), np.array(self.best_dir[1]))
+		#with gil:
+		#	print('dir', np.array(self.prob.best_fit), np.array(self.best_dir[0]), np.array(self.best_dir[1]))
 		self.next_dir = self.prob.best_fit
 
 		#if cblas_ddot(3, &self.mean[0], 1, &old_dir[0],1) < cblas_ddot(3, &self.mean[4], 1, &old_dir[0],1):
