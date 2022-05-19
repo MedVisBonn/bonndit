@@ -54,10 +54,10 @@ cdef class Probabilities:
 		#		with gil:
 		#			print(test_angle)
 				if test_angle >0 :
-					self.angles[i] = acos(test_angle)
+					self.angles[i] = acos(test_angle)/pi*180
 					self.test_vectors[i] = vectors[i]
 				elif test_angle <= 0:
-					self.angles[i] = 180 - acos(test_angle)
+					self.angles[i] = 180 - acos(test_angle)/pi*180
 					mult_with_scalar(self.test_vectors[i], -1, vectors[i])
 			else:
 				self.angles[i] = 180
