@@ -45,19 +45,19 @@ cdef class Probabilities:
 			#	if sum(direction) == 0 or sum(vectors[i]) == 0:
 			#		print(*direction,*vectors[i])
 			if sum_c(direction) == 0:
-				break
+				self.angles[i] = 0
+				continue
 			if norm(vectors[i]) != 0 and norm(vectors[i]) == norm(vectors[i]):
 				#with gil:
 				#	print(norm(direction), norm(vectors[i]))
-				test_angle = acos(clip(scalar(direction, vectors[i])/(norm(direction)*(norm(vectors[i]))), -1,
-				                       1)) *180/pi
+				test_angle = clip(scalar(direction, vectors[i])/(norm(direction)*(norm(vectors[i]))), -1,1)
 		#		with gil:
 		#			print(test_angle)
 				if test_angle < 90:
-					self.angles[i] = test_angle
+					self.angles[i] = acos(test_angle) *180/pi
 					self.test_vectors[i] = vectors[i]
 				elif test_angle <= 180:
-					self.angles[i] = 180 - test_angle
+					self.angles[i] = 180 - acos(test_angle) *180/pi
 					mult_with_scalar(self.test_vectors[i], -1, vectors[i])
 			else:
 				self.angles[i] = 180
