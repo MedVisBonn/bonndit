@@ -399,17 +399,17 @@ cdef class UKFFodf(UKF):
 				cblas_dscal(3, -1, &self.mean[4*i], 1)
 			self.mean[4*i+3] = max(self.mean[4*i+3],_lambda_min)
 
-		#for i in range(self._model.num_tensors):
-		#	self.best_dir[3*i: 3*(i+1)] = self.mean[4*i: 4*i + 3]
-		#self.prob.calculate_probabilities(self.best_dir, old_dir)
-		#self.next_dir = self.prob.best_fit
+		for i in range(self._model.num_tensors):
+			self.best_dir[3*i: 3*(i+1)] = self.mean[4*i: 4*i + 3]
+		self.prob.calculate_probabilities(self.best_dir, old_dir)
+		self.next_dir = self.prob.best_fit
 
-		if cblas_ddot(3, &self.mean[0], 1, &old_dir[0],1) < cblas_ddot(3, &self.mean[4], 1, &old_dir[0],1):
-			cblas_dswap(4, &self.mean[0], 1, &self.mean[4], 1)
-			for i in range(4):
-				cblas_dswap(4, &self.P[i,0], 1, &self.P[i+4,4], 1)
-				cblas_dswap(4, &self.P[i,4], 1, &self.P[i+4,0], 1)
-		dctov(&self.mean[0], self.next_dir)
+		#if cblas_ddot(3, &self.mean[0], 1, &old_dir[0],1) < cblas_ddot(3, &self.mean[4], 1, &old_dir[0],1):
+		#	cblas_dswap(4, &self.mean[0], 1, &self.mean[4], 1)
+		#	for i in range(4):
+		#		cblas_dswap(4, &self.P[i,0], 1, &self.P[i+4,4], 1)
+		#		cblas_dswap(4, &self.P[i,4], 1, &self.P[i+4,0], 1)
+		#dctov(&self.mean[0], self.next_dir)
 	#	with gil: print('dir', np.array(self.next_dir))
 		return info
 
