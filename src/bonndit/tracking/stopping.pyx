@@ -16,11 +16,11 @@ cdef class Validator:
 		self.min_wm = min_wm
 		self.wm_mask = wm_mask
 		self.shape = shape
-		if inclusion:
+		if isinstance(inclusion, np.ndarray):
 			self.ROIIn = ROIInValidator(inclusion)
 		else:
 			self.ROIIn = ROIInNotValidator(np.zeros((3,3)))
-		if exclusion:
+		if isinstance(exclusion, np.ndarray):
 			self.ROIEx = ROIExValidator(exclusion)
 		else:
 			self.ROIEx = ROIExNotValidator(np.zeros((3,3)))
