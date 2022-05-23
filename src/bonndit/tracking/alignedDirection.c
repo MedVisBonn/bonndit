@@ -11,7 +11,7 @@
         ],
         "depends": [],
         "include_dirs": [
-            "/tmp/pip-build-env-96vfapyp/overlay/lib/python3.8/site-packages/numpy/core/include",
+            "/tmp/pip-build-env-g23u9eqw/overlay/lib/python3.8/site-packages/numpy/core/include",
             "."
         ],
         "name": "bonndit.tracking.alignedDirection",
@@ -2750,13 +2750,12 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_13Probabilities_aligne
   int __pyx_t_2;
   int __pyx_t_3;
   int __pyx_t_4;
-  __Pyx_memviewslice __pyx_t_5 = { 0, 0, { 0 }, { 0 }, { 0 } };
-  int __pyx_t_6;
-  __Pyx_memviewslice __pyx_t_7 = { 0, 0, { 0 }, { 0 }, { 0 } };
-  double __pyx_t_8;
+  Py_ssize_t __pyx_t_5;
+  __Pyx_memviewslice __pyx_t_6 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  int __pyx_t_7;
+  __Pyx_memviewslice __pyx_t_8 = { 0, 0, { 0 }, { 0 }, { 0 } };
   double __pyx_t_9;
   double __pyx_t_10;
-  Py_ssize_t __pyx_t_11;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -2795,8 +2794,8 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_13Probabilities_aligne
  * 			#	if sum(direction) == 0 or sum(vectors[i]) == 0:
  * 			#		print(*direction,*vectors[i])
  * 			if sum_c(direction) == 0:             # <<<<<<<<<<<<<<
- * 				break
- * 			if norm(vectors[i]) != 0 and norm(vectors[i]) == norm(vectors[i]):
+ * 				self.angles[i] = 0
+ * 				continue
  */
     __pyx_t_4 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_v_direction) == 0.0) != 0);
     if (__pyx_t_4) {
@@ -2804,163 +2803,156 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_13Probabilities_aligne
       /* "bonndit/tracking/alignedDirection.pyx":48
  * 			#		print(*direction,*vectors[i])
  * 			if sum_c(direction) == 0:
- * 				break             # <<<<<<<<<<<<<<
+ * 				self.angles[i] = 0             # <<<<<<<<<<<<<<
+ * 				continue
+ * 			if norm(vectors[i]) != 0 and norm(vectors[i]) == norm(vectors[i]):
+ */
+      if (unlikely(!__pyx_v_self->angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 48, __pyx_L1_error)}
+      __pyx_t_5 = __pyx_v_i;
+      if (__pyx_t_5 < 0) __pyx_t_5 += __pyx_v_self->angles.shape[0];
+      *((double *) ( /* dim=0 */ (__pyx_v_self->angles.data + __pyx_t_5 * __pyx_v_self->angles.strides[0]) )) = 0.0;
+
+      /* "bonndit/tracking/alignedDirection.pyx":49
+ * 			if sum_c(direction) == 0:
+ * 				self.angles[i] = 0
+ * 				continue             # <<<<<<<<<<<<<<
  * 			if norm(vectors[i]) != 0 and norm(vectors[i]) == norm(vectors[i]):
  * 				#with gil:
  */
-      goto __pyx_L4_break;
+      goto __pyx_L3_continue;
 
       /* "bonndit/tracking/alignedDirection.pyx":47
  * 			#	if sum(direction) == 0 or sum(vectors[i]) == 0:
  * 			#		print(*direction,*vectors[i])
  * 			if sum_c(direction) == 0:             # <<<<<<<<<<<<<<
- * 				break
- * 			if norm(vectors[i]) != 0 and norm(vectors[i]) == norm(vectors[i]):
+ * 				self.angles[i] = 0
+ * 				continue
  */
     }
 
-    /* "bonndit/tracking/alignedDirection.pyx":49
- * 			if sum_c(direction) == 0:
- * 				break
+    /* "bonndit/tracking/alignedDirection.pyx":50
+ * 				self.angles[i] = 0
+ * 				continue
  * 			if norm(vectors[i]) != 0 and norm(vectors[i]) == norm(vectors[i]):             # <<<<<<<<<<<<<<
  * 				#with gil:
  * 				#	print(norm(direction), norm(vectors[i]))
  */
-    __pyx_t_5.data = __pyx_v_vectors.data;
-    __pyx_t_5.memview = __pyx_v_vectors.memview;
-    __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
+    __pyx_t_6.data = __pyx_v_vectors.data;
+    __pyx_t_6.memview = __pyx_v_vectors.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_6, 0);
     {
     Py_ssize_t __pyx_tmp_idx = __pyx_v_i;
         Py_ssize_t __pyx_tmp_shape = __pyx_v_vectors.shape[0];
     Py_ssize_t __pyx_tmp_stride = __pyx_v_vectors.strides[0];
         if (__pyx_tmp_idx < 0)
             __pyx_tmp_idx += __pyx_tmp_shape;
-        __pyx_t_5.data += __pyx_tmp_idx * __pyx_tmp_stride;
+        __pyx_t_6.data += __pyx_tmp_idx * __pyx_tmp_stride;
 }
 
-__pyx_t_5.shape[0] = __pyx_v_vectors.shape[1];
-__pyx_t_5.strides[0] = __pyx_v_vectors.strides[1];
-    __pyx_t_5.suboffsets[0] = -1;
+__pyx_t_6.shape[0] = __pyx_v_vectors.shape[1];
+__pyx_t_6.strides[0] = __pyx_v_vectors.strides[1];
+    __pyx_t_6.suboffsets[0] = -1;
 
-__pyx_t_6 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_norm(__pyx_t_5) != 0.0) != 0);
-    __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
-    __pyx_t_5.memview = NULL;
-    __pyx_t_5.data = NULL;
-    if (__pyx_t_6) {
+__pyx_t_7 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_norm(__pyx_t_6) != 0.0) != 0);
+    __PYX_XDEC_MEMVIEW(&__pyx_t_6, 0);
+    __pyx_t_6.memview = NULL;
+    __pyx_t_6.data = NULL;
+    if (__pyx_t_7) {
     } else {
-      __pyx_t_4 = __pyx_t_6;
+      __pyx_t_4 = __pyx_t_7;
       goto __pyx_L7_bool_binop_done;
     }
-    __pyx_t_5.data = __pyx_v_vectors.data;
-    __pyx_t_5.memview = __pyx_v_vectors.memview;
-    __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
+    __pyx_t_6.data = __pyx_v_vectors.data;
+    __pyx_t_6.memview = __pyx_v_vectors.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_6, 0);
     {
     Py_ssize_t __pyx_tmp_idx = __pyx_v_i;
         Py_ssize_t __pyx_tmp_shape = __pyx_v_vectors.shape[0];
     Py_ssize_t __pyx_tmp_stride = __pyx_v_vectors.strides[0];
         if (__pyx_tmp_idx < 0)
             __pyx_tmp_idx += __pyx_tmp_shape;
-        __pyx_t_5.data += __pyx_tmp_idx * __pyx_tmp_stride;
+        __pyx_t_6.data += __pyx_tmp_idx * __pyx_tmp_stride;
 }
 
-__pyx_t_5.shape[0] = __pyx_v_vectors.shape[1];
-__pyx_t_5.strides[0] = __pyx_v_vectors.strides[1];
-    __pyx_t_5.suboffsets[0] = -1;
+__pyx_t_6.shape[0] = __pyx_v_vectors.shape[1];
+__pyx_t_6.strides[0] = __pyx_v_vectors.strides[1];
+    __pyx_t_6.suboffsets[0] = -1;
 
-__pyx_t_7.data = __pyx_v_vectors.data;
-    __pyx_t_7.memview = __pyx_v_vectors.memview;
-    __PYX_INC_MEMVIEW(&__pyx_t_7, 0);
+__pyx_t_8.data = __pyx_v_vectors.data;
+    __pyx_t_8.memview = __pyx_v_vectors.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_8, 0);
     {
     Py_ssize_t __pyx_tmp_idx = __pyx_v_i;
         Py_ssize_t __pyx_tmp_shape = __pyx_v_vectors.shape[0];
     Py_ssize_t __pyx_tmp_stride = __pyx_v_vectors.strides[0];
         if (__pyx_tmp_idx < 0)
             __pyx_tmp_idx += __pyx_tmp_shape;
-        __pyx_t_7.data += __pyx_tmp_idx * __pyx_tmp_stride;
+        __pyx_t_8.data += __pyx_tmp_idx * __pyx_tmp_stride;
 }
 
-__pyx_t_7.shape[0] = __pyx_v_vectors.shape[1];
-__pyx_t_7.strides[0] = __pyx_v_vectors.strides[1];
-    __pyx_t_7.suboffsets[0] = -1;
+__pyx_t_8.shape[0] = __pyx_v_vectors.shape[1];
+__pyx_t_8.strides[0] = __pyx_v_vectors.strides[1];
+    __pyx_t_8.suboffsets[0] = -1;
 
-__pyx_t_6 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_norm(__pyx_t_5) == __pyx_f_7bonndit_5utilc_14cython_helpers_norm(__pyx_t_7)) != 0);
-    __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
-    __pyx_t_5.memview = NULL;
-    __pyx_t_5.data = NULL;
-    __PYX_XDEC_MEMVIEW(&__pyx_t_7, 0);
-    __pyx_t_7.memview = NULL;
-    __pyx_t_7.data = NULL;
-    __pyx_t_4 = __pyx_t_6;
+__pyx_t_7 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_norm(__pyx_t_6) == __pyx_f_7bonndit_5utilc_14cython_helpers_norm(__pyx_t_8)) != 0);
+    __PYX_XDEC_MEMVIEW(&__pyx_t_6, 0);
+    __pyx_t_6.memview = NULL;
+    __pyx_t_6.data = NULL;
+    __PYX_XDEC_MEMVIEW(&__pyx_t_8, 0);
+    __pyx_t_8.memview = NULL;
+    __pyx_t_8.data = NULL;
+    __pyx_t_4 = __pyx_t_7;
     __pyx_L7_bool_binop_done:;
     if (__pyx_t_4) {
 
-      /* "bonndit/tracking/alignedDirection.pyx":52
+      /* "bonndit/tracking/alignedDirection.pyx":53
  * 				#with gil:
  * 				#	print(norm(direction), norm(vectors[i]))
- * 				test_angle = acos(clip(scalar(direction, vectors[i])/(norm(direction)*(norm(vectors[i]))), -1,             # <<<<<<<<<<<<<<
- * 				                       1)) *180/pi
- * 		#		with gil:
- */
-      __pyx_t_7.data = __pyx_v_vectors.data;
-      __pyx_t_7.memview = __pyx_v_vectors.memview;
-      __PYX_INC_MEMVIEW(&__pyx_t_7, 0);
-      {
-    Py_ssize_t __pyx_tmp_idx = __pyx_v_i;
-        Py_ssize_t __pyx_tmp_shape = __pyx_v_vectors.shape[0];
-    Py_ssize_t __pyx_tmp_stride = __pyx_v_vectors.strides[0];
-        if (__pyx_tmp_idx < 0)
-            __pyx_tmp_idx += __pyx_tmp_shape;
-        __pyx_t_7.data += __pyx_tmp_idx * __pyx_tmp_stride;
-}
-
-__pyx_t_7.shape[0] = __pyx_v_vectors.shape[1];
-__pyx_t_7.strides[0] = __pyx_v_vectors.strides[1];
-    __pyx_t_7.suboffsets[0] = -1;
-
-__pyx_t_8 = __pyx_f_7bonndit_5utilc_14cython_helpers_scalar(__pyx_v_direction, __pyx_t_7);
-      __PYX_XDEC_MEMVIEW(&__pyx_t_7, 0);
-      __pyx_t_7.memview = NULL;
-      __pyx_t_7.data = NULL;
-      __pyx_t_7.data = __pyx_v_vectors.data;
-      __pyx_t_7.memview = __pyx_v_vectors.memview;
-      __PYX_INC_MEMVIEW(&__pyx_t_7, 0);
-      {
-    Py_ssize_t __pyx_tmp_idx = __pyx_v_i;
-        Py_ssize_t __pyx_tmp_shape = __pyx_v_vectors.shape[0];
-    Py_ssize_t __pyx_tmp_stride = __pyx_v_vectors.strides[0];
-        if (__pyx_tmp_idx < 0)
-            __pyx_tmp_idx += __pyx_tmp_shape;
-        __pyx_t_7.data += __pyx_tmp_idx * __pyx_tmp_stride;
-}
-
-__pyx_t_7.shape[0] = __pyx_v_vectors.shape[1];
-__pyx_t_7.strides[0] = __pyx_v_vectors.strides[1];
-    __pyx_t_7.suboffsets[0] = -1;
-
-__pyx_t_9 = (__pyx_f_7bonndit_5utilc_14cython_helpers_norm(__pyx_v_direction) * __pyx_f_7bonndit_5utilc_14cython_helpers_norm(__pyx_t_7));
-      __PYX_XDEC_MEMVIEW(&__pyx_t_7, 0);
-      __pyx_t_7.memview = NULL;
-      __pyx_t_7.data = NULL;
-      if (unlikely(__pyx_t_9 == 0)) {
-        #ifdef WITH_THREAD
-        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-        #endif
-        PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-        #ifdef WITH_THREAD
-        __Pyx_PyGILState_Release(__pyx_gilstate_save);
-        #endif
-        __PYX_ERR(0, 52, __pyx_L1_error)
-      }
-
-      /* "bonndit/tracking/alignedDirection.pyx":53
- * 				#	print(norm(direction), norm(vectors[i]))
- * 				test_angle = acos(clip(scalar(direction, vectors[i])/(norm(direction)*(norm(vectors[i]))), -1,
- * 				                       1)) *180/pi             # <<<<<<<<<<<<<<
+ * 				test_angle = clip(scalar(direction, vectors[i])/(norm(direction)*(norm(vectors[i]))), -1,1)             # <<<<<<<<<<<<<<
  * 		#		with gil:
  * 		#			print(test_angle)
  */
-      __pyx_t_10 = (acos(__pyx_f_7bonndit_5utilc_14cython_helpers_clip((__pyx_t_8 / __pyx_t_9), -1.0, 1.0)) * 180.0);
-      if (unlikely(M_PI == 0)) {
+      __pyx_t_8.data = __pyx_v_vectors.data;
+      __pyx_t_8.memview = __pyx_v_vectors.memview;
+      __PYX_INC_MEMVIEW(&__pyx_t_8, 0);
+      {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_i;
+        Py_ssize_t __pyx_tmp_shape = __pyx_v_vectors.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_vectors.strides[0];
+        if (__pyx_tmp_idx < 0)
+            __pyx_tmp_idx += __pyx_tmp_shape;
+        __pyx_t_8.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_8.shape[0] = __pyx_v_vectors.shape[1];
+__pyx_t_8.strides[0] = __pyx_v_vectors.strides[1];
+    __pyx_t_8.suboffsets[0] = -1;
+
+__pyx_t_9 = __pyx_f_7bonndit_5utilc_14cython_helpers_scalar(__pyx_v_direction, __pyx_t_8);
+      __PYX_XDEC_MEMVIEW(&__pyx_t_8, 0);
+      __pyx_t_8.memview = NULL;
+      __pyx_t_8.data = NULL;
+      __pyx_t_8.data = __pyx_v_vectors.data;
+      __pyx_t_8.memview = __pyx_v_vectors.memview;
+      __PYX_INC_MEMVIEW(&__pyx_t_8, 0);
+      {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_i;
+        Py_ssize_t __pyx_tmp_shape = __pyx_v_vectors.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_vectors.strides[0];
+        if (__pyx_tmp_idx < 0)
+            __pyx_tmp_idx += __pyx_tmp_shape;
+        __pyx_t_8.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_8.shape[0] = __pyx_v_vectors.shape[1];
+__pyx_t_8.strides[0] = __pyx_v_vectors.strides[1];
+    __pyx_t_8.suboffsets[0] = -1;
+
+__pyx_t_10 = (__pyx_f_7bonndit_5utilc_14cython_helpers_norm(__pyx_v_direction) * __pyx_f_7bonndit_5utilc_14cython_helpers_norm(__pyx_t_8));
+      __PYX_XDEC_MEMVIEW(&__pyx_t_8, 0);
+      __pyx_t_8.memview = NULL;
+      __pyx_t_8.data = NULL;
+      if (unlikely(__pyx_t_10 == 0)) {
         #ifdef WITH_THREAD
         PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
         #endif
@@ -2970,171 +2962,193 @@ __pyx_t_9 = (__pyx_f_7bonndit_5utilc_14cython_helpers_norm(__pyx_v_direction) * 
         #endif
         __PYX_ERR(0, 53, __pyx_L1_error)
       }
-      __pyx_v_test_angle = (__pyx_t_10 / ((double)M_PI));
+      __pyx_v_test_angle = __pyx_f_7bonndit_5utilc_14cython_helpers_clip((__pyx_t_9 / __pyx_t_10), -1.0, 1.0);
 
       /* "bonndit/tracking/alignedDirection.pyx":56
  * 		#		with gil:
  * 		#			print(test_angle)
- * 				if test_angle < 90:             # <<<<<<<<<<<<<<
- * 					self.angles[i] = test_angle
+ * 				if test_angle >0 :             # <<<<<<<<<<<<<<
+ * 					self.angles[i] = acos(test_angle)/pi*180
  * 					self.test_vectors[i] = vectors[i]
  */
-      __pyx_t_4 = ((__pyx_v_test_angle < 90.0) != 0);
+      __pyx_t_4 = ((__pyx_v_test_angle > 0.0) != 0);
       if (__pyx_t_4) {
 
         /* "bonndit/tracking/alignedDirection.pyx":57
  * 		#			print(test_angle)
- * 				if test_angle < 90:
- * 					self.angles[i] = test_angle             # <<<<<<<<<<<<<<
+ * 				if test_angle >0 :
+ * 					self.angles[i] = acos(test_angle)/pi*180             # <<<<<<<<<<<<<<
  * 					self.test_vectors[i] = vectors[i]
- * 				elif test_angle <= 180:
+ * 				elif test_angle <= 0:
  */
+        __pyx_t_10 = acos(__pyx_v_test_angle);
+        if (unlikely(M_PI == 0)) {
+          #ifdef WITH_THREAD
+          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+          #endif
+          PyErr_SetString(PyExc_ZeroDivisionError, "float division");
+          #ifdef WITH_THREAD
+          __Pyx_PyGILState_Release(__pyx_gilstate_save);
+          #endif
+          __PYX_ERR(0, 57, __pyx_L1_error)
+        }
         if (unlikely(!__pyx_v_self->angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 57, __pyx_L1_error)}
-        __pyx_t_11 = __pyx_v_i;
-        if (__pyx_t_11 < 0) __pyx_t_11 += __pyx_v_self->angles.shape[0];
-        *((double *) ( /* dim=0 */ (__pyx_v_self->angles.data + __pyx_t_11 * __pyx_v_self->angles.strides[0]) )) = __pyx_v_test_angle;
+        __pyx_t_5 = __pyx_v_i;
+        if (__pyx_t_5 < 0) __pyx_t_5 += __pyx_v_self->angles.shape[0];
+        *((double *) ( /* dim=0 */ (__pyx_v_self->angles.data + __pyx_t_5 * __pyx_v_self->angles.strides[0]) )) = ((__pyx_t_10 / ((double)M_PI)) * 180.0);
 
         /* "bonndit/tracking/alignedDirection.pyx":58
- * 				if test_angle < 90:
- * 					self.angles[i] = test_angle
+ * 				if test_angle >0 :
+ * 					self.angles[i] = acos(test_angle)/pi*180
  * 					self.test_vectors[i] = vectors[i]             # <<<<<<<<<<<<<<
- * 				elif test_angle <= 180:
- * 					self.angles[i] = 180 - test_angle
+ * 				elif test_angle <= 0:
+ * 					self.angles[i] = 180 - acos(test_angle)/pi*180
  */
-        __pyx_t_7.data = __pyx_v_vectors.data;
-        __pyx_t_7.memview = __pyx_v_vectors.memview;
-        __PYX_INC_MEMVIEW(&__pyx_t_7, 0);
+        __pyx_t_8.data = __pyx_v_vectors.data;
+        __pyx_t_8.memview = __pyx_v_vectors.memview;
+        __PYX_INC_MEMVIEW(&__pyx_t_8, 0);
         {
     Py_ssize_t __pyx_tmp_idx = __pyx_v_i;
         Py_ssize_t __pyx_tmp_shape = __pyx_v_vectors.shape[0];
     Py_ssize_t __pyx_tmp_stride = __pyx_v_vectors.strides[0];
         if (__pyx_tmp_idx < 0)
             __pyx_tmp_idx += __pyx_tmp_shape;
-        __pyx_t_7.data += __pyx_tmp_idx * __pyx_tmp_stride;
+        __pyx_t_8.data += __pyx_tmp_idx * __pyx_tmp_stride;
 }
 
-__pyx_t_7.shape[0] = __pyx_v_vectors.shape[1];
-__pyx_t_7.strides[0] = __pyx_v_vectors.strides[1];
-    __pyx_t_7.suboffsets[0] = -1;
+__pyx_t_8.shape[0] = __pyx_v_vectors.shape[1];
+__pyx_t_8.strides[0] = __pyx_v_vectors.strides[1];
+    __pyx_t_8.suboffsets[0] = -1;
 
 if (unlikely(!__pyx_v_self->test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 58, __pyx_L1_error)}
-        __pyx_t_5.data = __pyx_v_self->test_vectors.data;
-        __pyx_t_5.memview = __pyx_v_self->test_vectors.memview;
-        __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
+        __pyx_t_6.data = __pyx_v_self->test_vectors.data;
+        __pyx_t_6.memview = __pyx_v_self->test_vectors.memview;
+        __PYX_INC_MEMVIEW(&__pyx_t_6, 0);
         {
     Py_ssize_t __pyx_tmp_idx = __pyx_v_i;
         Py_ssize_t __pyx_tmp_shape = __pyx_v_self->test_vectors.shape[0];
     Py_ssize_t __pyx_tmp_stride = __pyx_v_self->test_vectors.strides[0];
         if (__pyx_tmp_idx < 0)
             __pyx_tmp_idx += __pyx_tmp_shape;
-        __pyx_t_5.data += __pyx_tmp_idx * __pyx_tmp_stride;
+        __pyx_t_6.data += __pyx_tmp_idx * __pyx_tmp_stride;
 }
 
-__pyx_t_5.shape[0] = __pyx_v_self->test_vectors.shape[1];
-__pyx_t_5.strides[0] = __pyx_v_self->test_vectors.strides[1];
-    __pyx_t_5.suboffsets[0] = -1;
+__pyx_t_6.shape[0] = __pyx_v_self->test_vectors.shape[1];
+__pyx_t_6.strides[0] = __pyx_v_self->test_vectors.strides[1];
+    __pyx_t_6.suboffsets[0] = -1;
 
-if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_7, __pyx_t_5, 1, 1, 0) < 0)) __PYX_ERR(0, 58, __pyx_L1_error)
-        __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
-        __pyx_t_5.memview = NULL;
-        __pyx_t_5.data = NULL;
-        __PYX_XDEC_MEMVIEW(&__pyx_t_7, 0);
-        __pyx_t_7.memview = NULL;
-        __pyx_t_7.data = NULL;
+if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_8, __pyx_t_6, 1, 1, 0) < 0)) __PYX_ERR(0, 58, __pyx_L1_error)
+        __PYX_XDEC_MEMVIEW(&__pyx_t_6, 0);
+        __pyx_t_6.memview = NULL;
+        __pyx_t_6.data = NULL;
+        __PYX_XDEC_MEMVIEW(&__pyx_t_8, 0);
+        __pyx_t_8.memview = NULL;
+        __pyx_t_8.data = NULL;
 
         /* "bonndit/tracking/alignedDirection.pyx":56
  * 		#		with gil:
  * 		#			print(test_angle)
- * 				if test_angle < 90:             # <<<<<<<<<<<<<<
- * 					self.angles[i] = test_angle
+ * 				if test_angle >0 :             # <<<<<<<<<<<<<<
+ * 					self.angles[i] = acos(test_angle)/pi*180
  * 					self.test_vectors[i] = vectors[i]
  */
         goto __pyx_L9;
       }
 
       /* "bonndit/tracking/alignedDirection.pyx":59
- * 					self.angles[i] = test_angle
+ * 					self.angles[i] = acos(test_angle)/pi*180
  * 					self.test_vectors[i] = vectors[i]
- * 				elif test_angle <= 180:             # <<<<<<<<<<<<<<
- * 					self.angles[i] = 180 - test_angle
+ * 				elif test_angle <= 0:             # <<<<<<<<<<<<<<
+ * 					self.angles[i] = 180 - acos(test_angle)/pi*180
  * 					mult_with_scalar(self.test_vectors[i], -1, vectors[i])
  */
-      __pyx_t_4 = ((__pyx_v_test_angle <= 180.0) != 0);
+      __pyx_t_4 = ((__pyx_v_test_angle <= 0.0) != 0);
       if (__pyx_t_4) {
 
         /* "bonndit/tracking/alignedDirection.pyx":60
  * 					self.test_vectors[i] = vectors[i]
- * 				elif test_angle <= 180:
- * 					self.angles[i] = 180 - test_angle             # <<<<<<<<<<<<<<
+ * 				elif test_angle <= 0:
+ * 					self.angles[i] = 180 - acos(test_angle)/pi*180             # <<<<<<<<<<<<<<
  * 					mult_with_scalar(self.test_vectors[i], -1, vectors[i])
  * 			else:
  */
+        __pyx_t_10 = acos(__pyx_v_test_angle);
+        if (unlikely(M_PI == 0)) {
+          #ifdef WITH_THREAD
+          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+          #endif
+          PyErr_SetString(PyExc_ZeroDivisionError, "float division");
+          #ifdef WITH_THREAD
+          __Pyx_PyGILState_Release(__pyx_gilstate_save);
+          #endif
+          __PYX_ERR(0, 60, __pyx_L1_error)
+        }
         if (unlikely(!__pyx_v_self->angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 60, __pyx_L1_error)}
-        __pyx_t_11 = __pyx_v_i;
-        if (__pyx_t_11 < 0) __pyx_t_11 += __pyx_v_self->angles.shape[0];
-        *((double *) ( /* dim=0 */ (__pyx_v_self->angles.data + __pyx_t_11 * __pyx_v_self->angles.strides[0]) )) = (180.0 - __pyx_v_test_angle);
+        __pyx_t_5 = __pyx_v_i;
+        if (__pyx_t_5 < 0) __pyx_t_5 += __pyx_v_self->angles.shape[0];
+        *((double *) ( /* dim=0 */ (__pyx_v_self->angles.data + __pyx_t_5 * __pyx_v_self->angles.strides[0]) )) = (180.0 - ((__pyx_t_10 / ((double)M_PI)) * 180.0));
 
         /* "bonndit/tracking/alignedDirection.pyx":61
- * 				elif test_angle <= 180:
- * 					self.angles[i] = 180 - test_angle
+ * 				elif test_angle <= 0:
+ * 					self.angles[i] = 180 - acos(test_angle)/pi*180
  * 					mult_with_scalar(self.test_vectors[i], -1, vectors[i])             # <<<<<<<<<<<<<<
  * 			else:
  * 				self.angles[i] = 180
  */
         if (unlikely(!__pyx_v_self->test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 61, __pyx_L1_error)}
-        __pyx_t_7.data = __pyx_v_self->test_vectors.data;
-        __pyx_t_7.memview = __pyx_v_self->test_vectors.memview;
-        __PYX_INC_MEMVIEW(&__pyx_t_7, 0);
+        __pyx_t_8.data = __pyx_v_self->test_vectors.data;
+        __pyx_t_8.memview = __pyx_v_self->test_vectors.memview;
+        __PYX_INC_MEMVIEW(&__pyx_t_8, 0);
         {
     Py_ssize_t __pyx_tmp_idx = __pyx_v_i;
         Py_ssize_t __pyx_tmp_shape = __pyx_v_self->test_vectors.shape[0];
     Py_ssize_t __pyx_tmp_stride = __pyx_v_self->test_vectors.strides[0];
         if (__pyx_tmp_idx < 0)
             __pyx_tmp_idx += __pyx_tmp_shape;
-        __pyx_t_7.data += __pyx_tmp_idx * __pyx_tmp_stride;
+        __pyx_t_8.data += __pyx_tmp_idx * __pyx_tmp_stride;
 }
 
-__pyx_t_7.shape[0] = __pyx_v_self->test_vectors.shape[1];
-__pyx_t_7.strides[0] = __pyx_v_self->test_vectors.strides[1];
-    __pyx_t_7.suboffsets[0] = -1;
+__pyx_t_8.shape[0] = __pyx_v_self->test_vectors.shape[1];
+__pyx_t_8.strides[0] = __pyx_v_self->test_vectors.strides[1];
+    __pyx_t_8.suboffsets[0] = -1;
 
-__pyx_t_5.data = __pyx_v_vectors.data;
-        __pyx_t_5.memview = __pyx_v_vectors.memview;
-        __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
+__pyx_t_6.data = __pyx_v_vectors.data;
+        __pyx_t_6.memview = __pyx_v_vectors.memview;
+        __PYX_INC_MEMVIEW(&__pyx_t_6, 0);
         {
     Py_ssize_t __pyx_tmp_idx = __pyx_v_i;
         Py_ssize_t __pyx_tmp_shape = __pyx_v_vectors.shape[0];
     Py_ssize_t __pyx_tmp_stride = __pyx_v_vectors.strides[0];
         if (__pyx_tmp_idx < 0)
             __pyx_tmp_idx += __pyx_tmp_shape;
-        __pyx_t_5.data += __pyx_tmp_idx * __pyx_tmp_stride;
+        __pyx_t_6.data += __pyx_tmp_idx * __pyx_tmp_stride;
 }
 
-__pyx_t_5.shape[0] = __pyx_v_vectors.shape[1];
-__pyx_t_5.strides[0] = __pyx_v_vectors.strides[1];
-    __pyx_t_5.suboffsets[0] = -1;
+__pyx_t_6.shape[0] = __pyx_v_vectors.shape[1];
+__pyx_t_6.strides[0] = __pyx_v_vectors.strides[1];
+    __pyx_t_6.suboffsets[0] = -1;
 
-__pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_t_7, -1.0, __pyx_t_5);
-        __PYX_XDEC_MEMVIEW(&__pyx_t_7, 0);
-        __pyx_t_7.memview = NULL;
-        __pyx_t_7.data = NULL;
-        __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
-        __pyx_t_5.memview = NULL;
-        __pyx_t_5.data = NULL;
+__pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_t_8, -1.0, __pyx_t_6);
+        __PYX_XDEC_MEMVIEW(&__pyx_t_8, 0);
+        __pyx_t_8.memview = NULL;
+        __pyx_t_8.data = NULL;
+        __PYX_XDEC_MEMVIEW(&__pyx_t_6, 0);
+        __pyx_t_6.memview = NULL;
+        __pyx_t_6.data = NULL;
 
         /* "bonndit/tracking/alignedDirection.pyx":59
- * 					self.angles[i] = test_angle
+ * 					self.angles[i] = acos(test_angle)/pi*180
  * 					self.test_vectors[i] = vectors[i]
- * 				elif test_angle <= 180:             # <<<<<<<<<<<<<<
- * 					self.angles[i] = 180 - test_angle
+ * 				elif test_angle <= 0:             # <<<<<<<<<<<<<<
+ * 					self.angles[i] = 180 - acos(test_angle)/pi*180
  * 					mult_with_scalar(self.test_vectors[i], -1, vectors[i])
  */
       }
       __pyx_L9:;
 
-      /* "bonndit/tracking/alignedDirection.pyx":49
- * 			if sum_c(direction) == 0:
- * 				break
+      /* "bonndit/tracking/alignedDirection.pyx":50
+ * 				self.angles[i] = 0
+ * 				continue
  * 			if norm(vectors[i]) != 0 and norm(vectors[i]) == norm(vectors[i]):             # <<<<<<<<<<<<<<
  * 				#with gil:
  * 				#	print(norm(direction), norm(vectors[i]))
@@ -3151,9 +3165,9 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_t_7, -1.0, __pyx
  */
     /*else*/ {
       if (unlikely(!__pyx_v_self->angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 63, __pyx_L1_error)}
-      __pyx_t_11 = __pyx_v_i;
-      if (__pyx_t_11 < 0) __pyx_t_11 += __pyx_v_self->angles.shape[0];
-      *((double *) ( /* dim=0 */ (__pyx_v_self->angles.data + __pyx_t_11 * __pyx_v_self->angles.strides[0]) )) = 180.0;
+      __pyx_t_5 = __pyx_v_i;
+      if (__pyx_t_5 < 0) __pyx_t_5 += __pyx_v_self->angles.shape[0];
+      *((double *) ( /* dim=0 */ (__pyx_v_self->angles.data + __pyx_t_5 * __pyx_v_self->angles.strides[0]) )) = 180.0;
 
       /* "bonndit/tracking/alignedDirection.pyx":64
  * 			else:
@@ -3163,49 +3177,49 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_t_7, -1.0, __pyx
  * 	cdef void random_choice(self, double[:] direction) nogil  except *:
  */
       if (unlikely(!__pyx_v_self->test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 64, __pyx_L1_error)}
-      __pyx_t_5.data = __pyx_v_self->test_vectors.data;
-      __pyx_t_5.memview = __pyx_v_self->test_vectors.memview;
-      __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
+      __pyx_t_6.data = __pyx_v_self->test_vectors.data;
+      __pyx_t_6.memview = __pyx_v_self->test_vectors.memview;
+      __PYX_INC_MEMVIEW(&__pyx_t_6, 0);
       {
     Py_ssize_t __pyx_tmp_idx = __pyx_v_i;
         Py_ssize_t __pyx_tmp_shape = __pyx_v_self->test_vectors.shape[0];
     Py_ssize_t __pyx_tmp_stride = __pyx_v_self->test_vectors.strides[0];
         if (__pyx_tmp_idx < 0)
             __pyx_tmp_idx += __pyx_tmp_shape;
-        __pyx_t_5.data += __pyx_tmp_idx * __pyx_tmp_stride;
+        __pyx_t_6.data += __pyx_tmp_idx * __pyx_tmp_stride;
 }
 
-__pyx_t_5.shape[0] = __pyx_v_self->test_vectors.shape[1];
-__pyx_t_5.strides[0] = __pyx_v_self->test_vectors.strides[1];
-    __pyx_t_5.suboffsets[0] = -1;
+__pyx_t_6.shape[0] = __pyx_v_self->test_vectors.shape[1];
+__pyx_t_6.strides[0] = __pyx_v_self->test_vectors.strides[1];
+    __pyx_t_6.suboffsets[0] = -1;
 
-__pyx_t_7.data = __pyx_v_vectors.data;
-      __pyx_t_7.memview = __pyx_v_vectors.memview;
-      __PYX_INC_MEMVIEW(&__pyx_t_7, 0);
+__pyx_t_8.data = __pyx_v_vectors.data;
+      __pyx_t_8.memview = __pyx_v_vectors.memview;
+      __PYX_INC_MEMVIEW(&__pyx_t_8, 0);
       {
     Py_ssize_t __pyx_tmp_idx = __pyx_v_i;
         Py_ssize_t __pyx_tmp_shape = __pyx_v_vectors.shape[0];
     Py_ssize_t __pyx_tmp_stride = __pyx_v_vectors.strides[0];
         if (__pyx_tmp_idx < 0)
             __pyx_tmp_idx += __pyx_tmp_shape;
-        __pyx_t_7.data += __pyx_tmp_idx * __pyx_tmp_stride;
+        __pyx_t_8.data += __pyx_tmp_idx * __pyx_tmp_stride;
 }
 
-__pyx_t_7.shape[0] = __pyx_v_vectors.shape[1];
-__pyx_t_7.strides[0] = __pyx_v_vectors.strides[1];
-    __pyx_t_7.suboffsets[0] = -1;
+__pyx_t_8.shape[0] = __pyx_v_vectors.shape[1];
+__pyx_t_8.strides[0] = __pyx_v_vectors.strides[1];
+    __pyx_t_8.suboffsets[0] = -1;
 
-__pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_t_5, 0.0, __pyx_t_7);
-      __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
-      __pyx_t_5.memview = NULL;
-      __pyx_t_5.data = NULL;
-      __PYX_XDEC_MEMVIEW(&__pyx_t_7, 0);
-      __pyx_t_7.memview = NULL;
-      __pyx_t_7.data = NULL;
+__pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_t_6, 0.0, __pyx_t_8);
+      __PYX_XDEC_MEMVIEW(&__pyx_t_6, 0);
+      __pyx_t_6.memview = NULL;
+      __pyx_t_6.data = NULL;
+      __PYX_XDEC_MEMVIEW(&__pyx_t_8, 0);
+      __pyx_t_8.memview = NULL;
+      __pyx_t_8.data = NULL;
     }
     __pyx_L6:;
+    __pyx_L3_continue:;
   }
-  __pyx_L4_break:;
 
   /* "bonndit/tracking/alignedDirection.pyx":31
  * 
@@ -3218,8 +3232,8 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_t_5, 0.0, __pyx_
   /* function exit code */
   goto __pyx_L0;
   __pyx_L1_error:;
-  __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
-  __PYX_XDEC_MEMVIEW(&__pyx_t_7, 0);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_6, 0);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_8, 0);
   {
     #ifdef WITH_THREAD
     PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
