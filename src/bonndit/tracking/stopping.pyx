@@ -132,7 +132,7 @@ cdef class ROIInValidator(ROIInNotValidator):
 	def __cinit__(self, double[:,:] inclusion):
 		self.inclusion = inclusion[:,:3]
 		self.inclusion_num = inclusion.shape[0]
-		self.inclusion_check = np.zeros(len(inclusion.shape[0]))
+		self.inclusion_check = np.zeros(inclusion.shape[0])
 
 	cdef int included(self, double[:] point) nogil except *:
 		cdef int i
