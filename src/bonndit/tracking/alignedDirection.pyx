@@ -40,19 +40,11 @@ cdef class Probabilities:
 		cdef double test_angle, min_angle = 180
 
 		for i in range(n):
-			#with gil:
-			#	print(*vectors[i])
-			#	if sum(direction) == 0 or sum(vectors[i]) == 0:
-			#		print(*direction,*vectors[i])
 			if sum_c(direction) == 0:
 				self.angles[i] = 0
 				continue
 			if norm(vectors[i]) != 0 and norm(vectors[i]) == norm(vectors[i]):
-				#with gil:
-				#	print(norm(direction), norm(vectors[i]))
 				test_angle = clip(scalar(direction, vectors[i])/(norm(direction)*(norm(vectors[i]))), -1,1)
-		#		with gil:
-		#			print(test_angle)
 				if test_angle >0 :
 					self.angles[i] = acos(test_angle)/pi*180
 					self.test_vectors[i] = vectors[i]
@@ -91,9 +83,6 @@ cdef class Probabilities:
 			self.old_fa = norm(self.best_fit)
 		else:
 
-		#	with gil:
-		#		print(*direction, *self.test_vectors[0], *self.test_vectors[1],
-		#		      *self.test_vectors[2])
 			mult_with_scalar(self.best_fit, 0, self.test_vectors[2])
 			self.chosen_angle = 0
 			self.chosen_prob = 0
@@ -152,10 +141,14 @@ cdef class ScalarOld(Probabilities):
 		#	print(*self.angles)
 		for i in range(3):
 			if sum_c(self.test_vectors[i]) == sum_c(self.test_vectors[i])  and pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2) <= 1/2*pi:
-		#		with gil:
-		#			print('First angle ' , self.angles[i], self.expectation, pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2), pow(cos(pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma))
-				self.probability[i]=pow(cos(pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)*norm(self.test_vectors[i])
+			#	with gil:
+			#		print('First angle ' , self.angles[i], pow(cos(pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)*norm(self.test_vectors[i]))
+				self.probability[i]=pow(cos(pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)#*norm(self.test_vectors[i])
 			else:
+			#	with gil:
+			#		print(
+			#			'DAS IST DER FEHLER',pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2)
+			#		)
 				self.probability[i] = 0
 		self.random_choice(direction)
 

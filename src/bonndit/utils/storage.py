@@ -7,7 +7,7 @@ import numpy as np
 
 # treat arrays in the program as world space...
 # automatically try to convert between world/file-space while loading/saving
-from bonndit.utils import nrrd
+from . import nrrd
 
 auto_convert_world_space = True
 

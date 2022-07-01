@@ -54,8 +54,6 @@ cdef class Euler(Integration):
 		self.trafo.itow(coordinate)
 		mult_with_scalar(self.three_vector, self.stepsize/norm(direction), direction)
 		add_vectors(self.three_vector, self.trafo.point_itow, self.three_vector)
-		#add_vectors(self.three_vector, coordinate, self.three_vector)
-		#print("threee ", *self.three_vector)
 		self.trafo.wtoi(self.three_vector)
 		self.next_point = self.trafo.point_wtoi#self.three_vector #coordinate #self.trafo.point_wtoi
 
@@ -72,7 +70,6 @@ cdef class EulerUKF(Integration):
 
 
 		"""
-		#print("ssd", *coordinate)
 		mult_with_scalar(self.three_vector, self.stepsize/norm(direction), direction)
 		add_vectors(self.next_point, coordinate, self.three_vector)
 

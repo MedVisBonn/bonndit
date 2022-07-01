@@ -151,6 +151,10 @@ cdef class ROIInValidator(ROIInNotValidator):
 	cpdef int included_p(self, double[:] point) except *:
 		return self.included(point)
 
+	cpdef void reset_p(self) except *:
+		self.inclusion_check = np.zeros(self.inclusion_num)
+
+
 	cdef bint included_checker(self) nogil except *:
 		return sum_c(self.inclusion_check) != self.inclusion_num
 

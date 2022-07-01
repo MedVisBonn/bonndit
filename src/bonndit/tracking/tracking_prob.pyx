@@ -16,6 +16,10 @@ from tqdm import tqdm
 ctypedef struct possible_features:
 	int chosen_angle
 	int seedpoint
+	int prob_chosen
+	int prob_others_0
+	int prob_others_1
+	int prob_others_2
 	int len
 
 
@@ -90,19 +94,15 @@ cdef bint forward_tracking(double[:,:] paths,  Interpolation interpolate,
 	cdef int k
 	# thousand is max length for pathway
 	interpolate.prob.old_fa = 1
-	for k in range(max_track_length*save_steps - 1):
+	for k in range((max_track_length-1)*save_steps):
 		# validate index and wm density.
 
 		if validator.index_checker(paths[(k-1)//save_steps + 1]):
 			set_zero_vector(paths[(k-1)//save_steps + 1])
-#			with gil:
-#				print('i break first at k = ',  str(k))
 			break
 		if validator.wm_checker(paths[(k-1)//save_steps + 1]):
 			trafo.itow(paths[(k-1)//save_steps + 1])
 			paths[(k-1)//save_steps + 1] = trafo.point_itow
-		#	with gil:
-		#		print('i break second at k = ',  str(k))
 			break
 		# find matching directions
 		if sum_c(integrate.old_dir) == 0:
@@ -131,17 +131,19 @@ cdef bint forward_tracking(double[:,:] paths,  Interpolation interpolate,
 		if k%save_steps == 0:
 			trafo.itow(paths[k//save_steps])
 			paths[k//save_steps] = trafo.point_itow
-		# features[k//save_steps, 2]
 		validator.ROIIn.included(paths[k//save_steps])
 		if validator.ROIEx.excluded(paths[k//save_steps]):
 			return False
 		if feature_save.chosen_angle >= 0:
-
 			features[k//save_steps,feature_save.chosen_angle] = interpolate.prob.chosen_angle
+		if feature_save.prob_chosen >= 0:
+			features[k//save_steps,feature_save.prob_chosen] = interpolate.prob.chosen_prob
+		if feature_save.prob_others_0 >= 0:
+			features[k//save_steps,feature_save.prob_others_0] = interpolate.prob.probability[0]
+			features[k//save_steps,feature_save.prob_others_1] = interpolate.prob.probability[1]
+			features[k//save_steps,feature_save.prob_others_2] = interpolate.prob.probability[2]
 		# Check curvature between current point and point 30mm ago
 		if validator.Curve.curvature_checker(paths[:k//save_steps], features[k//save_steps:k//save_steps + 1,1]):
-			#with gil:
-			#	print('Angle to big')
 			return False
 		integrate.old_dir = interpolate.next_dir
 	else:
@@ -150,13 +152,8 @@ cdef bint forward_tracking(double[:,:] paths,  Interpolation interpolate,
 	if k == 0:
 		trafo.itow(paths[k//save_steps])
 		paths[k//save_steps] = trafo.point_itow
-#	with gil:
-#		print(np.array(paths))
 	return True
-#double[:,:,:,:,:] vector_field, meta, double[:,:,:] wm_mask, double[:,:] seeds, integration,
-#                   interpolation, prob, stepsize, double variance, int samples, int max_track_length, double wmmin,
-#                   double expectation, verbose, logging, inclusion, exclusion, double max_angle, double[:,:] trafo_fsl,
-#                   file
+
 cpdef tracking_all(vector_field, wm_mask, seeds, tracking_parameters, postprocessing, ukf_parameters, logging, saving):
 	"""
 	@param vector_field: Array (4,3,x,y,z)
@@ -267,7 +264,7 @@ cpdef tracking_all(vector_field, wm_mask, seeds, tracking_parameters, postproces
 					paths[k,j, 0, 0,l] +=  np.random.normal(0,1)
 					paths[k,j, 0, 1,l] = paths[k,j, 0, 0,l]
 
-		if saving['features']['seedpoint']:
+		if saving['features']['seedpoint'] >= 0:
 			features[k,:, 0, 0, saving['features']['seedpoint']] = 1
 			features[k,:, 0, 1, saving['features']['seedpoint']] = 1
 	#	print("1", np.asarray(features[k,j,:,0]))
@@ -277,29 +274,29 @@ cpdef tracking_all(vector_field, wm_mask, seeds, tracking_parameters, postproces
 		# delete all zero arrays.
 
 		for j in range(tracking_parameters['samples']):
-		#	print(np.asarray(features[k,j,:,0]))
-
-		#	print(np.asarray(features[k,j,:,1]))
 			path = np.concatenate((np.asarray(paths[k,j]),np.asarray(features[k,j])), axis=-1)
-			path = np.concatenate((path[:,0][::-1], path[:,1]))
-			to_exclude = np.all(path[:,:3] == 0, axis=1)
-			path = path[~to_exclude]
-			if path.size == 0:
-				continue
-		#	print(path)
-			if sum_c(path[:,3]) == 2:
-				path = np.delete(path, np.argwhere(path[:,3]==1)[0], axis=0)
-			if path.shape[0]>5:
-				# Work on disk or ram. Ram might be faster but for large files disk is preferable.
-				if saving['file']:
-					with open(saving['file'] + 'len', 'a') as f:
-						f.write(str(path.shape[0]) +'\n')
-					with open(saving['file'], 'a') as f:
-						for l in range(path.shape[0]):
-							f.write(' '.join(map(str, path[l])) + "\n")
-				else:
-					tracks_len.append(path.shape[0])
-					tracks += [tuple(x) for x in path]
+		# seedpoint would be twice if first index is not skipped.
+			path = np.concatenate((path[1:,0][::-1], path[:,1]))
+			try:
+				to_exclude = np.all(path[:,:3] == 0, axis=1)
+
+				path = path[~to_exclude]
+				if path.size == 0:
+					continue
+			#	print(path)
+				if path.shape[0]>5:
+					# Work on disk or ram. Ram might be faster but for large files disk is preferable.
+					if saving['file']:
+						with open(saving['file'] + 'len', 'a') as f:
+							f.write(str(path.shape[0]) +'\n')
+						with open(saving['file'], 'a') as f:
+							for l in range(path.shape[0]):
+								f.write(' '.join(map(str, path[l])) + "\n")
+					else:
+						tracks_len.append(path.shape[0])
+						tracks += [tuple(x) for x in path]
+			except:
+				pass
 
 	return tracks, tracks_len
 

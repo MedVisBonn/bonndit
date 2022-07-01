@@ -19,7 +19,7 @@
             "-Wl,--no-as-needed"
         ],
         "include_dirs": [
-            "/tmp/pip-build-env-g23u9eqw/overlay/lib/python3.8/site-packages/numpy/core/include",
+            "/tmp/pip-build-env-cfphk54a/overlay/lib/python3.8/site-packages/numpy/core/include",
             "/opt/intel/oneapi/mkl/2022.0.2/include"
         ],
         "libraries": [
@@ -1719,7 +1719,7 @@ struct __pyx_vtabstruct_7bonndit_8tracking_13interpolation_UKFFodf {
 static struct __pyx_vtabstruct_7bonndit_8tracking_13interpolation_UKFFodf *__pyx_vtabptr_7bonndit_8tracking_13interpolation_UKFFodf;
 
 
-/* "bonndit/tracking/interpolation.pyx":422
+/* "bonndit/tracking/interpolation.pyx":430
  * 
  * 
  * cdef class UKFMultiTensor(UKF):             # <<<<<<<<<<<<<<
@@ -9257,7 +9257,7 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_7UKFFodf_interpolate(struc
  * 				cblas_dscal(3, -1, &self.mean[4*i], 1)
  * 			self.mean[4*i+3] = max(self.mean[4*i+3],_lambda_min)             # <<<<<<<<<<<<<<
  * 
- * 		for i in range(self._model.num_tensors):
+ * 
  */
       __pyx_t_6 = __pyx_v_7bonndit_8tracking_13interpolation__lambda_min;
       if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 400, __pyx_L4_error)}
@@ -9273,8 +9273,8 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_7UKFFodf_interpolate(struc
       *((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_7 * __pyx_v_self->__pyx_base.mean.strides[0]) )) = __pyx_t_9;
     }
 
-    /* "bonndit/tracking/interpolation.pyx":402
- * 			self.mean[4*i+3] = max(self.mean[4*i+3],_lambda_min)
+    /* "bonndit/tracking/interpolation.pyx":404
+ * 
  * 
  * 		for i in range(self._model.num_tensors):             # <<<<<<<<<<<<<<
  * 			dctov(&self.mean[4*i], self.best_dir[i])
@@ -9285,16 +9285,16 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_7UKFFodf_interpolate(struc
     for (__pyx_t_4 = 0; __pyx_t_4 < __pyx_t_3; __pyx_t_4+=1) {
       __pyx_v_i = __pyx_t_4;
 
-      /* "bonndit/tracking/interpolation.pyx":403
+      /* "bonndit/tracking/interpolation.pyx":405
  * 
  * 		for i in range(self._model.num_tensors):
  * 			dctov(&self.mean[4*i], self.best_dir[i])             # <<<<<<<<<<<<<<
  * 
- * 		self.prob.calculate_probabilities(self.best_dir, old_dir)
+ * 
  */
-      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 403, __pyx_L4_error)}
+      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 405, __pyx_L4_error)}
       __pyx_t_7 = (4 * __pyx_v_i);
-      if (unlikely(!__pyx_v_self->__pyx_base.__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 403, __pyx_L4_error)}
+      if (unlikely(!__pyx_v_self->__pyx_base.__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 405, __pyx_L4_error)}
       __pyx_t_10.data = __pyx_v_self->__pyx_base.__pyx_base.best_dir.data;
       __pyx_t_10.memview = __pyx_v_self->__pyx_base.__pyx_base.best_dir.memview;
       __PYX_INC_MEMVIEW(&__pyx_t_10, 0);
@@ -9308,30 +9308,30 @@ __pyx_t_10.shape[0] = __pyx_v_self->__pyx_base.__pyx_base.best_dir.shape[1];
 __pyx_t_10.strides[0] = __pyx_v_self->__pyx_base.__pyx_base.best_dir.strides[1];
     __pyx_t_10.suboffsets[0] = -1;
 
-__pyx_f_7bonndit_5utilc_14cython_helpers_dctov((&(*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_7 * __pyx_v_self->__pyx_base.mean.strides[0]) )))), __pyx_t_10); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 403, __pyx_L4_error)
+__pyx_f_7bonndit_5utilc_14cython_helpers_dctov((&(*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_7 * __pyx_v_self->__pyx_base.mean.strides[0]) )))), __pyx_t_10); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 405, __pyx_L4_error)
       __PYX_XDEC_MEMVIEW(&__pyx_t_10, 0);
       __pyx_t_10.memview = NULL;
       __pyx_t_10.data = NULL;
     }
 
-    /* "bonndit/tracking/interpolation.pyx":405
- * 			dctov(&self.mean[4*i], self.best_dir[i])
+    /* "bonndit/tracking/interpolation.pyx":408
+ * 
  * 
  * 		self.prob.calculate_probabilities(self.best_dir, old_dir)             # <<<<<<<<<<<<<<
- * 		#with gil:
- * 		#	print('dir', np.array(self.prob.best_fit), np.array(self.best_dir[0]), np.array(self.best_dir[1]))
+ * 
+ * 		#if self.prob.best_fit[0] != self.mean[0] or self.prob.best_fit[1] != self.mean[1] or self.prob.best_fit[2] != self.mean[2]:
  */
-    if (unlikely(!__pyx_v_self->__pyx_base.__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 405, __pyx_L4_error)}
-    ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self->__pyx_base.__pyx_base.prob->__pyx_vtab)->calculate_probabilities(__pyx_v_self->__pyx_base.__pyx_base.prob, __pyx_v_self->__pyx_base.__pyx_base.best_dir, __pyx_v_old_dir); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 405, __pyx_L4_error)
+    if (unlikely(!__pyx_v_self->__pyx_base.__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 408, __pyx_L4_error)}
+    ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self->__pyx_base.__pyx_base.prob->__pyx_vtab)->calculate_probabilities(__pyx_v_self->__pyx_base.__pyx_base.prob, __pyx_v_self->__pyx_base.__pyx_base.best_dir, __pyx_v_old_dir); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 408, __pyx_L4_error)
 
-    /* "bonndit/tracking/interpolation.pyx":408
- * 		#with gil:
- * 		#	print('dir', np.array(self.prob.best_fit), np.array(self.best_dir[0]), np.array(self.best_dir[1]))
+    /* "bonndit/tracking/interpolation.pyx":416
+ * 		#		cblas_dswap(4, &self.P[i,4], 1, &self.P[i+4,0], 1)		#:th gil:
+ * 		#print('dir', np.array(self.prob.best_fit), np.array(self.best_dir[0]), np.array(self.best_dir[1]))
  * 		self.next_dir = self.prob.best_fit             # <<<<<<<<<<<<<<
  * 
  * 		#if cblas_ddot(3, &self.mean[0], 1, &old_dir[0],1) < cblas_ddot(3, &self.mean[4], 1, &old_dir[0],1):
  */
-    if (unlikely(!__pyx_v_self->__pyx_base.__pyx_base.prob->best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 408, __pyx_L4_error)}
+    if (unlikely(!__pyx_v_self->__pyx_base.__pyx_base.prob->best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 416, __pyx_L4_error)}
     __pyx_t_10 = __pyx_v_self->__pyx_base.__pyx_base.prob->best_fit;
     __PYX_INC_MEMVIEW(&__pyx_t_10, 0);
     __PYX_XDEC_MEMVIEW(&__pyx_v_self->__pyx_base.__pyx_base.next_dir, 0);
@@ -9339,7 +9339,7 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_dctov((&(*((double *) ( /* dim=0 */ (__
     __pyx_t_10.memview = NULL;
     __pyx_t_10.data = NULL;
 
-    /* "bonndit/tracking/interpolation.pyx":417
+    /* "bonndit/tracking/interpolation.pyx":425
  * 		#dctov(&self.mean[0], self.next_dir)
  * 	#	with gil: print('dir', np.array(self.next_dir))
  * 		return info             # <<<<<<<<<<<<<<
@@ -9507,7 +9507,7 @@ static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_7UKFFodf_4__setstat
   return __pyx_r;
 }
 
-/* "bonndit/tracking/interpolation.pyx":423
+/* "bonndit/tracking/interpolation.pyx":431
  * 
  * cdef class UKFMultiTensor(UKF):
  * 	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities prob, **kwargs):             # <<<<<<<<<<<<<<
@@ -9555,17 +9555,17 @@ static int __pyx_pw_7bonndit_8tracking_13interpolation_14UKFMultiTensor_1__cinit
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_grid)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 3, 3, 1); __PYX_ERR(0, 423, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 3, 3, 1); __PYX_ERR(0, 431, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_prob)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 3, 3, 2); __PYX_ERR(0, 423, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 3, 3, 2); __PYX_ERR(0, 431, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, __pyx_v_kwargs, values, pos_args, "__cinit__") < 0)) __PYX_ERR(0, 423, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, __pyx_v_kwargs, values, pos_args, "__cinit__") < 0)) __PYX_ERR(0, 431, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 3) {
       goto __pyx_L5_argtuple_error;
@@ -9574,20 +9574,20 @@ static int __pyx_pw_7bonndit_8tracking_13interpolation_14UKFMultiTensor_1__cinit
       values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
       values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
     }
-    __pyx_v_vector_field = __Pyx_PyObject_to_MemoryviewSlice_dsdsdsdsds_double(values[0], PyBUF_WRITABLE); if (unlikely(!__pyx_v_vector_field.memview)) __PYX_ERR(0, 423, __pyx_L3_error)
-    __pyx_v_grid = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[1], PyBUF_WRITABLE); if (unlikely(!__pyx_v_grid.memview)) __PYX_ERR(0, 423, __pyx_L3_error)
+    __pyx_v_vector_field = __Pyx_PyObject_to_MemoryviewSlice_dsdsdsdsds_double(values[0], PyBUF_WRITABLE); if (unlikely(!__pyx_v_vector_field.memview)) __PYX_ERR(0, 431, __pyx_L3_error)
+    __pyx_v_grid = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[1], PyBUF_WRITABLE); if (unlikely(!__pyx_v_grid.memview)) __PYX_ERR(0, 431, __pyx_L3_error)
     __pyx_v_prob = ((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)values[2]);
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 423, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 431, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_DECREF(__pyx_v_kwargs); __pyx_v_kwargs = 0;
   __Pyx_AddTraceback("bonndit.tracking.interpolation.UKFMultiTensor.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return -1;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_prob), __pyx_ptype_7bonndit_8tracking_16alignedDirection_Probabilities, 1, "prob", 0))) __PYX_ERR(0, 423, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_prob), __pyx_ptype_7bonndit_8tracking_16alignedDirection_Probabilities, 1, "prob", 0))) __PYX_ERR(0, 431, __pyx_L1_error)
   __pyx_r = __pyx_pf_7bonndit_8tracking_13interpolation_14UKFMultiTensor___cinit__(((struct __pyx_obj_7bonndit_8tracking_13interpolation_UKFMultiTensor *)__pyx_v_self), __pyx_v_vector_field, __pyx_v_grid, __pyx_v_prob, __pyx_v_kwargs);
 
   /* function exit code */
@@ -9612,14 +9612,14 @@ static int __pyx_pf_7bonndit_8tracking_13interpolation_14UKFMultiTensor___cinit_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
-  /* "bonndit/tracking/interpolation.pyx":424
+  /* "bonndit/tracking/interpolation.pyx":432
  * cdef class UKFMultiTensor(UKF):
  * 	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities prob, **kwargs):
  * 		super(UKFMultiTensor, self).__init__(vector_field, grid, prob, **kwargs)             # <<<<<<<<<<<<<<
  * 
  * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) nogil except *:
  */
-  __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 424, __pyx_L1_error)
+  __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 432, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_INCREF(((PyObject *)__pyx_ptype_7bonndit_8tracking_13interpolation_UKFMultiTensor));
   __Pyx_GIVEREF(((PyObject *)__pyx_ptype_7bonndit_8tracking_13interpolation_UKFMultiTensor));
@@ -9627,17 +9627,17 @@ static int __pyx_pf_7bonndit_8tracking_13interpolation_14UKFMultiTensor___cinit_
   __Pyx_INCREF(((PyObject *)__pyx_v_self));
   __Pyx_GIVEREF(((PyObject *)__pyx_v_self));
   PyTuple_SET_ITEM(__pyx_t_1, 1, ((PyObject *)__pyx_v_self));
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_super, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 424, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_super, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 432, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_init); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 424, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_init); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 432, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __pyx_memoryview_fromslice(__pyx_v_vector_field, 5, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 424, __pyx_L1_error)
+  __pyx_t_2 = __pyx_memoryview_fromslice(__pyx_v_vector_field, 5, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 432, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __pyx_memoryview_fromslice(__pyx_v_grid, 1, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 424, __pyx_L1_error)
+  __pyx_t_3 = __pyx_memoryview_fromslice(__pyx_v_grid, 1, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 432, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = PyTuple_New(3); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 424, __pyx_L1_error)
+  __pyx_t_4 = PyTuple_New(3); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 432, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_2);
@@ -9648,16 +9648,16 @@ static int __pyx_pf_7bonndit_8tracking_13interpolation_14UKFMultiTensor___cinit_
   PyTuple_SET_ITEM(__pyx_t_4, 2, ((PyObject *)__pyx_v_prob));
   __pyx_t_2 = 0;
   __pyx_t_3 = 0;
-  __pyx_t_3 = PyDict_Copy(__pyx_v_kwargs); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 424, __pyx_L1_error)
+  __pyx_t_3 = PyDict_Copy(__pyx_v_kwargs); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 432, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_4, __pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 424, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_4, __pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 432, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "bonndit/tracking/interpolation.pyx":423
+  /* "bonndit/tracking/interpolation.pyx":431
  * 
  * cdef class UKFMultiTensor(UKF):
  * 	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities prob, **kwargs):             # <<<<<<<<<<<<<<
@@ -9682,7 +9682,7 @@ static int __pyx_pf_7bonndit_8tracking_13interpolation_14UKFMultiTensor___cinit_
   return __pyx_r;
 }
 
-/* "bonndit/tracking/interpolation.pyx":426
+/* "bonndit/tracking/interpolation.pyx":434
  * 		super(UKFMultiTensor, self).__init__(vector_field, grid, prob, **kwargs)
  * 
  * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) nogil except *:             # <<<<<<<<<<<<<<
@@ -9720,7 +9720,7 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_14UKFMultiTensor_interpola
   __Pyx_PyGILState_Release(__pyx_gilstate_save);
   #endif
 
-  /* "bonndit/tracking/interpolation.pyx":427
+  /* "bonndit/tracking/interpolation.pyx":435
  * 
  * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) nogil except *:
  * 		cdef int z, i, info = 0             # <<<<<<<<<<<<<<
@@ -9730,19 +9730,19 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_14UKFMultiTensor_interpola
   /*try:*/ {
     __pyx_v_info = 0;
 
-    /* "bonndit/tracking/interpolation.pyx":429
+    /* "bonndit/tracking/interpolation.pyx":437
  * 		cdef int z, i, info = 0
  * 		# Interpolate current point
  * 		self._kalman.linear(point, self.y, self.mlinear, self.data)             # <<<<<<<<<<<<<<
  * 		# If we are at the seed. Initialize the Kalmanfilter
  * 		if restart == 0:
  */
-    if (unlikely(!__pyx_v_self->__pyx_base.y.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 429, __pyx_L4_error)}
-    if (unlikely(!__pyx_v_self->__pyx_base.mlinear.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 429, __pyx_L4_error)}
-    if (unlikely(!__pyx_v_self->__pyx_base.data.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 429, __pyx_L4_error)}
-    ((struct __pyx_vtabstruct_7bonndit_8tracking_6kalman_6kalman_Kalman *)__pyx_v_self->__pyx_base._kalman->__pyx_vtab)->linear(__pyx_v_self->__pyx_base._kalman, __pyx_v_point, __pyx_v_self->__pyx_base.y, __pyx_v_self->__pyx_base.mlinear, __pyx_v_self->__pyx_base.data); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 429, __pyx_L4_error)
+    if (unlikely(!__pyx_v_self->__pyx_base.y.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 437, __pyx_L4_error)}
+    if (unlikely(!__pyx_v_self->__pyx_base.mlinear.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 437, __pyx_L4_error)}
+    if (unlikely(!__pyx_v_self->__pyx_base.data.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 437, __pyx_L4_error)}
+    ((struct __pyx_vtabstruct_7bonndit_8tracking_6kalman_6kalman_Kalman *)__pyx_v_self->__pyx_base._kalman->__pyx_vtab)->linear(__pyx_v_self->__pyx_base._kalman, __pyx_v_point, __pyx_v_self->__pyx_base.y, __pyx_v_self->__pyx_base.mlinear, __pyx_v_self->__pyx_base.data); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 437, __pyx_L4_error)
 
-    /* "bonndit/tracking/interpolation.pyx":431
+    /* "bonndit/tracking/interpolation.pyx":439
  * 		self._kalman.linear(point, self.y, self.mlinear, self.data)
  * 		# If we are at the seed. Initialize the Kalmanfilter
  * 		if restart == 0:             # <<<<<<<<<<<<<<
@@ -9752,7 +9752,7 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_14UKFMultiTensor_interpola
     __pyx_t_1 = ((__pyx_v_restart == 0) != 0);
     if (__pyx_t_1) {
 
-      /* "bonndit/tracking/interpolation.pyx":432
+      /* "bonndit/tracking/interpolation.pyx":440
  * 		# If we are at the seed. Initialize the Kalmanfilter
  * 		if restart == 0:
  * 			with gil:             # <<<<<<<<<<<<<<
@@ -9765,20 +9765,20 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_14UKFMultiTensor_interpola
           #endif
           /*try:*/ {
 
-            /* "bonndit/tracking/interpolation.pyx":434
+            /* "bonndit/tracking/interpolation.pyx":442
  * 			with gil:
  * 				##print(np.array(self.y))
  * 				self._model.kinit(self.mean, point, old_dir, self.P, self.y)             # <<<<<<<<<<<<<<
  * 		# Run Kalmannfilter
  * 		info = self._kalman.update_kalman_parameters(self.mean, self.P, self.y)
  */
-            if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 434, __pyx_L8_error)}
-            if (unlikely(!__pyx_v_self->__pyx_base.P.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 434, __pyx_L8_error)}
-            if (unlikely(!__pyx_v_self->__pyx_base.y.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 434, __pyx_L8_error)}
+            if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 442, __pyx_L8_error)}
+            if (unlikely(!__pyx_v_self->__pyx_base.P.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 442, __pyx_L8_error)}
+            if (unlikely(!__pyx_v_self->__pyx_base.y.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 442, __pyx_L8_error)}
             (void)(((struct __pyx_vtabstruct_7bonndit_8tracking_6kalman_5model_AbstractModel *)__pyx_v_self->__pyx_base._model->__pyx_vtab)->kinit(__pyx_v_self->__pyx_base._model, __pyx_v_self->__pyx_base.mean, __pyx_v_point, __pyx_v_old_dir, __pyx_v_self->__pyx_base.P, __pyx_v_self->__pyx_base.y));
           }
 
-          /* "bonndit/tracking/interpolation.pyx":432
+          /* "bonndit/tracking/interpolation.pyx":440
  * 		# If we are at the seed. Initialize the Kalmanfilter
  * 		if restart == 0:
  * 			with gil:             # <<<<<<<<<<<<<<
@@ -9802,7 +9802,7 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_14UKFMultiTensor_interpola
           }
       }
 
-      /* "bonndit/tracking/interpolation.pyx":431
+      /* "bonndit/tracking/interpolation.pyx":439
  * 		self._kalman.linear(point, self.y, self.mlinear, self.data)
  * 		# If we are at the seed. Initialize the Kalmanfilter
  * 		if restart == 0:             # <<<<<<<<<<<<<<
@@ -9811,20 +9811,20 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_14UKFMultiTensor_interpola
  */
     }
 
-    /* "bonndit/tracking/interpolation.pyx":436
+    /* "bonndit/tracking/interpolation.pyx":444
  * 				self._model.kinit(self.mean, point, old_dir, self.P, self.y)
  * 		# Run Kalmannfilter
  * 		info = self._kalman.update_kalman_parameters(self.mean, self.P, self.y)             # <<<<<<<<<<<<<<
  * 		#cblas_dcopy(self.mean.shape[0], &self.mean[0], 1, &self.tmpmean[0], 1)
  * 		for i in range(self._model.num_tensors):
  */
-    if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 436, __pyx_L4_error)}
-    if (unlikely(!__pyx_v_self->__pyx_base.P.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 436, __pyx_L4_error)}
-    if (unlikely(!__pyx_v_self->__pyx_base.y.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 436, __pyx_L4_error)}
-    __pyx_t_2 = ((struct __pyx_vtabstruct_7bonndit_8tracking_6kalman_6kalman_Kalman *)__pyx_v_self->__pyx_base._kalman->__pyx_vtab)->update_kalman_parameters(__pyx_v_self->__pyx_base._kalman, __pyx_v_self->__pyx_base.mean, __pyx_v_self->__pyx_base.P, __pyx_v_self->__pyx_base.y); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 436, __pyx_L4_error)
+    if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 444, __pyx_L4_error)}
+    if (unlikely(!__pyx_v_self->__pyx_base.P.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 444, __pyx_L4_error)}
+    if (unlikely(!__pyx_v_self->__pyx_base.y.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 444, __pyx_L4_error)}
+    __pyx_t_2 = ((struct __pyx_vtabstruct_7bonndit_8tracking_6kalman_6kalman_Kalman *)__pyx_v_self->__pyx_base._kalman->__pyx_vtab)->update_kalman_parameters(__pyx_v_self->__pyx_base._kalman, __pyx_v_self->__pyx_base.mean, __pyx_v_self->__pyx_base.P, __pyx_v_self->__pyx_base.y); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 444, __pyx_L4_error)
     __pyx_v_info = __pyx_t_2;
 
-    /* "bonndit/tracking/interpolation.pyx":438
+    /* "bonndit/tracking/interpolation.pyx":446
  * 		info = self._kalman.update_kalman_parameters(self.mean, self.P, self.y)
  * 		#cblas_dcopy(self.mean.shape[0], &self.mean[0], 1, &self.tmpmean[0], 1)
  * 		for i in range(self._model.num_tensors):             # <<<<<<<<<<<<<<
@@ -9836,16 +9836,16 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_14UKFMultiTensor_interpola
     for (__pyx_t_4 = 0; __pyx_t_4 < __pyx_t_3; __pyx_t_4+=1) {
       __pyx_v_i = __pyx_t_4;
 
-      /* "bonndit/tracking/interpolation.pyx":439
+      /* "bonndit/tracking/interpolation.pyx":447
  * 		#cblas_dcopy(self.mean.shape[0], &self.mean[0], 1, &self.tmpmean[0], 1)
  * 		for i in range(self._model.num_tensors):
  * 			cblas_dscal(3, 1 / cblas_dnrm2(3, &self.mean[5*i], 1), &self.mean[5*i], 1)             # <<<<<<<<<<<<<<
  * 			if cblas_ddot(3, &self.mean[5*i], 1, &old_dir[0],1) < 0:
  * 				cblas_dscal(3, -1, &self.mean[5*i], 1)
  */
-      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 439, __pyx_L4_error)}
+      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 447, __pyx_L4_error)}
       __pyx_t_5 = (5 * __pyx_v_i);
-      __pyx_t_6 = cblas_dnrm2(3, (&(*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_5 * __pyx_v_self->__pyx_base.mean.strides[0]) )))), 1); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 439, __pyx_L4_error)
+      __pyx_t_6 = cblas_dnrm2(3, (&(*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_5 * __pyx_v_self->__pyx_base.mean.strides[0]) )))), 1); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 447, __pyx_L4_error)
       if (unlikely(__pyx_t_6 == 0)) {
         #ifdef WITH_THREAD
         PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
@@ -9854,38 +9854,38 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_14UKFMultiTensor_interpola
         #ifdef WITH_THREAD
         __Pyx_PyGILState_Release(__pyx_gilstate_save);
         #endif
-        __PYX_ERR(0, 439, __pyx_L4_error)
+        __PYX_ERR(0, 447, __pyx_L4_error)
       }
-      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 439, __pyx_L4_error)}
+      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 447, __pyx_L4_error)}
       __pyx_t_5 = (5 * __pyx_v_i);
-      cblas_dscal(3, (1.0 / __pyx_t_6), (&(*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_5 * __pyx_v_self->__pyx_base.mean.strides[0]) )))), 1); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 439, __pyx_L4_error)
+      cblas_dscal(3, (1.0 / __pyx_t_6), (&(*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_5 * __pyx_v_self->__pyx_base.mean.strides[0]) )))), 1); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 447, __pyx_L4_error)
 
-      /* "bonndit/tracking/interpolation.pyx":440
+      /* "bonndit/tracking/interpolation.pyx":448
  * 		for i in range(self._model.num_tensors):
  * 			cblas_dscal(3, 1 / cblas_dnrm2(3, &self.mean[5*i], 1), &self.mean[5*i], 1)
  * 			if cblas_ddot(3, &self.mean[5*i], 1, &old_dir[0],1) < 0:             # <<<<<<<<<<<<<<
  * 				cblas_dscal(3, -1, &self.mean[5*i], 1)
  * 			self.mean[5*i+3] = max(self.mean[5*i+3],_lambda_min)
  */
-      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 440, __pyx_L4_error)}
+      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 448, __pyx_L4_error)}
       __pyx_t_5 = (5 * __pyx_v_i);
       __pyx_t_7 = 0;
-      __pyx_t_6 = cblas_ddot(3, (&(*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_5 * __pyx_v_self->__pyx_base.mean.strides[0]) )))), 1, (&(*((double *) ( /* dim=0 */ (__pyx_v_old_dir.data + __pyx_t_7 * __pyx_v_old_dir.strides[0]) )))), 1); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 440, __pyx_L4_error)
+      __pyx_t_6 = cblas_ddot(3, (&(*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_5 * __pyx_v_self->__pyx_base.mean.strides[0]) )))), 1, (&(*((double *) ( /* dim=0 */ (__pyx_v_old_dir.data + __pyx_t_7 * __pyx_v_old_dir.strides[0]) )))), 1); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 448, __pyx_L4_error)
       __pyx_t_1 = ((__pyx_t_6 < 0.0) != 0);
       if (__pyx_t_1) {
 
-        /* "bonndit/tracking/interpolation.pyx":441
+        /* "bonndit/tracking/interpolation.pyx":449
  * 			cblas_dscal(3, 1 / cblas_dnrm2(3, &self.mean[5*i], 1), &self.mean[5*i], 1)
  * 			if cblas_ddot(3, &self.mean[5*i], 1, &old_dir[0],1) < 0:
  * 				cblas_dscal(3, -1, &self.mean[5*i], 1)             # <<<<<<<<<<<<<<
  * 			self.mean[5*i+3] = max(self.mean[5*i+3],_lambda_min)
  * 			self.mean[5*i+4] = max(self.mean[5*i+4],_lambda_min)
  */
-        if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 441, __pyx_L4_error)}
+        if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 449, __pyx_L4_error)}
         __pyx_t_7 = (5 * __pyx_v_i);
-        cblas_dscal(3, -1.0, (&(*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_7 * __pyx_v_self->__pyx_base.mean.strides[0]) )))), 1); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 441, __pyx_L4_error)
+        cblas_dscal(3, -1.0, (&(*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_7 * __pyx_v_self->__pyx_base.mean.strides[0]) )))), 1); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 449, __pyx_L4_error)
 
-        /* "bonndit/tracking/interpolation.pyx":440
+        /* "bonndit/tracking/interpolation.pyx":448
  * 		for i in range(self._model.num_tensors):
  * 			cblas_dscal(3, 1 / cblas_dnrm2(3, &self.mean[5*i], 1), &self.mean[5*i], 1)
  * 			if cblas_ddot(3, &self.mean[5*i], 1, &old_dir[0],1) < 0:             # <<<<<<<<<<<<<<
@@ -9894,7 +9894,7 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_14UKFMultiTensor_interpola
  */
       }
 
-      /* "bonndit/tracking/interpolation.pyx":442
+      /* "bonndit/tracking/interpolation.pyx":450
  * 			if cblas_ddot(3, &self.mean[5*i], 1, &old_dir[0],1) < 0:
  * 				cblas_dscal(3, -1, &self.mean[5*i], 1)
  * 			self.mean[5*i+3] = max(self.mean[5*i+3],_lambda_min)             # <<<<<<<<<<<<<<
@@ -9902,7 +9902,7 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_14UKFMultiTensor_interpola
  * 
  */
       __pyx_t_6 = __pyx_v_7bonndit_8tracking_13interpolation__lambda_min;
-      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 442, __pyx_L4_error)}
+      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 450, __pyx_L4_error)}
       __pyx_t_7 = ((5 * __pyx_v_i) + 3);
       __pyx_t_8 = (*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_7 * __pyx_v_self->__pyx_base.mean.strides[0]) )));
       if (((__pyx_t_6 > __pyx_t_8) != 0)) {
@@ -9910,11 +9910,11 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_14UKFMultiTensor_interpola
       } else {
         __pyx_t_9 = __pyx_t_8;
       }
-      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 442, __pyx_L4_error)}
+      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 450, __pyx_L4_error)}
       __pyx_t_7 = ((5 * __pyx_v_i) + 3);
       *((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_7 * __pyx_v_self->__pyx_base.mean.strides[0]) )) = __pyx_t_9;
 
-      /* "bonndit/tracking/interpolation.pyx":443
+      /* "bonndit/tracking/interpolation.pyx":451
  * 				cblas_dscal(3, -1, &self.mean[5*i], 1)
  * 			self.mean[5*i+3] = max(self.mean[5*i+3],_lambda_min)
  * 			self.mean[5*i+4] = max(self.mean[5*i+4],_lambda_min)             # <<<<<<<<<<<<<<
@@ -9922,7 +9922,7 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_14UKFMultiTensor_interpola
  * 		# Use alw
  */
       __pyx_t_9 = __pyx_v_7bonndit_8tracking_13interpolation__lambda_min;
-      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 443, __pyx_L4_error)}
+      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 451, __pyx_L4_error)}
       __pyx_t_7 = ((5 * __pyx_v_i) + 4);
       __pyx_t_6 = (*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_7 * __pyx_v_self->__pyx_base.mean.strides[0]) )));
       if (((__pyx_t_9 > __pyx_t_6) != 0)) {
@@ -9930,12 +9930,12 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_14UKFMultiTensor_interpola
       } else {
         __pyx_t_8 = __pyx_t_6;
       }
-      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 443, __pyx_L4_error)}
+      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 451, __pyx_L4_error)}
       __pyx_t_7 = ((5 * __pyx_v_i) + 4);
       *((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_7 * __pyx_v_self->__pyx_base.mean.strides[0]) )) = __pyx_t_8;
     }
 
-    /* "bonndit/tracking/interpolation.pyx":446
+    /* "bonndit/tracking/interpolation.pyx":454
  * 
  * 		# Use alw
  * 		for i in range(self._model.num_tensors):             # <<<<<<<<<<<<<<
@@ -9947,14 +9947,14 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_14UKFMultiTensor_interpola
     for (__pyx_t_4 = 0; __pyx_t_4 < __pyx_t_3; __pyx_t_4+=1) {
       __pyx_v_i = __pyx_t_4;
 
-      /* "bonndit/tracking/interpolation.pyx":447
+      /* "bonndit/tracking/interpolation.pyx":455
  * 		# Use alw
  * 		for i in range(self._model.num_tensors):
  * 			self.best_dir[3*i: 3*(i+1)] = self.mean[5*i: 5*i + 3]             # <<<<<<<<<<<<<<
  * 		self.prob.calculate_probabilities(self.best_dir, old_dir)
  * 		self.next_dir = self.prob.best_fit
  */
-      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 447, __pyx_L4_error)}
+      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 455, __pyx_L4_error)}
       __pyx_t_10.data = __pyx_v_self->__pyx_base.mean.data;
       __pyx_t_10.memview = __pyx_v_self->__pyx_base.mean.memview;
       __PYX_INC_MEMVIEW(&__pyx_t_10, 0);
@@ -9973,10 +9973,10 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_14UKFMultiTensor_interpola
     0,
     1) < 0))
 {
-    __PYX_ERR(0, 447, __pyx_L4_error)
+    __PYX_ERR(0, 455, __pyx_L4_error)
 }
 
-if (unlikely(!__pyx_v_self->__pyx_base.__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 447, __pyx_L4_error)}
+if (unlikely(!__pyx_v_self->__pyx_base.__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 455, __pyx_L4_error)}
       __pyx_t_12.data = __pyx_v_self->__pyx_base.__pyx_base.best_dir.data;
       __pyx_t_12.memview = __pyx_v_self->__pyx_base.__pyx_base.best_dir.memview;
       __PYX_INC_MEMVIEW(&__pyx_t_12, 0);
@@ -9995,14 +9995,14 @@ if (unlikely(!__pyx_v_self->__pyx_base.__pyx_base.best_dir.memview)) {PyErr_SetS
     0,
     1) < 0))
 {
-    __PYX_ERR(0, 447, __pyx_L4_error)
+    __PYX_ERR(0, 455, __pyx_L4_error)
 }
 
 __pyx_t_12.shape[1] = __pyx_v_self->__pyx_base.__pyx_base.best_dir.shape[1];
 __pyx_t_12.strides[1] = __pyx_v_self->__pyx_base.__pyx_base.best_dir.strides[1];
     __pyx_t_12.suboffsets[1] = -1;
 
-if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_10, __pyx_t_12, 1, 2, 0) < 0)) __PYX_ERR(0, 447, __pyx_L4_error)
+if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_10, __pyx_t_12, 1, 2, 0) < 0)) __PYX_ERR(0, 455, __pyx_L4_error)
       __PYX_XDEC_MEMVIEW(&__pyx_t_12, 0);
       __pyx_t_12.memview = NULL;
       __pyx_t_12.data = NULL;
@@ -10011,24 +10011,24 @@ if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_10, __pyx_t_12, 1, 2, 0) < 0
       __pyx_t_10.data = NULL;
     }
 
-    /* "bonndit/tracking/interpolation.pyx":448
+    /* "bonndit/tracking/interpolation.pyx":456
  * 		for i in range(self._model.num_tensors):
  * 			self.best_dir[3*i: 3*(i+1)] = self.mean[5*i: 5*i + 3]
  * 		self.prob.calculate_probabilities(self.best_dir, old_dir)             # <<<<<<<<<<<<<<
  * 		self.next_dir = self.prob.best_fit
  * #		if self._model.num_tensors == 1:
  */
-    if (unlikely(!__pyx_v_self->__pyx_base.__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 448, __pyx_L4_error)}
-    ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self->__pyx_base.__pyx_base.prob->__pyx_vtab)->calculate_probabilities(__pyx_v_self->__pyx_base.__pyx_base.prob, __pyx_v_self->__pyx_base.__pyx_base.best_dir, __pyx_v_old_dir); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 448, __pyx_L4_error)
+    if (unlikely(!__pyx_v_self->__pyx_base.__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 456, __pyx_L4_error)}
+    ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self->__pyx_base.__pyx_base.prob->__pyx_vtab)->calculate_probabilities(__pyx_v_self->__pyx_base.__pyx_base.prob, __pyx_v_self->__pyx_base.__pyx_base.best_dir, __pyx_v_old_dir); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 456, __pyx_L4_error)
 
-    /* "bonndit/tracking/interpolation.pyx":449
+    /* "bonndit/tracking/interpolation.pyx":457
  * 			self.best_dir[3*i: 3*(i+1)] = self.mean[5*i: 5*i + 3]
  * 		self.prob.calculate_probabilities(self.best_dir, old_dir)
  * 		self.next_dir = self.prob.best_fit             # <<<<<<<<<<<<<<
  * #		if self._model.num_tensors == 1:
  * #			dctov(&self.mean[0], self.next_dir)
  */
-    if (unlikely(!__pyx_v_self->__pyx_base.__pyx_base.prob->best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 449, __pyx_L4_error)}
+    if (unlikely(!__pyx_v_self->__pyx_base.__pyx_base.prob->best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 457, __pyx_L4_error)}
     __pyx_t_10 = __pyx_v_self->__pyx_base.__pyx_base.prob->best_fit;
     __PYX_INC_MEMVIEW(&__pyx_t_10, 0);
     __PYX_XDEC_MEMVIEW(&__pyx_v_self->__pyx_base.__pyx_base.next_dir, 0);
@@ -10036,7 +10036,7 @@ if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_10, __pyx_t_12, 1, 2, 0) < 0
     __pyx_t_10.memview = NULL;
     __pyx_t_10.data = NULL;
 
-    /* "bonndit/tracking/interpolation.pyx":486
+    /* "bonndit/tracking/interpolation.pyx":494
  * 
  * 		#		#with gil: print('dir', np.array(self.next_dir))
  * 		z = 0             # <<<<<<<<<<<<<<
@@ -10045,24 +10045,24 @@ if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_10, __pyx_t_12, 1, 2, 0) < 0
  */
     __pyx_v_z = 0;
 
-    /* "bonndit/tracking/interpolation.pyx":488
+    /* "bonndit/tracking/interpolation.pyx":496
  * 		z = 0
  * 
  * 		if fa(self.mean[5 + 3],self.mean[5 + 4],self.mean[5 + 4]) < 0.15:             # <<<<<<<<<<<<<<
  * 			z += 1
  * 
  */
-    if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 488, __pyx_L4_error)}
+    if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 496, __pyx_L4_error)}
     __pyx_t_7 = 8;
-    if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 488, __pyx_L4_error)}
+    if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 496, __pyx_L4_error)}
     __pyx_t_5 = 9;
-    if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 488, __pyx_L4_error)}
+    if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 496, __pyx_L4_error)}
     __pyx_t_13 = 9;
-    __pyx_t_8 = __pyx_f_7bonndit_5utilc_14cython_helpers_fa((*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_7 * __pyx_v_self->__pyx_base.mean.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_5 * __pyx_v_self->__pyx_base.mean.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_13 * __pyx_v_self->__pyx_base.mean.strides[0]) )))); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 488, __pyx_L4_error)
+    __pyx_t_8 = __pyx_f_7bonndit_5utilc_14cython_helpers_fa((*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_7 * __pyx_v_self->__pyx_base.mean.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_5 * __pyx_v_self->__pyx_base.mean.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_13 * __pyx_v_self->__pyx_base.mean.strides[0]) )))); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 496, __pyx_L4_error)
     __pyx_t_1 = ((__pyx_t_8 < 0.15) != 0);
     if (__pyx_t_1) {
 
-      /* "bonndit/tracking/interpolation.pyx":489
+      /* "bonndit/tracking/interpolation.pyx":497
  * 
  * 		if fa(self.mean[5 + 3],self.mean[5 + 4],self.mean[5 + 4]) < 0.15:
  * 			z += 1             # <<<<<<<<<<<<<<
@@ -10071,7 +10071,7 @@ if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_10, __pyx_t_12, 1, 2, 0) < 0
  */
       __pyx_v_z = (__pyx_v_z + 1);
 
-      /* "bonndit/tracking/interpolation.pyx":488
+      /* "bonndit/tracking/interpolation.pyx":496
  * 		z = 0
  * 
  * 		if fa(self.mean[5 + 3],self.mean[5 + 4],self.mean[5 + 4]) < 0.15:             # <<<<<<<<<<<<<<
@@ -10080,7 +10080,7 @@ if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_10, __pyx_t_12, 1, 2, 0) < 0
  */
     }
 
-    /* "bonndit/tracking/interpolation.pyx":491
+    /* "bonndit/tracking/interpolation.pyx":499
  * 			z += 1
  * 
  * 		return info             # <<<<<<<<<<<<<<
@@ -10091,7 +10091,7 @@ if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_10, __pyx_t_12, 1, 2, 0) < 0
     goto __pyx_L3_return;
   }
 
-  /* "bonndit/tracking/interpolation.pyx":427
+  /* "bonndit/tracking/interpolation.pyx":435
  * 
  * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) nogil except *:
  * 		cdef int z, i, info = 0             # <<<<<<<<<<<<<<
@@ -10113,7 +10113,7 @@ if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_10, __pyx_t_12, 1, 2, 0) < 0
     }
   }
 
-  /* "bonndit/tracking/interpolation.pyx":426
+  /* "bonndit/tracking/interpolation.pyx":434
  * 		super(UKFMultiTensor, self).__init__(vector_field, grid, prob, **kwargs)
  * 
  * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) nogil except *:             # <<<<<<<<<<<<<<
@@ -25557,16 +25557,16 @@ static int __Pyx_modinit_type_init_code(void) {
   __pyx_vtable_7bonndit_8tracking_13interpolation_UKFMultiTensor.__pyx_base = *__pyx_vtabptr_7bonndit_8tracking_13interpolation_UKF;
   __pyx_vtable_7bonndit_8tracking_13interpolation_UKFMultiTensor.__pyx_base.__pyx_base.interpolate = (int (*)(struct __pyx_obj_7bonndit_8tracking_13interpolation_Interpolation *, __Pyx_memviewslice, __Pyx_memviewslice, int))__pyx_f_7bonndit_8tracking_13interpolation_14UKFMultiTensor_interpolate;
   __pyx_type_7bonndit_8tracking_13interpolation_UKFMultiTensor.tp_base = __pyx_ptype_7bonndit_8tracking_13interpolation_UKF;
-  if (PyType_Ready(&__pyx_type_7bonndit_8tracking_13interpolation_UKFMultiTensor) < 0) __PYX_ERR(0, 422, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_7bonndit_8tracking_13interpolation_UKFMultiTensor) < 0) __PYX_ERR(0, 430, __pyx_L1_error)
   #if PY_VERSION_HEX < 0x030800B1
   __pyx_type_7bonndit_8tracking_13interpolation_UKFMultiTensor.tp_print = 0;
   #endif
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_7bonndit_8tracking_13interpolation_UKFMultiTensor.tp_dictoffset && __pyx_type_7bonndit_8tracking_13interpolation_UKFMultiTensor.tp_getattro == PyObject_GenericGetAttr)) {
     __pyx_type_7bonndit_8tracking_13interpolation_UKFMultiTensor.tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
-  if (__Pyx_SetVtable(__pyx_type_7bonndit_8tracking_13interpolation_UKFMultiTensor.tp_dict, __pyx_vtabptr_7bonndit_8tracking_13interpolation_UKFMultiTensor) < 0) __PYX_ERR(0, 422, __pyx_L1_error)
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_UKFMultiTensor, (PyObject *)&__pyx_type_7bonndit_8tracking_13interpolation_UKFMultiTensor) < 0) __PYX_ERR(0, 422, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_7bonndit_8tracking_13interpolation_UKFMultiTensor) < 0) __PYX_ERR(0, 422, __pyx_L1_error)
+  if (__Pyx_SetVtable(__pyx_type_7bonndit_8tracking_13interpolation_UKFMultiTensor.tp_dict, __pyx_vtabptr_7bonndit_8tracking_13interpolation_UKFMultiTensor) < 0) __PYX_ERR(0, 430, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_UKFMultiTensor, (PyObject *)&__pyx_type_7bonndit_8tracking_13interpolation_UKFMultiTensor) < 0) __PYX_ERR(0, 430, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_7bonndit_8tracking_13interpolation_UKFMultiTensor) < 0) __PYX_ERR(0, 430, __pyx_L1_error)
   __pyx_ptype_7bonndit_8tracking_13interpolation_UKFMultiTensor = &__pyx_type_7bonndit_8tracking_13interpolation_UKFMultiTensor;
   __pyx_vtabptr_array = &__pyx_vtable_array;
   __pyx_vtable_array.get_memview = (PyObject *(*)(struct __pyx_array_obj *))__pyx_array_get_memview;

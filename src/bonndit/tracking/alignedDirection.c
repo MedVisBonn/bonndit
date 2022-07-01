@@ -11,7 +11,7 @@
         ],
         "depends": [],
         "include_dirs": [
-            "/tmp/pip-build-env-g23u9eqw/overlay/lib/python3.8/site-packages/numpy/core/include",
+            "/tmp/pip-build-env-cfphk54a/overlay/lib/python3.8/site-packages/numpy/core/include",
             "."
         ],
         "name": "bonndit.tracking.alignedDirection",
@@ -1245,7 +1245,7 @@ struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Probabilities {
 static struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Probabilities *__pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Probabilities;
 
 
-/* "bonndit/tracking/alignedDirection.pyx":109
+/* "bonndit/tracking/alignedDirection.pyx":98
  * 
  * 
  * cdef class Gaussian(Probabilities):             # <<<<<<<<<<<<<<
@@ -1259,7 +1259,7 @@ struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Gaussian {
 static struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Gaussian *__pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Gaussian;
 
 
-/* "bonndit/tracking/alignedDirection.pyx":124
+/* "bonndit/tracking/alignedDirection.pyx":113
  * 
  * 
  * cdef class Laplacian(Probabilities):             # <<<<<<<<<<<<<<
@@ -1273,7 +1273,7 @@ struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Laplacian {
 static struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Laplacian *__pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Laplacian;
 
 
-/* "bonndit/tracking/alignedDirection.pyx":140
+/* "bonndit/tracking/alignedDirection.pyx":129
  * 
  * 
  * cdef class ScalarOld(Probabilities):             # <<<<<<<<<<<<<<
@@ -1287,7 +1287,7 @@ struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_ScalarOld {
 static struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_ScalarOld *__pyx_vtabptr_7bonndit_8tracking_16alignedDirection_ScalarOld;
 
 
-/* "bonndit/tracking/alignedDirection.pyx":163
+/* "bonndit/tracking/alignedDirection.pyx":156
  * 
  * 
  * cdef class ScalarNew(Probabilities):             # <<<<<<<<<<<<<<
@@ -1301,7 +1301,7 @@ struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_ScalarNew {
 static struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_ScalarNew *__pyx_vtabptr_7bonndit_8tracking_16alignedDirection_ScalarNew;
 
 
-/* "bonndit/tracking/alignedDirection.pyx":213
+/* "bonndit/tracking/alignedDirection.pyx":206
  * #		self.chosen_angle = self.angles[min_index]
  * 
  * cdef class Deterministic(Probabilities):             # <<<<<<<<<<<<<<
@@ -1315,7 +1315,7 @@ struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Deterministic {
 static struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Deterministic *__pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Deterministic;
 
 
-/* "bonndit/tracking/alignedDirection.pyx":185
+/* "bonndit/tracking/alignedDirection.pyx":178
  * 
  * 
  * cdef class Deterministic2(Probabilities):             # <<<<<<<<<<<<<<
@@ -2782,17 +2782,17 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_13Probabilities_aligne
  * 		cdef double test_angle, min_angle = 180
  * 
  * 		for i in range(n):             # <<<<<<<<<<<<<<
- * 			#with gil:
- * 			#	print(*vectors[i])
+ * 			if sum_c(direction) == 0:
+ * 				self.angles[i] = 0
  */
   __pyx_t_1 = __pyx_v_n;
   __pyx_t_2 = __pyx_t_1;
   for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
     __pyx_v_i = __pyx_t_3;
 
-    /* "bonndit/tracking/alignedDirection.pyx":47
- * 			#	if sum(direction) == 0 or sum(vectors[i]) == 0:
- * 			#		print(*direction,*vectors[i])
+    /* "bonndit/tracking/alignedDirection.pyx":43
+ * 
+ * 		for i in range(n):
  * 			if sum_c(direction) == 0:             # <<<<<<<<<<<<<<
  * 				self.angles[i] = 0
  * 				continue
@@ -2800,42 +2800,42 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_13Probabilities_aligne
     __pyx_t_4 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_v_direction) == 0.0) != 0);
     if (__pyx_t_4) {
 
-      /* "bonndit/tracking/alignedDirection.pyx":48
- * 			#		print(*direction,*vectors[i])
+      /* "bonndit/tracking/alignedDirection.pyx":44
+ * 		for i in range(n):
  * 			if sum_c(direction) == 0:
  * 				self.angles[i] = 0             # <<<<<<<<<<<<<<
  * 				continue
  * 			if norm(vectors[i]) != 0 and norm(vectors[i]) == norm(vectors[i]):
  */
-      if (unlikely(!__pyx_v_self->angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 48, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 44, __pyx_L1_error)}
       __pyx_t_5 = __pyx_v_i;
       if (__pyx_t_5 < 0) __pyx_t_5 += __pyx_v_self->angles.shape[0];
       *((double *) ( /* dim=0 */ (__pyx_v_self->angles.data + __pyx_t_5 * __pyx_v_self->angles.strides[0]) )) = 0.0;
 
-      /* "bonndit/tracking/alignedDirection.pyx":49
+      /* "bonndit/tracking/alignedDirection.pyx":45
  * 			if sum_c(direction) == 0:
  * 				self.angles[i] = 0
  * 				continue             # <<<<<<<<<<<<<<
  * 			if norm(vectors[i]) != 0 and norm(vectors[i]) == norm(vectors[i]):
- * 				#with gil:
+ * 				test_angle = clip(scalar(direction, vectors[i])/(norm(direction)*(norm(vectors[i]))), -1,1)
  */
       goto __pyx_L3_continue;
 
-      /* "bonndit/tracking/alignedDirection.pyx":47
- * 			#	if sum(direction) == 0 or sum(vectors[i]) == 0:
- * 			#		print(*direction,*vectors[i])
+      /* "bonndit/tracking/alignedDirection.pyx":43
+ * 
+ * 		for i in range(n):
  * 			if sum_c(direction) == 0:             # <<<<<<<<<<<<<<
  * 				self.angles[i] = 0
  * 				continue
  */
     }
 
-    /* "bonndit/tracking/alignedDirection.pyx":50
+    /* "bonndit/tracking/alignedDirection.pyx":46
  * 				self.angles[i] = 0
  * 				continue
  * 			if norm(vectors[i]) != 0 and norm(vectors[i]) == norm(vectors[i]):             # <<<<<<<<<<<<<<
- * 				#with gil:
- * 				#	print(norm(direction), norm(vectors[i]))
+ * 				test_angle = clip(scalar(direction, vectors[i])/(norm(direction)*(norm(vectors[i]))), -1,1)
+ * 				if test_angle >0 :
  */
     __pyx_t_6.data = __pyx_v_vectors.data;
     __pyx_t_6.memview = __pyx_v_vectors.memview;
@@ -2905,12 +2905,12 @@ __pyx_t_7 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_norm(__pyx_t_6) == __pyx_
     __pyx_L7_bool_binop_done:;
     if (__pyx_t_4) {
 
-      /* "bonndit/tracking/alignedDirection.pyx":53
- * 				#with gil:
- * 				#	print(norm(direction), norm(vectors[i]))
+      /* "bonndit/tracking/alignedDirection.pyx":47
+ * 				continue
+ * 			if norm(vectors[i]) != 0 and norm(vectors[i]) == norm(vectors[i]):
  * 				test_angle = clip(scalar(direction, vectors[i])/(norm(direction)*(norm(vectors[i]))), -1,1)             # <<<<<<<<<<<<<<
- * 		#		with gil:
- * 		#			print(test_angle)
+ * 				if test_angle >0 :
+ * 					self.angles[i] = acos(test_angle)/pi*180
  */
       __pyx_t_8.data = __pyx_v_vectors.data;
       __pyx_t_8.memview = __pyx_v_vectors.memview;
@@ -2960,13 +2960,13 @@ __pyx_t_10 = (__pyx_f_7bonndit_5utilc_14cython_helpers_norm(__pyx_v_direction) *
         #ifdef WITH_THREAD
         __Pyx_PyGILState_Release(__pyx_gilstate_save);
         #endif
-        __PYX_ERR(0, 53, __pyx_L1_error)
+        __PYX_ERR(0, 47, __pyx_L1_error)
       }
       __pyx_v_test_angle = __pyx_f_7bonndit_5utilc_14cython_helpers_clip((__pyx_t_9 / __pyx_t_10), -1.0, 1.0);
 
-      /* "bonndit/tracking/alignedDirection.pyx":56
- * 		#		with gil:
- * 		#			print(test_angle)
+      /* "bonndit/tracking/alignedDirection.pyx":48
+ * 			if norm(vectors[i]) != 0 and norm(vectors[i]) == norm(vectors[i]):
+ * 				test_angle = clip(scalar(direction, vectors[i])/(norm(direction)*(norm(vectors[i]))), -1,1)
  * 				if test_angle >0 :             # <<<<<<<<<<<<<<
  * 					self.angles[i] = acos(test_angle)/pi*180
  * 					self.test_vectors[i] = vectors[i]
@@ -2974,8 +2974,8 @@ __pyx_t_10 = (__pyx_f_7bonndit_5utilc_14cython_helpers_norm(__pyx_v_direction) *
       __pyx_t_4 = ((__pyx_v_test_angle > 0.0) != 0);
       if (__pyx_t_4) {
 
-        /* "bonndit/tracking/alignedDirection.pyx":57
- * 		#			print(test_angle)
+        /* "bonndit/tracking/alignedDirection.pyx":49
+ * 				test_angle = clip(scalar(direction, vectors[i])/(norm(direction)*(norm(vectors[i]))), -1,1)
  * 				if test_angle >0 :
  * 					self.angles[i] = acos(test_angle)/pi*180             # <<<<<<<<<<<<<<
  * 					self.test_vectors[i] = vectors[i]
@@ -2990,14 +2990,14 @@ __pyx_t_10 = (__pyx_f_7bonndit_5utilc_14cython_helpers_norm(__pyx_v_direction) *
           #ifdef WITH_THREAD
           __Pyx_PyGILState_Release(__pyx_gilstate_save);
           #endif
-          __PYX_ERR(0, 57, __pyx_L1_error)
+          __PYX_ERR(0, 49, __pyx_L1_error)
         }
-        if (unlikely(!__pyx_v_self->angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 57, __pyx_L1_error)}
+        if (unlikely(!__pyx_v_self->angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 49, __pyx_L1_error)}
         __pyx_t_5 = __pyx_v_i;
         if (__pyx_t_5 < 0) __pyx_t_5 += __pyx_v_self->angles.shape[0];
         *((double *) ( /* dim=0 */ (__pyx_v_self->angles.data + __pyx_t_5 * __pyx_v_self->angles.strides[0]) )) = ((__pyx_t_10 / ((double)M_PI)) * 180.0);
 
-        /* "bonndit/tracking/alignedDirection.pyx":58
+        /* "bonndit/tracking/alignedDirection.pyx":50
  * 				if test_angle >0 :
  * 					self.angles[i] = acos(test_angle)/pi*180
  * 					self.test_vectors[i] = vectors[i]             # <<<<<<<<<<<<<<
@@ -3020,7 +3020,7 @@ __pyx_t_8.shape[0] = __pyx_v_vectors.shape[1];
 __pyx_t_8.strides[0] = __pyx_v_vectors.strides[1];
     __pyx_t_8.suboffsets[0] = -1;
 
-if (unlikely(!__pyx_v_self->test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 58, __pyx_L1_error)}
+if (unlikely(!__pyx_v_self->test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 50, __pyx_L1_error)}
         __pyx_t_6.data = __pyx_v_self->test_vectors.data;
         __pyx_t_6.memview = __pyx_v_self->test_vectors.memview;
         __PYX_INC_MEMVIEW(&__pyx_t_6, 0);
@@ -3037,7 +3037,7 @@ __pyx_t_6.shape[0] = __pyx_v_self->test_vectors.shape[1];
 __pyx_t_6.strides[0] = __pyx_v_self->test_vectors.strides[1];
     __pyx_t_6.suboffsets[0] = -1;
 
-if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_8, __pyx_t_6, 1, 1, 0) < 0)) __PYX_ERR(0, 58, __pyx_L1_error)
+if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_8, __pyx_t_6, 1, 1, 0) < 0)) __PYX_ERR(0, 50, __pyx_L1_error)
         __PYX_XDEC_MEMVIEW(&__pyx_t_6, 0);
         __pyx_t_6.memview = NULL;
         __pyx_t_6.data = NULL;
@@ -3045,9 +3045,9 @@ if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_8, __pyx_t_6, 1, 1, 0) < 0))
         __pyx_t_8.memview = NULL;
         __pyx_t_8.data = NULL;
 
-        /* "bonndit/tracking/alignedDirection.pyx":56
- * 		#		with gil:
- * 		#			print(test_angle)
+        /* "bonndit/tracking/alignedDirection.pyx":48
+ * 			if norm(vectors[i]) != 0 and norm(vectors[i]) == norm(vectors[i]):
+ * 				test_angle = clip(scalar(direction, vectors[i])/(norm(direction)*(norm(vectors[i]))), -1,1)
  * 				if test_angle >0 :             # <<<<<<<<<<<<<<
  * 					self.angles[i] = acos(test_angle)/pi*180
  * 					self.test_vectors[i] = vectors[i]
@@ -3055,7 +3055,7 @@ if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_8, __pyx_t_6, 1, 1, 0) < 0))
         goto __pyx_L9;
       }
 
-      /* "bonndit/tracking/alignedDirection.pyx":59
+      /* "bonndit/tracking/alignedDirection.pyx":51
  * 					self.angles[i] = acos(test_angle)/pi*180
  * 					self.test_vectors[i] = vectors[i]
  * 				elif test_angle <= 0:             # <<<<<<<<<<<<<<
@@ -3065,7 +3065,7 @@ if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_8, __pyx_t_6, 1, 1, 0) < 0))
       __pyx_t_4 = ((__pyx_v_test_angle <= 0.0) != 0);
       if (__pyx_t_4) {
 
-        /* "bonndit/tracking/alignedDirection.pyx":60
+        /* "bonndit/tracking/alignedDirection.pyx":52
  * 					self.test_vectors[i] = vectors[i]
  * 				elif test_angle <= 0:
  * 					self.angles[i] = 180 - acos(test_angle)/pi*180             # <<<<<<<<<<<<<<
@@ -3081,21 +3081,21 @@ if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_8, __pyx_t_6, 1, 1, 0) < 0))
           #ifdef WITH_THREAD
           __Pyx_PyGILState_Release(__pyx_gilstate_save);
           #endif
-          __PYX_ERR(0, 60, __pyx_L1_error)
+          __PYX_ERR(0, 52, __pyx_L1_error)
         }
-        if (unlikely(!__pyx_v_self->angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 60, __pyx_L1_error)}
+        if (unlikely(!__pyx_v_self->angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 52, __pyx_L1_error)}
         __pyx_t_5 = __pyx_v_i;
         if (__pyx_t_5 < 0) __pyx_t_5 += __pyx_v_self->angles.shape[0];
         *((double *) ( /* dim=0 */ (__pyx_v_self->angles.data + __pyx_t_5 * __pyx_v_self->angles.strides[0]) )) = (180.0 - ((__pyx_t_10 / ((double)M_PI)) * 180.0));
 
-        /* "bonndit/tracking/alignedDirection.pyx":61
+        /* "bonndit/tracking/alignedDirection.pyx":53
  * 				elif test_angle <= 0:
  * 					self.angles[i] = 180 - acos(test_angle)/pi*180
  * 					mult_with_scalar(self.test_vectors[i], -1, vectors[i])             # <<<<<<<<<<<<<<
  * 			else:
  * 				self.angles[i] = 180
  */
-        if (unlikely(!__pyx_v_self->test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 61, __pyx_L1_error)}
+        if (unlikely(!__pyx_v_self->test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 53, __pyx_L1_error)}
         __pyx_t_8.data = __pyx_v_self->test_vectors.data;
         __pyx_t_8.memview = __pyx_v_self->test_vectors.memview;
         __PYX_INC_MEMVIEW(&__pyx_t_8, 0);
@@ -3136,7 +3136,7 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_t_8, -1.0, __pyx
         __pyx_t_6.memview = NULL;
         __pyx_t_6.data = NULL;
 
-        /* "bonndit/tracking/alignedDirection.pyx":59
+        /* "bonndit/tracking/alignedDirection.pyx":51
  * 					self.angles[i] = acos(test_angle)/pi*180
  * 					self.test_vectors[i] = vectors[i]
  * 				elif test_angle <= 0:             # <<<<<<<<<<<<<<
@@ -3146,17 +3146,17 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_t_8, -1.0, __pyx
       }
       __pyx_L9:;
 
-      /* "bonndit/tracking/alignedDirection.pyx":50
+      /* "bonndit/tracking/alignedDirection.pyx":46
  * 				self.angles[i] = 0
  * 				continue
  * 			if norm(vectors[i]) != 0 and norm(vectors[i]) == norm(vectors[i]):             # <<<<<<<<<<<<<<
- * 				#with gil:
- * 				#	print(norm(direction), norm(vectors[i]))
+ * 				test_angle = clip(scalar(direction, vectors[i])/(norm(direction)*(norm(vectors[i]))), -1,1)
+ * 				if test_angle >0 :
  */
       goto __pyx_L6;
     }
 
-    /* "bonndit/tracking/alignedDirection.pyx":63
+    /* "bonndit/tracking/alignedDirection.pyx":55
  * 					mult_with_scalar(self.test_vectors[i], -1, vectors[i])
  * 			else:
  * 				self.angles[i] = 180             # <<<<<<<<<<<<<<
@@ -3164,19 +3164,19 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_t_8, -1.0, __pyx
  * 
  */
     /*else*/ {
-      if (unlikely(!__pyx_v_self->angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 63, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 55, __pyx_L1_error)}
       __pyx_t_5 = __pyx_v_i;
       if (__pyx_t_5 < 0) __pyx_t_5 += __pyx_v_self->angles.shape[0];
       *((double *) ( /* dim=0 */ (__pyx_v_self->angles.data + __pyx_t_5 * __pyx_v_self->angles.strides[0]) )) = 180.0;
 
-      /* "bonndit/tracking/alignedDirection.pyx":64
+      /* "bonndit/tracking/alignedDirection.pyx":56
  * 			else:
  * 				self.angles[i] = 180
  * 				mult_with_scalar(self.test_vectors[i], 0, vectors[i])             # <<<<<<<<<<<<<<
  * 
  * 	cdef void random_choice(self, double[:] direction) nogil  except *:
  */
-      if (unlikely(!__pyx_v_self->test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 64, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 56, __pyx_L1_error)}
       __pyx_t_6.data = __pyx_v_self->test_vectors.data;
       __pyx_t_6.memview = __pyx_v_self->test_vectors.memview;
       __PYX_INC_MEMVIEW(&__pyx_t_6, 0);
@@ -3246,7 +3246,7 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_t_6, 0.0, __pyx_
   __pyx_L0:;
 }
 
-/* "bonndit/tracking/alignedDirection.pyx":66
+/* "bonndit/tracking/alignedDirection.pyx":58
  * 				mult_with_scalar(self.test_vectors[i], 0, vectors[i])
  * 
  * 	cdef void random_choice(self, double[:] direction) nogil  except *:             # <<<<<<<<<<<<<<
@@ -3266,7 +3266,7 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_13Probabilities_random
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
 
-  /* "bonndit/tracking/alignedDirection.pyx":72
+  /* "bonndit/tracking/alignedDirection.pyx":64
  * 		@return:
  * 		"""
  * 		cdef double best_choice = rand() / RAND_MAX             # <<<<<<<<<<<<<<
@@ -3282,30 +3282,30 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_13Probabilities_random
     #ifdef WITH_THREAD
     __Pyx_PyGILState_Release(__pyx_gilstate_save);
     #endif
-    __PYX_ERR(0, 72, __pyx_L1_error)
+    __PYX_ERR(0, 64, __pyx_L1_error)
   }
   __pyx_v_best_choice = (((double)__pyx_t_1) / ((double)RAND_MAX));
 
-  /* "bonndit/tracking/alignedDirection.pyx":75
+  /* "bonndit/tracking/alignedDirection.pyx":67
  * 	#	with gil:
  * 	#		print(*self.probability)
  * 		if sum_c(self.probability) != 0:             # <<<<<<<<<<<<<<
  * 			mult_with_scalar(self.probability, 1/sum_c(self.probability), self.probability)
  * 
  */
-  if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 75, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 67, __pyx_L1_error)}
   __pyx_t_2 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_v_self->probability) != 0.0) != 0);
   if (__pyx_t_2) {
 
-    /* "bonndit/tracking/alignedDirection.pyx":76
+    /* "bonndit/tracking/alignedDirection.pyx":68
  * 	#		print(*self.probability)
  * 		if sum_c(self.probability) != 0:
  * 			mult_with_scalar(self.probability, 1/sum_c(self.probability), self.probability)             # <<<<<<<<<<<<<<
  * 
  * 
  */
-    if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 76, __pyx_L1_error)}
-    if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 76, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 68, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 68, __pyx_L1_error)}
     __pyx_t_3 = __pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_v_self->probability);
     if (unlikely(__pyx_t_3 == 0)) {
       #ifdef WITH_THREAD
@@ -3315,33 +3315,33 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_13Probabilities_random
       #ifdef WITH_THREAD
       __Pyx_PyGILState_Release(__pyx_gilstate_save);
       #endif
-      __PYX_ERR(0, 76, __pyx_L1_error)
+      __PYX_ERR(0, 68, __pyx_L1_error)
     }
-    if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 76, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 68, __pyx_L1_error)}
     __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_self->probability, (1.0 / __pyx_t_3), __pyx_v_self->probability);
 
-    /* "bonndit/tracking/alignedDirection.pyx":79
+    /* "bonndit/tracking/alignedDirection.pyx":71
  * 
  * 
  * 			if best_choice < self.probability[0]:             # <<<<<<<<<<<<<<
  * 				mult_with_scalar(self.best_fit, 1, self.test_vectors[0])
  * 				self.chosen_prob = self.probability[0]
  */
-    if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 79, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 71, __pyx_L1_error)}
     __pyx_t_4 = 0;
     if (__pyx_t_4 < 0) __pyx_t_4 += __pyx_v_self->probability.shape[0];
     __pyx_t_2 = ((__pyx_v_best_choice < (*((double *) ( /* dim=0 */ (__pyx_v_self->probability.data + __pyx_t_4 * __pyx_v_self->probability.strides[0]) )))) != 0);
     if (__pyx_t_2) {
 
-      /* "bonndit/tracking/alignedDirection.pyx":80
+      /* "bonndit/tracking/alignedDirection.pyx":72
  * 
  * 			if best_choice < self.probability[0]:
  * 				mult_with_scalar(self.best_fit, 1, self.test_vectors[0])             # <<<<<<<<<<<<<<
  * 				self.chosen_prob = self.probability[0]
  * 				self.chosen_angle = self.angles[0]
  */
-      if (unlikely(!__pyx_v_self->best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 80, __pyx_L1_error)}
-      if (unlikely(!__pyx_v_self->test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 80, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 72, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 72, __pyx_L1_error)}
       __pyx_t_5.data = __pyx_v_self->test_vectors.data;
       __pyx_t_5.memview = __pyx_v_self->test_vectors.memview;
       __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
@@ -3363,31 +3363,31 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_self->best_fit
       __pyx_t_5.memview = NULL;
       __pyx_t_5.data = NULL;
 
-      /* "bonndit/tracking/alignedDirection.pyx":81
+      /* "bonndit/tracking/alignedDirection.pyx":73
  * 			if best_choice < self.probability[0]:
  * 				mult_with_scalar(self.best_fit, 1, self.test_vectors[0])
  * 				self.chosen_prob = self.probability[0]             # <<<<<<<<<<<<<<
  * 				self.chosen_angle = self.angles[0]
  * 			elif best_choice < self.probability[0] + self.probability[1]:
  */
-      if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 81, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 73, __pyx_L1_error)}
       __pyx_t_4 = 0;
       if (__pyx_t_4 < 0) __pyx_t_4 += __pyx_v_self->probability.shape[0];
       __pyx_v_self->chosen_prob = (*((double *) ( /* dim=0 */ (__pyx_v_self->probability.data + __pyx_t_4 * __pyx_v_self->probability.strides[0]) )));
 
-      /* "bonndit/tracking/alignedDirection.pyx":82
+      /* "bonndit/tracking/alignedDirection.pyx":74
  * 				mult_with_scalar(self.best_fit, 1, self.test_vectors[0])
  * 				self.chosen_prob = self.probability[0]
  * 				self.chosen_angle = self.angles[0]             # <<<<<<<<<<<<<<
  * 			elif best_choice < self.probability[0] + self.probability[1]:
  * 				mult_with_scalar(self.best_fit, 1, self.test_vectors[1])
  */
-      if (unlikely(!__pyx_v_self->angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 82, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 74, __pyx_L1_error)}
       __pyx_t_4 = 0;
       if (__pyx_t_4 < 0) __pyx_t_4 += __pyx_v_self->angles.shape[0];
       __pyx_v_self->chosen_angle = (*((double *) ( /* dim=0 */ (__pyx_v_self->angles.data + __pyx_t_4 * __pyx_v_self->angles.strides[0]) )));
 
-      /* "bonndit/tracking/alignedDirection.pyx":79
+      /* "bonndit/tracking/alignedDirection.pyx":71
  * 
  * 
  * 			if best_choice < self.probability[0]:             # <<<<<<<<<<<<<<
@@ -3397,31 +3397,31 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_self->best_fit
       goto __pyx_L4;
     }
 
-    /* "bonndit/tracking/alignedDirection.pyx":83
+    /* "bonndit/tracking/alignedDirection.pyx":75
  * 				self.chosen_prob = self.probability[0]
  * 				self.chosen_angle = self.angles[0]
  * 			elif best_choice < self.probability[0] + self.probability[1]:             # <<<<<<<<<<<<<<
  * 				mult_with_scalar(self.best_fit, 1, self.test_vectors[1])
  * 				self.chosen_prob = self.probability[1]
  */
-    if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 83, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 75, __pyx_L1_error)}
     __pyx_t_4 = 0;
     if (__pyx_t_4 < 0) __pyx_t_4 += __pyx_v_self->probability.shape[0];
-    if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 83, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 75, __pyx_L1_error)}
     __pyx_t_6 = 1;
     if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_self->probability.shape[0];
     __pyx_t_2 = ((__pyx_v_best_choice < ((*((double *) ( /* dim=0 */ (__pyx_v_self->probability.data + __pyx_t_4 * __pyx_v_self->probability.strides[0]) ))) + (*((double *) ( /* dim=0 */ (__pyx_v_self->probability.data + __pyx_t_6 * __pyx_v_self->probability.strides[0]) ))))) != 0);
     if (__pyx_t_2) {
 
-      /* "bonndit/tracking/alignedDirection.pyx":84
+      /* "bonndit/tracking/alignedDirection.pyx":76
  * 				self.chosen_angle = self.angles[0]
  * 			elif best_choice < self.probability[0] + self.probability[1]:
  * 				mult_with_scalar(self.best_fit, 1, self.test_vectors[1])             # <<<<<<<<<<<<<<
  * 				self.chosen_prob = self.probability[1]
  * 				self.chosen_angle = self.angles[1]
  */
-      if (unlikely(!__pyx_v_self->best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 84, __pyx_L1_error)}
-      if (unlikely(!__pyx_v_self->test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 84, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 76, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 76, __pyx_L1_error)}
       __pyx_t_5.data = __pyx_v_self->test_vectors.data;
       __pyx_t_5.memview = __pyx_v_self->test_vectors.memview;
       __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
@@ -3443,31 +3443,31 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_self->best_fit
       __pyx_t_5.memview = NULL;
       __pyx_t_5.data = NULL;
 
-      /* "bonndit/tracking/alignedDirection.pyx":85
+      /* "bonndit/tracking/alignedDirection.pyx":77
  * 			elif best_choice < self.probability[0] + self.probability[1]:
  * 				mult_with_scalar(self.best_fit, 1, self.test_vectors[1])
  * 				self.chosen_prob = self.probability[1]             # <<<<<<<<<<<<<<
  * 				self.chosen_angle = self.angles[1]
  * 			else:
  */
-      if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 85, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 77, __pyx_L1_error)}
       __pyx_t_6 = 1;
       if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_self->probability.shape[0];
       __pyx_v_self->chosen_prob = (*((double *) ( /* dim=0 */ (__pyx_v_self->probability.data + __pyx_t_6 * __pyx_v_self->probability.strides[0]) )));
 
-      /* "bonndit/tracking/alignedDirection.pyx":86
+      /* "bonndit/tracking/alignedDirection.pyx":78
  * 				mult_with_scalar(self.best_fit, 1, self.test_vectors[1])
  * 				self.chosen_prob = self.probability[1]
  * 				self.chosen_angle = self.angles[1]             # <<<<<<<<<<<<<<
  * 			else:
  * 				mult_with_scalar(self.best_fit, 1, self.test_vectors[2])
  */
-      if (unlikely(!__pyx_v_self->angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 86, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 78, __pyx_L1_error)}
       __pyx_t_6 = 1;
       if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_self->angles.shape[0];
       __pyx_v_self->chosen_angle = (*((double *) ( /* dim=0 */ (__pyx_v_self->angles.data + __pyx_t_6 * __pyx_v_self->angles.strides[0]) )));
 
-      /* "bonndit/tracking/alignedDirection.pyx":83
+      /* "bonndit/tracking/alignedDirection.pyx":75
  * 				self.chosen_prob = self.probability[0]
  * 				self.chosen_angle = self.angles[0]
  * 			elif best_choice < self.probability[0] + self.probability[1]:             # <<<<<<<<<<<<<<
@@ -3477,7 +3477,7 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_self->best_fit
       goto __pyx_L4;
     }
 
-    /* "bonndit/tracking/alignedDirection.pyx":88
+    /* "bonndit/tracking/alignedDirection.pyx":80
  * 				self.chosen_angle = self.angles[1]
  * 			else:
  * 				mult_with_scalar(self.best_fit, 1, self.test_vectors[2])             # <<<<<<<<<<<<<<
@@ -3485,8 +3485,8 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_self->best_fit
  * 				self.chosen_angle = self.angles[2]
  */
     /*else*/ {
-      if (unlikely(!__pyx_v_self->best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 88, __pyx_L1_error)}
-      if (unlikely(!__pyx_v_self->test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 88, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 80, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 80, __pyx_L1_error)}
       __pyx_t_5.data = __pyx_v_self->test_vectors.data;
       __pyx_t_5.memview = __pyx_v_self->test_vectors.memview;
       __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
@@ -3508,43 +3508,43 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_self->best_fit
       __pyx_t_5.memview = NULL;
       __pyx_t_5.data = NULL;
 
-      /* "bonndit/tracking/alignedDirection.pyx":89
+      /* "bonndit/tracking/alignedDirection.pyx":81
  * 			else:
  * 				mult_with_scalar(self.best_fit, 1, self.test_vectors[2])
  * 				self.chosen_prob = self.probability[2]             # <<<<<<<<<<<<<<
  * 				self.chosen_angle = self.angles[2]
  * 			self.old_fa = norm(self.best_fit)
  */
-      if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 89, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 81, __pyx_L1_error)}
       __pyx_t_6 = 2;
       if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_self->probability.shape[0];
       __pyx_v_self->chosen_prob = (*((double *) ( /* dim=0 */ (__pyx_v_self->probability.data + __pyx_t_6 * __pyx_v_self->probability.strides[0]) )));
 
-      /* "bonndit/tracking/alignedDirection.pyx":90
+      /* "bonndit/tracking/alignedDirection.pyx":82
  * 				mult_with_scalar(self.best_fit, 1, self.test_vectors[2])
  * 				self.chosen_prob = self.probability[2]
  * 				self.chosen_angle = self.angles[2]             # <<<<<<<<<<<<<<
  * 			self.old_fa = norm(self.best_fit)
  * 		else:
  */
-      if (unlikely(!__pyx_v_self->angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 90, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 82, __pyx_L1_error)}
       __pyx_t_6 = 2;
       if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_self->angles.shape[0];
       __pyx_v_self->chosen_angle = (*((double *) ( /* dim=0 */ (__pyx_v_self->angles.data + __pyx_t_6 * __pyx_v_self->angles.strides[0]) )));
     }
     __pyx_L4:;
 
-    /* "bonndit/tracking/alignedDirection.pyx":91
+    /* "bonndit/tracking/alignedDirection.pyx":83
  * 				self.chosen_prob = self.probability[2]
  * 				self.chosen_angle = self.angles[2]
  * 			self.old_fa = norm(self.best_fit)             # <<<<<<<<<<<<<<
  * 		else:
  * 
  */
-    if (unlikely(!__pyx_v_self->best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 91, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 83, __pyx_L1_error)}
     __pyx_v_self->old_fa = __pyx_f_7bonndit_5utilc_14cython_helpers_norm(__pyx_v_self->best_fit);
 
-    /* "bonndit/tracking/alignedDirection.pyx":75
+    /* "bonndit/tracking/alignedDirection.pyx":67
  * 	#	with gil:
  * 	#		print(*self.probability)
  * 		if sum_c(self.probability) != 0:             # <<<<<<<<<<<<<<
@@ -3554,16 +3554,16 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_self->best_fit
     goto __pyx_L3;
   }
 
-  /* "bonndit/tracking/alignedDirection.pyx":97
- * 		#		print(*direction, *self.test_vectors[0], *self.test_vectors[1],
- * 		#		      *self.test_vectors[2])
+  /* "bonndit/tracking/alignedDirection.pyx":86
+ * 		else:
+ * 
  * 			mult_with_scalar(self.best_fit, 0, self.test_vectors[2])             # <<<<<<<<<<<<<<
  * 			self.chosen_angle = 0
  * 			self.chosen_prob = 0
  */
   /*else*/ {
-    if (unlikely(!__pyx_v_self->best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 97, __pyx_L1_error)}
-    if (unlikely(!__pyx_v_self->test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 97, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 86, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 86, __pyx_L1_error)}
     __pyx_t_5.data = __pyx_v_self->test_vectors.data;
     __pyx_t_5.memview = __pyx_v_self->test_vectors.memview;
     __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
@@ -3585,8 +3585,8 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_self->best_fit
     __pyx_t_5.memview = NULL;
     __pyx_t_5.data = NULL;
 
-    /* "bonndit/tracking/alignedDirection.pyx":98
- * 		#		      *self.test_vectors[2])
+    /* "bonndit/tracking/alignedDirection.pyx":87
+ * 
  * 			mult_with_scalar(self.best_fit, 0, self.test_vectors[2])
  * 			self.chosen_angle = 0             # <<<<<<<<<<<<<<
  * 			self.chosen_prob = 0
@@ -3594,7 +3594,7 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_self->best_fit
  */
     __pyx_v_self->chosen_angle = 0.0;
 
-    /* "bonndit/tracking/alignedDirection.pyx":99
+    /* "bonndit/tracking/alignedDirection.pyx":88
  * 			mult_with_scalar(self.best_fit, 0, self.test_vectors[2])
  * 			self.chosen_angle = 0
  * 			self.chosen_prob = 0             # <<<<<<<<<<<<<<
@@ -3605,7 +3605,7 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_self->best_fit
   }
   __pyx_L3:;
 
-  /* "bonndit/tracking/alignedDirection.pyx":66
+  /* "bonndit/tracking/alignedDirection.pyx":58
  * 				mult_with_scalar(self.test_vectors[i], 0, vectors[i])
  * 
  * 	cdef void random_choice(self, double[:] direction) nogil  except *:             # <<<<<<<<<<<<<<
@@ -3629,7 +3629,7 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_self->best_fit
   __pyx_L0:;
 }
 
-/* "bonndit/tracking/alignedDirection.pyx":105
+/* "bonndit/tracking/alignedDirection.pyx":94
  * 
  * 
  * 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil except *:             # <<<<<<<<<<<<<<
@@ -3755,7 +3755,7 @@ static PyObject *__pyx_pf_7bonndit_8tracking_16alignedDirection_13Probabilities_
   return __pyx_r;
 }
 
-/* "bonndit/tracking/alignedDirection.pyx":110
+/* "bonndit/tracking/alignedDirection.pyx":99
  * 
  * cdef class Gaussian(Probabilities):
  * 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil except *:             # <<<<<<<<<<<<<<
@@ -3772,16 +3772,16 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_8Gaussian_calculate_pr
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
 
-  /* "bonndit/tracking/alignedDirection.pyx":118
+  /* "bonndit/tracking/alignedDirection.pyx":107
  * 		"""
  * 		cdef int i
  * 		self.aligned_direction(vectors, direction)             # <<<<<<<<<<<<<<
  * 		for i in range(3):
  * 			self.probability[i] = exp(-1/2*((self.angles[i] - self.expectation)/self.sigma)**2)
  */
-  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Gaussian *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.aligned_direction(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_vectors, __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 118, __pyx_L1_error)
+  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Gaussian *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.aligned_direction(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_vectors, __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 107, __pyx_L1_error)
 
-  /* "bonndit/tracking/alignedDirection.pyx":119
+  /* "bonndit/tracking/alignedDirection.pyx":108
  * 		cdef int i
  * 		self.aligned_direction(vectors, direction)
  * 		for i in range(3):             # <<<<<<<<<<<<<<
@@ -3791,14 +3791,14 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_8Gaussian_calculate_pr
   for (__pyx_t_1 = 0; __pyx_t_1 < 3; __pyx_t_1+=1) {
     __pyx_v_i = __pyx_t_1;
 
-    /* "bonndit/tracking/alignedDirection.pyx":120
+    /* "bonndit/tracking/alignedDirection.pyx":109
  * 		self.aligned_direction(vectors, direction)
  * 		for i in range(3):
  * 			self.probability[i] = exp(-1/2*((self.angles[i] - self.expectation)/self.sigma)**2)             # <<<<<<<<<<<<<<
  * 		self.random_choice(direction)
  * 
  */
-    if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 120, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 109, __pyx_L1_error)}
     __pyx_t_2 = __pyx_v_i;
     if (__pyx_t_2 < 0) __pyx_t_2 += __pyx_v_self->__pyx_base.angles.shape[0];
     __pyx_t_3 = ((*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.angles.data + __pyx_t_2 * __pyx_v_self->__pyx_base.angles.strides[0]) ))) - __pyx_v_self->__pyx_base.expectation);
@@ -3810,24 +3810,24 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_8Gaussian_calculate_pr
       #ifdef WITH_THREAD
       __Pyx_PyGILState_Release(__pyx_gilstate_save);
       #endif
-      __PYX_ERR(0, 120, __pyx_L1_error)
+      __PYX_ERR(0, 109, __pyx_L1_error)
     }
-    if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 120, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 109, __pyx_L1_error)}
     __pyx_t_2 = __pyx_v_i;
     if (__pyx_t_2 < 0) __pyx_t_2 += __pyx_v_self->__pyx_base.probability.shape[0];
     *((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.probability.data + __pyx_t_2 * __pyx_v_self->__pyx_base.probability.strides[0]) )) = exp(((-1.0 / 2.0) * pow((__pyx_t_3 / __pyx_v_self->__pyx_base.sigma), 2.0)));
   }
 
-  /* "bonndit/tracking/alignedDirection.pyx":121
+  /* "bonndit/tracking/alignedDirection.pyx":110
  * 		for i in range(3):
  * 			self.probability[i] = exp(-1/2*((self.angles[i] - self.expectation)/self.sigma)**2)
  * 		self.random_choice(direction)             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Gaussian *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.random_choice(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 121, __pyx_L1_error)
+  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Gaussian *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.random_choice(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 110, __pyx_L1_error)
 
-  /* "bonndit/tracking/alignedDirection.pyx":110
+  /* "bonndit/tracking/alignedDirection.pyx":99
  * 
  * cdef class Gaussian(Probabilities):
  * 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil except *:             # <<<<<<<<<<<<<<
@@ -3963,7 +3963,7 @@ static PyObject *__pyx_pf_7bonndit_8tracking_16alignedDirection_8Gaussian_2__set
   return __pyx_r;
 }
 
-/* "bonndit/tracking/alignedDirection.pyx":125
+/* "bonndit/tracking/alignedDirection.pyx":114
  * 
  * cdef class Laplacian(Probabilities):
  * 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil except *:             # <<<<<<<<<<<<<<
@@ -3980,16 +3980,16 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_9Laplacian_calculate_p
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
 
-  /* "bonndit/tracking/alignedDirection.pyx":133
+  /* "bonndit/tracking/alignedDirection.pyx":122
  * 		"""
  * 		cdef int i
  * 		self.aligned_direction(vectors, direction)             # <<<<<<<<<<<<<<
  * 		for i in range(3):
  * 			self.probability[i] = 1/2 * exp(- (fabs(self.angles[i] - self.expectation) /
  */
-  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Laplacian *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.aligned_direction(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_vectors, __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 133, __pyx_L1_error)
+  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Laplacian *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.aligned_direction(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_vectors, __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 122, __pyx_L1_error)
 
-  /* "bonndit/tracking/alignedDirection.pyx":134
+  /* "bonndit/tracking/alignedDirection.pyx":123
  * 		cdef int i
  * 		self.aligned_direction(vectors, direction)
  * 		for i in range(3):             # <<<<<<<<<<<<<<
@@ -3999,19 +3999,19 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_9Laplacian_calculate_p
   for (__pyx_t_1 = 0; __pyx_t_1 < 3; __pyx_t_1+=1) {
     __pyx_v_i = __pyx_t_1;
 
-    /* "bonndit/tracking/alignedDirection.pyx":135
+    /* "bonndit/tracking/alignedDirection.pyx":124
  * 		self.aligned_direction(vectors, direction)
  * 		for i in range(3):
  * 			self.probability[i] = 1/2 * exp(- (fabs(self.angles[i] - self.expectation) /             # <<<<<<<<<<<<<<
  * 			                                             self.sigma))
  * 		self.random_choice(direction)
  */
-    if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 135, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 124, __pyx_L1_error)}
     __pyx_t_2 = __pyx_v_i;
     if (__pyx_t_2 < 0) __pyx_t_2 += __pyx_v_self->__pyx_base.angles.shape[0];
     __pyx_t_3 = fabs(((*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.angles.data + __pyx_t_2 * __pyx_v_self->__pyx_base.angles.strides[0]) ))) - __pyx_v_self->__pyx_base.expectation));
 
-    /* "bonndit/tracking/alignedDirection.pyx":136
+    /* "bonndit/tracking/alignedDirection.pyx":125
  * 		for i in range(3):
  * 			self.probability[i] = 1/2 * exp(- (fabs(self.angles[i] - self.expectation) /
  * 			                                             self.sigma))             # <<<<<<<<<<<<<<
@@ -4026,32 +4026,32 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_9Laplacian_calculate_p
       #ifdef WITH_THREAD
       __Pyx_PyGILState_Release(__pyx_gilstate_save);
       #endif
-      __PYX_ERR(0, 135, __pyx_L1_error)
+      __PYX_ERR(0, 124, __pyx_L1_error)
     }
 
-    /* "bonndit/tracking/alignedDirection.pyx":135
+    /* "bonndit/tracking/alignedDirection.pyx":124
  * 		self.aligned_direction(vectors, direction)
  * 		for i in range(3):
  * 			self.probability[i] = 1/2 * exp(- (fabs(self.angles[i] - self.expectation) /             # <<<<<<<<<<<<<<
  * 			                                             self.sigma))
  * 		self.random_choice(direction)
  */
-    if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 135, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 124, __pyx_L1_error)}
     __pyx_t_2 = __pyx_v_i;
     if (__pyx_t_2 < 0) __pyx_t_2 += __pyx_v_self->__pyx_base.probability.shape[0];
     *((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.probability.data + __pyx_t_2 * __pyx_v_self->__pyx_base.probability.strides[0]) )) = ((1.0 / 2.0) * exp((-(__pyx_t_3 / __pyx_v_self->__pyx_base.sigma))));
   }
 
-  /* "bonndit/tracking/alignedDirection.pyx":137
+  /* "bonndit/tracking/alignedDirection.pyx":126
  * 			self.probability[i] = 1/2 * exp(- (fabs(self.angles[i] - self.expectation) /
  * 			                                             self.sigma))
  * 		self.random_choice(direction)             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Laplacian *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.random_choice(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 137, __pyx_L1_error)
+  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Laplacian *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.random_choice(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 126, __pyx_L1_error)
 
-  /* "bonndit/tracking/alignedDirection.pyx":125
+  /* "bonndit/tracking/alignedDirection.pyx":114
  * 
  * cdef class Laplacian(Probabilities):
  * 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil except *:             # <<<<<<<<<<<<<<
@@ -4187,7 +4187,7 @@ static PyObject *__pyx_pf_7bonndit_8tracking_16alignedDirection_9Laplacian_2__se
   return __pyx_r;
 }
 
-/* "bonndit/tracking/alignedDirection.pyx":141
+/* "bonndit/tracking/alignedDirection.pyx":130
  * 
  * cdef class ScalarOld(Probabilities):
  * 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil except *:             # <<<<<<<<<<<<<<
@@ -4209,33 +4209,33 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_9ScalarOld_calculate_p
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
 
-  /* "bonndit/tracking/alignedDirection.pyx":150
+  /* "bonndit/tracking/alignedDirection.pyx":139
  * 		cdef int i
  * 		cdef double s
  * 		self.aligned_direction(vectors, direction)             # <<<<<<<<<<<<<<
  * 		#with gil:
  * 		#	print(*self.angles)
  */
-  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_ScalarOld *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.aligned_direction(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_vectors, __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 150, __pyx_L1_error)
+  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_ScalarOld *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.aligned_direction(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_vectors, __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 139, __pyx_L1_error)
 
-  /* "bonndit/tracking/alignedDirection.pyx":153
+  /* "bonndit/tracking/alignedDirection.pyx":142
  * 		#with gil:
  * 		#	print(*self.angles)
  * 		for i in range(3):             # <<<<<<<<<<<<<<
  * 			if sum_c(self.test_vectors[i]) == sum_c(self.test_vectors[i])  and pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2) <= 1/2*pi:
- * 		#		with gil:
+ * 			#	with gil:
  */
   for (__pyx_t_1 = 0; __pyx_t_1 < 3; __pyx_t_1+=1) {
     __pyx_v_i = __pyx_t_1;
 
-    /* "bonndit/tracking/alignedDirection.pyx":154
+    /* "bonndit/tracking/alignedDirection.pyx":143
  * 		#	print(*self.angles)
  * 		for i in range(3):
  * 			if sum_c(self.test_vectors[i]) == sum_c(self.test_vectors[i])  and pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2) <= 1/2*pi:             # <<<<<<<<<<<<<<
- * 		#		with gil:
- * 		#			print('First angle ' , self.angles[i], self.expectation, pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2), pow(cos(pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma))
+ * 			#	with gil:
+ * 			#		print('First angle ' , self.angles[i], pow(cos(pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)*norm(self.test_vectors[i]))
  */
-    if (unlikely(!__pyx_v_self->__pyx_base.test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 154, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->__pyx_base.test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 143, __pyx_L1_error)}
     __pyx_t_3.data = __pyx_v_self->__pyx_base.test_vectors.data;
     __pyx_t_3.memview = __pyx_v_self->__pyx_base.test_vectors.memview;
     __PYX_INC_MEMVIEW(&__pyx_t_3, 0);
@@ -4252,7 +4252,7 @@ __pyx_t_3.shape[0] = __pyx_v_self->__pyx_base.test_vectors.shape[1];
 __pyx_t_3.strides[0] = __pyx_v_self->__pyx_base.test_vectors.strides[1];
     __pyx_t_3.suboffsets[0] = -1;
 
-if (unlikely(!__pyx_v_self->__pyx_base.test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 154, __pyx_L1_error)}
+if (unlikely(!__pyx_v_self->__pyx_base.test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 143, __pyx_L1_error)}
     __pyx_t_4.data = __pyx_v_self->__pyx_base.test_vectors.data;
     __pyx_t_4.memview = __pyx_v_self->__pyx_base.test_vectors.memview;
     __PYX_INC_MEMVIEW(&__pyx_t_4, 0);
@@ -4290,9 +4290,9 @@ __pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_3) == __pyx
       #ifdef WITH_THREAD
       __Pyx_PyGILState_Release(__pyx_gilstate_save);
       #endif
-      __PYX_ERR(0, 154, __pyx_L1_error)
+      __PYX_ERR(0, 143, __pyx_L1_error)
     }
-    if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 154, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 143, __pyx_L1_error)}
     __pyx_t_7 = __pyx_v_i;
     if (__pyx_t_7 < 0) __pyx_t_7 += __pyx_v_self->__pyx_base.angles.shape[0];
     __pyx_t_5 = ((pow(((((__pyx_v_self->__pyx_base.expectation / __pyx_t_6) * (*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.angles.data + __pyx_t_7 * __pyx_v_self->__pyx_base.angles.strides[0]) )))) / 180.0) * M_PI), 2.0) <= ((1.0 / 2.0) * M_PI)) != 0);
@@ -4300,12 +4300,12 @@ __pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_3) == __pyx
     __pyx_L6_bool_binop_done:;
     if (__pyx_t_2) {
 
-      /* "bonndit/tracking/alignedDirection.pyx":157
- * 		#		with gil:
- * 		#			print('First angle ' , self.angles[i], self.expectation, pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2), pow(cos(pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma))
- * 				self.probability[i]=pow(cos(pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)*norm(self.test_vectors[i])             # <<<<<<<<<<<<<<
+      /* "bonndit/tracking/alignedDirection.pyx":146
+ * 			#	with gil:
+ * 			#		print('First angle ' , self.angles[i], pow(cos(pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)*norm(self.test_vectors[i]))
+ * 				self.probability[i]=pow(cos(pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)#*norm(self.test_vectors[i])             # <<<<<<<<<<<<<<
  * 			else:
- * 				self.probability[i] = 0
+ * 			#	with gil:
  */
       __pyx_t_6 = pow((2.0 * M_PI), 0.5);
       if (unlikely(__pyx_t_6 == 0)) {
@@ -4316,55 +4316,35 @@ __pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_3) == __pyx
         #ifdef WITH_THREAD
         __Pyx_PyGILState_Release(__pyx_gilstate_save);
         #endif
-        __PYX_ERR(0, 157, __pyx_L1_error)
+        __PYX_ERR(0, 146, __pyx_L1_error)
       }
-      if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 157, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 146, __pyx_L1_error)}
       __pyx_t_7 = __pyx_v_i;
       if (__pyx_t_7 < 0) __pyx_t_7 += __pyx_v_self->__pyx_base.angles.shape[0];
-      if (unlikely(!__pyx_v_self->__pyx_base.test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 157, __pyx_L1_error)}
-      __pyx_t_4.data = __pyx_v_self->__pyx_base.test_vectors.data;
-      __pyx_t_4.memview = __pyx_v_self->__pyx_base.test_vectors.memview;
-      __PYX_INC_MEMVIEW(&__pyx_t_4, 0);
-      {
-    Py_ssize_t __pyx_tmp_idx = __pyx_v_i;
-        Py_ssize_t __pyx_tmp_shape = __pyx_v_self->__pyx_base.test_vectors.shape[0];
-    Py_ssize_t __pyx_tmp_stride = __pyx_v_self->__pyx_base.test_vectors.strides[0];
-        if (__pyx_tmp_idx < 0)
-            __pyx_tmp_idx += __pyx_tmp_shape;
-        __pyx_t_4.data += __pyx_tmp_idx * __pyx_tmp_stride;
-}
-
-__pyx_t_4.shape[0] = __pyx_v_self->__pyx_base.test_vectors.shape[1];
-__pyx_t_4.strides[0] = __pyx_v_self->__pyx_base.test_vectors.strides[1];
-    __pyx_t_4.suboffsets[0] = -1;
-
-if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 157, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 146, __pyx_L1_error)}
       __pyx_t_8 = __pyx_v_i;
       if (__pyx_t_8 < 0) __pyx_t_8 += __pyx_v_self->__pyx_base.probability.shape[0];
-      *((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.probability.data + __pyx_t_8 * __pyx_v_self->__pyx_base.probability.strides[0]) )) = (pow(cos(pow(((((__pyx_v_self->__pyx_base.expectation / __pyx_t_6) * (*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.angles.data + __pyx_t_7 * __pyx_v_self->__pyx_base.angles.strides[0]) )))) / 180.0) * M_PI), 2.0)), __pyx_v_self->__pyx_base.sigma) * __pyx_f_7bonndit_5utilc_14cython_helpers_norm(__pyx_t_4));
-      __PYX_XDEC_MEMVIEW(&__pyx_t_4, 0);
-      __pyx_t_4.memview = NULL;
-      __pyx_t_4.data = NULL;
+      *((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.probability.data + __pyx_t_8 * __pyx_v_self->__pyx_base.probability.strides[0]) )) = pow(cos(pow(((((__pyx_v_self->__pyx_base.expectation / __pyx_t_6) * (*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.angles.data + __pyx_t_7 * __pyx_v_self->__pyx_base.angles.strides[0]) )))) / 180.0) * M_PI), 2.0)), __pyx_v_self->__pyx_base.sigma);
 
-      /* "bonndit/tracking/alignedDirection.pyx":154
+      /* "bonndit/tracking/alignedDirection.pyx":143
  * 		#	print(*self.angles)
  * 		for i in range(3):
  * 			if sum_c(self.test_vectors[i]) == sum_c(self.test_vectors[i])  and pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2) <= 1/2*pi:             # <<<<<<<<<<<<<<
- * 		#		with gil:
- * 		#			print('First angle ' , self.angles[i], self.expectation, pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2), pow(cos(pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma))
+ * 			#	with gil:
+ * 			#		print('First angle ' , self.angles[i], pow(cos(pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)*norm(self.test_vectors[i]))
  */
       goto __pyx_L5;
     }
 
-    /* "bonndit/tracking/alignedDirection.pyx":159
- * 				self.probability[i]=pow(cos(pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)*norm(self.test_vectors[i])
- * 			else:
+    /* "bonndit/tracking/alignedDirection.pyx":152
+ * 			#			'DAS IST DER FEHLER',pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2)
+ * 			#		)
  * 				self.probability[i] = 0             # <<<<<<<<<<<<<<
  * 		self.random_choice(direction)
  * 
  */
     /*else*/ {
-      if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 159, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 152, __pyx_L1_error)}
       __pyx_t_7 = __pyx_v_i;
       if (__pyx_t_7 < 0) __pyx_t_7 += __pyx_v_self->__pyx_base.probability.shape[0];
       *((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.probability.data + __pyx_t_7 * __pyx_v_self->__pyx_base.probability.strides[0]) )) = 0.0;
@@ -4372,16 +4352,16 @@ if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(Py
     __pyx_L5:;
   }
 
-  /* "bonndit/tracking/alignedDirection.pyx":160
- * 			else:
+  /* "bonndit/tracking/alignedDirection.pyx":153
+ * 			#		)
  * 				self.probability[i] = 0
  * 		self.random_choice(direction)             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_ScalarOld *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.random_choice(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 160, __pyx_L1_error)
+  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_ScalarOld *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.random_choice(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 153, __pyx_L1_error)
 
-  /* "bonndit/tracking/alignedDirection.pyx":141
+  /* "bonndit/tracking/alignedDirection.pyx":130
  * 
  * cdef class ScalarOld(Probabilities):
  * 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil except *:             # <<<<<<<<<<<<<<
@@ -4519,7 +4499,7 @@ static PyObject *__pyx_pf_7bonndit_8tracking_16alignedDirection_9ScalarOld_2__se
   return __pyx_r;
 }
 
-/* "bonndit/tracking/alignedDirection.pyx":164
+/* "bonndit/tracking/alignedDirection.pyx":157
  * 
  * cdef class ScalarNew(Probabilities):
  * 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil  except *:             # <<<<<<<<<<<<<<
@@ -4539,16 +4519,16 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_9ScalarNew_calculate_p
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
 
-  /* "bonndit/tracking/alignedDirection.pyx":173
+  /* "bonndit/tracking/alignedDirection.pyx":166
  * 		cdef int i
  * 		cdef double s
  * 		self.aligned_direction(vectors, direction)             # <<<<<<<<<<<<<<
  * 		#with gil:
  * 		#	print(*self.angles)
  */
-  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_ScalarNew *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.aligned_direction(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_vectors, __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 173, __pyx_L1_error)
+  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_ScalarNew *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.aligned_direction(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_vectors, __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 166, __pyx_L1_error)
 
-  /* "bonndit/tracking/alignedDirection.pyx":176
+  /* "bonndit/tracking/alignedDirection.pyx":169
  * 		#with gil:
  * 		#	print(*self.angles)
  * 		for i in range(3):             # <<<<<<<<<<<<<<
@@ -4558,7 +4538,7 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_9ScalarNew_calculate_p
   for (__pyx_t_1 = 0; __pyx_t_1 < 3; __pyx_t_1+=1) {
     __pyx_v_i = __pyx_t_1;
 
-    /* "bonndit/tracking/alignedDirection.pyx":177
+    /* "bonndit/tracking/alignedDirection.pyx":170
  * 		#	print(*self.angles)
  * 		for i in range(3):
  * 			if sum_c(vectors[i]) == sum_c(vectors[i]):             # <<<<<<<<<<<<<<
@@ -4606,17 +4586,17 @@ __pyx_t_4 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_2) == __pyx
     __pyx_t_3.data = NULL;
     if (__pyx_t_4) {
 
-      /* "bonndit/tracking/alignedDirection.pyx":178
+      /* "bonndit/tracking/alignedDirection.pyx":171
  * 		for i in range(3):
  * 			if sum_c(vectors[i]) == sum_c(vectors[i]):
  * 				self.probability[i] = pow(cos(self.angles[i]/180*pi),self.sigma)*norm(self.test_vectors[i])             # <<<<<<<<<<<<<<
  * 			else:
  * 				self.probability[i] = 0
  */
-      if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 178, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 171, __pyx_L1_error)}
       __pyx_t_5 = __pyx_v_i;
       if (__pyx_t_5 < 0) __pyx_t_5 += __pyx_v_self->__pyx_base.angles.shape[0];
-      if (unlikely(!__pyx_v_self->__pyx_base.test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 178, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->__pyx_base.test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 171, __pyx_L1_error)}
       __pyx_t_3.data = __pyx_v_self->__pyx_base.test_vectors.data;
       __pyx_t_3.memview = __pyx_v_self->__pyx_base.test_vectors.memview;
       __PYX_INC_MEMVIEW(&__pyx_t_3, 0);
@@ -4633,7 +4613,7 @@ __pyx_t_3.shape[0] = __pyx_v_self->__pyx_base.test_vectors.shape[1];
 __pyx_t_3.strides[0] = __pyx_v_self->__pyx_base.test_vectors.strides[1];
     __pyx_t_3.suboffsets[0] = -1;
 
-if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 178, __pyx_L1_error)}
+if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 171, __pyx_L1_error)}
       __pyx_t_6 = __pyx_v_i;
       if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_self->__pyx_base.probability.shape[0];
       *((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.probability.data + __pyx_t_6 * __pyx_v_self->__pyx_base.probability.strides[0]) )) = (pow(cos((((*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.angles.data + __pyx_t_5 * __pyx_v_self->__pyx_base.angles.strides[0]) ))) / 180.0) * M_PI)), __pyx_v_self->__pyx_base.sigma) * __pyx_f_7bonndit_5utilc_14cython_helpers_norm(__pyx_t_3));
@@ -4641,7 +4621,7 @@ if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(Py
       __pyx_t_3.memview = NULL;
       __pyx_t_3.data = NULL;
 
-      /* "bonndit/tracking/alignedDirection.pyx":177
+      /* "bonndit/tracking/alignedDirection.pyx":170
  * 		#	print(*self.angles)
  * 		for i in range(3):
  * 			if sum_c(vectors[i]) == sum_c(vectors[i]):             # <<<<<<<<<<<<<<
@@ -4651,7 +4631,7 @@ if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(Py
       goto __pyx_L5;
     }
 
-    /* "bonndit/tracking/alignedDirection.pyx":180
+    /* "bonndit/tracking/alignedDirection.pyx":173
  * 				self.probability[i] = pow(cos(self.angles[i]/180*pi),self.sigma)*norm(self.test_vectors[i])
  * 			else:
  * 				self.probability[i] = 0             # <<<<<<<<<<<<<<
@@ -4659,7 +4639,7 @@ if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(Py
  * 		self.random_choice(direction)
  */
     /*else*/ {
-      if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 180, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 173, __pyx_L1_error)}
       __pyx_t_5 = __pyx_v_i;
       if (__pyx_t_5 < 0) __pyx_t_5 += __pyx_v_self->__pyx_base.probability.shape[0];
       *((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.probability.data + __pyx_t_5 * __pyx_v_self->__pyx_base.probability.strides[0]) )) = 0.0;
@@ -4667,16 +4647,16 @@ if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(Py
     __pyx_L5:;
   }
 
-  /* "bonndit/tracking/alignedDirection.pyx":182
+  /* "bonndit/tracking/alignedDirection.pyx":175
  * 				self.probability[i] = 0
  * 
  * 		self.random_choice(direction)             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_ScalarNew *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.random_choice(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 182, __pyx_L1_error)
+  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_ScalarNew *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.random_choice(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 175, __pyx_L1_error)
 
-  /* "bonndit/tracking/alignedDirection.pyx":164
+  /* "bonndit/tracking/alignedDirection.pyx":157
  * 
  * cdef class ScalarNew(Probabilities):
  * 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil  except *:             # <<<<<<<<<<<<<<
@@ -4814,7 +4794,7 @@ static PyObject *__pyx_pf_7bonndit_8tracking_16alignedDirection_9ScalarNew_2__se
   return __pyx_r;
 }
 
-/* "bonndit/tracking/alignedDirection.pyx":186
+/* "bonndit/tracking/alignedDirection.pyx":179
  * 
  * cdef class Deterministic2(Probabilities):
  * 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil  except *:             # <<<<<<<<<<<<<<
@@ -4836,7 +4816,7 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_14Deterministic2_calcu
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
 
-  /* "bonndit/tracking/alignedDirection.pyx":193
+  /* "bonndit/tracking/alignedDirection.pyx":186
  * 		@return:
  * 		"""
  * 		cdef int i, min_index=0             # <<<<<<<<<<<<<<
@@ -4845,7 +4825,7 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_14Deterministic2_calcu
  */
   __pyx_v_min_index = 0;
 
-  /* "bonndit/tracking/alignedDirection.pyx":194
+  /* "bonndit/tracking/alignedDirection.pyx":187
  * 		"""
  * 		cdef int i, min_index=0
  * 		cdef double s, min_angle=0             # <<<<<<<<<<<<<<
@@ -4854,16 +4834,16 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_14Deterministic2_calcu
  */
   __pyx_v_min_angle = 0.0;
 
-  /* "bonndit/tracking/alignedDirection.pyx":195
+  /* "bonndit/tracking/alignedDirection.pyx":188
  * 		cdef int i, min_index=0
  * 		cdef double s, min_angle=0
  * 		self.aligned_direction(vectors, direction)             # <<<<<<<<<<<<<<
  * 		for i in range(3):
  * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:
  */
-  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Deterministic2 *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.aligned_direction(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_vectors, __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 195, __pyx_L1_error)
+  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Deterministic2 *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.aligned_direction(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_vectors, __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 188, __pyx_L1_error)
 
-  /* "bonndit/tracking/alignedDirection.pyx":196
+  /* "bonndit/tracking/alignedDirection.pyx":189
  * 		cdef double s, min_angle=0
  * 		self.aligned_direction(vectors, direction)
  * 		for i in range(3):             # <<<<<<<<<<<<<<
@@ -4873,7 +4853,7 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_14Deterministic2_calcu
   for (__pyx_t_1 = 0; __pyx_t_1 < 3; __pyx_t_1+=1) {
     __pyx_v_i = __pyx_t_1;
 
-    /* "bonndit/tracking/alignedDirection.pyx":197
+    /* "bonndit/tracking/alignedDirection.pyx":190
  * 		self.aligned_direction(vectors, direction)
  * 		for i in range(3):
  * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:             # <<<<<<<<<<<<<<
@@ -4948,14 +4928,14 @@ __pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_4) != 0.0) 
     __pyx_L6_bool_binop_done:;
     if (__pyx_t_2) {
 
-      /* "bonndit/tracking/alignedDirection.pyx":198
+      /* "bonndit/tracking/alignedDirection.pyx":191
  * 		for i in range(3):
  * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:
  * 				if self.angles[i] < min_angle or i==0:             # <<<<<<<<<<<<<<
  * 					min_angle=self.angles[i]
  * 					min_index=i
  */
-      if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 198, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 191, __pyx_L1_error)}
       __pyx_t_6 = __pyx_v_i;
       if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_self->__pyx_base.angles.shape[0];
       __pyx_t_5 = (((*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.angles.data + __pyx_t_6 * __pyx_v_self->__pyx_base.angles.strides[0]) ))) < __pyx_v_min_angle) != 0);
@@ -4969,19 +4949,19 @@ __pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_4) != 0.0) 
       __pyx_L9_bool_binop_done:;
       if (__pyx_t_2) {
 
-        /* "bonndit/tracking/alignedDirection.pyx":199
+        /* "bonndit/tracking/alignedDirection.pyx":192
  * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:
  * 				if self.angles[i] < min_angle or i==0:
  * 					min_angle=self.angles[i]             # <<<<<<<<<<<<<<
  * 					min_index=i
  * 		for i in range(3):
  */
-        if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 199, __pyx_L1_error)}
+        if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 192, __pyx_L1_error)}
         __pyx_t_6 = __pyx_v_i;
         if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_self->__pyx_base.angles.shape[0];
         __pyx_v_min_angle = (*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.angles.data + __pyx_t_6 * __pyx_v_self->__pyx_base.angles.strides[0]) )));
 
-        /* "bonndit/tracking/alignedDirection.pyx":200
+        /* "bonndit/tracking/alignedDirection.pyx":193
  * 				if self.angles[i] < min_angle or i==0:
  * 					min_angle=self.angles[i]
  * 					min_index=i             # <<<<<<<<<<<<<<
@@ -4990,7 +4970,7 @@ __pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_4) != 0.0) 
  */
         __pyx_v_min_index = __pyx_v_i;
 
-        /* "bonndit/tracking/alignedDirection.pyx":198
+        /* "bonndit/tracking/alignedDirection.pyx":191
  * 		for i in range(3):
  * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:
  * 				if self.angles[i] < min_angle or i==0:             # <<<<<<<<<<<<<<
@@ -4999,7 +4979,7 @@ __pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_4) != 0.0) 
  */
       }
 
-      /* "bonndit/tracking/alignedDirection.pyx":197
+      /* "bonndit/tracking/alignedDirection.pyx":190
  * 		self.aligned_direction(vectors, direction)
  * 		for i in range(3):
  * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:             # <<<<<<<<<<<<<<
@@ -5009,7 +4989,7 @@ __pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_4) != 0.0) 
     }
   }
 
-  /* "bonndit/tracking/alignedDirection.pyx":201
+  /* "bonndit/tracking/alignedDirection.pyx":194
  * 					min_angle=self.angles[i]
  * 					min_index=i
  * 		for i in range(3):             # <<<<<<<<<<<<<<
@@ -5019,7 +4999,7 @@ __pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_4) != 0.0) 
   for (__pyx_t_1 = 0; __pyx_t_1 < 3; __pyx_t_1+=1) {
     __pyx_v_i = __pyx_t_1;
 
-    /* "bonndit/tracking/alignedDirection.pyx":202
+    /* "bonndit/tracking/alignedDirection.pyx":195
  * 					min_index=i
  * 		for i in range(3):
  * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:             # <<<<<<<<<<<<<<
@@ -5094,14 +5074,14 @@ __pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_3) != 0.0) 
     __pyx_L14_bool_binop_done:;
     if (__pyx_t_2) {
 
-      /* "bonndit/tracking/alignedDirection.pyx":203
+      /* "bonndit/tracking/alignedDirection.pyx":196
  * 		for i in range(3):
  * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:
  * 				if self.angles[i] < self.expectation or (self.angles[i] == min_angle and min_angle < self.sigma):             # <<<<<<<<<<<<<<
  * 					self.probability[i] = 1
  * 				else:
  */
-      if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 203, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 196, __pyx_L1_error)}
       __pyx_t_6 = __pyx_v_i;
       if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_self->__pyx_base.angles.shape[0];
       __pyx_t_5 = (((*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.angles.data + __pyx_t_6 * __pyx_v_self->__pyx_base.angles.strides[0]) ))) < __pyx_v_self->__pyx_base.expectation) != 0);
@@ -5110,7 +5090,7 @@ __pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_3) != 0.0) 
         __pyx_t_2 = __pyx_t_5;
         goto __pyx_L17_bool_binop_done;
       }
-      if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 203, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 196, __pyx_L1_error)}
       __pyx_t_6 = __pyx_v_i;
       if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_self->__pyx_base.angles.shape[0];
       __pyx_t_5 = (((*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.angles.data + __pyx_t_6 * __pyx_v_self->__pyx_base.angles.strides[0]) ))) == __pyx_v_min_angle) != 0);
@@ -5124,19 +5104,19 @@ __pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_3) != 0.0) 
       __pyx_L17_bool_binop_done:;
       if (__pyx_t_2) {
 
-        /* "bonndit/tracking/alignedDirection.pyx":204
+        /* "bonndit/tracking/alignedDirection.pyx":197
  * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:
  * 				if self.angles[i] < self.expectation or (self.angles[i] == min_angle and min_angle < self.sigma):
  * 					self.probability[i] = 1             # <<<<<<<<<<<<<<
  * 				else:
  * 					self.probability[i] = 0
  */
-        if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 204, __pyx_L1_error)}
+        if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 197, __pyx_L1_error)}
         __pyx_t_6 = __pyx_v_i;
         if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_self->__pyx_base.probability.shape[0];
         *((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.probability.data + __pyx_t_6 * __pyx_v_self->__pyx_base.probability.strides[0]) )) = 1.0;
 
-        /* "bonndit/tracking/alignedDirection.pyx":203
+        /* "bonndit/tracking/alignedDirection.pyx":196
  * 		for i in range(3):
  * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:
  * 				if self.angles[i] < self.expectation or (self.angles[i] == min_angle and min_angle < self.sigma):             # <<<<<<<<<<<<<<
@@ -5146,7 +5126,7 @@ __pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_3) != 0.0) 
         goto __pyx_L16;
       }
 
-      /* "bonndit/tracking/alignedDirection.pyx":206
+      /* "bonndit/tracking/alignedDirection.pyx":199
  * 					self.probability[i] = 1
  * 				else:
  * 					self.probability[i] = 0             # <<<<<<<<<<<<<<
@@ -5154,14 +5134,14 @@ __pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_3) != 0.0) 
  * 		self.random_choice(direction)
  */
       /*else*/ {
-        if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 206, __pyx_L1_error)}
+        if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 199, __pyx_L1_error)}
         __pyx_t_6 = __pyx_v_i;
         if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_self->__pyx_base.probability.shape[0];
         *((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.probability.data + __pyx_t_6 * __pyx_v_self->__pyx_base.probability.strides[0]) )) = 0.0;
       }
       __pyx_L16:;
 
-      /* "bonndit/tracking/alignedDirection.pyx":202
+      /* "bonndit/tracking/alignedDirection.pyx":195
  * 					min_index=i
  * 		for i in range(3):
  * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:             # <<<<<<<<<<<<<<
@@ -5171,16 +5151,16 @@ __pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_3) != 0.0) 
     }
   }
 
-  /* "bonndit/tracking/alignedDirection.pyx":208
+  /* "bonndit/tracking/alignedDirection.pyx":201
  * 					self.probability[i] = 0
  * 	#	self.probability[min_index] = 1
  * 		self.random_choice(direction)             # <<<<<<<<<<<<<<
  * #		mult_with_scalar(self.best_fit, 1, self.test_vectors[min_index])
  * #		self.chosen_prob = 0
  */
-  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Deterministic2 *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.random_choice(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 208, __pyx_L1_error)
+  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Deterministic2 *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.random_choice(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 201, __pyx_L1_error)
 
-  /* "bonndit/tracking/alignedDirection.pyx":186
+  /* "bonndit/tracking/alignedDirection.pyx":179
  * 
  * cdef class Deterministic2(Probabilities):
  * 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil  except *:             # <<<<<<<<<<<<<<
@@ -5318,7 +5298,7 @@ static PyObject *__pyx_pf_7bonndit_8tracking_16alignedDirection_14Deterministic2
   return __pyx_r;
 }
 
-/* "bonndit/tracking/alignedDirection.pyx":214
+/* "bonndit/tracking/alignedDirection.pyx":207
  * 
  * cdef class Deterministic(Probabilities):
  * 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil  except *:             # <<<<<<<<<<<<<<
@@ -5340,7 +5320,7 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_13Deterministic_calcul
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
 
-  /* "bonndit/tracking/alignedDirection.pyx":221
+  /* "bonndit/tracking/alignedDirection.pyx":214
  * 		@return:
  * 		"""
  * 		cdef int i, min_index=0             # <<<<<<<<<<<<<<
@@ -5349,7 +5329,7 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_13Deterministic_calcul
  */
   __pyx_v_min_index = 0;
 
-  /* "bonndit/tracking/alignedDirection.pyx":222
+  /* "bonndit/tracking/alignedDirection.pyx":215
  * 		"""
  * 		cdef int i, min_index=0
  * 		cdef double s, min_angle=0             # <<<<<<<<<<<<<<
@@ -5358,16 +5338,16 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_13Deterministic_calcul
  */
   __pyx_v_min_angle = 0.0;
 
-  /* "bonndit/tracking/alignedDirection.pyx":223
+  /* "bonndit/tracking/alignedDirection.pyx":216
  * 		cdef int i, min_index=0
  * 		cdef double s, min_angle=0
  * 		self.aligned_direction(vectors, direction)             # <<<<<<<<<<<<<<
  * 		for i in range(3):
  * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:
  */
-  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Deterministic *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.aligned_direction(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_vectors, __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 223, __pyx_L1_error)
+  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Deterministic *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.aligned_direction(((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self), __pyx_v_vectors, __pyx_v_direction); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 216, __pyx_L1_error)
 
-  /* "bonndit/tracking/alignedDirection.pyx":224
+  /* "bonndit/tracking/alignedDirection.pyx":217
  * 		cdef double s, min_angle=0
  * 		self.aligned_direction(vectors, direction)
  * 		for i in range(3):             # <<<<<<<<<<<<<<
@@ -5377,7 +5357,7 @@ static void __pyx_f_7bonndit_8tracking_16alignedDirection_13Deterministic_calcul
   for (__pyx_t_1 = 0; __pyx_t_1 < 3; __pyx_t_1+=1) {
     __pyx_v_i = __pyx_t_1;
 
-    /* "bonndit/tracking/alignedDirection.pyx":225
+    /* "bonndit/tracking/alignedDirection.pyx":218
  * 		self.aligned_direction(vectors, direction)
  * 		for i in range(3):
  * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:             # <<<<<<<<<<<<<<
@@ -5452,14 +5432,14 @@ __pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_4) != 0.0) 
     __pyx_L6_bool_binop_done:;
     if (__pyx_t_2) {
 
-      /* "bonndit/tracking/alignedDirection.pyx":226
+      /* "bonndit/tracking/alignedDirection.pyx":219
  * 		for i in range(3):
  * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:
  * 				if self.angles[i] < min_angle or i==0:             # <<<<<<<<<<<<<<
  * 					min_angle=self.angles[i]
  * 					min_index=i
  */
-      if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 226, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 219, __pyx_L1_error)}
       __pyx_t_6 = __pyx_v_i;
       if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_self->__pyx_base.angles.shape[0];
       __pyx_t_5 = (((*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.angles.data + __pyx_t_6 * __pyx_v_self->__pyx_base.angles.strides[0]) ))) < __pyx_v_min_angle) != 0);
@@ -5473,19 +5453,19 @@ __pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_4) != 0.0) 
       __pyx_L9_bool_binop_done:;
       if (__pyx_t_2) {
 
-        /* "bonndit/tracking/alignedDirection.pyx":227
+        /* "bonndit/tracking/alignedDirection.pyx":220
  * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:
  * 				if self.angles[i] < min_angle or i==0:
  * 					min_angle=self.angles[i]             # <<<<<<<<<<<<<<
  * 					min_index=i
  * 
  */
-        if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 227, __pyx_L1_error)}
+        if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 220, __pyx_L1_error)}
         __pyx_t_6 = __pyx_v_i;
         if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_self->__pyx_base.angles.shape[0];
         __pyx_v_min_angle = (*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.angles.data + __pyx_t_6 * __pyx_v_self->__pyx_base.angles.strides[0]) )));
 
-        /* "bonndit/tracking/alignedDirection.pyx":228
+        /* "bonndit/tracking/alignedDirection.pyx":221
  * 				if self.angles[i] < min_angle or i==0:
  * 					min_angle=self.angles[i]
  * 					min_index=i             # <<<<<<<<<<<<<<
@@ -5494,7 +5474,7 @@ __pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_4) != 0.0) 
  */
         __pyx_v_min_index = __pyx_v_i;
 
-        /* "bonndit/tracking/alignedDirection.pyx":226
+        /* "bonndit/tracking/alignedDirection.pyx":219
  * 		for i in range(3):
  * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:
  * 				if self.angles[i] < min_angle or i==0:             # <<<<<<<<<<<<<<
@@ -5503,7 +5483,7 @@ __pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_4) != 0.0) 
  */
       }
 
-      /* "bonndit/tracking/alignedDirection.pyx":225
+      /* "bonndit/tracking/alignedDirection.pyx":218
  * 		self.aligned_direction(vectors, direction)
  * 		for i in range(3):
  * 			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:             # <<<<<<<<<<<<<<
@@ -5513,15 +5493,15 @@ __pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_4) != 0.0) 
     }
   }
 
-  /* "bonndit/tracking/alignedDirection.pyx":230
+  /* "bonndit/tracking/alignedDirection.pyx":223
  * 					min_index=i
  * 
  * 		mult_with_scalar(self.best_fit, 1, self.test_vectors[min_index])             # <<<<<<<<<<<<<<
  * 		self.chosen_prob = 0
  * 		self.chosen_angle = self.angles[min_index]
  */
-  if (unlikely(!__pyx_v_self->__pyx_base.best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 230, __pyx_L1_error)}
-  if (unlikely(!__pyx_v_self->__pyx_base.test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 230, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->__pyx_base.best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 223, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->__pyx_base.test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 223, __pyx_L1_error)}
   __pyx_t_4.data = __pyx_v_self->__pyx_base.test_vectors.data;
   __pyx_t_4.memview = __pyx_v_self->__pyx_base.test_vectors.memview;
   __PYX_INC_MEMVIEW(&__pyx_t_4, 0);
@@ -5543,7 +5523,7 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_self->__pyx_ba
   __pyx_t_4.memview = NULL;
   __pyx_t_4.data = NULL;
 
-  /* "bonndit/tracking/alignedDirection.pyx":231
+  /* "bonndit/tracking/alignedDirection.pyx":224
  * 
  * 		mult_with_scalar(self.best_fit, 1, self.test_vectors[min_index])
  * 		self.chosen_prob = 0             # <<<<<<<<<<<<<<
@@ -5552,18 +5532,18 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_self->__pyx_ba
  */
   __pyx_v_self->__pyx_base.chosen_prob = 0.0;
 
-  /* "bonndit/tracking/alignedDirection.pyx":232
+  /* "bonndit/tracking/alignedDirection.pyx":225
  * 		mult_with_scalar(self.best_fit, 1, self.test_vectors[min_index])
  * 		self.chosen_prob = 0
  * 		self.chosen_angle = self.angles[min_index]             # <<<<<<<<<<<<<<
  * 
  */
-  if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 232, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 225, __pyx_L1_error)}
   __pyx_t_6 = __pyx_v_min_index;
   if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_self->__pyx_base.angles.shape[0];
   __pyx_v_self->__pyx_base.chosen_angle = (*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.angles.data + __pyx_t_6 * __pyx_v_self->__pyx_base.angles.strides[0]) )));
 
-  /* "bonndit/tracking/alignedDirection.pyx":214
+  /* "bonndit/tracking/alignedDirection.pyx":207
  * 
  * cdef class Deterministic(Probabilities):
  * 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) nogil  except *:             # <<<<<<<<<<<<<<
@@ -20759,91 +20739,91 @@ static int __Pyx_modinit_type_init_code(void) {
   __pyx_vtable_7bonndit_8tracking_16alignedDirection_Gaussian.__pyx_base = *__pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Probabilities;
   __pyx_vtable_7bonndit_8tracking_16alignedDirection_Gaussian.__pyx_base.calculate_probabilities = (void (*)(struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *, __Pyx_memviewslice, __Pyx_memviewslice))__pyx_f_7bonndit_8tracking_16alignedDirection_8Gaussian_calculate_probabilities;
   __pyx_type_7bonndit_8tracking_16alignedDirection_Gaussian.tp_base = __pyx_ptype_7bonndit_8tracking_16alignedDirection_Probabilities;
-  if (PyType_Ready(&__pyx_type_7bonndit_8tracking_16alignedDirection_Gaussian) < 0) __PYX_ERR(0, 109, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_7bonndit_8tracking_16alignedDirection_Gaussian) < 0) __PYX_ERR(0, 98, __pyx_L1_error)
   #if PY_VERSION_HEX < 0x030800B1
   __pyx_type_7bonndit_8tracking_16alignedDirection_Gaussian.tp_print = 0;
   #endif
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_7bonndit_8tracking_16alignedDirection_Gaussian.tp_dictoffset && __pyx_type_7bonndit_8tracking_16alignedDirection_Gaussian.tp_getattro == PyObject_GenericGetAttr)) {
     __pyx_type_7bonndit_8tracking_16alignedDirection_Gaussian.tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
-  if (__Pyx_SetVtable(__pyx_type_7bonndit_8tracking_16alignedDirection_Gaussian.tp_dict, __pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Gaussian) < 0) __PYX_ERR(0, 109, __pyx_L1_error)
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_Gaussian, (PyObject *)&__pyx_type_7bonndit_8tracking_16alignedDirection_Gaussian) < 0) __PYX_ERR(0, 109, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_7bonndit_8tracking_16alignedDirection_Gaussian) < 0) __PYX_ERR(0, 109, __pyx_L1_error)
+  if (__Pyx_SetVtable(__pyx_type_7bonndit_8tracking_16alignedDirection_Gaussian.tp_dict, __pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Gaussian) < 0) __PYX_ERR(0, 98, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_Gaussian, (PyObject *)&__pyx_type_7bonndit_8tracking_16alignedDirection_Gaussian) < 0) __PYX_ERR(0, 98, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_7bonndit_8tracking_16alignedDirection_Gaussian) < 0) __PYX_ERR(0, 98, __pyx_L1_error)
   __pyx_ptype_7bonndit_8tracking_16alignedDirection_Gaussian = &__pyx_type_7bonndit_8tracking_16alignedDirection_Gaussian;
   __pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Laplacian = &__pyx_vtable_7bonndit_8tracking_16alignedDirection_Laplacian;
   __pyx_vtable_7bonndit_8tracking_16alignedDirection_Laplacian.__pyx_base = *__pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Probabilities;
   __pyx_vtable_7bonndit_8tracking_16alignedDirection_Laplacian.__pyx_base.calculate_probabilities = (void (*)(struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *, __Pyx_memviewslice, __Pyx_memviewslice))__pyx_f_7bonndit_8tracking_16alignedDirection_9Laplacian_calculate_probabilities;
   __pyx_type_7bonndit_8tracking_16alignedDirection_Laplacian.tp_base = __pyx_ptype_7bonndit_8tracking_16alignedDirection_Probabilities;
-  if (PyType_Ready(&__pyx_type_7bonndit_8tracking_16alignedDirection_Laplacian) < 0) __PYX_ERR(0, 124, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_7bonndit_8tracking_16alignedDirection_Laplacian) < 0) __PYX_ERR(0, 113, __pyx_L1_error)
   #if PY_VERSION_HEX < 0x030800B1
   __pyx_type_7bonndit_8tracking_16alignedDirection_Laplacian.tp_print = 0;
   #endif
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_7bonndit_8tracking_16alignedDirection_Laplacian.tp_dictoffset && __pyx_type_7bonndit_8tracking_16alignedDirection_Laplacian.tp_getattro == PyObject_GenericGetAttr)) {
     __pyx_type_7bonndit_8tracking_16alignedDirection_Laplacian.tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
-  if (__Pyx_SetVtable(__pyx_type_7bonndit_8tracking_16alignedDirection_Laplacian.tp_dict, __pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Laplacian) < 0) __PYX_ERR(0, 124, __pyx_L1_error)
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_Laplacian, (PyObject *)&__pyx_type_7bonndit_8tracking_16alignedDirection_Laplacian) < 0) __PYX_ERR(0, 124, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_7bonndit_8tracking_16alignedDirection_Laplacian) < 0) __PYX_ERR(0, 124, __pyx_L1_error)
+  if (__Pyx_SetVtable(__pyx_type_7bonndit_8tracking_16alignedDirection_Laplacian.tp_dict, __pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Laplacian) < 0) __PYX_ERR(0, 113, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_Laplacian, (PyObject *)&__pyx_type_7bonndit_8tracking_16alignedDirection_Laplacian) < 0) __PYX_ERR(0, 113, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_7bonndit_8tracking_16alignedDirection_Laplacian) < 0) __PYX_ERR(0, 113, __pyx_L1_error)
   __pyx_ptype_7bonndit_8tracking_16alignedDirection_Laplacian = &__pyx_type_7bonndit_8tracking_16alignedDirection_Laplacian;
   __pyx_vtabptr_7bonndit_8tracking_16alignedDirection_ScalarOld = &__pyx_vtable_7bonndit_8tracking_16alignedDirection_ScalarOld;
   __pyx_vtable_7bonndit_8tracking_16alignedDirection_ScalarOld.__pyx_base = *__pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Probabilities;
   __pyx_vtable_7bonndit_8tracking_16alignedDirection_ScalarOld.__pyx_base.calculate_probabilities = (void (*)(struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *, __Pyx_memviewslice, __Pyx_memviewslice))__pyx_f_7bonndit_8tracking_16alignedDirection_9ScalarOld_calculate_probabilities;
   __pyx_type_7bonndit_8tracking_16alignedDirection_ScalarOld.tp_base = __pyx_ptype_7bonndit_8tracking_16alignedDirection_Probabilities;
-  if (PyType_Ready(&__pyx_type_7bonndit_8tracking_16alignedDirection_ScalarOld) < 0) __PYX_ERR(0, 140, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_7bonndit_8tracking_16alignedDirection_ScalarOld) < 0) __PYX_ERR(0, 129, __pyx_L1_error)
   #if PY_VERSION_HEX < 0x030800B1
   __pyx_type_7bonndit_8tracking_16alignedDirection_ScalarOld.tp_print = 0;
   #endif
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_7bonndit_8tracking_16alignedDirection_ScalarOld.tp_dictoffset && __pyx_type_7bonndit_8tracking_16alignedDirection_ScalarOld.tp_getattro == PyObject_GenericGetAttr)) {
     __pyx_type_7bonndit_8tracking_16alignedDirection_ScalarOld.tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
-  if (__Pyx_SetVtable(__pyx_type_7bonndit_8tracking_16alignedDirection_ScalarOld.tp_dict, __pyx_vtabptr_7bonndit_8tracking_16alignedDirection_ScalarOld) < 0) __PYX_ERR(0, 140, __pyx_L1_error)
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_ScalarOld, (PyObject *)&__pyx_type_7bonndit_8tracking_16alignedDirection_ScalarOld) < 0) __PYX_ERR(0, 140, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_7bonndit_8tracking_16alignedDirection_ScalarOld) < 0) __PYX_ERR(0, 140, __pyx_L1_error)
+  if (__Pyx_SetVtable(__pyx_type_7bonndit_8tracking_16alignedDirection_ScalarOld.tp_dict, __pyx_vtabptr_7bonndit_8tracking_16alignedDirection_ScalarOld) < 0) __PYX_ERR(0, 129, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_ScalarOld, (PyObject *)&__pyx_type_7bonndit_8tracking_16alignedDirection_ScalarOld) < 0) __PYX_ERR(0, 129, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_7bonndit_8tracking_16alignedDirection_ScalarOld) < 0) __PYX_ERR(0, 129, __pyx_L1_error)
   __pyx_ptype_7bonndit_8tracking_16alignedDirection_ScalarOld = &__pyx_type_7bonndit_8tracking_16alignedDirection_ScalarOld;
   __pyx_vtabptr_7bonndit_8tracking_16alignedDirection_ScalarNew = &__pyx_vtable_7bonndit_8tracking_16alignedDirection_ScalarNew;
   __pyx_vtable_7bonndit_8tracking_16alignedDirection_ScalarNew.__pyx_base = *__pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Probabilities;
   __pyx_vtable_7bonndit_8tracking_16alignedDirection_ScalarNew.__pyx_base.calculate_probabilities = (void (*)(struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *, __Pyx_memviewslice, __Pyx_memviewslice))__pyx_f_7bonndit_8tracking_16alignedDirection_9ScalarNew_calculate_probabilities;
   __pyx_type_7bonndit_8tracking_16alignedDirection_ScalarNew.tp_base = __pyx_ptype_7bonndit_8tracking_16alignedDirection_Probabilities;
-  if (PyType_Ready(&__pyx_type_7bonndit_8tracking_16alignedDirection_ScalarNew) < 0) __PYX_ERR(0, 163, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_7bonndit_8tracking_16alignedDirection_ScalarNew) < 0) __PYX_ERR(0, 156, __pyx_L1_error)
   #if PY_VERSION_HEX < 0x030800B1
   __pyx_type_7bonndit_8tracking_16alignedDirection_ScalarNew.tp_print = 0;
   #endif
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_7bonndit_8tracking_16alignedDirection_ScalarNew.tp_dictoffset && __pyx_type_7bonndit_8tracking_16alignedDirection_ScalarNew.tp_getattro == PyObject_GenericGetAttr)) {
     __pyx_type_7bonndit_8tracking_16alignedDirection_ScalarNew.tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
-  if (__Pyx_SetVtable(__pyx_type_7bonndit_8tracking_16alignedDirection_ScalarNew.tp_dict, __pyx_vtabptr_7bonndit_8tracking_16alignedDirection_ScalarNew) < 0) __PYX_ERR(0, 163, __pyx_L1_error)
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_ScalarNew, (PyObject *)&__pyx_type_7bonndit_8tracking_16alignedDirection_ScalarNew) < 0) __PYX_ERR(0, 163, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_7bonndit_8tracking_16alignedDirection_ScalarNew) < 0) __PYX_ERR(0, 163, __pyx_L1_error)
+  if (__Pyx_SetVtable(__pyx_type_7bonndit_8tracking_16alignedDirection_ScalarNew.tp_dict, __pyx_vtabptr_7bonndit_8tracking_16alignedDirection_ScalarNew) < 0) __PYX_ERR(0, 156, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_ScalarNew, (PyObject *)&__pyx_type_7bonndit_8tracking_16alignedDirection_ScalarNew) < 0) __PYX_ERR(0, 156, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_7bonndit_8tracking_16alignedDirection_ScalarNew) < 0) __PYX_ERR(0, 156, __pyx_L1_error)
   __pyx_ptype_7bonndit_8tracking_16alignedDirection_ScalarNew = &__pyx_type_7bonndit_8tracking_16alignedDirection_ScalarNew;
   __pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Deterministic = &__pyx_vtable_7bonndit_8tracking_16alignedDirection_Deterministic;
   __pyx_vtable_7bonndit_8tracking_16alignedDirection_Deterministic.__pyx_base = *__pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Probabilities;
   __pyx_vtable_7bonndit_8tracking_16alignedDirection_Deterministic.__pyx_base.calculate_probabilities = (void (*)(struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *, __Pyx_memviewslice, __Pyx_memviewslice))__pyx_f_7bonndit_8tracking_16alignedDirection_13Deterministic_calculate_probabilities;
   __pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic.tp_base = __pyx_ptype_7bonndit_8tracking_16alignedDirection_Probabilities;
-  if (PyType_Ready(&__pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic) < 0) __PYX_ERR(0, 213, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic) < 0) __PYX_ERR(0, 206, __pyx_L1_error)
   #if PY_VERSION_HEX < 0x030800B1
   __pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic.tp_print = 0;
   #endif
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic.tp_dictoffset && __pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic.tp_getattro == PyObject_GenericGetAttr)) {
     __pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic.tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
-  if (__Pyx_SetVtable(__pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic.tp_dict, __pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Deterministic) < 0) __PYX_ERR(0, 213, __pyx_L1_error)
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_Deterministic, (PyObject *)&__pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic) < 0) __PYX_ERR(0, 213, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic) < 0) __PYX_ERR(0, 213, __pyx_L1_error)
+  if (__Pyx_SetVtable(__pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic.tp_dict, __pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Deterministic) < 0) __PYX_ERR(0, 206, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_Deterministic, (PyObject *)&__pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic) < 0) __PYX_ERR(0, 206, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic) < 0) __PYX_ERR(0, 206, __pyx_L1_error)
   __pyx_ptype_7bonndit_8tracking_16alignedDirection_Deterministic = &__pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic;
   __pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Deterministic2 = &__pyx_vtable_7bonndit_8tracking_16alignedDirection_Deterministic2;
   __pyx_vtable_7bonndit_8tracking_16alignedDirection_Deterministic2.__pyx_base = *__pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Probabilities;
   __pyx_vtable_7bonndit_8tracking_16alignedDirection_Deterministic2.__pyx_base.calculate_probabilities = (void (*)(struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *, __Pyx_memviewslice, __Pyx_memviewslice))__pyx_f_7bonndit_8tracking_16alignedDirection_14Deterministic2_calculate_probabilities;
   __pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic2.tp_base = __pyx_ptype_7bonndit_8tracking_16alignedDirection_Probabilities;
-  if (PyType_Ready(&__pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic2) < 0) __PYX_ERR(0, 185, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic2) < 0) __PYX_ERR(0, 178, __pyx_L1_error)
   #if PY_VERSION_HEX < 0x030800B1
   __pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic2.tp_print = 0;
   #endif
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic2.tp_dictoffset && __pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic2.tp_getattro == PyObject_GenericGetAttr)) {
     __pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic2.tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
-  if (__Pyx_SetVtable(__pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic2.tp_dict, __pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Deterministic2) < 0) __PYX_ERR(0, 185, __pyx_L1_error)
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_Deterministic2, (PyObject *)&__pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic2) < 0) __PYX_ERR(0, 185, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic2) < 0) __PYX_ERR(0, 185, __pyx_L1_error)
+  if (__Pyx_SetVtable(__pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic2.tp_dict, __pyx_vtabptr_7bonndit_8tracking_16alignedDirection_Deterministic2) < 0) __PYX_ERR(0, 178, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_Deterministic2, (PyObject *)&__pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic2) < 0) __PYX_ERR(0, 178, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic2) < 0) __PYX_ERR(0, 178, __pyx_L1_error)
   __pyx_ptype_7bonndit_8tracking_16alignedDirection_Deterministic2 = &__pyx_type_7bonndit_8tracking_16alignedDirection_Deterministic2;
   __pyx_vtabptr_array = &__pyx_vtable_array;
   __pyx_vtable_array.get_memview = (PyObject *(*)(struct __pyx_array_obj *))__pyx_array_get_memview;
