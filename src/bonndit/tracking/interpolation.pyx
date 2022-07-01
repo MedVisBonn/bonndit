@@ -7,12 +7,15 @@ from bonndit.utilc.cython_helpers cimport add_pointwise, floor_pointwise_matrix,
 	angle_deg, set_zero_matrix_int, point_validator
 import numpy as np
 import time
+from bonndit.utilc.cython_helpers cimport dm2toc
+from bonndit.utilc.hota cimport hota_4o3d_sym_norm
+from bonndit.utilc.lowrank cimport approx_initial
 from .ItoW cimport Trafo
 cdef int[:,:] permute_poss = np.array([[0,1,2],[0,2,1], [1,0,2], [1,2,0], [2,1,0], [2,0,1]], dtype=np.int32)
 from .kalman.model cimport AbstractModel, fODFModel, MultiTensorModel
 from .kalman.kalman cimport Kalman
 from .alignedDirection cimport Probabilities
-from libc.math cimport pow, pi, acos, floor, fabs,fmax
+from libc.math cimport pow, pi, acos, floor, fabs,fmax, exp
 from libc.stdio cimport printf
 from bonndit.utilc.cython_helpers cimport fa, dctov, dinit
 from bonndit.utilc.blas_lapack cimport *
@@ -137,10 +140,100 @@ cdef class FACT(Interpolation):
 				l = 0
 			self.set_vector(self.best_ind, i)
 			mult_with_scalar(self.best_dir[i], l, self.vector)
-		#printf('%i \n', thread_id)
+		#printf('%i \n', thread_id)<
 		self.prob.calculate_probabilities(self.best_dir, old_dir)
 		mult_with_scalar(self.next_dir, 1, self.prob.best_fit)
 		return 0
+
+
+cdef double[:] valsec = np.empty([1, ], dtype=DTYPE), \
+				val= np.empty([1,], dtype=DTYPE), \
+				testv = np.empty([3,], dtype=DTYPE), \
+				anisoten = np.empty([15,],  dtype=DTYPE), \
+				isoten = np.empty([15,],dtype=DTYPE), \
+				der = np.empty([3,],  dtype=DTYPE)
+
+cdef double[:, :] tens = np.zeros([3, 15], dtype=DTYPE)
+
+cdef class TrilinearFODF(Interpolation):
+	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities prob, **kwargs):
+		super(TrilinearFODF, self).__init__(vector_field, grid, prob, **kwargs)
+		self.data = kwargs['data']
+		self.fodf = np.zeros((16,))
+		self.fodf1 = np.zeros((16,))
+		self.length = np.zeros((3,))
+		self.empty = np.zeros((15,))
+		self.sigma_1 = kwargs['sigma_1']
+		self.sigma_2 = kwargs['sigma_2']
+		self.point_diff = np.zeros((3,), dtype=DTYPE)
+		self.vlinear = np.zeros((8, kwargs['data'].shape[0]))
+		self.trafo = kwargs['trafo']
+		self.dist = np.zeros((3,), dtype=DTYPE)
+		self.r = kwargs['r']
+		self.rank = kwargs['rank']
+		self.neighbors = np.array([[i,j,k] for i in range(-kwargs['r'],1+kwargs['r']) for j in range(-kwargs['r'],1+kwargs['r']) for k in range(-kwargs['r'],1+kwargs['r'])], dtype=np.int64)
+
+
+	cdef void trilinear(self, double[:] point) nogil except *:
+		cdef int i, j, k, m,n,o
+		for i in range(8):
+			j = <int> floor(i / 2) % 2
+			k = <int> floor(i / 4) % 2
+			m = <int> point[0] + i%2
+			n = <int> point[1] + j
+			o = <int> point[2] + k
+
+			dm2toc(&self.vlinear[i, 0], self.data[:, m,n,o],  self.vlinear.shape[1])
+		for i in range(4):
+			cblas_dscal(self.vlinear.shape[1], (1 + floor(point[2]) - point[2]), &self.vlinear[i, 0], 1)
+			cblas_daxpy(self.vlinear.shape[1], (point[2] - floor(point[2])), &self.vlinear[4+i, 0], 1, &self.vlinear[i,0], 1)
+		for i in range(2):
+			cblas_dscal(self.vlinear.shape[1], (1 + floor(point[1]) - point[1]), &self.vlinear[i, 0], 1)
+			cblas_daxpy(self.vlinear.shape[1], (point[1] - floor(point[1])), &self.vlinear[2 + i, 0], 1, &self.vlinear[i, 0], 1)
+		cblas_dscal(self.vlinear.shape[1], (1 + floor(point[0]) - point[0]), &self.vlinear[0, 0], 1)
+		cblas_daxpy(self.vlinear.shape[1], (point[0] - floor(point[0])), &self.vlinear[1,0], 1, &self.vlinear[0,0], 1)
+		cblas_dcopy(self.vlinear.shape[1], &self.vlinear[0,0], 1, &self.fodf[0], 1)
+
+	cdef void neigh(self, double[:] point) nogil except *:
+		cdef double scale = 0, dis=0
+		cdef int i, index
+		self.trilinear(point)
+		set_zero_vector(self.fodf1)
+		for index in range(<int> self.r):
+			for i in range(3):
+				self.point_diff[i] = point[i]%1
+			cblas_dgemv(CblasRowMajor, CblasNoTrans, 3,3,1, &self.trafo[0,0], 3, &self.point_diff[0], 1, 0, &self.dist[0], 1)
+			dis = cblas_dnrm2(3, &self.dist[0], 1)
+			if self.data.shape[1] > point[0] + self.neighbors[index, 0] >= 0 \
+				and self.data.shape[2] > point[1] + self.neighbors[index, 1] >= 0 \
+				and self.data.shape[3] > point[2] + self.neighbors[index, 2] >= 0 and dis <= self.r:
+				sub_vectors(self.empty, self.fodf[1:], self.data[1:, <int> point[0] + self.neighbors[index, 0], \
+												  <int> point[1] + self.neighbors[index, 1], \
+												  <int> point[2] + self.neighbors[index, 2]])
+				dis = exp(-pow(hota_4o3d_sym_norm(self.empty),2)/pow(self.sigma_1, 2))*dis/self.sigma_2
+				scale += dis
+				for i in range(16):
+					self.fodf1[i] += dis*self.data[i, <int> point[0] + self.neighbors[index, 0], \
+												  <int> point[1] + self.neighbors[index, 1], \
+												  <int> point[2] + self.neighbors[index, 2]]
+		if scale > 0:
+			mult_with_scalar(self.fodf, 1/scale, self.fodf1)
+
+	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) nogil except *:
+		# If r==0: Interpolate trilinear else: calculate average over neighborhood.
+		cdef int i
+		if r==0:
+			self.trilinear(point)
+		else:
+			self.neigh(point)
+		if self.fodf[0] == 0:
+			return -1
+		approx_initial(self.length, self.best_dir, tens, self.fodf[1:], self.rank, valsec, val,der, testv, anisoten, isoten)
+		for i in range(3):
+			mult_with_scalar(self.best_dir[i], pow(self.length[i], 1/4), self.best_dir[i])
+		self.prob.calculate_probabilities(self.best_dir, old_dir)
+		return 0
+
 
 
 
@@ -362,7 +455,7 @@ cdef class UKF(Interpolation):
 	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities prob, **kwargs):
 		super(UKF, self).__init__(vector_field, grid, prob, **kwargs)
 		self.mean = np.zeros((kwargs['dim_model'],), dtype=np.float64)
-		self.mlinear  = np.zeros((kwargs['dim_model'],kwargs['data'].shape[3]), dtype=np.float64)
+		self.mlinear  = np.zeros((8,kwargs['data'].shape[3]), dtype=np.float64) ##  Shpuld be always 8. Was dim_model before?
 		self.P = np.zeros((kwargs['dim_model'],kwargs['dim_model']), dtype=np.float64)
 		self.y = np.zeros((kwargs['data'].shape[3],), dtype=np.float64)
 		if kwargs['baseline'] != "" and kwargs['model'] != 'fodf':

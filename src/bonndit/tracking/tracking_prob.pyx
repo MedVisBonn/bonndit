@@ -154,7 +154,7 @@ cdef bint forward_tracking(double[:,:] paths,  Interpolation interpolate,
 		paths[k//save_steps] = trafo.point_itow
 	return True
 
-cpdef tracking_all(vector_field, wm_mask, seeds, tracking_parameters, postprocessing, ukf_parameters, logging, saving):
+cpdef tracking_all(vector_field, wm_mask, seeds, tracking_parameters, postprocessing, ukf_parameters, trilinear_parameters, logging, saving):
 	"""
 	@param vector_field: Array (4,3,x,y,z)
 		Where the first dimension contains the length and direction, the second
@@ -234,6 +234,8 @@ cpdef tracking_all(vector_field, wm_mask, seeds, tracking_parameters, postproces
 		interpolate = FACT(vector_field, dim[2:5], directionGetter )
 	elif tracking_parameters['interpolation'] == "Trilinear":
 		interpolate = Trilinear(vector_field, dim[2:5], directionGetter)
+	elif tracking_parameters['interpolation'] == "TrilinearFODF":
+		interpolate = Trilinear(vector_field, dim[2:5], directionGetter, **trilinear_parameters)
 	else:
 		logging.error('FACT, Triliniear or UKF for MultiTensor and low rank approximation are available so far.')
 		return 0

@@ -107,9 +107,22 @@ def main():
 	parser.add_argument('-maxangle', help='Max angle over the last 30 mm of the streamline', default=130)
 	parser.add_argument('--var', help='Variance for probabilistic direction selection..', default=1)
 	parser.add_argument('--exp', help='Expectation for probabilistic direction selection.', default=0)
+
 	parser.add_argument('--interpolation', '--interpolation',
 						help='decide between FACT interpolation and Trilinear interpolation.',
 						default='Trilinear')
+	parser.add_argument('--sigma1',
+						help='Only useful if interpolation is set to TrilinearFODF and dist>0. Controls sigma1 for low-rank approx',
+						default='1')
+	parser.add_argument('--sigma2',
+						help='Only useful if interpolation is set to TrilinearFODF and dist>0. Controls sigma2 for low-rank approx.',
+						default='1')
+	parser.add_argument('--dist',
+						help='Only useful if interpolation is set to TrilinearFODF. Radius of points to include',
+						default='Trilinear')
+	parser.add_argument('--rank', help='Only useful if interpolation is set to TrilinearFODF. Rank of low-rank approx.',
+						default='Trilinear')
+
 	parser.add_argument('--integration', '--integration',
 						help='Decide between Euler integration and Euler integration. '
 						, default='Euler')
@@ -248,6 +261,19 @@ def main():
 		'exclusion': np.loadtxt(args.exclusion) if "exclusion" in args else "",
 	}
 	ukf_parameter = {}
+	if args.interpolation == 'TrilinearFODF':
+		trilinear_parameters = {
+			'data': load('ukf_data', args, 'fodf.nrrd', args.i, logging, nrrd.read),
+			'sigma_1': float(args.sigma_1),
+			'sigma_2': float(args.sigma_1),
+			'trafo': meta['space directions'][-3:],
+			'r': float(args.dist),
+			'rank': int(args.rank)
+		}
+	else:
+		trilinear_parameters = {}
+
+
 	if "ukf" in args:
 		ukf_parameter = {
 			'data': np.array(data, dtype=np.float64),
@@ -284,7 +310,7 @@ def main():
 	}
 
 	paths, paths_len = tracking_all(np.float64(vector_field), np.float64(wm_mask), np.float64(seeds),
-									tracking_parameters, postprocessing, ukf_parameter, logging, saving)
+									tracking_parameters, postprocessing, ukf_parameter,trilinear_parameters,  logging, saving)
 	if 'disk' in args:
 		paths_len = np.loadtxt(args.disk_file + 'len')
 		paths = np.loadtxt(args.disk_file)

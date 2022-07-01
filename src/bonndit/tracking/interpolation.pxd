@@ -41,6 +41,25 @@ cdef class Trilinear(Interpolation):
 	cdef int kmeans(self, double[:]) nogil except *
 	cdef void permute(self, double[:]) nogil except *
 
+cdef class TrilinearFODF(Interpolation):
+	cdef double[:,:,:,:] data
+	cdef double[:] fodf
+	cdef double[:] fodf1
+	cdef double[:] empty
+	cdef double sigma_1
+	cdef double sigma_2
+	cdef double[:] point_diff
+	cdef double[:,:] trafo
+	cdef double[:] dist
+	cdef double[:] length
+	cdef double r
+	cdef int rank
+	cdef double[:,:] vlinear
+	cdef int[:,:] neighbors
+	cdef void trilinear(self, double[:] point) nogil except *
+	cdef void neigh(self, double[:] point) nogil except *
+	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) nogil except *
+
 cdef class UKF(Interpolation):
 	cdef double[:] mean
 	cdef double[:,:] P
