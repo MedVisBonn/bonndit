@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 import random
@@ -159,7 +159,7 @@ def main():
     parser.add_argument(
         '--disk_file',
         help='Name of disk file. If not set a random filename is chosen',
-        default='.stream' + ''.join(
+        default='/tmp/.stream' + ''.join(
             random.choice([chr(i) for i in range(ord('a'),
                                                  ord('z'))]) for _ in
             range(10)))
@@ -281,7 +281,7 @@ def main():
             bvals = ""
             bvecs = ""
             baseline = ""
-            # data = ""
+        # data = ""
         else:
             logging.error(
                 (
@@ -361,14 +361,22 @@ def main():
                     ))
                 raise Exception()
     saving = {
-        'features': {
-            'chosen_angle': args.features.index('angle') if 'angle' in args.features else -2,
-            'seedpoint': args.features.index('seedpoint') if 'seedpoint' in args.features else -2,
-            'len': len(args.features)
-        },
-        'file': args.disk_file if args.disk else "",
-    }
-    print(tracking_parameters)
+        'features':
+        {'chosen_angle': args.features.index('angle')
+            if 'angle' in args.features else -2,
+            'seedpoint': args.features.index('seedpoint')
+            if 'seedpoint' in args.features else -2,
+            'prob_chosen': args.features.index('prob_chosen')
+            if 'prob_chosen' in args.features else -2,
+            'prob_others_0': args.features.index('prob_others')
+            if 'prob_others' in args.features else -2,
+            'prob_others_1': args.features.index('prob_others') + 1
+            if 'prob_others' in args.features else -2,
+            'prob_others_2': args.features.index('prob_others') + 2
+            if 'prob_others' in args.features else -2,
+            'len': len(args.features) + 2
+            if 'prob_others' in args.features else len(args.features)},
+        'file': args.disk_file if args.disk else "", }
 
     paths, paths_len = tracking_all(
         np.float64(vector_field),
@@ -383,15 +391,15 @@ def main():
             os.remove(args.disk_file)
             os.remove(args.disk_file + 'len')
     paths_len = [sum(paths_len[:i + 1]) for i in range(len(paths_len))]
-
+    features = [0] * saving['features']['len']
+    for x in saving['features']:
+        if saving['features'][x] >= 0 and x != 'len':
+            features[saving['features'][x]] = x
     tracks = PlyElement.describe(
         np.array(
-            paths,
-            dtype=[('x', 'f4'),
-                   ('y', 'f4'),
-                   ('z', 'f4'),
-                   ('seedpoint', 'f4'),
-                   ('angle', 'f4')]),
+            paths, dtype=[('x', 'f4'),
+                          ('y', 'f4'),
+                          ('z', 'f4')] + [(x, 'f4') for x in features]),
         'vertices', comments=[])
     endindex = PlyElement.describe(
         np.array(paths_len, dtype=[('endindex', 'i4')]), 'fiber')
