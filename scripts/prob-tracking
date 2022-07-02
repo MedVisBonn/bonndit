@@ -265,7 +265,7 @@ def main():
 		trilinear_parameters = {
 			'data': load('data', args, 'fodf.nrrd', args.i, logging, nrrd.read)[0],
 			'sigma_1': float(args.sigma_1),
-			'sigma_2': float(args.sigma_1),
+			'sigma_2': float(args.sigma_2),
 			'trafo': meta['space directions'][-3:],
 			'r': float(args.dist),
 			'rank': int(args.rank)
