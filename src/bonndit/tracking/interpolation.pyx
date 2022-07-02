@@ -172,11 +172,7 @@ cdef class TrilinearFODF(Interpolation):
 		self.dist = np.zeros((3,), dtype=DTYPE)
 		self.r = kwargs['r']
 		self.rank = kwargs['rank']
-<<<<<<< HEAD
-		self.neighbors = np.array([[i,j,k] for i in range(-int(kwargs['r']),1+int(kwargs['r'])) for j in range(-int(kwargs['r']),1+int(kwargs['r'])) for k in range(-int(kwargs['r']),1+int(kwargs['r']))], dtype=np.int32)
-=======
-		self.neighbors = np.array(sorted([[i,j,k] for i in range(-kwargs['r'],1+kwargs['r']) for j in range(-kwargs['r'],1+kwargs['r']) for k in range(-kwargs['r'],1+kwargs['r'])], key=lambda x: np.linalg.norm(kwargs['trafo']@x)), dtype=np.int64)
->>>>>>> 85eee1d41ab68b4298223f22b8343f0cd101e699
+		self.neighbors = np.array(sorted([[i,j,k] for i in range(-kwargs['r'],1+kwargs['r']) for j in range(-kwargs['r'],1+kwargs['r']) for k in range(-kwargs['r'],1+kwargs['r'])], key=lambda x: np.linalg.norm(kwargs['trafo']@x)), dtype=np.int32)
 
 
 	cdef void trilinear(self, double[:] point) nogil except *:
