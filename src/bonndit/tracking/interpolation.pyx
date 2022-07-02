@@ -171,7 +171,7 @@ cdef class TrilinearFODF(Interpolation):
 		self.dist = np.zeros((3,), dtype=DTYPE)
 		self.r = kwargs['r']
 		self.rank = kwargs['rank']
-		self.neighbors = np.array([[i,j,k] for i in range(-kwargs['r'],1+kwargs['r']) for j in range(-kwargs['r'],1+kwargs['r']) for k in range(-kwargs['r'],1+kwargs['r'])], dtype=np.int64)
+		self.neighbors = np.array(sorted([[i,j,k] for i in range(-kwargs['r'],1+kwargs['r']) for j in range(-kwargs['r'],1+kwargs['r']) for k in range(-kwargs['r'],1+kwargs['r'])], key=lambda x: np.linalg.norm(kwargs['trafo']@x)), dtype=np.int64)
 
 
 	cdef void trilinear(self, double[:] point) nogil except *:
@@ -199,14 +199,14 @@ cdef class TrilinearFODF(Interpolation):
 		cdef int i, index
 		self.trilinear(point)
 		set_zero_vector(self.fodf1)
-		for index in range(<int> self.r):
+		for index in range(<int> self.neighbors.shape[0]):
 			for i in range(3):
 				self.point_diff[i] = point[i]%1
 			cblas_dgemv(CblasRowMajor, CblasNoTrans, 3,3,1, &self.trafo[0,0], 3, &self.point_diff[0], 1, 0, &self.dist[0], 1)
 			dis = cblas_dnrm2(3, &self.dist[0], 1)
 			if self.data.shape[1] > point[0] + self.neighbors[index, 0] >= 0 \
 				and self.data.shape[2] > point[1] + self.neighbors[index, 1] >= 0 \
-				and self.data.shape[3] > point[2] + self.neighbors[index, 2] >= 0 and dis <= self.r:
+				and self.data.shape[3] > point[2] + self.neighbors[index, 2] >= 0 and (dis <= self.r or index<27):
 				sub_vectors(self.empty, self.fodf[1:], self.data[1:, <int> point[0] + self.neighbors[index, 0], \
 												  <int> point[1] + self.neighbors[index, 1], \
 												  <int> point[2] + self.neighbors[index, 2]])
