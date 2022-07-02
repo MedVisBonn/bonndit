@@ -320,7 +320,7 @@ cdef class TrilinearFODF(Interpolation):
         # If r==0: Interpolate trilinear else: calculate average over
         # neighborhood.
         cdef int i
-        if r == 0:
+        if self.r == 0:
             self.trilinear(point)
         else:
             self.neigh(point)
