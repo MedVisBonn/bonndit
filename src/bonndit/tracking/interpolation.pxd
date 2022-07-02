@@ -52,6 +52,7 @@ cdef class TrilinearFODF(Interpolation):
 	cdef double[:,:] trafo
 	cdef double[:] dist
 	cdef double[:] length
+	cdef bint auto
 	cdef double[:,:] best_dir_approx
 	cdef double r
 	cdef int rank
