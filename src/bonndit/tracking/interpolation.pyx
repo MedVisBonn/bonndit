@@ -322,10 +322,15 @@ cdef class TrilinearFODF(Interpolation):
         self, double[:] point, double[:] old_dir,
         int r
     ) nogil except *:
-        # If r==0: Interpolate trilinear else: calculate average over
-        # neighborhood.
-        cdef int i
+        # Initialize with last step. Except we are starting again.
         if r == 0:
+            set_zero_matrix(self.best_dir)
+            set_zero_vector(self.length)
+        # If self.r==0: Interpolate trilinear else: calculate average over
+        # neighborhood.
+
+        cdef int i
+        if self.r == 0:
             self.trilinear(point)
         else:
             self.neigh(point)
