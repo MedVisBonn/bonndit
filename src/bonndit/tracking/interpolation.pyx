@@ -297,13 +297,15 @@ cdef class TrilinearFODF(Interpolation):
                 &self.trafo[0, 0], 3, &self.point_diff[0], 1, 0,
                 &self.dist[0], 1)
             dis = cblas_dnrm2(3, &self.dist[0], 1)
+            if dis > self.r and index > 27:
+                break
             if self.data.shape[1] > point[0] + self.neighbors[index, 0] >= 0 \
                 and self.data.shape[2] > point[1] + self.neighbors[
                 index,
                 1] >= 0 \
                 and self.data.shape[3] > point[2] + self.neighbors[
                 index,
-                2] >= 0 and (dis <= self.r or index < 27):
+                2] >= 0:
                 sub_vectors(
                     self.empty, self.fodf[1:], self.data[
                         1:, <int> point[0] + self.neighbors[index, 0], \
