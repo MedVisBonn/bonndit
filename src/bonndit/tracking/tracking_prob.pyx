@@ -106,16 +106,18 @@ cdef bint forward_tracking(double[:,:] paths,  Interpolation interpolate,
 			break
 		# find matching directions
 		if sum_c(integrate.old_dir) == 0:
-			trafo.itow(paths[(k-1)//save_steps + 1])
-			paths[(k-1)//save_steps + 1] = trafo.point_itow
-			with gil:
-				print('i break third at k = ',  str(k))
+			#trafo.itow(paths[(k-1)//save_steps + 1])
+			#paths[(k-1)//save_steps + 1] = trafo.point_itow
+			set_zero_vector(paths[[(k-1)//save_steps + 1]])
+			set_zero_vector(features[[(k - 1) // save_steps + 1]])
+		#	with gil:
+		#		print('i break third at k = ',  str(k))
 			break
 		if interpolate.interpolate(paths[(k-1)//save_steps + 1], integrate.old_dir, (k-1)//save_steps + 1) != 0:
 			trafo.itow(paths[(k-1)//save_steps + 1])
 			paths[(k-1)//save_steps + 1] = trafo.point_itow
-			with gil:
-				print('i break fourth at k = ',  str(k))
+		#	with gil:
+		#		print('i break fourth at k = ',  str(k))
 			break
 
 		# Check next step is valid. If it is: Integrate. else break
