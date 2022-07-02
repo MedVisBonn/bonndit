@@ -2230,6 +2230,39 @@ static CYTHON_INLINE long __Pyx_div_long(long, long);
 #define UNARY_NEG_WOULD_OVERFLOW(x)\
         (((x) < 0) & ((unsigned long)(x) == 0-(unsigned long)(x)))
 
+/* DivInt[int].proto */
+static CYTHON_INLINE int __Pyx_div_int(int, int);
+
+/* ModInt[int].proto */
+static CYTHON_INLINE int __Pyx_mod_int(int, int);
+
+/* DictGetItem.proto */
+#if PY_MAJOR_VERSION >= 3 && !CYTHON_COMPILING_IN_PYPY
+static PyObject *__Pyx_PyDict_GetItem(PyObject *d, PyObject* key);
+#define __Pyx_PyObject_Dict_GetItem(obj, name)\
+    (likely(PyDict_CheckExact(obj)) ?\
+     __Pyx_PyDict_GetItem(obj, name) : PyObject_GetItem(obj, name))
+#else
+#define __Pyx_PyDict_GetItem(d, key) PyObject_GetItem(d, key)
+#define __Pyx_PyObject_Dict_GetItem(obj, name)  PyObject_GetItem(obj, name)
+#endif
+
+/* IncludeStringH.proto */
+#include <string.h>
+
+/* BytesEquals.proto */
+static CYTHON_INLINE int __Pyx_PyBytes_Equals(PyObject* s1, PyObject* s2, int equals);
+
+/* UnicodeEquals.proto */
+static CYTHON_INLINE int __Pyx_PyUnicode_Equals(PyObject* s1, PyObject* s2, int equals);
+
+/* PyObjectCall.proto */
+#if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw);
+#else
+#define __Pyx_PyObject_Call(func, arg, kw) PyObject_Call(func, arg, kw)
+#endif
+
 /* PyCFunctionFastCall.proto */
 #if CYTHON_FAST_PYCCALL
 static CYTHON_INLINE PyObject *__Pyx_PyCFunction_FastCall(PyObject *func, PyObject **args, Py_ssize_t nargs);
@@ -2268,12 +2301,8 @@ static PyObject *__Pyx_PyFunction_FastCallDict(PyObject *func, PyObject **args, 
 #endif // CYTHON_FAST_PYCALL
 #endif
 
-/* PyObjectCall.proto */
-#if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw);
-#else
-#define __Pyx_PyObject_Call(func, arg, kw) PyObject_Call(func, arg, kw)
-#endif
+/* PyObjectCall2Args.proto */
+static CYTHON_UNUSED PyObject* __Pyx_PyObject_Call2Args(PyObject* function, PyObject* arg1, PyObject* arg2);
 
 /* PyObjectCallMethO.proto */
 #if CYTHON_COMPILING_IN_CPYTHON
@@ -2282,35 +2311,6 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_CallMethO(PyObject *func, PyObject
 
 /* PyObjectCallOneArg.proto */
 static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg);
-
-/* DivInt[int].proto */
-static CYTHON_INLINE int __Pyx_div_int(int, int);
-
-/* ModInt[int].proto */
-static CYTHON_INLINE int __Pyx_mod_int(int, int);
-
-/* DictGetItem.proto */
-#if PY_MAJOR_VERSION >= 3 && !CYTHON_COMPILING_IN_PYPY
-static PyObject *__Pyx_PyDict_GetItem(PyObject *d, PyObject* key);
-#define __Pyx_PyObject_Dict_GetItem(obj, name)\
-    (likely(PyDict_CheckExact(obj)) ?\
-     __Pyx_PyDict_GetItem(obj, name) : PyObject_GetItem(obj, name))
-#else
-#define __Pyx_PyDict_GetItem(d, key) PyObject_GetItem(d, key)
-#define __Pyx_PyObject_Dict_GetItem(obj, name)  PyObject_GetItem(obj, name)
-#endif
-
-/* IncludeStringH.proto */
-#include <string.h>
-
-/* BytesEquals.proto */
-static CYTHON_INLINE int __Pyx_PyBytes_Equals(PyObject* s1, PyObject* s2, int equals);
-
-/* UnicodeEquals.proto */
-static CYTHON_INLINE int __Pyx_PyUnicode_Equals(PyObject* s1, PyObject* s2, int equals);
-
-/* PyObjectCall2Args.proto */
-static CYTHON_UNUSED PyObject* __Pyx_PyObject_Call2Args(PyObject* function, PyObject* arg1, PyObject* arg2);
 
 /* PyDictVersioning.proto */
 #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_TYPE_SLOTS
@@ -2969,7 +2969,6 @@ int __pyx_module_is_main_bonndit__tracking__tracking_prob = 0;
 
 /* Implementation of 'bonndit.tracking.tracking_prob' */
 static PyObject *__pyx_builtin_range;
-static PyObject *__pyx_builtin_print;
 static PyObject *__pyx_builtin_open;
 static PyObject *__pyx_builtin_map;
 static PyObject *__pyx_builtin_TypeError;
@@ -3026,7 +3025,6 @@ static const char __pyx_k_error[] = "error";
 static const char __pyx_k_flags[] = "flags";
 static const char __pyx_k_int32[] = "int32";
 static const char __pyx_k_numpy[] = "numpy";
-static const char __pyx_k_print[] = "print";
 static const char __pyx_k_range[] = "range";
 static const char __pyx_k_seeds[] = "seeds";
 static const char __pyx_k_shape[] = "shape";
@@ -3116,9 +3114,7 @@ static const char __pyx_k_max_track_length[] = "max_track_length";
 static const char __pyx_k_space_directions[] = "space directions";
 static const char __pyx_k_pyx_unpickle_Enum[] = "__pyx_unpickle_Enum";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
-static const char __pyx_k_i_break_third_at_k[] = "i break third at k = ";
 static const char __pyx_k_strided_and_direct[] = "<strided and direct>";
-static const char __pyx_k_i_break_fourth_at_k[] = "i break fourth at k = ";
 static const char __pyx_k_tracking_parameters[] = "tracking_parameters";
 static const char __pyx_k_strided_and_indirect[] = "<strided and indirect>";
 static const char __pyx_k_trilinear_parameters[] = "trilinear_parameters";
@@ -3239,8 +3235,6 @@ static PyObject *__pyx_n_s_fortran;
 static PyObject *__pyx_n_u_fortran;
 static PyObject *__pyx_n_s_getstate;
 static PyObject *__pyx_kp_s_got_differing_extents_in_dimensi;
-static PyObject *__pyx_kp_u_i_break_fourth_at_k;
-static PyObject *__pyx_kp_u_i_break_third_at_k;
 static PyObject *__pyx_n_s_id;
 static PyObject *__pyx_n_s_import;
 static PyObject *__pyx_n_u_inclusion;
@@ -3274,7 +3268,6 @@ static PyObject *__pyx_n_s_pack;
 static PyObject *__pyx_n_s_path;
 static PyObject *__pyx_n_s_pickle;
 static PyObject *__pyx_n_s_postprocessing;
-static PyObject *__pyx_n_s_print;
 static PyObject *__pyx_n_u_prob;
 static PyObject *__pyx_n_s_prob_chosen;
 static PyObject *__pyx_n_s_prob_others_0;
@@ -4297,7 +4290,6 @@ if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_5, __pyx_t_11, 1, 1, 0) < 0)
 static int __pyx_f_7bonndit_8tracking_13tracking_prob_forward_tracking(__Pyx_memviewslice __pyx_v_paths, struct __pyx_obj_7bonndit_8tracking_13interpolation_Interpolation *__pyx_v_interpolate, struct __pyx_obj_7bonndit_8tracking_11integration_Integration *__pyx_v_integrate, struct __pyx_obj_7bonndit_8tracking_4ItoW_Trafo *__pyx_v_trafo, struct __pyx_obj_7bonndit_8tracking_8stopping_Validator *__pyx_v_validator, int __pyx_v_max_track_length, int __pyx_v_save_steps, __Pyx_memviewslice __pyx_v_features, __pyx_t_7bonndit_8tracking_13tracking_prob_possible_features __pyx_v_feature_save) {
   int __pyx_v_k;
   int __pyx_r;
-  __Pyx_RefNannyDeclarations
   long __pyx_t_1;
   long __pyx_t_2;
   int __pyx_t_3;
@@ -4306,54 +4298,139 @@ static int __pyx_f_7bonndit_8tracking_13tracking_prob_forward_tracking(__Pyx_mem
   int __pyx_t_6;
   int __pyx_t_7;
   __Pyx_memviewslice __pyx_t_8 = { 0, 0, { 0 }, { 0 }, { 0 } };
-  PyObject *__pyx_t_9 = NULL;
-  PyObject *__pyx_t_10 = NULL;
-  int __pyx_t_11;
-  double __pyx_t_12;
+  int __pyx_t_9;
+  double __pyx_t_10;
+  Py_ssize_t __pyx_t_11;
+  Py_ssize_t __pyx_t_12;
   Py_ssize_t __pyx_t_13;
-  Py_ssize_t __pyx_t_14;
-  Py_ssize_t __pyx_t_15;
-  __Pyx_memviewslice __pyx_t_16 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  __Pyx_memviewslice __pyx_t_14 = { 0, 0, { 0 }, { 0 }, { 0 } };
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
-  #ifdef WITH_THREAD
-  PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-  #endif
-  __Pyx_RefNannySetupContext("forward_tracking", 0);
-  #ifdef WITH_THREAD
-  __Pyx_PyGILState_Release(__pyx_gilstate_save);
-  #endif
 
-  /* "bonndit/tracking/tracking_prob.pyx":83
- * cdef bint forward_tracking(double[:,:] paths,  Interpolation interpolate,
- *                        Integration integrate, Trafo trafo, Validator validator, int max_track_length, int save_steps, double[:,:] features, possible_features feature_save) nogil except *:
- * 	"""             # <<<<<<<<<<<<<<
- *         This function do the tracking into one direction.
- * 	@param paths: empty path array to save the streamline points.
- */
-  /*try:*/ {
-
-    /* "bonndit/tracking/tracking_prob.pyx":96
+  /* "bonndit/tracking/tracking_prob.pyx":96
  * 	cdef int k
  * 	# thousand is max length for pathway
  * 	interpolate.prob.old_fa = 1             # <<<<<<<<<<<<<<
  * 	for k in range((max_track_length-1)*save_steps):
  * 		# validate index and wm density.
  */
-    __pyx_v_interpolate->prob->old_fa = 1.0;
+  __pyx_v_interpolate->prob->old_fa = 1.0;
 
-    /* "bonndit/tracking/tracking_prob.pyx":97
+  /* "bonndit/tracking/tracking_prob.pyx":97
  * 	# thousand is max length for pathway
  * 	interpolate.prob.old_fa = 1
  * 	for k in range((max_track_length-1)*save_steps):             # <<<<<<<<<<<<<<
  * 		# validate index and wm density.
  * 
  */
-    __pyx_t_1 = ((__pyx_v_max_track_length - 1) * __pyx_v_save_steps);
-    __pyx_t_2 = __pyx_t_1;
-    for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
-      __pyx_v_k = __pyx_t_3;
+  __pyx_t_1 = ((__pyx_v_max_track_length - 1) * __pyx_v_save_steps);
+  __pyx_t_2 = __pyx_t_1;
+  for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
+    __pyx_v_k = __pyx_t_3;
+
+    /* "bonndit/tracking/tracking_prob.pyx":100
+ * 		# validate index and wm density.
+ * 
+ * 		if validator.index_checker(paths[(k-1)//save_steps + 1]):             # <<<<<<<<<<<<<<
+ * 			set_zero_vector(paths[(k-1)//save_steps + 1])
+ * 			break
+ */
+    __pyx_t_4 = (__pyx_v_k - 1);
+    if (unlikely(__pyx_v_save_steps == 0)) {
+      #ifdef WITH_THREAD
+      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+      #endif
+      PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+      #ifdef WITH_THREAD
+      __Pyx_PyGILState_Release(__pyx_gilstate_save);
+      #endif
+      __PYX_ERR(0, 100, __pyx_L1_error)
+    }
+    else if (sizeof(long) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_t_4))) {
+      #ifdef WITH_THREAD
+      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+      #endif
+      PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
+      #ifdef WITH_THREAD
+      __Pyx_PyGILState_Release(__pyx_gilstate_save);
+      #endif
+      __PYX_ERR(0, 100, __pyx_L1_error)
+    }
+    __pyx_t_5.data = __pyx_v_paths.data;
+    __pyx_t_5.memview = __pyx_v_paths.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = (__Pyx_div_long(__pyx_t_4, __pyx_v_save_steps) + 1);
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_paths.strides[0];
+        __pyx_t_5.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_5.shape[0] = __pyx_v_paths.shape[1];
+__pyx_t_5.strides[0] = __pyx_v_paths.strides[1];
+    __pyx_t_5.suboffsets[0] = -1;
+
+__pyx_t_6 = ((struct __pyx_vtabstruct_7bonndit_8tracking_8stopping_Validator *)__pyx_v_validator->__pyx_vtab)->index_checker(__pyx_v_validator, __pyx_t_5); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 100, __pyx_L1_error)
+    __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
+    __pyx_t_5.memview = NULL;
+    __pyx_t_5.data = NULL;
+    __pyx_t_7 = (__pyx_t_6 != 0);
+    if (__pyx_t_7) {
+
+      /* "bonndit/tracking/tracking_prob.pyx":101
+ * 
+ * 		if validator.index_checker(paths[(k-1)//save_steps + 1]):
+ * 			set_zero_vector(paths[(k-1)//save_steps + 1])             # <<<<<<<<<<<<<<
+ * 			break
+ * 		if validator.wm_checker(paths[(k-1)//save_steps + 1]):
+ */
+      __pyx_t_4 = (__pyx_v_k - 1);
+      if (unlikely(__pyx_v_save_steps == 0)) {
+        #ifdef WITH_THREAD
+        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+        #endif
+        PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+        #ifdef WITH_THREAD
+        __Pyx_PyGILState_Release(__pyx_gilstate_save);
+        #endif
+        __PYX_ERR(0, 101, __pyx_L1_error)
+      }
+      else if (sizeof(long) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_t_4))) {
+        #ifdef WITH_THREAD
+        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+        #endif
+        PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
+        #ifdef WITH_THREAD
+        __Pyx_PyGILState_Release(__pyx_gilstate_save);
+        #endif
+        __PYX_ERR(0, 101, __pyx_L1_error)
+      }
+      __pyx_t_5.data = __pyx_v_paths.data;
+      __pyx_t_5.memview = __pyx_v_paths.memview;
+      __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
+      {
+    Py_ssize_t __pyx_tmp_idx = (__Pyx_div_long(__pyx_t_4, __pyx_v_save_steps) + 1);
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_paths.strides[0];
+        __pyx_t_5.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_5.shape[0] = __pyx_v_paths.shape[1];
+__pyx_t_5.strides[0] = __pyx_v_paths.strides[1];
+    __pyx_t_5.suboffsets[0] = -1;
+
+__pyx_f_7bonndit_5utilc_14cython_helpers_set_zero_vector(__pyx_t_5);
+      __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
+      __pyx_t_5.memview = NULL;
+      __pyx_t_5.data = NULL;
+
+      /* "bonndit/tracking/tracking_prob.pyx":102
+ * 		if validator.index_checker(paths[(k-1)//save_steps + 1]):
+ * 			set_zero_vector(paths[(k-1)//save_steps + 1])
+ * 			break             # <<<<<<<<<<<<<<
+ * 		if validator.wm_checker(paths[(k-1)//save_steps + 1]):
+ * 			trafo.itow(paths[(k-1)//save_steps + 1])
+ */
+      goto __pyx_L4_break;
 
       /* "bonndit/tracking/tracking_prob.pyx":100
  * 		# validate index and wm density.
@@ -4362,6 +4439,63 @@ static int __pyx_f_7bonndit_8tracking_13tracking_prob_forward_tracking(__Pyx_mem
  * 			set_zero_vector(paths[(k-1)//save_steps + 1])
  * 			break
  */
+    }
+
+    /* "bonndit/tracking/tracking_prob.pyx":103
+ * 			set_zero_vector(paths[(k-1)//save_steps + 1])
+ * 			break
+ * 		if validator.wm_checker(paths[(k-1)//save_steps + 1]):             # <<<<<<<<<<<<<<
+ * 			trafo.itow(paths[(k-1)//save_steps + 1])
+ * 			paths[(k-1)//save_steps + 1] = trafo.point_itow
+ */
+    __pyx_t_4 = (__pyx_v_k - 1);
+    if (unlikely(__pyx_v_save_steps == 0)) {
+      #ifdef WITH_THREAD
+      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+      #endif
+      PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+      #ifdef WITH_THREAD
+      __Pyx_PyGILState_Release(__pyx_gilstate_save);
+      #endif
+      __PYX_ERR(0, 103, __pyx_L1_error)
+    }
+    else if (sizeof(long) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_t_4))) {
+      #ifdef WITH_THREAD
+      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+      #endif
+      PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
+      #ifdef WITH_THREAD
+      __Pyx_PyGILState_Release(__pyx_gilstate_save);
+      #endif
+      __PYX_ERR(0, 103, __pyx_L1_error)
+    }
+    __pyx_t_5.data = __pyx_v_paths.data;
+    __pyx_t_5.memview = __pyx_v_paths.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = (__Pyx_div_long(__pyx_t_4, __pyx_v_save_steps) + 1);
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_paths.strides[0];
+        __pyx_t_5.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_5.shape[0] = __pyx_v_paths.shape[1];
+__pyx_t_5.strides[0] = __pyx_v_paths.strides[1];
+    __pyx_t_5.suboffsets[0] = -1;
+
+__pyx_t_7 = ((struct __pyx_vtabstruct_7bonndit_8tracking_8stopping_Validator *)__pyx_v_validator->__pyx_vtab)->wm_checker(__pyx_v_validator, __pyx_t_5); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 103, __pyx_L1_error)
+    __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
+    __pyx_t_5.memview = NULL;
+    __pyx_t_5.data = NULL;
+    __pyx_t_6 = (__pyx_t_7 != 0);
+    if (__pyx_t_6) {
+
+      /* "bonndit/tracking/tracking_prob.pyx":104
+ * 			break
+ * 		if validator.wm_checker(paths[(k-1)//save_steps + 1]):
+ * 			trafo.itow(paths[(k-1)//save_steps + 1])             # <<<<<<<<<<<<<<
+ * 			paths[(k-1)//save_steps + 1] = trafo.point_itow
+ * 			break
+ */
       __pyx_t_4 = (__pyx_v_k - 1);
       if (unlikely(__pyx_v_save_steps == 0)) {
         #ifdef WITH_THREAD
@@ -4371,7 +4505,7 @@ static int __pyx_f_7bonndit_8tracking_13tracking_prob_forward_tracking(__Pyx_mem
         #ifdef WITH_THREAD
         __Pyx_PyGILState_Release(__pyx_gilstate_save);
         #endif
-        __PYX_ERR(0, 100, __pyx_L4_error)
+        __PYX_ERR(0, 104, __pyx_L1_error)
       }
       else if (sizeof(long) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_t_4))) {
         #ifdef WITH_THREAD
@@ -4381,7 +4515,7 @@ static int __pyx_f_7bonndit_8tracking_13tracking_prob_forward_tracking(__Pyx_mem
         #ifdef WITH_THREAD
         __Pyx_PyGILState_Release(__pyx_gilstate_save);
         #endif
-        __PYX_ERR(0, 100, __pyx_L4_error)
+        __PYX_ERR(0, 104, __pyx_L1_error)
       }
       __pyx_t_5.data = __pyx_v_paths.data;
       __pyx_t_5.memview = __pyx_v_paths.memview;
@@ -4396,76 +4530,71 @@ __pyx_t_5.shape[0] = __pyx_v_paths.shape[1];
 __pyx_t_5.strides[0] = __pyx_v_paths.strides[1];
     __pyx_t_5.suboffsets[0] = -1;
 
-__pyx_t_6 = ((struct __pyx_vtabstruct_7bonndit_8tracking_8stopping_Validator *)__pyx_v_validator->__pyx_vtab)->index_checker(__pyx_v_validator, __pyx_t_5); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 100, __pyx_L4_error)
+((struct __pyx_vtabstruct_7bonndit_8tracking_4ItoW_Trafo *)__pyx_v_trafo->__pyx_vtab)->itow(__pyx_v_trafo, __pyx_t_5);
       __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
       __pyx_t_5.memview = NULL;
       __pyx_t_5.data = NULL;
-      __pyx_t_7 = (__pyx_t_6 != 0);
-      if (__pyx_t_7) {
 
-        /* "bonndit/tracking/tracking_prob.pyx":101
- * 
- * 		if validator.index_checker(paths[(k-1)//save_steps + 1]):
- * 			set_zero_vector(paths[(k-1)//save_steps + 1])             # <<<<<<<<<<<<<<
- * 			break
- * 		if validator.wm_checker(paths[(k-1)//save_steps + 1]):
- */
-        __pyx_t_4 = (__pyx_v_k - 1);
-        if (unlikely(__pyx_v_save_steps == 0)) {
-          #ifdef WITH_THREAD
-          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-          #endif
-          PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-          #ifdef WITH_THREAD
-          __Pyx_PyGILState_Release(__pyx_gilstate_save);
-          #endif
-          __PYX_ERR(0, 101, __pyx_L4_error)
-        }
-        else if (sizeof(long) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_t_4))) {
-          #ifdef WITH_THREAD
-          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-          #endif
-          PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-          #ifdef WITH_THREAD
-          __Pyx_PyGILState_Release(__pyx_gilstate_save);
-          #endif
-          __PYX_ERR(0, 101, __pyx_L4_error)
-        }
-        __pyx_t_5.data = __pyx_v_paths.data;
-        __pyx_t_5.memview = __pyx_v_paths.memview;
-        __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
-        {
-    Py_ssize_t __pyx_tmp_idx = (__Pyx_div_long(__pyx_t_4, __pyx_v_save_steps) + 1);
-    Py_ssize_t __pyx_tmp_stride = __pyx_v_paths.strides[0];
-        __pyx_t_5.data += __pyx_tmp_idx * __pyx_tmp_stride;
-}
-
-__pyx_t_5.shape[0] = __pyx_v_paths.shape[1];
-__pyx_t_5.strides[0] = __pyx_v_paths.strides[1];
-    __pyx_t_5.suboffsets[0] = -1;
-
-__pyx_f_7bonndit_5utilc_14cython_helpers_set_zero_vector(__pyx_t_5);
-        __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
-        __pyx_t_5.memview = NULL;
-        __pyx_t_5.data = NULL;
-
-        /* "bonndit/tracking/tracking_prob.pyx":102
- * 		if validator.index_checker(paths[(k-1)//save_steps + 1]):
- * 			set_zero_vector(paths[(k-1)//save_steps + 1])
- * 			break             # <<<<<<<<<<<<<<
+      /* "bonndit/tracking/tracking_prob.pyx":105
  * 		if validator.wm_checker(paths[(k-1)//save_steps + 1]):
  * 			trafo.itow(paths[(k-1)//save_steps + 1])
- */
-        goto __pyx_L7_break;
-
-        /* "bonndit/tracking/tracking_prob.pyx":100
- * 		# validate index and wm density.
- * 
- * 		if validator.index_checker(paths[(k-1)//save_steps + 1]):             # <<<<<<<<<<<<<<
- * 			set_zero_vector(paths[(k-1)//save_steps + 1])
+ * 			paths[(k-1)//save_steps + 1] = trafo.point_itow             # <<<<<<<<<<<<<<
  * 			break
+ * 		# find matching directions
  */
+      if (unlikely(!__pyx_v_trafo->point_itow.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 105, __pyx_L1_error)}
+      __pyx_t_5 = __pyx_v_trafo->point_itow;
+      __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
+      __pyx_t_4 = (__pyx_v_k - 1);
+      if (unlikely(__pyx_v_save_steps == 0)) {
+        #ifdef WITH_THREAD
+        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+        #endif
+        PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+        #ifdef WITH_THREAD
+        __Pyx_PyGILState_Release(__pyx_gilstate_save);
+        #endif
+        __PYX_ERR(0, 105, __pyx_L1_error)
       }
+      else if (sizeof(long) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_t_4))) {
+        #ifdef WITH_THREAD
+        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+        #endif
+        PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
+        #ifdef WITH_THREAD
+        __Pyx_PyGILState_Release(__pyx_gilstate_save);
+        #endif
+        __PYX_ERR(0, 105, __pyx_L1_error)
+      }
+      __pyx_t_8.data = __pyx_v_paths.data;
+      __pyx_t_8.memview = __pyx_v_paths.memview;
+      __PYX_INC_MEMVIEW(&__pyx_t_8, 0);
+      {
+    Py_ssize_t __pyx_tmp_idx = (__Pyx_div_long(__pyx_t_4, __pyx_v_save_steps) + 1);
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_paths.strides[0];
+        __pyx_t_8.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_8.shape[0] = __pyx_v_paths.shape[1];
+__pyx_t_8.strides[0] = __pyx_v_paths.strides[1];
+    __pyx_t_8.suboffsets[0] = -1;
+
+if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_5, __pyx_t_8, 1, 1, 0) < 0)) __PYX_ERR(0, 105, __pyx_L1_error)
+      __PYX_XDEC_MEMVIEW(&__pyx_t_8, 0);
+      __pyx_t_8.memview = NULL;
+      __pyx_t_8.data = NULL;
+      __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
+      __pyx_t_5.memview = NULL;
+      __pyx_t_5.data = NULL;
+
+      /* "bonndit/tracking/tracking_prob.pyx":106
+ * 			trafo.itow(paths[(k-1)//save_steps + 1])
+ * 			paths[(k-1)//save_steps + 1] = trafo.point_itow
+ * 			break             # <<<<<<<<<<<<<<
+ * 		# find matching directions
+ * 		if sum_c(integrate.old_dir) == 0:
+ */
+      goto __pyx_L4_break;
 
       /* "bonndit/tracking/tracking_prob.pyx":103
  * 			set_zero_vector(paths[(k-1)//save_steps + 1])
@@ -4474,646 +4603,51 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_set_zero_vector(__pyx_t_5);
  * 			trafo.itow(paths[(k-1)//save_steps + 1])
  * 			paths[(k-1)//save_steps + 1] = trafo.point_itow
  */
-      __pyx_t_4 = (__pyx_v_k - 1);
-      if (unlikely(__pyx_v_save_steps == 0)) {
-        #ifdef WITH_THREAD
-        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-        #endif
-        PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-        #ifdef WITH_THREAD
-        __Pyx_PyGILState_Release(__pyx_gilstate_save);
-        #endif
-        __PYX_ERR(0, 103, __pyx_L4_error)
-      }
-      else if (sizeof(long) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_t_4))) {
-        #ifdef WITH_THREAD
-        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-        #endif
-        PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-        #ifdef WITH_THREAD
-        __Pyx_PyGILState_Release(__pyx_gilstate_save);
-        #endif
-        __PYX_ERR(0, 103, __pyx_L4_error)
-      }
-      __pyx_t_5.data = __pyx_v_paths.data;
-      __pyx_t_5.memview = __pyx_v_paths.memview;
-      __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
-      {
-    Py_ssize_t __pyx_tmp_idx = (__Pyx_div_long(__pyx_t_4, __pyx_v_save_steps) + 1);
-    Py_ssize_t __pyx_tmp_stride = __pyx_v_paths.strides[0];
-        __pyx_t_5.data += __pyx_tmp_idx * __pyx_tmp_stride;
-}
+    }
 
-__pyx_t_5.shape[0] = __pyx_v_paths.shape[1];
-__pyx_t_5.strides[0] = __pyx_v_paths.strides[1];
-    __pyx_t_5.suboffsets[0] = -1;
-
-__pyx_t_7 = ((struct __pyx_vtabstruct_7bonndit_8tracking_8stopping_Validator *)__pyx_v_validator->__pyx_vtab)->wm_checker(__pyx_v_validator, __pyx_t_5); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 103, __pyx_L4_error)
-      __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
-      __pyx_t_5.memview = NULL;
-      __pyx_t_5.data = NULL;
-      __pyx_t_6 = (__pyx_t_7 != 0);
-      if (__pyx_t_6) {
-
-        /* "bonndit/tracking/tracking_prob.pyx":104
- * 			break
- * 		if validator.wm_checker(paths[(k-1)//save_steps + 1]):
- * 			trafo.itow(paths[(k-1)//save_steps + 1])             # <<<<<<<<<<<<<<
- * 			paths[(k-1)//save_steps + 1] = trafo.point_itow
- * 			break
- */
-        __pyx_t_4 = (__pyx_v_k - 1);
-        if (unlikely(__pyx_v_save_steps == 0)) {
-          #ifdef WITH_THREAD
-          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-          #endif
-          PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-          #ifdef WITH_THREAD
-          __Pyx_PyGILState_Release(__pyx_gilstate_save);
-          #endif
-          __PYX_ERR(0, 104, __pyx_L4_error)
-        }
-        else if (sizeof(long) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_t_4))) {
-          #ifdef WITH_THREAD
-          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-          #endif
-          PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-          #ifdef WITH_THREAD
-          __Pyx_PyGILState_Release(__pyx_gilstate_save);
-          #endif
-          __PYX_ERR(0, 104, __pyx_L4_error)
-        }
-        __pyx_t_5.data = __pyx_v_paths.data;
-        __pyx_t_5.memview = __pyx_v_paths.memview;
-        __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
-        {
-    Py_ssize_t __pyx_tmp_idx = (__Pyx_div_long(__pyx_t_4, __pyx_v_save_steps) + 1);
-    Py_ssize_t __pyx_tmp_stride = __pyx_v_paths.strides[0];
-        __pyx_t_5.data += __pyx_tmp_idx * __pyx_tmp_stride;
-}
-
-__pyx_t_5.shape[0] = __pyx_v_paths.shape[1];
-__pyx_t_5.strides[0] = __pyx_v_paths.strides[1];
-    __pyx_t_5.suboffsets[0] = -1;
-
-((struct __pyx_vtabstruct_7bonndit_8tracking_4ItoW_Trafo *)__pyx_v_trafo->__pyx_vtab)->itow(__pyx_v_trafo, __pyx_t_5);
-        __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
-        __pyx_t_5.memview = NULL;
-        __pyx_t_5.data = NULL;
-
-        /* "bonndit/tracking/tracking_prob.pyx":105
- * 		if validator.wm_checker(paths[(k-1)//save_steps + 1]):
- * 			trafo.itow(paths[(k-1)//save_steps + 1])
- * 			paths[(k-1)//save_steps + 1] = trafo.point_itow             # <<<<<<<<<<<<<<
- * 			break
- * 		# find matching directions
- */
-        if (unlikely(!__pyx_v_trafo->point_itow.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 105, __pyx_L4_error)}
-        __pyx_t_5 = __pyx_v_trafo->point_itow;
-        __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
-        __pyx_t_4 = (__pyx_v_k - 1);
-        if (unlikely(__pyx_v_save_steps == 0)) {
-          #ifdef WITH_THREAD
-          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-          #endif
-          PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-          #ifdef WITH_THREAD
-          __Pyx_PyGILState_Release(__pyx_gilstate_save);
-          #endif
-          __PYX_ERR(0, 105, __pyx_L4_error)
-        }
-        else if (sizeof(long) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_t_4))) {
-          #ifdef WITH_THREAD
-          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-          #endif
-          PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-          #ifdef WITH_THREAD
-          __Pyx_PyGILState_Release(__pyx_gilstate_save);
-          #endif
-          __PYX_ERR(0, 105, __pyx_L4_error)
-        }
-        __pyx_t_8.data = __pyx_v_paths.data;
-        __pyx_t_8.memview = __pyx_v_paths.memview;
-        __PYX_INC_MEMVIEW(&__pyx_t_8, 0);
-        {
-    Py_ssize_t __pyx_tmp_idx = (__Pyx_div_long(__pyx_t_4, __pyx_v_save_steps) + 1);
-    Py_ssize_t __pyx_tmp_stride = __pyx_v_paths.strides[0];
-        __pyx_t_8.data += __pyx_tmp_idx * __pyx_tmp_stride;
-}
-
-__pyx_t_8.shape[0] = __pyx_v_paths.shape[1];
-__pyx_t_8.strides[0] = __pyx_v_paths.strides[1];
-    __pyx_t_8.suboffsets[0] = -1;
-
-if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_5, __pyx_t_8, 1, 1, 0) < 0)) __PYX_ERR(0, 105, __pyx_L4_error)
-        __PYX_XDEC_MEMVIEW(&__pyx_t_8, 0);
-        __pyx_t_8.memview = NULL;
-        __pyx_t_8.data = NULL;
-        __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
-        __pyx_t_5.memview = NULL;
-        __pyx_t_5.data = NULL;
-
-        /* "bonndit/tracking/tracking_prob.pyx":106
- * 			trafo.itow(paths[(k-1)//save_steps + 1])
- * 			paths[(k-1)//save_steps + 1] = trafo.point_itow
- * 			break             # <<<<<<<<<<<<<<
- * 		# find matching directions
- * 		if sum_c(integrate.old_dir) == 0:
- */
-        goto __pyx_L7_break;
-
-        /* "bonndit/tracking/tracking_prob.pyx":103
- * 			set_zero_vector(paths[(k-1)//save_steps + 1])
- * 			break
- * 		if validator.wm_checker(paths[(k-1)//save_steps + 1]):             # <<<<<<<<<<<<<<
- * 			trafo.itow(paths[(k-1)//save_steps + 1])
- * 			paths[(k-1)//save_steps + 1] = trafo.point_itow
- */
-      }
-
-      /* "bonndit/tracking/tracking_prob.pyx":108
+    /* "bonndit/tracking/tracking_prob.pyx":108
  * 			break
  * 		# find matching directions
  * 		if sum_c(integrate.old_dir) == 0:             # <<<<<<<<<<<<<<
- * 			trafo.itow(paths[(k-1)//save_steps + 1])
- * 			paths[(k-1)//save_steps + 1] = trafo.point_itow
+ * 			#trafo.itow(paths[(k-1)//save_steps + 1])
+ * 			#paths[(k-1)//save_steps + 1] = trafo.point_itow
  */
-      if (unlikely(!__pyx_v_integrate->old_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 108, __pyx_L4_error)}
-      __pyx_t_6 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_v_integrate->old_dir) == 0.0) != 0);
-      if (__pyx_t_6) {
+    if (unlikely(!__pyx_v_integrate->old_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 108, __pyx_L1_error)}
+    __pyx_t_6 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_v_integrate->old_dir) == 0.0) != 0);
+    if (__pyx_t_6) {
 
-        /* "bonndit/tracking/tracking_prob.pyx":109
- * 		# find matching directions
- * 		if sum_c(integrate.old_dir) == 0:
- * 			trafo.itow(paths[(k-1)//save_steps + 1])             # <<<<<<<<<<<<<<
- * 			paths[(k-1)//save_steps + 1] = trafo.point_itow
- * 			with gil:
- */
-        __pyx_t_4 = (__pyx_v_k - 1);
-        if (unlikely(__pyx_v_save_steps == 0)) {
-          #ifdef WITH_THREAD
-          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-          #endif
-          PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-          #ifdef WITH_THREAD
-          __Pyx_PyGILState_Release(__pyx_gilstate_save);
-          #endif
-          __PYX_ERR(0, 109, __pyx_L4_error)
-        }
-        else if (sizeof(long) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_t_4))) {
-          #ifdef WITH_THREAD
-          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-          #endif
-          PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-          #ifdef WITH_THREAD
-          __Pyx_PyGILState_Release(__pyx_gilstate_save);
-          #endif
-          __PYX_ERR(0, 109, __pyx_L4_error)
-        }
-        __pyx_t_5.data = __pyx_v_paths.data;
-        __pyx_t_5.memview = __pyx_v_paths.memview;
-        __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
-        {
-    Py_ssize_t __pyx_tmp_idx = (__Pyx_div_long(__pyx_t_4, __pyx_v_save_steps) + 1);
-    Py_ssize_t __pyx_tmp_stride = __pyx_v_paths.strides[0];
-        __pyx_t_5.data += __pyx_tmp_idx * __pyx_tmp_stride;
-}
-
-__pyx_t_5.shape[0] = __pyx_v_paths.shape[1];
-__pyx_t_5.strides[0] = __pyx_v_paths.strides[1];
-    __pyx_t_5.suboffsets[0] = -1;
-
-((struct __pyx_vtabstruct_7bonndit_8tracking_4ItoW_Trafo *)__pyx_v_trafo->__pyx_vtab)->itow(__pyx_v_trafo, __pyx_t_5);
-        __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
-        __pyx_t_5.memview = NULL;
-        __pyx_t_5.data = NULL;
-
-        /* "bonndit/tracking/tracking_prob.pyx":110
- * 		if sum_c(integrate.old_dir) == 0:
- * 			trafo.itow(paths[(k-1)//save_steps + 1])
- * 			paths[(k-1)//save_steps + 1] = trafo.point_itow             # <<<<<<<<<<<<<<
- * 			with gil:
- * 				print('i break third at k = ',  str(k))
- */
-        if (unlikely(!__pyx_v_trafo->point_itow.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 110, __pyx_L4_error)}
-        __pyx_t_5 = __pyx_v_trafo->point_itow;
-        __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
-        __pyx_t_4 = (__pyx_v_k - 1);
-        if (unlikely(__pyx_v_save_steps == 0)) {
-          #ifdef WITH_THREAD
-          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-          #endif
-          PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-          #ifdef WITH_THREAD
-          __Pyx_PyGILState_Release(__pyx_gilstate_save);
-          #endif
-          __PYX_ERR(0, 110, __pyx_L4_error)
-        }
-        else if (sizeof(long) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_t_4))) {
-          #ifdef WITH_THREAD
-          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-          #endif
-          PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-          #ifdef WITH_THREAD
-          __Pyx_PyGILState_Release(__pyx_gilstate_save);
-          #endif
-          __PYX_ERR(0, 110, __pyx_L4_error)
-        }
-        __pyx_t_8.data = __pyx_v_paths.data;
-        __pyx_t_8.memview = __pyx_v_paths.memview;
-        __PYX_INC_MEMVIEW(&__pyx_t_8, 0);
-        {
-    Py_ssize_t __pyx_tmp_idx = (__Pyx_div_long(__pyx_t_4, __pyx_v_save_steps) + 1);
-    Py_ssize_t __pyx_tmp_stride = __pyx_v_paths.strides[0];
-        __pyx_t_8.data += __pyx_tmp_idx * __pyx_tmp_stride;
-}
-
-__pyx_t_8.shape[0] = __pyx_v_paths.shape[1];
-__pyx_t_8.strides[0] = __pyx_v_paths.strides[1];
-    __pyx_t_8.suboffsets[0] = -1;
-
-if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_5, __pyx_t_8, 1, 1, 0) < 0)) __PYX_ERR(0, 110, __pyx_L4_error)
-        __PYX_XDEC_MEMVIEW(&__pyx_t_8, 0);
-        __pyx_t_8.memview = NULL;
-        __pyx_t_8.data = NULL;
-        __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
-        __pyx_t_5.memview = NULL;
-        __pyx_t_5.data = NULL;
-
-        /* "bonndit/tracking/tracking_prob.pyx":111
- * 			trafo.itow(paths[(k-1)//save_steps + 1])
- * 			paths[(k-1)//save_steps + 1] = trafo.point_itow
- * 			with gil:             # <<<<<<<<<<<<<<
- * 				print('i break third at k = ',  str(k))
- * 			break
- */
-        {
-            #ifdef WITH_THREAD
-            PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-            #endif
-            /*try:*/ {
-
-              /* "bonndit/tracking/tracking_prob.pyx":112
- * 			paths[(k-1)//save_steps + 1] = trafo.point_itow
- * 			with gil:
- * 				print('i break third at k = ',  str(k))             # <<<<<<<<<<<<<<
- * 			break
- * 		if interpolate.interpolate(paths[(k-1)//save_steps + 1], integrate.old_dir, (k-1)//save_steps + 1) != 0:
- */
-              __pyx_t_9 = __Pyx_PyInt_From_int(__pyx_v_k); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 112, __pyx_L14_error)
-              __Pyx_GOTREF(__pyx_t_9);
-              __pyx_t_10 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyUnicode_Type)), __pyx_t_9); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 112, __pyx_L14_error)
-              __Pyx_GOTREF(__pyx_t_10);
-              __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-              __pyx_t_9 = PyTuple_New(2); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 112, __pyx_L14_error)
-              __Pyx_GOTREF(__pyx_t_9);
-              __Pyx_INCREF(__pyx_kp_u_i_break_third_at_k);
-              __Pyx_GIVEREF(__pyx_kp_u_i_break_third_at_k);
-              PyTuple_SET_ITEM(__pyx_t_9, 0, __pyx_kp_u_i_break_third_at_k);
-              __Pyx_GIVEREF(__pyx_t_10);
-              PyTuple_SET_ITEM(__pyx_t_9, 1, __pyx_t_10);
-              __pyx_t_10 = 0;
-              __pyx_t_10 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_9, NULL); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 112, __pyx_L14_error)
-              __Pyx_GOTREF(__pyx_t_10);
-              __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-              __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-            }
-
-            /* "bonndit/tracking/tracking_prob.pyx":111
- * 			trafo.itow(paths[(k-1)//save_steps + 1])
- * 			paths[(k-1)//save_steps + 1] = trafo.point_itow
- * 			with gil:             # <<<<<<<<<<<<<<
- * 				print('i break third at k = ',  str(k))
- * 			break
- */
-            /*finally:*/ {
-              /*normal exit:*/{
-                #ifdef WITH_THREAD
-                __Pyx_PyGILState_Release(__pyx_gilstate_save);
-                #endif
-                goto __pyx_L15;
-              }
-              __pyx_L14_error: {
-                #ifdef WITH_THREAD
-                __Pyx_PyGILState_Release(__pyx_gilstate_save);
-                #endif
-                goto __pyx_L4_error;
-              }
-              __pyx_L15:;
-            }
-        }
-
-        /* "bonndit/tracking/tracking_prob.pyx":113
- * 			with gil:
- * 				print('i break third at k = ',  str(k))
- * 			break             # <<<<<<<<<<<<<<
- * 		if interpolate.interpolate(paths[(k-1)//save_steps + 1], integrate.old_dir, (k-1)//save_steps + 1) != 0:
- * 			trafo.itow(paths[(k-1)//save_steps + 1])
- */
-        goto __pyx_L7_break;
-
-        /* "bonndit/tracking/tracking_prob.pyx":108
- * 			break
- * 		# find matching directions
- * 		if sum_c(integrate.old_dir) == 0:             # <<<<<<<<<<<<<<
- * 			trafo.itow(paths[(k-1)//save_steps + 1])
- * 			paths[(k-1)//save_steps + 1] = trafo.point_itow
- */
-      }
-
-      /* "bonndit/tracking/tracking_prob.pyx":114
- * 				print('i break third at k = ',  str(k))
- * 			break
- * 		if interpolate.interpolate(paths[(k-1)//save_steps + 1], integrate.old_dir, (k-1)//save_steps + 1) != 0:             # <<<<<<<<<<<<<<
- * 			trafo.itow(paths[(k-1)//save_steps + 1])
- * 			paths[(k-1)//save_steps + 1] = trafo.point_itow
- */
-      __pyx_t_4 = (__pyx_v_k - 1);
-      if (unlikely(__pyx_v_save_steps == 0)) {
-        #ifdef WITH_THREAD
-        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-        #endif
-        PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-        #ifdef WITH_THREAD
-        __Pyx_PyGILState_Release(__pyx_gilstate_save);
-        #endif
-        __PYX_ERR(0, 114, __pyx_L4_error)
-      }
-      else if (sizeof(long) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_t_4))) {
-        #ifdef WITH_THREAD
-        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-        #endif
-        PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-        #ifdef WITH_THREAD
-        __Pyx_PyGILState_Release(__pyx_gilstate_save);
-        #endif
-        __PYX_ERR(0, 114, __pyx_L4_error)
-      }
-      __pyx_t_5.data = __pyx_v_paths.data;
-      __pyx_t_5.memview = __pyx_v_paths.memview;
-      __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
-      {
-    Py_ssize_t __pyx_tmp_idx = (__Pyx_div_long(__pyx_t_4, __pyx_v_save_steps) + 1);
-    Py_ssize_t __pyx_tmp_stride = __pyx_v_paths.strides[0];
-        __pyx_t_5.data += __pyx_tmp_idx * __pyx_tmp_stride;
-}
-
-__pyx_t_5.shape[0] = __pyx_v_paths.shape[1];
-__pyx_t_5.strides[0] = __pyx_v_paths.strides[1];
-    __pyx_t_5.suboffsets[0] = -1;
-
-if (unlikely(!__pyx_v_integrate->old_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 114, __pyx_L4_error)}
-      __pyx_t_4 = (__pyx_v_k - 1);
-      if (unlikely(__pyx_v_save_steps == 0)) {
-        #ifdef WITH_THREAD
-        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-        #endif
-        PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-        #ifdef WITH_THREAD
-        __Pyx_PyGILState_Release(__pyx_gilstate_save);
-        #endif
-        __PYX_ERR(0, 114, __pyx_L4_error)
-      }
-      else if (sizeof(long) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_t_4))) {
-        #ifdef WITH_THREAD
-        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-        #endif
-        PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-        #ifdef WITH_THREAD
-        __Pyx_PyGILState_Release(__pyx_gilstate_save);
-        #endif
-        __PYX_ERR(0, 114, __pyx_L4_error)
-      }
-      __pyx_t_11 = ((struct __pyx_vtabstruct_7bonndit_8tracking_13interpolation_Interpolation *)__pyx_v_interpolate->__pyx_vtab)->interpolate(__pyx_v_interpolate, __pyx_t_5, __pyx_v_integrate->old_dir, (__Pyx_div_long(__pyx_t_4, __pyx_v_save_steps) + 1)); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 114, __pyx_L4_error)
-      __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
-      __pyx_t_5.memview = NULL;
-      __pyx_t_5.data = NULL;
-      __pyx_t_6 = ((__pyx_t_11 != 0) != 0);
-      if (__pyx_t_6) {
-
-        /* "bonndit/tracking/tracking_prob.pyx":115
- * 			break
- * 		if interpolate.interpolate(paths[(k-1)//save_steps + 1], integrate.old_dir, (k-1)//save_steps + 1) != 0:
- * 			trafo.itow(paths[(k-1)//save_steps + 1])             # <<<<<<<<<<<<<<
- * 			paths[(k-1)//save_steps + 1] = trafo.point_itow
- * 			with gil:
- */
-        __pyx_t_4 = (__pyx_v_k - 1);
-        if (unlikely(__pyx_v_save_steps == 0)) {
-          #ifdef WITH_THREAD
-          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-          #endif
-          PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-          #ifdef WITH_THREAD
-          __Pyx_PyGILState_Release(__pyx_gilstate_save);
-          #endif
-          __PYX_ERR(0, 115, __pyx_L4_error)
-        }
-        else if (sizeof(long) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_t_4))) {
-          #ifdef WITH_THREAD
-          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-          #endif
-          PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-          #ifdef WITH_THREAD
-          __Pyx_PyGILState_Release(__pyx_gilstate_save);
-          #endif
-          __PYX_ERR(0, 115, __pyx_L4_error)
-        }
-        __pyx_t_5.data = __pyx_v_paths.data;
-        __pyx_t_5.memview = __pyx_v_paths.memview;
-        __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
-        {
-    Py_ssize_t __pyx_tmp_idx = (__Pyx_div_long(__pyx_t_4, __pyx_v_save_steps) + 1);
-    Py_ssize_t __pyx_tmp_stride = __pyx_v_paths.strides[0];
-        __pyx_t_5.data += __pyx_tmp_idx * __pyx_tmp_stride;
-}
-
-__pyx_t_5.shape[0] = __pyx_v_paths.shape[1];
-__pyx_t_5.strides[0] = __pyx_v_paths.strides[1];
-    __pyx_t_5.suboffsets[0] = -1;
-
-((struct __pyx_vtabstruct_7bonndit_8tracking_4ItoW_Trafo *)__pyx_v_trafo->__pyx_vtab)->itow(__pyx_v_trafo, __pyx_t_5);
-        __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
-        __pyx_t_5.memview = NULL;
-        __pyx_t_5.data = NULL;
-
-        /* "bonndit/tracking/tracking_prob.pyx":116
- * 		if interpolate.interpolate(paths[(k-1)//save_steps + 1], integrate.old_dir, (k-1)//save_steps + 1) != 0:
- * 			trafo.itow(paths[(k-1)//save_steps + 1])
- * 			paths[(k-1)//save_steps + 1] = trafo.point_itow             # <<<<<<<<<<<<<<
- * 			with gil:
- * 				print('i break fourth at k = ',  str(k))
- */
-        if (unlikely(!__pyx_v_trafo->point_itow.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 116, __pyx_L4_error)}
-        __pyx_t_5 = __pyx_v_trafo->point_itow;
-        __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
-        __pyx_t_4 = (__pyx_v_k - 1);
-        if (unlikely(__pyx_v_save_steps == 0)) {
-          #ifdef WITH_THREAD
-          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-          #endif
-          PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-          #ifdef WITH_THREAD
-          __Pyx_PyGILState_Release(__pyx_gilstate_save);
-          #endif
-          __PYX_ERR(0, 116, __pyx_L4_error)
-        }
-        else if (sizeof(long) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_t_4))) {
-          #ifdef WITH_THREAD
-          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-          #endif
-          PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-          #ifdef WITH_THREAD
-          __Pyx_PyGILState_Release(__pyx_gilstate_save);
-          #endif
-          __PYX_ERR(0, 116, __pyx_L4_error)
-        }
-        __pyx_t_8.data = __pyx_v_paths.data;
-        __pyx_t_8.memview = __pyx_v_paths.memview;
-        __PYX_INC_MEMVIEW(&__pyx_t_8, 0);
-        {
-    Py_ssize_t __pyx_tmp_idx = (__Pyx_div_long(__pyx_t_4, __pyx_v_save_steps) + 1);
-    Py_ssize_t __pyx_tmp_stride = __pyx_v_paths.strides[0];
-        __pyx_t_8.data += __pyx_tmp_idx * __pyx_tmp_stride;
-}
-
-__pyx_t_8.shape[0] = __pyx_v_paths.shape[1];
-__pyx_t_8.strides[0] = __pyx_v_paths.strides[1];
-    __pyx_t_8.suboffsets[0] = -1;
-
-if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_5, __pyx_t_8, 1, 1, 0) < 0)) __PYX_ERR(0, 116, __pyx_L4_error)
-        __PYX_XDEC_MEMVIEW(&__pyx_t_8, 0);
-        __pyx_t_8.memview = NULL;
-        __pyx_t_8.data = NULL;
-        __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
-        __pyx_t_5.memview = NULL;
-        __pyx_t_5.data = NULL;
-
-        /* "bonndit/tracking/tracking_prob.pyx":117
- * 			trafo.itow(paths[(k-1)//save_steps + 1])
- * 			paths[(k-1)//save_steps + 1] = trafo.point_itow
- * 			with gil:             # <<<<<<<<<<<<<<
- * 				print('i break fourth at k = ',  str(k))
- * 			break
- */
-        {
-            #ifdef WITH_THREAD
-            PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-            #endif
-            /*try:*/ {
-
-              /* "bonndit/tracking/tracking_prob.pyx":118
- * 			paths[(k-1)//save_steps + 1] = trafo.point_itow
- * 			with gil:
- * 				print('i break fourth at k = ',  str(k))             # <<<<<<<<<<<<<<
- * 			break
- * 
- */
-              __pyx_t_10 = __Pyx_PyInt_From_int(__pyx_v_k); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 118, __pyx_L20_error)
-              __Pyx_GOTREF(__pyx_t_10);
-              __pyx_t_9 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyUnicode_Type)), __pyx_t_10); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 118, __pyx_L20_error)
-              __Pyx_GOTREF(__pyx_t_9);
-              __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-              __pyx_t_10 = PyTuple_New(2); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 118, __pyx_L20_error)
-              __Pyx_GOTREF(__pyx_t_10);
-              __Pyx_INCREF(__pyx_kp_u_i_break_fourth_at_k);
-              __Pyx_GIVEREF(__pyx_kp_u_i_break_fourth_at_k);
-              PyTuple_SET_ITEM(__pyx_t_10, 0, __pyx_kp_u_i_break_fourth_at_k);
-              __Pyx_GIVEREF(__pyx_t_9);
-              PyTuple_SET_ITEM(__pyx_t_10, 1, __pyx_t_9);
-              __pyx_t_9 = 0;
-              __pyx_t_9 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_10, NULL); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 118, __pyx_L20_error)
-              __Pyx_GOTREF(__pyx_t_9);
-              __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-              __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-            }
-
-            /* "bonndit/tracking/tracking_prob.pyx":117
- * 			trafo.itow(paths[(k-1)//save_steps + 1])
- * 			paths[(k-1)//save_steps + 1] = trafo.point_itow
- * 			with gil:             # <<<<<<<<<<<<<<
- * 				print('i break fourth at k = ',  str(k))
- * 			break
- */
-            /*finally:*/ {
-              /*normal exit:*/{
-                #ifdef WITH_THREAD
-                __Pyx_PyGILState_Release(__pyx_gilstate_save);
-                #endif
-                goto __pyx_L21;
-              }
-              __pyx_L20_error: {
-                #ifdef WITH_THREAD
-                __Pyx_PyGILState_Release(__pyx_gilstate_save);
-                #endif
-                goto __pyx_L4_error;
-              }
-              __pyx_L21:;
-            }
-        }
-
-        /* "bonndit/tracking/tracking_prob.pyx":119
- * 			with gil:
- * 				print('i break fourth at k = ',  str(k))
- * 			break             # <<<<<<<<<<<<<<
- * 
- * 		# Check next step is valid. If it is: Integrate. else break
- */
-        goto __pyx_L7_break;
-
-        /* "bonndit/tracking/tracking_prob.pyx":114
- * 				print('i break third at k = ',  str(k))
- * 			break
- * 		if interpolate.interpolate(paths[(k-1)//save_steps + 1], integrate.old_dir, (k-1)//save_steps + 1) != 0:             # <<<<<<<<<<<<<<
- * 			trafo.itow(paths[(k-1)//save_steps + 1])
- * 			paths[(k-1)//save_steps + 1] = trafo.point_itow
- */
-      }
-
-      /* "bonndit/tracking/tracking_prob.pyx":122
- * 
- * 		# Check next step is valid. If it is: Integrate. else break
- * 		if validator.next_point_checker(interpolate.next_dir):             # <<<<<<<<<<<<<<
- * 			set_zero_vector(paths[(k-1)//save_steps + 1])
- * 			break
- */
-      if (unlikely(!__pyx_v_interpolate->next_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 122, __pyx_L4_error)}
-      __pyx_t_6 = ((struct __pyx_vtabstruct_7bonndit_8tracking_8stopping_Validator *)__pyx_v_validator->__pyx_vtab)->next_point_checker(__pyx_v_validator, __pyx_v_interpolate->next_dir); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 122, __pyx_L4_error)
-      __pyx_t_7 = (__pyx_t_6 != 0);
-      if (__pyx_t_7) {
-
-        /* "bonndit/tracking/tracking_prob.pyx":123
- * 		# Check next step is valid. If it is: Integrate. else break
- * 		if validator.next_point_checker(interpolate.next_dir):
+      /* "bonndit/tracking/tracking_prob.pyx":111
+ * 			#trafo.itow(paths[(k-1)//save_steps + 1])
+ * 			#paths[(k-1)//save_steps + 1] = trafo.point_itow
  * 			set_zero_vector(paths[(k-1)//save_steps + 1])             # <<<<<<<<<<<<<<
- * 			break
- * 		integrate.integrate(interpolate.next_dir, paths[(k-1)//save_steps + 1])
+ * 			set_zero_vector(features[(k - 1) // save_steps + 1])
+ * 		#	with gil:
  */
-        __pyx_t_4 = (__pyx_v_k - 1);
-        if (unlikely(__pyx_v_save_steps == 0)) {
-          #ifdef WITH_THREAD
-          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-          #endif
-          PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-          #ifdef WITH_THREAD
-          __Pyx_PyGILState_Release(__pyx_gilstate_save);
-          #endif
-          __PYX_ERR(0, 123, __pyx_L4_error)
-        }
-        else if (sizeof(long) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_t_4))) {
-          #ifdef WITH_THREAD
-          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-          #endif
-          PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-          #ifdef WITH_THREAD
-          __Pyx_PyGILState_Release(__pyx_gilstate_save);
-          #endif
-          __PYX_ERR(0, 123, __pyx_L4_error)
-        }
-        __pyx_t_5.data = __pyx_v_paths.data;
-        __pyx_t_5.memview = __pyx_v_paths.memview;
-        __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
-        {
+      __pyx_t_4 = (__pyx_v_k - 1);
+      if (unlikely(__pyx_v_save_steps == 0)) {
+        #ifdef WITH_THREAD
+        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+        #endif
+        PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+        #ifdef WITH_THREAD
+        __Pyx_PyGILState_Release(__pyx_gilstate_save);
+        #endif
+        __PYX_ERR(0, 111, __pyx_L1_error)
+      }
+      else if (sizeof(long) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_t_4))) {
+        #ifdef WITH_THREAD
+        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+        #endif
+        PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
+        #ifdef WITH_THREAD
+        __Pyx_PyGILState_Release(__pyx_gilstate_save);
+        #endif
+        __PYX_ERR(0, 111, __pyx_L1_error)
+      }
+      __pyx_t_5.data = __pyx_v_paths.data;
+      __pyx_t_5.memview = __pyx_v_paths.memview;
+      __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
+      {
     Py_ssize_t __pyx_tmp_idx = (__Pyx_div_long(__pyx_t_4, __pyx_v_save_steps) + 1);
     Py_ssize_t __pyx_tmp_stride = __pyx_v_paths.strides[0];
         __pyx_t_5.data += __pyx_tmp_idx * __pyx_tmp_stride;
@@ -5124,36 +4658,17 @@ __pyx_t_5.strides[0] = __pyx_v_paths.strides[1];
     __pyx_t_5.suboffsets[0] = -1;
 
 __pyx_f_7bonndit_5utilc_14cython_helpers_set_zero_vector(__pyx_t_5);
-        __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
-        __pyx_t_5.memview = NULL;
-        __pyx_t_5.data = NULL;
+      __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
+      __pyx_t_5.memview = NULL;
+      __pyx_t_5.data = NULL;
 
-        /* "bonndit/tracking/tracking_prob.pyx":124
- * 		if validator.next_point_checker(interpolate.next_dir):
+      /* "bonndit/tracking/tracking_prob.pyx":112
+ * 			#paths[(k-1)//save_steps + 1] = trafo.point_itow
  * 			set_zero_vector(paths[(k-1)//save_steps + 1])
- * 			break             # <<<<<<<<<<<<<<
- * 		integrate.integrate(interpolate.next_dir, paths[(k-1)//save_steps + 1])
- * 		# update old dir
+ * 			set_zero_vector(features[(k - 1) // save_steps + 1])             # <<<<<<<<<<<<<<
+ * 		#	with gil:
+ * 		#		print('i break third at k = ',  str(k))
  */
-        goto __pyx_L7_break;
-
-        /* "bonndit/tracking/tracking_prob.pyx":122
- * 
- * 		# Check next step is valid. If it is: Integrate. else break
- * 		if validator.next_point_checker(interpolate.next_dir):             # <<<<<<<<<<<<<<
- * 			set_zero_vector(paths[(k-1)//save_steps + 1])
- * 			break
- */
-      }
-
-      /* "bonndit/tracking/tracking_prob.pyx":125
- * 			set_zero_vector(paths[(k-1)//save_steps + 1])
- * 			break
- * 		integrate.integrate(interpolate.next_dir, paths[(k-1)//save_steps + 1])             # <<<<<<<<<<<<<<
- * 		# update old dir
- * 		paths[k//save_steps + 1] = integrate.next_point
- */
-      if (unlikely(!__pyx_v_interpolate->next_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 125, __pyx_L4_error)}
       __pyx_t_4 = (__pyx_v_k - 1);
       if (unlikely(__pyx_v_save_steps == 0)) {
         #ifdef WITH_THREAD
@@ -5163,7 +4678,7 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_set_zero_vector(__pyx_t_5);
         #ifdef WITH_THREAD
         __Pyx_PyGILState_Release(__pyx_gilstate_save);
         #endif
-        __PYX_ERR(0, 125, __pyx_L4_error)
+        __PYX_ERR(0, 112, __pyx_L1_error)
       }
       else if (sizeof(long) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_t_4))) {
         #ifdef WITH_THREAD
@@ -5173,12 +4688,339 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_set_zero_vector(__pyx_t_5);
         #ifdef WITH_THREAD
         __Pyx_PyGILState_Release(__pyx_gilstate_save);
         #endif
-        __PYX_ERR(0, 125, __pyx_L4_error)
+        __PYX_ERR(0, 112, __pyx_L1_error)
+      }
+      __pyx_t_5.data = __pyx_v_features.data;
+      __pyx_t_5.memview = __pyx_v_features.memview;
+      __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
+      {
+    Py_ssize_t __pyx_tmp_idx = (__Pyx_div_long(__pyx_t_4, __pyx_v_save_steps) + 1);
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_features.strides[0];
+        __pyx_t_5.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_5.shape[0] = __pyx_v_features.shape[1];
+__pyx_t_5.strides[0] = __pyx_v_features.strides[1];
+    __pyx_t_5.suboffsets[0] = -1;
+
+__pyx_f_7bonndit_5utilc_14cython_helpers_set_zero_vector(__pyx_t_5);
+      __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
+      __pyx_t_5.memview = NULL;
+      __pyx_t_5.data = NULL;
+
+      /* "bonndit/tracking/tracking_prob.pyx":115
+ * 		#	with gil:
+ * 		#		print('i break third at k = ',  str(k))
+ * 			break             # <<<<<<<<<<<<<<
+ * 		if interpolate.interpolate(paths[(k-1)//save_steps + 1], integrate.old_dir, (k-1)//save_steps + 1) != 0:
+ * 			trafo.itow(paths[(k-1)//save_steps + 1])
+ */
+      goto __pyx_L4_break;
+
+      /* "bonndit/tracking/tracking_prob.pyx":108
+ * 			break
+ * 		# find matching directions
+ * 		if sum_c(integrate.old_dir) == 0:             # <<<<<<<<<<<<<<
+ * 			#trafo.itow(paths[(k-1)//save_steps + 1])
+ * 			#paths[(k-1)//save_steps + 1] = trafo.point_itow
+ */
+    }
+
+    /* "bonndit/tracking/tracking_prob.pyx":116
+ * 		#		print('i break third at k = ',  str(k))
+ * 			break
+ * 		if interpolate.interpolate(paths[(k-1)//save_steps + 1], integrate.old_dir, (k-1)//save_steps + 1) != 0:             # <<<<<<<<<<<<<<
+ * 			trafo.itow(paths[(k-1)//save_steps + 1])
+ * 			paths[(k-1)//save_steps + 1] = trafo.point_itow
+ */
+    __pyx_t_4 = (__pyx_v_k - 1);
+    if (unlikely(__pyx_v_save_steps == 0)) {
+      #ifdef WITH_THREAD
+      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+      #endif
+      PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+      #ifdef WITH_THREAD
+      __Pyx_PyGILState_Release(__pyx_gilstate_save);
+      #endif
+      __PYX_ERR(0, 116, __pyx_L1_error)
+    }
+    else if (sizeof(long) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_t_4))) {
+      #ifdef WITH_THREAD
+      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+      #endif
+      PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
+      #ifdef WITH_THREAD
+      __Pyx_PyGILState_Release(__pyx_gilstate_save);
+      #endif
+      __PYX_ERR(0, 116, __pyx_L1_error)
+    }
+    __pyx_t_5.data = __pyx_v_paths.data;
+    __pyx_t_5.memview = __pyx_v_paths.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = (__Pyx_div_long(__pyx_t_4, __pyx_v_save_steps) + 1);
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_paths.strides[0];
+        __pyx_t_5.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_5.shape[0] = __pyx_v_paths.shape[1];
+__pyx_t_5.strides[0] = __pyx_v_paths.strides[1];
+    __pyx_t_5.suboffsets[0] = -1;
+
+if (unlikely(!__pyx_v_integrate->old_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 116, __pyx_L1_error)}
+    __pyx_t_4 = (__pyx_v_k - 1);
+    if (unlikely(__pyx_v_save_steps == 0)) {
+      #ifdef WITH_THREAD
+      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+      #endif
+      PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+      #ifdef WITH_THREAD
+      __Pyx_PyGILState_Release(__pyx_gilstate_save);
+      #endif
+      __PYX_ERR(0, 116, __pyx_L1_error)
+    }
+    else if (sizeof(long) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_t_4))) {
+      #ifdef WITH_THREAD
+      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+      #endif
+      PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
+      #ifdef WITH_THREAD
+      __Pyx_PyGILState_Release(__pyx_gilstate_save);
+      #endif
+      __PYX_ERR(0, 116, __pyx_L1_error)
+    }
+    __pyx_t_9 = ((struct __pyx_vtabstruct_7bonndit_8tracking_13interpolation_Interpolation *)__pyx_v_interpolate->__pyx_vtab)->interpolate(__pyx_v_interpolate, __pyx_t_5, __pyx_v_integrate->old_dir, (__Pyx_div_long(__pyx_t_4, __pyx_v_save_steps) + 1)); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 116, __pyx_L1_error)
+    __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
+    __pyx_t_5.memview = NULL;
+    __pyx_t_5.data = NULL;
+    __pyx_t_6 = ((__pyx_t_9 != 0) != 0);
+    if (__pyx_t_6) {
+
+      /* "bonndit/tracking/tracking_prob.pyx":117
+ * 			break
+ * 		if interpolate.interpolate(paths[(k-1)//save_steps + 1], integrate.old_dir, (k-1)//save_steps + 1) != 0:
+ * 			trafo.itow(paths[(k-1)//save_steps + 1])             # <<<<<<<<<<<<<<
+ * 			paths[(k-1)//save_steps + 1] = trafo.point_itow
+ * 		#	with gil:
+ */
+      __pyx_t_4 = (__pyx_v_k - 1);
+      if (unlikely(__pyx_v_save_steps == 0)) {
+        #ifdef WITH_THREAD
+        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+        #endif
+        PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+        #ifdef WITH_THREAD
+        __Pyx_PyGILState_Release(__pyx_gilstate_save);
+        #endif
+        __PYX_ERR(0, 117, __pyx_L1_error)
+      }
+      else if (sizeof(long) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_t_4))) {
+        #ifdef WITH_THREAD
+        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+        #endif
+        PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
+        #ifdef WITH_THREAD
+        __Pyx_PyGILState_Release(__pyx_gilstate_save);
+        #endif
+        __PYX_ERR(0, 117, __pyx_L1_error)
       }
       __pyx_t_5.data = __pyx_v_paths.data;
       __pyx_t_5.memview = __pyx_v_paths.memview;
       __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
       {
+    Py_ssize_t __pyx_tmp_idx = (__Pyx_div_long(__pyx_t_4, __pyx_v_save_steps) + 1);
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_paths.strides[0];
+        __pyx_t_5.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_5.shape[0] = __pyx_v_paths.shape[1];
+__pyx_t_5.strides[0] = __pyx_v_paths.strides[1];
+    __pyx_t_5.suboffsets[0] = -1;
+
+((struct __pyx_vtabstruct_7bonndit_8tracking_4ItoW_Trafo *)__pyx_v_trafo->__pyx_vtab)->itow(__pyx_v_trafo, __pyx_t_5);
+      __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
+      __pyx_t_5.memview = NULL;
+      __pyx_t_5.data = NULL;
+
+      /* "bonndit/tracking/tracking_prob.pyx":118
+ * 		if interpolate.interpolate(paths[(k-1)//save_steps + 1], integrate.old_dir, (k-1)//save_steps + 1) != 0:
+ * 			trafo.itow(paths[(k-1)//save_steps + 1])
+ * 			paths[(k-1)//save_steps + 1] = trafo.point_itow             # <<<<<<<<<<<<<<
+ * 		#	with gil:
+ * 		#		print('i break fourth at k = ',  str(k))
+ */
+      if (unlikely(!__pyx_v_trafo->point_itow.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 118, __pyx_L1_error)}
+      __pyx_t_5 = __pyx_v_trafo->point_itow;
+      __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
+      __pyx_t_4 = (__pyx_v_k - 1);
+      if (unlikely(__pyx_v_save_steps == 0)) {
+        #ifdef WITH_THREAD
+        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+        #endif
+        PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+        #ifdef WITH_THREAD
+        __Pyx_PyGILState_Release(__pyx_gilstate_save);
+        #endif
+        __PYX_ERR(0, 118, __pyx_L1_error)
+      }
+      else if (sizeof(long) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_t_4))) {
+        #ifdef WITH_THREAD
+        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+        #endif
+        PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
+        #ifdef WITH_THREAD
+        __Pyx_PyGILState_Release(__pyx_gilstate_save);
+        #endif
+        __PYX_ERR(0, 118, __pyx_L1_error)
+      }
+      __pyx_t_8.data = __pyx_v_paths.data;
+      __pyx_t_8.memview = __pyx_v_paths.memview;
+      __PYX_INC_MEMVIEW(&__pyx_t_8, 0);
+      {
+    Py_ssize_t __pyx_tmp_idx = (__Pyx_div_long(__pyx_t_4, __pyx_v_save_steps) + 1);
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_paths.strides[0];
+        __pyx_t_8.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_8.shape[0] = __pyx_v_paths.shape[1];
+__pyx_t_8.strides[0] = __pyx_v_paths.strides[1];
+    __pyx_t_8.suboffsets[0] = -1;
+
+if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_5, __pyx_t_8, 1, 1, 0) < 0)) __PYX_ERR(0, 118, __pyx_L1_error)
+      __PYX_XDEC_MEMVIEW(&__pyx_t_8, 0);
+      __pyx_t_8.memview = NULL;
+      __pyx_t_8.data = NULL;
+      __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
+      __pyx_t_5.memview = NULL;
+      __pyx_t_5.data = NULL;
+
+      /* "bonndit/tracking/tracking_prob.pyx":121
+ * 		#	with gil:
+ * 		#		print('i break fourth at k = ',  str(k))
+ * 			break             # <<<<<<<<<<<<<<
+ * 
+ * 		# Check next step is valid. If it is: Integrate. else break
+ */
+      goto __pyx_L4_break;
+
+      /* "bonndit/tracking/tracking_prob.pyx":116
+ * 		#		print('i break third at k = ',  str(k))
+ * 			break
+ * 		if interpolate.interpolate(paths[(k-1)//save_steps + 1], integrate.old_dir, (k-1)//save_steps + 1) != 0:             # <<<<<<<<<<<<<<
+ * 			trafo.itow(paths[(k-1)//save_steps + 1])
+ * 			paths[(k-1)//save_steps + 1] = trafo.point_itow
+ */
+    }
+
+    /* "bonndit/tracking/tracking_prob.pyx":124
+ * 
+ * 		# Check next step is valid. If it is: Integrate. else break
+ * 		if validator.next_point_checker(interpolate.next_dir):             # <<<<<<<<<<<<<<
+ * 			set_zero_vector(paths[(k-1)//save_steps + 1])
+ * 			break
+ */
+    if (unlikely(!__pyx_v_interpolate->next_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 124, __pyx_L1_error)}
+    __pyx_t_6 = ((struct __pyx_vtabstruct_7bonndit_8tracking_8stopping_Validator *)__pyx_v_validator->__pyx_vtab)->next_point_checker(__pyx_v_validator, __pyx_v_interpolate->next_dir); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 124, __pyx_L1_error)
+    __pyx_t_7 = (__pyx_t_6 != 0);
+    if (__pyx_t_7) {
+
+      /* "bonndit/tracking/tracking_prob.pyx":125
+ * 		# Check next step is valid. If it is: Integrate. else break
+ * 		if validator.next_point_checker(interpolate.next_dir):
+ * 			set_zero_vector(paths[(k-1)//save_steps + 1])             # <<<<<<<<<<<<<<
+ * 			break
+ * 		integrate.integrate(interpolate.next_dir, paths[(k-1)//save_steps + 1])
+ */
+      __pyx_t_4 = (__pyx_v_k - 1);
+      if (unlikely(__pyx_v_save_steps == 0)) {
+        #ifdef WITH_THREAD
+        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+        #endif
+        PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+        #ifdef WITH_THREAD
+        __Pyx_PyGILState_Release(__pyx_gilstate_save);
+        #endif
+        __PYX_ERR(0, 125, __pyx_L1_error)
+      }
+      else if (sizeof(long) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_t_4))) {
+        #ifdef WITH_THREAD
+        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+        #endif
+        PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
+        #ifdef WITH_THREAD
+        __Pyx_PyGILState_Release(__pyx_gilstate_save);
+        #endif
+        __PYX_ERR(0, 125, __pyx_L1_error)
+      }
+      __pyx_t_5.data = __pyx_v_paths.data;
+      __pyx_t_5.memview = __pyx_v_paths.memview;
+      __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
+      {
+    Py_ssize_t __pyx_tmp_idx = (__Pyx_div_long(__pyx_t_4, __pyx_v_save_steps) + 1);
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_paths.strides[0];
+        __pyx_t_5.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_5.shape[0] = __pyx_v_paths.shape[1];
+__pyx_t_5.strides[0] = __pyx_v_paths.strides[1];
+    __pyx_t_5.suboffsets[0] = -1;
+
+__pyx_f_7bonndit_5utilc_14cython_helpers_set_zero_vector(__pyx_t_5);
+      __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
+      __pyx_t_5.memview = NULL;
+      __pyx_t_5.data = NULL;
+
+      /* "bonndit/tracking/tracking_prob.pyx":126
+ * 		if validator.next_point_checker(interpolate.next_dir):
+ * 			set_zero_vector(paths[(k-1)//save_steps + 1])
+ * 			break             # <<<<<<<<<<<<<<
+ * 		integrate.integrate(interpolate.next_dir, paths[(k-1)//save_steps + 1])
+ * 		# update old dir
+ */
+      goto __pyx_L4_break;
+
+      /* "bonndit/tracking/tracking_prob.pyx":124
+ * 
+ * 		# Check next step is valid. If it is: Integrate. else break
+ * 		if validator.next_point_checker(interpolate.next_dir):             # <<<<<<<<<<<<<<
+ * 			set_zero_vector(paths[(k-1)//save_steps + 1])
+ * 			break
+ */
+    }
+
+    /* "bonndit/tracking/tracking_prob.pyx":127
+ * 			set_zero_vector(paths[(k-1)//save_steps + 1])
+ * 			break
+ * 		integrate.integrate(interpolate.next_dir, paths[(k-1)//save_steps + 1])             # <<<<<<<<<<<<<<
+ * 		# update old dir
+ * 		paths[k//save_steps + 1] = integrate.next_point
+ */
+    if (unlikely(!__pyx_v_interpolate->next_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 127, __pyx_L1_error)}
+    __pyx_t_4 = (__pyx_v_k - 1);
+    if (unlikely(__pyx_v_save_steps == 0)) {
+      #ifdef WITH_THREAD
+      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+      #endif
+      PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+      #ifdef WITH_THREAD
+      __Pyx_PyGILState_Release(__pyx_gilstate_save);
+      #endif
+      __PYX_ERR(0, 127, __pyx_L1_error)
+    }
+    else if (sizeof(long) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_t_4))) {
+      #ifdef WITH_THREAD
+      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+      #endif
+      PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
+      #ifdef WITH_THREAD
+      __Pyx_PyGILState_Release(__pyx_gilstate_save);
+      #endif
+      __PYX_ERR(0, 127, __pyx_L1_error)
+    }
+    __pyx_t_5.data = __pyx_v_paths.data;
+    __pyx_t_5.memview = __pyx_v_paths.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
+    {
     Py_ssize_t __pyx_tmp_idx = (__Pyx_div_long(__pyx_t_4, __pyx_v_save_steps) + 1);
     Py_ssize_t __pyx_tmp_stride = __pyx_v_paths.strides[0];
         __pyx_t_5.data += __pyx_tmp_idx * __pyx_tmp_stride;
@@ -5189,44 +5031,44 @@ __pyx_t_5.strides[0] = __pyx_v_paths.strides[1];
     __pyx_t_5.suboffsets[0] = -1;
 
 ((struct __pyx_vtabstruct_7bonndit_8tracking_11integration_Integration *)__pyx_v_integrate->__pyx_vtab)->integrate(__pyx_v_integrate, __pyx_v_interpolate->next_dir, __pyx_t_5);
-      __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
-      __pyx_t_5.memview = NULL;
-      __pyx_t_5.data = NULL;
+    __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
+    __pyx_t_5.memview = NULL;
+    __pyx_t_5.data = NULL;
 
-      /* "bonndit/tracking/tracking_prob.pyx":127
+    /* "bonndit/tracking/tracking_prob.pyx":129
  * 		integrate.integrate(interpolate.next_dir, paths[(k-1)//save_steps + 1])
  * 		# update old dir
  * 		paths[k//save_steps + 1] = integrate.next_point             # <<<<<<<<<<<<<<
  * 		# check if next dir is near region of interest:
  * 
  */
-      if (unlikely(!__pyx_v_integrate->next_point.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 127, __pyx_L4_error)}
-      __pyx_t_5 = __pyx_v_integrate->next_point;
-      __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
-      if (unlikely(__pyx_v_save_steps == 0)) {
-        #ifdef WITH_THREAD
-        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-        #endif
-        PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-        #ifdef WITH_THREAD
-        __Pyx_PyGILState_Release(__pyx_gilstate_save);
-        #endif
-        __PYX_ERR(0, 127, __pyx_L4_error)
-      }
-      else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_k))) {
-        #ifdef WITH_THREAD
-        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-        #endif
-        PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-        #ifdef WITH_THREAD
-        __Pyx_PyGILState_Release(__pyx_gilstate_save);
-        #endif
-        __PYX_ERR(0, 127, __pyx_L4_error)
-      }
-      __pyx_t_8.data = __pyx_v_paths.data;
-      __pyx_t_8.memview = __pyx_v_paths.memview;
-      __PYX_INC_MEMVIEW(&__pyx_t_8, 0);
-      {
+    if (unlikely(!__pyx_v_integrate->next_point.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 129, __pyx_L1_error)}
+    __pyx_t_5 = __pyx_v_integrate->next_point;
+    __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
+    if (unlikely(__pyx_v_save_steps == 0)) {
+      #ifdef WITH_THREAD
+      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+      #endif
+      PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+      #ifdef WITH_THREAD
+      __Pyx_PyGILState_Release(__pyx_gilstate_save);
+      #endif
+      __PYX_ERR(0, 129, __pyx_L1_error)
+    }
+    else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_k))) {
+      #ifdef WITH_THREAD
+      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+      #endif
+      PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
+      #ifdef WITH_THREAD
+      __Pyx_PyGILState_Release(__pyx_gilstate_save);
+      #endif
+      __PYX_ERR(0, 129, __pyx_L1_error)
+    }
+    __pyx_t_8.data = __pyx_v_paths.data;
+    __pyx_t_8.memview = __pyx_v_paths.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_8, 0);
+    {
     Py_ssize_t __pyx_tmp_idx = (__Pyx_div_int(__pyx_v_k, __pyx_v_save_steps) + 1);
     Py_ssize_t __pyx_tmp_stride = __pyx_v_paths.strides[0];
         __pyx_t_8.data += __pyx_tmp_idx * __pyx_tmp_stride;
@@ -5236,20 +5078,40 @@ __pyx_t_8.shape[0] = __pyx_v_paths.shape[1];
 __pyx_t_8.strides[0] = __pyx_v_paths.strides[1];
     __pyx_t_8.suboffsets[0] = -1;
 
-if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_5, __pyx_t_8, 1, 1, 0) < 0)) __PYX_ERR(0, 127, __pyx_L4_error)
-      __PYX_XDEC_MEMVIEW(&__pyx_t_8, 0);
-      __pyx_t_8.memview = NULL;
-      __pyx_t_8.data = NULL;
-      __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
-      __pyx_t_5.memview = NULL;
-      __pyx_t_5.data = NULL;
+if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_5, __pyx_t_8, 1, 1, 0) < 0)) __PYX_ERR(0, 129, __pyx_L1_error)
+    __PYX_XDEC_MEMVIEW(&__pyx_t_8, 0);
+    __pyx_t_8.memview = NULL;
+    __pyx_t_8.data = NULL;
+    __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
+    __pyx_t_5.memview = NULL;
+    __pyx_t_5.data = NULL;
 
-      /* "bonndit/tracking/tracking_prob.pyx":131
+    /* "bonndit/tracking/tracking_prob.pyx":133
  * 
  * 
  * 		if k%save_steps == 0:             # <<<<<<<<<<<<<<
  * 			trafo.itow(paths[k//save_steps])
  * 			paths[k//save_steps] = trafo.point_itow
+ */
+    if (unlikely(__pyx_v_save_steps == 0)) {
+      #ifdef WITH_THREAD
+      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+      #endif
+      PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+      #ifdef WITH_THREAD
+      __Pyx_PyGILState_Release(__pyx_gilstate_save);
+      #endif
+      __PYX_ERR(0, 133, __pyx_L1_error)
+    }
+    __pyx_t_7 = ((__Pyx_mod_int(__pyx_v_k, __pyx_v_save_steps) == 0) != 0);
+    if (__pyx_t_7) {
+
+      /* "bonndit/tracking/tracking_prob.pyx":134
+ * 
+ * 		if k%save_steps == 0:
+ * 			trafo.itow(paths[k//save_steps])             # <<<<<<<<<<<<<<
+ * 			paths[k//save_steps] = trafo.point_itow
+ * 		validator.ROIIn.included(paths[k//save_steps])
  */
       if (unlikely(__pyx_v_save_steps == 0)) {
         #ifdef WITH_THREAD
@@ -5259,42 +5121,22 @@ if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_5, __pyx_t_8, 1, 1, 0) < 0))
         #ifdef WITH_THREAD
         __Pyx_PyGILState_Release(__pyx_gilstate_save);
         #endif
-        __PYX_ERR(0, 131, __pyx_L4_error)
+        __PYX_ERR(0, 134, __pyx_L1_error)
       }
-      __pyx_t_7 = ((__Pyx_mod_int(__pyx_v_k, __pyx_v_save_steps) == 0) != 0);
-      if (__pyx_t_7) {
-
-        /* "bonndit/tracking/tracking_prob.pyx":132
- * 
- * 		if k%save_steps == 0:
- * 			trafo.itow(paths[k//save_steps])             # <<<<<<<<<<<<<<
- * 			paths[k//save_steps] = trafo.point_itow
- * 		validator.ROIIn.included(paths[k//save_steps])
- */
-        if (unlikely(__pyx_v_save_steps == 0)) {
-          #ifdef WITH_THREAD
-          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-          #endif
-          PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-          #ifdef WITH_THREAD
-          __Pyx_PyGILState_Release(__pyx_gilstate_save);
-          #endif
-          __PYX_ERR(0, 132, __pyx_L4_error)
-        }
-        else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_k))) {
-          #ifdef WITH_THREAD
-          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-          #endif
-          PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-          #ifdef WITH_THREAD
-          __Pyx_PyGILState_Release(__pyx_gilstate_save);
-          #endif
-          __PYX_ERR(0, 132, __pyx_L4_error)
-        }
-        __pyx_t_5.data = __pyx_v_paths.data;
-        __pyx_t_5.memview = __pyx_v_paths.memview;
-        __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
-        {
+      else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_k))) {
+        #ifdef WITH_THREAD
+        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+        #endif
+        PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
+        #ifdef WITH_THREAD
+        __Pyx_PyGILState_Release(__pyx_gilstate_save);
+        #endif
+        __PYX_ERR(0, 134, __pyx_L1_error)
+      }
+      __pyx_t_5.data = __pyx_v_paths.data;
+      __pyx_t_5.memview = __pyx_v_paths.memview;
+      __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
+      {
     Py_ssize_t __pyx_tmp_idx = __Pyx_div_int(__pyx_v_k, __pyx_v_save_steps);
     Py_ssize_t __pyx_tmp_stride = __pyx_v_paths.strides[0];
         __pyx_t_5.data += __pyx_tmp_idx * __pyx_tmp_stride;
@@ -5305,44 +5147,44 @@ __pyx_t_5.strides[0] = __pyx_v_paths.strides[1];
     __pyx_t_5.suboffsets[0] = -1;
 
 ((struct __pyx_vtabstruct_7bonndit_8tracking_4ItoW_Trafo *)__pyx_v_trafo->__pyx_vtab)->itow(__pyx_v_trafo, __pyx_t_5);
-        __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
-        __pyx_t_5.memview = NULL;
-        __pyx_t_5.data = NULL;
+      __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
+      __pyx_t_5.memview = NULL;
+      __pyx_t_5.data = NULL;
 
-        /* "bonndit/tracking/tracking_prob.pyx":133
+      /* "bonndit/tracking/tracking_prob.pyx":135
  * 		if k%save_steps == 0:
  * 			trafo.itow(paths[k//save_steps])
  * 			paths[k//save_steps] = trafo.point_itow             # <<<<<<<<<<<<<<
  * 		validator.ROIIn.included(paths[k//save_steps])
  * 		if validator.ROIEx.excluded(paths[k//save_steps]):
  */
-        if (unlikely(!__pyx_v_trafo->point_itow.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 133, __pyx_L4_error)}
-        __pyx_t_5 = __pyx_v_trafo->point_itow;
-        __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
-        if (unlikely(__pyx_v_save_steps == 0)) {
-          #ifdef WITH_THREAD
-          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-          #endif
-          PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-          #ifdef WITH_THREAD
-          __Pyx_PyGILState_Release(__pyx_gilstate_save);
-          #endif
-          __PYX_ERR(0, 133, __pyx_L4_error)
-        }
-        else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_k))) {
-          #ifdef WITH_THREAD
-          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-          #endif
-          PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-          #ifdef WITH_THREAD
-          __Pyx_PyGILState_Release(__pyx_gilstate_save);
-          #endif
-          __PYX_ERR(0, 133, __pyx_L4_error)
-        }
-        __pyx_t_8.data = __pyx_v_paths.data;
-        __pyx_t_8.memview = __pyx_v_paths.memview;
-        __PYX_INC_MEMVIEW(&__pyx_t_8, 0);
-        {
+      if (unlikely(!__pyx_v_trafo->point_itow.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 135, __pyx_L1_error)}
+      __pyx_t_5 = __pyx_v_trafo->point_itow;
+      __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
+      if (unlikely(__pyx_v_save_steps == 0)) {
+        #ifdef WITH_THREAD
+        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+        #endif
+        PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+        #ifdef WITH_THREAD
+        __Pyx_PyGILState_Release(__pyx_gilstate_save);
+        #endif
+        __PYX_ERR(0, 135, __pyx_L1_error)
+      }
+      else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_k))) {
+        #ifdef WITH_THREAD
+        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+        #endif
+        PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
+        #ifdef WITH_THREAD
+        __Pyx_PyGILState_Release(__pyx_gilstate_save);
+        #endif
+        __PYX_ERR(0, 135, __pyx_L1_error)
+      }
+      __pyx_t_8.data = __pyx_v_paths.data;
+      __pyx_t_8.memview = __pyx_v_paths.memview;
+      __PYX_INC_MEMVIEW(&__pyx_t_8, 0);
+      {
     Py_ssize_t __pyx_tmp_idx = __Pyx_div_int(__pyx_v_k, __pyx_v_save_steps);
     Py_ssize_t __pyx_tmp_stride = __pyx_v_paths.strides[0];
         __pyx_t_8.data += __pyx_tmp_idx * __pyx_tmp_stride;
@@ -5352,54 +5194,54 @@ __pyx_t_8.shape[0] = __pyx_v_paths.shape[1];
 __pyx_t_8.strides[0] = __pyx_v_paths.strides[1];
     __pyx_t_8.suboffsets[0] = -1;
 
-if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_5, __pyx_t_8, 1, 1, 0) < 0)) __PYX_ERR(0, 133, __pyx_L4_error)
-        __PYX_XDEC_MEMVIEW(&__pyx_t_8, 0);
-        __pyx_t_8.memview = NULL;
-        __pyx_t_8.data = NULL;
-        __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
-        __pyx_t_5.memview = NULL;
-        __pyx_t_5.data = NULL;
+if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_5, __pyx_t_8, 1, 1, 0) < 0)) __PYX_ERR(0, 135, __pyx_L1_error)
+      __PYX_XDEC_MEMVIEW(&__pyx_t_8, 0);
+      __pyx_t_8.memview = NULL;
+      __pyx_t_8.data = NULL;
+      __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
+      __pyx_t_5.memview = NULL;
+      __pyx_t_5.data = NULL;
 
-        /* "bonndit/tracking/tracking_prob.pyx":131
+      /* "bonndit/tracking/tracking_prob.pyx":133
  * 
  * 
  * 		if k%save_steps == 0:             # <<<<<<<<<<<<<<
  * 			trafo.itow(paths[k//save_steps])
  * 			paths[k//save_steps] = trafo.point_itow
  */
-      }
+    }
 
-      /* "bonndit/tracking/tracking_prob.pyx":134
+    /* "bonndit/tracking/tracking_prob.pyx":136
  * 			trafo.itow(paths[k//save_steps])
  * 			paths[k//save_steps] = trafo.point_itow
  * 		validator.ROIIn.included(paths[k//save_steps])             # <<<<<<<<<<<<<<
  * 		if validator.ROIEx.excluded(paths[k//save_steps]):
  * 			return False
  */
-      if (unlikely(__pyx_v_save_steps == 0)) {
-        #ifdef WITH_THREAD
-        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-        #endif
-        PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-        #ifdef WITH_THREAD
-        __Pyx_PyGILState_Release(__pyx_gilstate_save);
-        #endif
-        __PYX_ERR(0, 134, __pyx_L4_error)
-      }
-      else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_k))) {
-        #ifdef WITH_THREAD
-        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-        #endif
-        PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-        #ifdef WITH_THREAD
-        __Pyx_PyGILState_Release(__pyx_gilstate_save);
-        #endif
-        __PYX_ERR(0, 134, __pyx_L4_error)
-      }
-      __pyx_t_5.data = __pyx_v_paths.data;
-      __pyx_t_5.memview = __pyx_v_paths.memview;
-      __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
-      {
+    if (unlikely(__pyx_v_save_steps == 0)) {
+      #ifdef WITH_THREAD
+      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+      #endif
+      PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+      #ifdef WITH_THREAD
+      __Pyx_PyGILState_Release(__pyx_gilstate_save);
+      #endif
+      __PYX_ERR(0, 136, __pyx_L1_error)
+    }
+    else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_k))) {
+      #ifdef WITH_THREAD
+      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+      #endif
+      PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
+      #ifdef WITH_THREAD
+      __Pyx_PyGILState_Release(__pyx_gilstate_save);
+      #endif
+      __PYX_ERR(0, 136, __pyx_L1_error)
+    }
+    __pyx_t_5.data = __pyx_v_paths.data;
+    __pyx_t_5.memview = __pyx_v_paths.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
+    {
     Py_ssize_t __pyx_tmp_idx = __Pyx_div_int(__pyx_v_k, __pyx_v_save_steps);
     Py_ssize_t __pyx_tmp_stride = __pyx_v_paths.strides[0];
         __pyx_t_5.data += __pyx_tmp_idx * __pyx_tmp_stride;
@@ -5409,42 +5251,42 @@ __pyx_t_5.shape[0] = __pyx_v_paths.shape[1];
 __pyx_t_5.strides[0] = __pyx_v_paths.strides[1];
     __pyx_t_5.suboffsets[0] = -1;
 
-((struct __pyx_vtabstruct_7bonndit_8tracking_8stopping_ROIInNotValidator *)__pyx_v_validator->ROIIn->__pyx_vtab)->included(__pyx_v_validator->ROIIn, __pyx_t_5); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 134, __pyx_L4_error)
-      __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
-      __pyx_t_5.memview = NULL;
-      __pyx_t_5.data = NULL;
+((struct __pyx_vtabstruct_7bonndit_8tracking_8stopping_ROIInNotValidator *)__pyx_v_validator->ROIIn->__pyx_vtab)->included(__pyx_v_validator->ROIIn, __pyx_t_5); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 136, __pyx_L1_error)
+    __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
+    __pyx_t_5.memview = NULL;
+    __pyx_t_5.data = NULL;
 
-      /* "bonndit/tracking/tracking_prob.pyx":135
+    /* "bonndit/tracking/tracking_prob.pyx":137
  * 			paths[k//save_steps] = trafo.point_itow
  * 		validator.ROIIn.included(paths[k//save_steps])
  * 		if validator.ROIEx.excluded(paths[k//save_steps]):             # <<<<<<<<<<<<<<
  * 			return False
  * 		if feature_save.chosen_angle >= 0:
  */
-      if (unlikely(__pyx_v_save_steps == 0)) {
-        #ifdef WITH_THREAD
-        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-        #endif
-        PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-        #ifdef WITH_THREAD
-        __Pyx_PyGILState_Release(__pyx_gilstate_save);
-        #endif
-        __PYX_ERR(0, 135, __pyx_L4_error)
-      }
-      else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_k))) {
-        #ifdef WITH_THREAD
-        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-        #endif
-        PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-        #ifdef WITH_THREAD
-        __Pyx_PyGILState_Release(__pyx_gilstate_save);
-        #endif
-        __PYX_ERR(0, 135, __pyx_L4_error)
-      }
-      __pyx_t_5.data = __pyx_v_paths.data;
-      __pyx_t_5.memview = __pyx_v_paths.memview;
-      __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
-      {
+    if (unlikely(__pyx_v_save_steps == 0)) {
+      #ifdef WITH_THREAD
+      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+      #endif
+      PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+      #ifdef WITH_THREAD
+      __Pyx_PyGILState_Release(__pyx_gilstate_save);
+      #endif
+      __PYX_ERR(0, 137, __pyx_L1_error)
+    }
+    else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_k))) {
+      #ifdef WITH_THREAD
+      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+      #endif
+      PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
+      #ifdef WITH_THREAD
+      __Pyx_PyGILState_Release(__pyx_gilstate_save);
+      #endif
+      __PYX_ERR(0, 137, __pyx_L1_error)
+    }
+    __pyx_t_5.data = __pyx_v_paths.data;
+    __pyx_t_5.memview = __pyx_v_paths.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
+    {
     Py_ssize_t __pyx_tmp_idx = __Pyx_div_int(__pyx_v_k, __pyx_v_save_steps);
     Py_ssize_t __pyx_tmp_stride = __pyx_v_paths.strides[0];
         __pyx_t_5.data += __pyx_tmp_idx * __pyx_tmp_stride;
@@ -5454,259 +5296,50 @@ __pyx_t_5.shape[0] = __pyx_v_paths.shape[1];
 __pyx_t_5.strides[0] = __pyx_v_paths.strides[1];
     __pyx_t_5.suboffsets[0] = -1;
 
-__pyx_t_7 = ((struct __pyx_vtabstruct_7bonndit_8tracking_8stopping_ROIExNotValidator *)__pyx_v_validator->ROIEx->__pyx_vtab)->excluded(__pyx_v_validator->ROIEx, __pyx_t_5); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 135, __pyx_L4_error)
-      __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
-      __pyx_t_5.memview = NULL;
-      __pyx_t_5.data = NULL;
-      __pyx_t_6 = (__pyx_t_7 != 0);
-      if (__pyx_t_6) {
+__pyx_t_7 = ((struct __pyx_vtabstruct_7bonndit_8tracking_8stopping_ROIExNotValidator *)__pyx_v_validator->ROIEx->__pyx_vtab)->excluded(__pyx_v_validator->ROIEx, __pyx_t_5); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 137, __pyx_L1_error)
+    __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
+    __pyx_t_5.memview = NULL;
+    __pyx_t_5.data = NULL;
+    __pyx_t_6 = (__pyx_t_7 != 0);
+    if (__pyx_t_6) {
 
-        /* "bonndit/tracking/tracking_prob.pyx":136
+      /* "bonndit/tracking/tracking_prob.pyx":138
  * 		validator.ROIIn.included(paths[k//save_steps])
  * 		if validator.ROIEx.excluded(paths[k//save_steps]):
  * 			return False             # <<<<<<<<<<<<<<
  * 		if feature_save.chosen_angle >= 0:
  * 			features[k//save_steps,feature_save.chosen_angle] = interpolate.prob.chosen_angle
  */
-        __pyx_r = 0;
-        goto __pyx_L3_return;
+      __pyx_r = 0;
+      goto __pyx_L0;
 
-        /* "bonndit/tracking/tracking_prob.pyx":135
+      /* "bonndit/tracking/tracking_prob.pyx":137
  * 			paths[k//save_steps] = trafo.point_itow
  * 		validator.ROIIn.included(paths[k//save_steps])
  * 		if validator.ROIEx.excluded(paths[k//save_steps]):             # <<<<<<<<<<<<<<
  * 			return False
  * 		if feature_save.chosen_angle >= 0:
  */
-      }
+    }
 
-      /* "bonndit/tracking/tracking_prob.pyx":137
+    /* "bonndit/tracking/tracking_prob.pyx":139
  * 		if validator.ROIEx.excluded(paths[k//save_steps]):
  * 			return False
  * 		if feature_save.chosen_angle >= 0:             # <<<<<<<<<<<<<<
  * 			features[k//save_steps,feature_save.chosen_angle] = interpolate.prob.chosen_angle
  * 		if feature_save.prob_chosen >= 0:
  */
-      __pyx_t_6 = ((__pyx_v_feature_save.chosen_angle >= 0) != 0);
-      if (__pyx_t_6) {
+    __pyx_t_6 = ((__pyx_v_feature_save.chosen_angle >= 0) != 0);
+    if (__pyx_t_6) {
 
-        /* "bonndit/tracking/tracking_prob.pyx":138
+      /* "bonndit/tracking/tracking_prob.pyx":140
  * 			return False
  * 		if feature_save.chosen_angle >= 0:
  * 			features[k//save_steps,feature_save.chosen_angle] = interpolate.prob.chosen_angle             # <<<<<<<<<<<<<<
  * 		if feature_save.prob_chosen >= 0:
  * 			features[k//save_steps,feature_save.prob_chosen] = interpolate.prob.chosen_prob
  */
-        __pyx_t_12 = __pyx_v_interpolate->prob->chosen_angle;
-        if (unlikely(__pyx_v_save_steps == 0)) {
-          #ifdef WITH_THREAD
-          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-          #endif
-          PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-          #ifdef WITH_THREAD
-          __Pyx_PyGILState_Release(__pyx_gilstate_save);
-          #endif
-          __PYX_ERR(0, 138, __pyx_L4_error)
-        }
-        else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_k))) {
-          #ifdef WITH_THREAD
-          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-          #endif
-          PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-          #ifdef WITH_THREAD
-          __Pyx_PyGILState_Release(__pyx_gilstate_save);
-          #endif
-          __PYX_ERR(0, 138, __pyx_L4_error)
-        }
-        __pyx_t_13 = __Pyx_div_int(__pyx_v_k, __pyx_v_save_steps);
-        __pyx_t_14 = __pyx_v_feature_save.chosen_angle;
-        *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_features.data + __pyx_t_13 * __pyx_v_features.strides[0]) ) + __pyx_t_14 * __pyx_v_features.strides[1]) )) = __pyx_t_12;
-
-        /* "bonndit/tracking/tracking_prob.pyx":137
- * 		if validator.ROIEx.excluded(paths[k//save_steps]):
- * 			return False
- * 		if feature_save.chosen_angle >= 0:             # <<<<<<<<<<<<<<
- * 			features[k//save_steps,feature_save.chosen_angle] = interpolate.prob.chosen_angle
- * 		if feature_save.prob_chosen >= 0:
- */
-      }
-
-      /* "bonndit/tracking/tracking_prob.pyx":139
- * 		if feature_save.chosen_angle >= 0:
- * 			features[k//save_steps,feature_save.chosen_angle] = interpolate.prob.chosen_angle
- * 		if feature_save.prob_chosen >= 0:             # <<<<<<<<<<<<<<
- * 			features[k//save_steps,feature_save.prob_chosen] = interpolate.prob.chosen_prob
- * 		if feature_save.prob_others_0 >= 0:
- */
-      __pyx_t_6 = ((__pyx_v_feature_save.prob_chosen >= 0) != 0);
-      if (__pyx_t_6) {
-
-        /* "bonndit/tracking/tracking_prob.pyx":140
- * 			features[k//save_steps,feature_save.chosen_angle] = interpolate.prob.chosen_angle
- * 		if feature_save.prob_chosen >= 0:
- * 			features[k//save_steps,feature_save.prob_chosen] = interpolate.prob.chosen_prob             # <<<<<<<<<<<<<<
- * 		if feature_save.prob_others_0 >= 0:
- * 			features[k//save_steps,feature_save.prob_others_0] = interpolate.prob.probability[0]
- */
-        __pyx_t_12 = __pyx_v_interpolate->prob->chosen_prob;
-        if (unlikely(__pyx_v_save_steps == 0)) {
-          #ifdef WITH_THREAD
-          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-          #endif
-          PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-          #ifdef WITH_THREAD
-          __Pyx_PyGILState_Release(__pyx_gilstate_save);
-          #endif
-          __PYX_ERR(0, 140, __pyx_L4_error)
-        }
-        else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_k))) {
-          #ifdef WITH_THREAD
-          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-          #endif
-          PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-          #ifdef WITH_THREAD
-          __Pyx_PyGILState_Release(__pyx_gilstate_save);
-          #endif
-          __PYX_ERR(0, 140, __pyx_L4_error)
-        }
-        __pyx_t_14 = __Pyx_div_int(__pyx_v_k, __pyx_v_save_steps);
-        __pyx_t_13 = __pyx_v_feature_save.prob_chosen;
-        *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_features.data + __pyx_t_14 * __pyx_v_features.strides[0]) ) + __pyx_t_13 * __pyx_v_features.strides[1]) )) = __pyx_t_12;
-
-        /* "bonndit/tracking/tracking_prob.pyx":139
- * 		if feature_save.chosen_angle >= 0:
- * 			features[k//save_steps,feature_save.chosen_angle] = interpolate.prob.chosen_angle
- * 		if feature_save.prob_chosen >= 0:             # <<<<<<<<<<<<<<
- * 			features[k//save_steps,feature_save.prob_chosen] = interpolate.prob.chosen_prob
- * 		if feature_save.prob_others_0 >= 0:
- */
-      }
-
-      /* "bonndit/tracking/tracking_prob.pyx":141
- * 		if feature_save.prob_chosen >= 0:
- * 			features[k//save_steps,feature_save.prob_chosen] = interpolate.prob.chosen_prob
- * 		if feature_save.prob_others_0 >= 0:             # <<<<<<<<<<<<<<
- * 			features[k//save_steps,feature_save.prob_others_0] = interpolate.prob.probability[0]
- * 			features[k//save_steps,feature_save.prob_others_1] = interpolate.prob.probability[1]
- */
-      __pyx_t_6 = ((__pyx_v_feature_save.prob_others_0 >= 0) != 0);
-      if (__pyx_t_6) {
-
-        /* "bonndit/tracking/tracking_prob.pyx":142
- * 			features[k//save_steps,feature_save.prob_chosen] = interpolate.prob.chosen_prob
- * 		if feature_save.prob_others_0 >= 0:
- * 			features[k//save_steps,feature_save.prob_others_0] = interpolate.prob.probability[0]             # <<<<<<<<<<<<<<
- * 			features[k//save_steps,feature_save.prob_others_1] = interpolate.prob.probability[1]
- * 			features[k//save_steps,feature_save.prob_others_2] = interpolate.prob.probability[2]
- */
-        if (unlikely(!__pyx_v_interpolate->prob->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 142, __pyx_L4_error)}
-        __pyx_t_13 = 0;
-        if (unlikely(__pyx_v_save_steps == 0)) {
-          #ifdef WITH_THREAD
-          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-          #endif
-          PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-          #ifdef WITH_THREAD
-          __Pyx_PyGILState_Release(__pyx_gilstate_save);
-          #endif
-          __PYX_ERR(0, 142, __pyx_L4_error)
-        }
-        else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_k))) {
-          #ifdef WITH_THREAD
-          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-          #endif
-          PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-          #ifdef WITH_THREAD
-          __Pyx_PyGILState_Release(__pyx_gilstate_save);
-          #endif
-          __PYX_ERR(0, 142, __pyx_L4_error)
-        }
-        __pyx_t_14 = __Pyx_div_int(__pyx_v_k, __pyx_v_save_steps);
-        __pyx_t_15 = __pyx_v_feature_save.prob_others_0;
-        *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_features.data + __pyx_t_14 * __pyx_v_features.strides[0]) ) + __pyx_t_15 * __pyx_v_features.strides[1]) )) = (*((double *) ( /* dim=0 */ (__pyx_v_interpolate->prob->probability.data + __pyx_t_13 * __pyx_v_interpolate->prob->probability.strides[0]) )));
-
-        /* "bonndit/tracking/tracking_prob.pyx":143
- * 		if feature_save.prob_others_0 >= 0:
- * 			features[k//save_steps,feature_save.prob_others_0] = interpolate.prob.probability[0]
- * 			features[k//save_steps,feature_save.prob_others_1] = interpolate.prob.probability[1]             # <<<<<<<<<<<<<<
- * 			features[k//save_steps,feature_save.prob_others_2] = interpolate.prob.probability[2]
- * 		# Check curvature between current point and point 30mm ago
- */
-        if (unlikely(!__pyx_v_interpolate->prob->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 143, __pyx_L4_error)}
-        __pyx_t_13 = 1;
-        if (unlikely(__pyx_v_save_steps == 0)) {
-          #ifdef WITH_THREAD
-          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-          #endif
-          PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-          #ifdef WITH_THREAD
-          __Pyx_PyGILState_Release(__pyx_gilstate_save);
-          #endif
-          __PYX_ERR(0, 143, __pyx_L4_error)
-        }
-        else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_k))) {
-          #ifdef WITH_THREAD
-          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-          #endif
-          PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-          #ifdef WITH_THREAD
-          __Pyx_PyGILState_Release(__pyx_gilstate_save);
-          #endif
-          __PYX_ERR(0, 143, __pyx_L4_error)
-        }
-        __pyx_t_15 = __Pyx_div_int(__pyx_v_k, __pyx_v_save_steps);
-        __pyx_t_14 = __pyx_v_feature_save.prob_others_1;
-        *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_features.data + __pyx_t_15 * __pyx_v_features.strides[0]) ) + __pyx_t_14 * __pyx_v_features.strides[1]) )) = (*((double *) ( /* dim=0 */ (__pyx_v_interpolate->prob->probability.data + __pyx_t_13 * __pyx_v_interpolate->prob->probability.strides[0]) )));
-
-        /* "bonndit/tracking/tracking_prob.pyx":144
- * 			features[k//save_steps,feature_save.prob_others_0] = interpolate.prob.probability[0]
- * 			features[k//save_steps,feature_save.prob_others_1] = interpolate.prob.probability[1]
- * 			features[k//save_steps,feature_save.prob_others_2] = interpolate.prob.probability[2]             # <<<<<<<<<<<<<<
- * 		# Check curvature between current point and point 30mm ago
- * 		if validator.Curve.curvature_checker(paths[:k//save_steps], features[k//save_steps:k//save_steps + 1,1]):
- */
-        if (unlikely(!__pyx_v_interpolate->prob->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 144, __pyx_L4_error)}
-        __pyx_t_13 = 2;
-        if (unlikely(__pyx_v_save_steps == 0)) {
-          #ifdef WITH_THREAD
-          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-          #endif
-          PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-          #ifdef WITH_THREAD
-          __Pyx_PyGILState_Release(__pyx_gilstate_save);
-          #endif
-          __PYX_ERR(0, 144, __pyx_L4_error)
-        }
-        else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_k))) {
-          #ifdef WITH_THREAD
-          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-          #endif
-          PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-          #ifdef WITH_THREAD
-          __Pyx_PyGILState_Release(__pyx_gilstate_save);
-          #endif
-          __PYX_ERR(0, 144, __pyx_L4_error)
-        }
-        __pyx_t_14 = __Pyx_div_int(__pyx_v_k, __pyx_v_save_steps);
-        __pyx_t_15 = __pyx_v_feature_save.prob_others_2;
-        *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_features.data + __pyx_t_14 * __pyx_v_features.strides[0]) ) + __pyx_t_15 * __pyx_v_features.strides[1]) )) = (*((double *) ( /* dim=0 */ (__pyx_v_interpolate->prob->probability.data + __pyx_t_13 * __pyx_v_interpolate->prob->probability.strides[0]) )));
-
-        /* "bonndit/tracking/tracking_prob.pyx":141
- * 		if feature_save.prob_chosen >= 0:
- * 			features[k//save_steps,feature_save.prob_chosen] = interpolate.prob.chosen_prob
- * 		if feature_save.prob_others_0 >= 0:             # <<<<<<<<<<<<<<
- * 			features[k//save_steps,feature_save.prob_others_0] = interpolate.prob.probability[0]
- * 			features[k//save_steps,feature_save.prob_others_1] = interpolate.prob.probability[1]
- */
-      }
-
-      /* "bonndit/tracking/tracking_prob.pyx":146
- * 			features[k//save_steps,feature_save.prob_others_2] = interpolate.prob.probability[2]
- * 		# Check curvature between current point and point 30mm ago
- * 		if validator.Curve.curvature_checker(paths[:k//save_steps], features[k//save_steps:k//save_steps + 1,1]):             # <<<<<<<<<<<<<<
- * 			return False
- * 		integrate.old_dir = interpolate.next_dir
- */
+      __pyx_t_10 = __pyx_v_interpolate->prob->chosen_angle;
       if (unlikely(__pyx_v_save_steps == 0)) {
         #ifdef WITH_THREAD
         PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
@@ -5715,7 +5348,7 @@ __pyx_t_7 = ((struct __pyx_vtabstruct_7bonndit_8tracking_8stopping_ROIExNotValid
         #ifdef WITH_THREAD
         __Pyx_PyGILState_Release(__pyx_gilstate_save);
         #endif
-        __PYX_ERR(0, 146, __pyx_L4_error)
+        __PYX_ERR(0, 140, __pyx_L1_error)
       }
       else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_k))) {
         #ifdef WITH_THREAD
@@ -5725,18 +5358,227 @@ __pyx_t_7 = ((struct __pyx_vtabstruct_7bonndit_8tracking_8stopping_ROIExNotValid
         #ifdef WITH_THREAD
         __Pyx_PyGILState_Release(__pyx_gilstate_save);
         #endif
-        __PYX_ERR(0, 146, __pyx_L4_error)
+        __PYX_ERR(0, 140, __pyx_L1_error)
       }
-      __pyx_t_16.data = __pyx_v_paths.data;
-      __pyx_t_16.memview = __pyx_v_paths.memview;
-      __PYX_INC_MEMVIEW(&__pyx_t_16, 0);
-      __pyx_t_11 = -1;
-      if (unlikely(__pyx_memoryview_slice_memviewslice(
-    &__pyx_t_16,
+      __pyx_t_11 = __Pyx_div_int(__pyx_v_k, __pyx_v_save_steps);
+      __pyx_t_12 = __pyx_v_feature_save.chosen_angle;
+      *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_features.data + __pyx_t_11 * __pyx_v_features.strides[0]) ) + __pyx_t_12 * __pyx_v_features.strides[1]) )) = __pyx_t_10;
+
+      /* "bonndit/tracking/tracking_prob.pyx":139
+ * 		if validator.ROIEx.excluded(paths[k//save_steps]):
+ * 			return False
+ * 		if feature_save.chosen_angle >= 0:             # <<<<<<<<<<<<<<
+ * 			features[k//save_steps,feature_save.chosen_angle] = interpolate.prob.chosen_angle
+ * 		if feature_save.prob_chosen >= 0:
+ */
+    }
+
+    /* "bonndit/tracking/tracking_prob.pyx":141
+ * 		if feature_save.chosen_angle >= 0:
+ * 			features[k//save_steps,feature_save.chosen_angle] = interpolate.prob.chosen_angle
+ * 		if feature_save.prob_chosen >= 0:             # <<<<<<<<<<<<<<
+ * 			features[k//save_steps,feature_save.prob_chosen] = interpolate.prob.chosen_prob
+ * 		if feature_save.prob_others_0 >= 0:
+ */
+    __pyx_t_6 = ((__pyx_v_feature_save.prob_chosen >= 0) != 0);
+    if (__pyx_t_6) {
+
+      /* "bonndit/tracking/tracking_prob.pyx":142
+ * 			features[k//save_steps,feature_save.chosen_angle] = interpolate.prob.chosen_angle
+ * 		if feature_save.prob_chosen >= 0:
+ * 			features[k//save_steps,feature_save.prob_chosen] = interpolate.prob.chosen_prob             # <<<<<<<<<<<<<<
+ * 		if feature_save.prob_others_0 >= 0:
+ * 			features[k//save_steps,feature_save.prob_others_0] = interpolate.prob.probability[0]
+ */
+      __pyx_t_10 = __pyx_v_interpolate->prob->chosen_prob;
+      if (unlikely(__pyx_v_save_steps == 0)) {
+        #ifdef WITH_THREAD
+        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+        #endif
+        PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+        #ifdef WITH_THREAD
+        __Pyx_PyGILState_Release(__pyx_gilstate_save);
+        #endif
+        __PYX_ERR(0, 142, __pyx_L1_error)
+      }
+      else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_k))) {
+        #ifdef WITH_THREAD
+        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+        #endif
+        PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
+        #ifdef WITH_THREAD
+        __Pyx_PyGILState_Release(__pyx_gilstate_save);
+        #endif
+        __PYX_ERR(0, 142, __pyx_L1_error)
+      }
+      __pyx_t_12 = __Pyx_div_int(__pyx_v_k, __pyx_v_save_steps);
+      __pyx_t_11 = __pyx_v_feature_save.prob_chosen;
+      *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_features.data + __pyx_t_12 * __pyx_v_features.strides[0]) ) + __pyx_t_11 * __pyx_v_features.strides[1]) )) = __pyx_t_10;
+
+      /* "bonndit/tracking/tracking_prob.pyx":141
+ * 		if feature_save.chosen_angle >= 0:
+ * 			features[k//save_steps,feature_save.chosen_angle] = interpolate.prob.chosen_angle
+ * 		if feature_save.prob_chosen >= 0:             # <<<<<<<<<<<<<<
+ * 			features[k//save_steps,feature_save.prob_chosen] = interpolate.prob.chosen_prob
+ * 		if feature_save.prob_others_0 >= 0:
+ */
+    }
+
+    /* "bonndit/tracking/tracking_prob.pyx":143
+ * 		if feature_save.prob_chosen >= 0:
+ * 			features[k//save_steps,feature_save.prob_chosen] = interpolate.prob.chosen_prob
+ * 		if feature_save.prob_others_0 >= 0:             # <<<<<<<<<<<<<<
+ * 			features[k//save_steps,feature_save.prob_others_0] = interpolate.prob.probability[0]
+ * 			features[k//save_steps,feature_save.prob_others_1] = interpolate.prob.probability[1]
+ */
+    __pyx_t_6 = ((__pyx_v_feature_save.prob_others_0 >= 0) != 0);
+    if (__pyx_t_6) {
+
+      /* "bonndit/tracking/tracking_prob.pyx":144
+ * 			features[k//save_steps,feature_save.prob_chosen] = interpolate.prob.chosen_prob
+ * 		if feature_save.prob_others_0 >= 0:
+ * 			features[k//save_steps,feature_save.prob_others_0] = interpolate.prob.probability[0]             # <<<<<<<<<<<<<<
+ * 			features[k//save_steps,feature_save.prob_others_1] = interpolate.prob.probability[1]
+ * 			features[k//save_steps,feature_save.prob_others_2] = interpolate.prob.probability[2]
+ */
+      if (unlikely(!__pyx_v_interpolate->prob->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 144, __pyx_L1_error)}
+      __pyx_t_11 = 0;
+      if (unlikely(__pyx_v_save_steps == 0)) {
+        #ifdef WITH_THREAD
+        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+        #endif
+        PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+        #ifdef WITH_THREAD
+        __Pyx_PyGILState_Release(__pyx_gilstate_save);
+        #endif
+        __PYX_ERR(0, 144, __pyx_L1_error)
+      }
+      else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_k))) {
+        #ifdef WITH_THREAD
+        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+        #endif
+        PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
+        #ifdef WITH_THREAD
+        __Pyx_PyGILState_Release(__pyx_gilstate_save);
+        #endif
+        __PYX_ERR(0, 144, __pyx_L1_error)
+      }
+      __pyx_t_12 = __Pyx_div_int(__pyx_v_k, __pyx_v_save_steps);
+      __pyx_t_13 = __pyx_v_feature_save.prob_others_0;
+      *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_features.data + __pyx_t_12 * __pyx_v_features.strides[0]) ) + __pyx_t_13 * __pyx_v_features.strides[1]) )) = (*((double *) ( /* dim=0 */ (__pyx_v_interpolate->prob->probability.data + __pyx_t_11 * __pyx_v_interpolate->prob->probability.strides[0]) )));
+
+      /* "bonndit/tracking/tracking_prob.pyx":145
+ * 		if feature_save.prob_others_0 >= 0:
+ * 			features[k//save_steps,feature_save.prob_others_0] = interpolate.prob.probability[0]
+ * 			features[k//save_steps,feature_save.prob_others_1] = interpolate.prob.probability[1]             # <<<<<<<<<<<<<<
+ * 			features[k//save_steps,feature_save.prob_others_2] = interpolate.prob.probability[2]
+ * 		# Check curvature between current point and point 30mm ago
+ */
+      if (unlikely(!__pyx_v_interpolate->prob->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 145, __pyx_L1_error)}
+      __pyx_t_11 = 1;
+      if (unlikely(__pyx_v_save_steps == 0)) {
+        #ifdef WITH_THREAD
+        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+        #endif
+        PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+        #ifdef WITH_THREAD
+        __Pyx_PyGILState_Release(__pyx_gilstate_save);
+        #endif
+        __PYX_ERR(0, 145, __pyx_L1_error)
+      }
+      else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_k))) {
+        #ifdef WITH_THREAD
+        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+        #endif
+        PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
+        #ifdef WITH_THREAD
+        __Pyx_PyGILState_Release(__pyx_gilstate_save);
+        #endif
+        __PYX_ERR(0, 145, __pyx_L1_error)
+      }
+      __pyx_t_13 = __Pyx_div_int(__pyx_v_k, __pyx_v_save_steps);
+      __pyx_t_12 = __pyx_v_feature_save.prob_others_1;
+      *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_features.data + __pyx_t_13 * __pyx_v_features.strides[0]) ) + __pyx_t_12 * __pyx_v_features.strides[1]) )) = (*((double *) ( /* dim=0 */ (__pyx_v_interpolate->prob->probability.data + __pyx_t_11 * __pyx_v_interpolate->prob->probability.strides[0]) )));
+
+      /* "bonndit/tracking/tracking_prob.pyx":146
+ * 			features[k//save_steps,feature_save.prob_others_0] = interpolate.prob.probability[0]
+ * 			features[k//save_steps,feature_save.prob_others_1] = interpolate.prob.probability[1]
+ * 			features[k//save_steps,feature_save.prob_others_2] = interpolate.prob.probability[2]             # <<<<<<<<<<<<<<
+ * 		# Check curvature between current point and point 30mm ago
+ * 		if validator.Curve.curvature_checker(paths[:k//save_steps], features[k//save_steps:k//save_steps + 1,1]):
+ */
+      if (unlikely(!__pyx_v_interpolate->prob->probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 146, __pyx_L1_error)}
+      __pyx_t_11 = 2;
+      if (unlikely(__pyx_v_save_steps == 0)) {
+        #ifdef WITH_THREAD
+        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+        #endif
+        PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+        #ifdef WITH_THREAD
+        __Pyx_PyGILState_Release(__pyx_gilstate_save);
+        #endif
+        __PYX_ERR(0, 146, __pyx_L1_error)
+      }
+      else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_k))) {
+        #ifdef WITH_THREAD
+        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+        #endif
+        PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
+        #ifdef WITH_THREAD
+        __Pyx_PyGILState_Release(__pyx_gilstate_save);
+        #endif
+        __PYX_ERR(0, 146, __pyx_L1_error)
+      }
+      __pyx_t_12 = __Pyx_div_int(__pyx_v_k, __pyx_v_save_steps);
+      __pyx_t_13 = __pyx_v_feature_save.prob_others_2;
+      *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_features.data + __pyx_t_12 * __pyx_v_features.strides[0]) ) + __pyx_t_13 * __pyx_v_features.strides[1]) )) = (*((double *) ( /* dim=0 */ (__pyx_v_interpolate->prob->probability.data + __pyx_t_11 * __pyx_v_interpolate->prob->probability.strides[0]) )));
+
+      /* "bonndit/tracking/tracking_prob.pyx":143
+ * 		if feature_save.prob_chosen >= 0:
+ * 			features[k//save_steps,feature_save.prob_chosen] = interpolate.prob.chosen_prob
+ * 		if feature_save.prob_others_0 >= 0:             # <<<<<<<<<<<<<<
+ * 			features[k//save_steps,feature_save.prob_others_0] = interpolate.prob.probability[0]
+ * 			features[k//save_steps,feature_save.prob_others_1] = interpolate.prob.probability[1]
+ */
+    }
+
+    /* "bonndit/tracking/tracking_prob.pyx":148
+ * 			features[k//save_steps,feature_save.prob_others_2] = interpolate.prob.probability[2]
+ * 		# Check curvature between current point and point 30mm ago
+ * 		if validator.Curve.curvature_checker(paths[:k//save_steps], features[k//save_steps:k//save_steps + 1,1]):             # <<<<<<<<<<<<<<
+ * 			return False
+ * 		integrate.old_dir = interpolate.next_dir
+ */
+    if (unlikely(__pyx_v_save_steps == 0)) {
+      #ifdef WITH_THREAD
+      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+      #endif
+      PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+      #ifdef WITH_THREAD
+      __Pyx_PyGILState_Release(__pyx_gilstate_save);
+      #endif
+      __PYX_ERR(0, 148, __pyx_L1_error)
+    }
+    else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_k))) {
+      #ifdef WITH_THREAD
+      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+      #endif
+      PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
+      #ifdef WITH_THREAD
+      __Pyx_PyGILState_Release(__pyx_gilstate_save);
+      #endif
+      __PYX_ERR(0, 148, __pyx_L1_error)
+    }
+    __pyx_t_14.data = __pyx_v_paths.data;
+    __pyx_t_14.memview = __pyx_v_paths.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_14, 0);
+    __pyx_t_9 = -1;
+    if (unlikely(__pyx_memoryview_slice_memviewslice(
+    &__pyx_t_14,
     __pyx_v_paths.shape[0], __pyx_v_paths.strides[0], __pyx_v_paths.suboffsets[0],
     0,
     0,
-    &__pyx_t_11,
+    &__pyx_t_9,
     0,
     __Pyx_div_int(__pyx_v_k, __pyx_v_save_steps),
     0,
@@ -5745,63 +5587,63 @@ __pyx_t_7 = ((struct __pyx_vtabstruct_7bonndit_8tracking_8stopping_ROIExNotValid
     0,
     1) < 0))
 {
-    __PYX_ERR(0, 146, __pyx_L4_error)
+    __PYX_ERR(0, 148, __pyx_L1_error)
 }
 
-__pyx_t_16.shape[1] = __pyx_v_paths.shape[1];
-__pyx_t_16.strides[1] = __pyx_v_paths.strides[1];
-    __pyx_t_16.suboffsets[1] = -1;
+__pyx_t_14.shape[1] = __pyx_v_paths.shape[1];
+__pyx_t_14.strides[1] = __pyx_v_paths.strides[1];
+    __pyx_t_14.suboffsets[1] = -1;
 
 if (unlikely(__pyx_v_save_steps == 0)) {
-        #ifdef WITH_THREAD
-        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-        #endif
-        PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-        #ifdef WITH_THREAD
-        __Pyx_PyGILState_Release(__pyx_gilstate_save);
-        #endif
-        __PYX_ERR(0, 146, __pyx_L4_error)
-      }
-      else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_k))) {
-        #ifdef WITH_THREAD
-        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-        #endif
-        PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-        #ifdef WITH_THREAD
-        __Pyx_PyGILState_Release(__pyx_gilstate_save);
-        #endif
-        __PYX_ERR(0, 146, __pyx_L4_error)
-      }
-      if (unlikely(__pyx_v_save_steps == 0)) {
-        #ifdef WITH_THREAD
-        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-        #endif
-        PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-        #ifdef WITH_THREAD
-        __Pyx_PyGILState_Release(__pyx_gilstate_save);
-        #endif
-        __PYX_ERR(0, 146, __pyx_L4_error)
-      }
-      else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_k))) {
-        #ifdef WITH_THREAD
-        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-        #endif
-        PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-        #ifdef WITH_THREAD
-        __Pyx_PyGILState_Release(__pyx_gilstate_save);
-        #endif
-        __PYX_ERR(0, 146, __pyx_L4_error)
-      }
-      __pyx_t_5.data = __pyx_v_features.data;
-      __pyx_t_5.memview = __pyx_v_features.memview;
-      __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
-      __pyx_t_11 = -1;
-      if (unlikely(__pyx_memoryview_slice_memviewslice(
+      #ifdef WITH_THREAD
+      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+      #endif
+      PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+      #ifdef WITH_THREAD
+      __Pyx_PyGILState_Release(__pyx_gilstate_save);
+      #endif
+      __PYX_ERR(0, 148, __pyx_L1_error)
+    }
+    else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_k))) {
+      #ifdef WITH_THREAD
+      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+      #endif
+      PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
+      #ifdef WITH_THREAD
+      __Pyx_PyGILState_Release(__pyx_gilstate_save);
+      #endif
+      __PYX_ERR(0, 148, __pyx_L1_error)
+    }
+    if (unlikely(__pyx_v_save_steps == 0)) {
+      #ifdef WITH_THREAD
+      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+      #endif
+      PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+      #ifdef WITH_THREAD
+      __Pyx_PyGILState_Release(__pyx_gilstate_save);
+      #endif
+      __PYX_ERR(0, 148, __pyx_L1_error)
+    }
+    else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_k))) {
+      #ifdef WITH_THREAD
+      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+      #endif
+      PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
+      #ifdef WITH_THREAD
+      __Pyx_PyGILState_Release(__pyx_gilstate_save);
+      #endif
+      __PYX_ERR(0, 148, __pyx_L1_error)
+    }
+    __pyx_t_5.data = __pyx_v_features.data;
+    __pyx_t_5.memview = __pyx_v_features.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
+    __pyx_t_9 = -1;
+    if (unlikely(__pyx_memoryview_slice_memviewslice(
     &__pyx_t_5,
     __pyx_v_features.shape[0], __pyx_v_features.strides[0], __pyx_v_features.suboffsets[0],
     0,
     0,
-    &__pyx_t_11,
+    &__pyx_t_9,
     __Pyx_div_int(__pyx_v_k, __pyx_v_save_steps),
     (__Pyx_div_int(__pyx_v_k, __pyx_v_save_steps) + 1),
     0,
@@ -5810,7 +5652,7 @@ if (unlikely(__pyx_v_save_steps == 0)) {
     0,
     1) < 0))
 {
-    __PYX_ERR(0, 146, __pyx_L4_error)
+    __PYX_ERR(0, 148, __pyx_L1_error)
 }
 
 {
@@ -5819,83 +5661,83 @@ if (unlikely(__pyx_v_save_steps == 0)) {
         __pyx_t_5.data += __pyx_tmp_idx * __pyx_tmp_stride;
 }
 
-__pyx_t_6 = ((struct __pyx_vtabstruct_7bonndit_8tracking_8stopping_CurvatureNotValidator *)__pyx_v_validator->Curve->__pyx_vtab)->curvature_checker(__pyx_v_validator->Curve, __pyx_t_16, __pyx_t_5); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 146, __pyx_L4_error)
-      __PYX_XDEC_MEMVIEW(&__pyx_t_16, 0);
-      __pyx_t_16.memview = NULL;
-      __pyx_t_16.data = NULL;
-      __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
-      __pyx_t_5.memview = NULL;
-      __pyx_t_5.data = NULL;
-      __pyx_t_7 = (__pyx_t_6 != 0);
-      if (__pyx_t_7) {
+__pyx_t_6 = ((struct __pyx_vtabstruct_7bonndit_8tracking_8stopping_CurvatureNotValidator *)__pyx_v_validator->Curve->__pyx_vtab)->curvature_checker(__pyx_v_validator->Curve, __pyx_t_14, __pyx_t_5); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 148, __pyx_L1_error)
+    __PYX_XDEC_MEMVIEW(&__pyx_t_14, 0);
+    __pyx_t_14.memview = NULL;
+    __pyx_t_14.data = NULL;
+    __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
+    __pyx_t_5.memview = NULL;
+    __pyx_t_5.data = NULL;
+    __pyx_t_7 = (__pyx_t_6 != 0);
+    if (__pyx_t_7) {
 
-        /* "bonndit/tracking/tracking_prob.pyx":147
+      /* "bonndit/tracking/tracking_prob.pyx":149
  * 		# Check curvature between current point and point 30mm ago
  * 		if validator.Curve.curvature_checker(paths[:k//save_steps], features[k//save_steps:k//save_steps + 1,1]):
  * 			return False             # <<<<<<<<<<<<<<
  * 		integrate.old_dir = interpolate.next_dir
  * 	else:
  */
-        __pyx_r = 0;
-        goto __pyx_L3_return;
+      __pyx_r = 0;
+      goto __pyx_L0;
 
-        /* "bonndit/tracking/tracking_prob.pyx":146
+      /* "bonndit/tracking/tracking_prob.pyx":148
  * 			features[k//save_steps,feature_save.prob_others_2] = interpolate.prob.probability[2]
  * 		# Check curvature between current point and point 30mm ago
  * 		if validator.Curve.curvature_checker(paths[:k//save_steps], features[k//save_steps:k//save_steps + 1,1]):             # <<<<<<<<<<<<<<
  * 			return False
  * 		integrate.old_dir = interpolate.next_dir
  */
-      }
+    }
 
-      /* "bonndit/tracking/tracking_prob.pyx":148
+    /* "bonndit/tracking/tracking_prob.pyx":150
  * 		if validator.Curve.curvature_checker(paths[:k//save_steps], features[k//save_steps:k//save_steps + 1,1]):
  * 			return False
  * 		integrate.old_dir = interpolate.next_dir             # <<<<<<<<<<<<<<
  * 	else:
  * 		trafo.itow(paths[k//save_steps + 1])
  */
-      if (unlikely(!__pyx_v_interpolate->next_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 148, __pyx_L4_error)}
-      __pyx_t_5 = __pyx_v_interpolate->next_dir;
-      __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
-      __PYX_XDEC_MEMVIEW(&__pyx_v_integrate->old_dir, 0);
-      __pyx_v_integrate->old_dir = __pyx_t_5;
-      __pyx_t_5.memview = NULL;
-      __pyx_t_5.data = NULL;
-    }
-    /*else*/ {
+    if (unlikely(!__pyx_v_interpolate->next_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 150, __pyx_L1_error)}
+    __pyx_t_5 = __pyx_v_interpolate->next_dir;
+    __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
+    __PYX_XDEC_MEMVIEW(&__pyx_v_integrate->old_dir, 0);
+    __pyx_v_integrate->old_dir = __pyx_t_5;
+    __pyx_t_5.memview = NULL;
+    __pyx_t_5.data = NULL;
+  }
+  /*else*/ {
 
-      /* "bonndit/tracking/tracking_prob.pyx":150
+    /* "bonndit/tracking/tracking_prob.pyx":152
  * 		integrate.old_dir = interpolate.next_dir
  * 	else:
  * 		trafo.itow(paths[k//save_steps + 1])             # <<<<<<<<<<<<<<
  * 		paths[k//save_steps + 1] = trafo.point_itow
  * 	if k == 0:
  */
-      if (unlikely(__pyx_v_save_steps == 0)) {
-        #ifdef WITH_THREAD
-        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-        #endif
-        PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-        #ifdef WITH_THREAD
-        __Pyx_PyGILState_Release(__pyx_gilstate_save);
-        #endif
-        __PYX_ERR(0, 150, __pyx_L4_error)
-      }
-      else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_k))) {
-        #ifdef WITH_THREAD
-        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-        #endif
-        PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-        #ifdef WITH_THREAD
-        __Pyx_PyGILState_Release(__pyx_gilstate_save);
-        #endif
-        __PYX_ERR(0, 150, __pyx_L4_error)
-      }
-      __pyx_t_5.data = __pyx_v_paths.data;
-      __pyx_t_5.memview = __pyx_v_paths.memview;
-      __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
-      {
+    if (unlikely(__pyx_v_save_steps == 0)) {
+      #ifdef WITH_THREAD
+      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+      #endif
+      PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+      #ifdef WITH_THREAD
+      __Pyx_PyGILState_Release(__pyx_gilstate_save);
+      #endif
+      __PYX_ERR(0, 152, __pyx_L1_error)
+    }
+    else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_k))) {
+      #ifdef WITH_THREAD
+      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+      #endif
+      PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
+      #ifdef WITH_THREAD
+      __Pyx_PyGILState_Release(__pyx_gilstate_save);
+      #endif
+      __PYX_ERR(0, 152, __pyx_L1_error)
+    }
+    __pyx_t_5.data = __pyx_v_paths.data;
+    __pyx_t_5.memview = __pyx_v_paths.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
+    {
     Py_ssize_t __pyx_tmp_idx = (__Pyx_div_int(__pyx_v_k, __pyx_v_save_steps) + 1);
     Py_ssize_t __pyx_tmp_stride = __pyx_v_paths.strides[0];
         __pyx_t_5.data += __pyx_tmp_idx * __pyx_tmp_stride;
@@ -5906,44 +5748,44 @@ __pyx_t_5.strides[0] = __pyx_v_paths.strides[1];
     __pyx_t_5.suboffsets[0] = -1;
 
 ((struct __pyx_vtabstruct_7bonndit_8tracking_4ItoW_Trafo *)__pyx_v_trafo->__pyx_vtab)->itow(__pyx_v_trafo, __pyx_t_5);
-      __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
-      __pyx_t_5.memview = NULL;
-      __pyx_t_5.data = NULL;
+    __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
+    __pyx_t_5.memview = NULL;
+    __pyx_t_5.data = NULL;
 
-      /* "bonndit/tracking/tracking_prob.pyx":151
+    /* "bonndit/tracking/tracking_prob.pyx":153
  * 	else:
  * 		trafo.itow(paths[k//save_steps + 1])
  * 		paths[k//save_steps + 1] = trafo.point_itow             # <<<<<<<<<<<<<<
  * 	if k == 0:
  * 		trafo.itow(paths[k//save_steps])
  */
-      if (unlikely(!__pyx_v_trafo->point_itow.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 151, __pyx_L4_error)}
-      __pyx_t_5 = __pyx_v_trafo->point_itow;
-      __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
-      if (unlikely(__pyx_v_save_steps == 0)) {
-        #ifdef WITH_THREAD
-        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-        #endif
-        PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-        #ifdef WITH_THREAD
-        __Pyx_PyGILState_Release(__pyx_gilstate_save);
-        #endif
-        __PYX_ERR(0, 151, __pyx_L4_error)
-      }
-      else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_k))) {
-        #ifdef WITH_THREAD
-        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-        #endif
-        PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-        #ifdef WITH_THREAD
-        __Pyx_PyGILState_Release(__pyx_gilstate_save);
-        #endif
-        __PYX_ERR(0, 151, __pyx_L4_error)
-      }
-      __pyx_t_8.data = __pyx_v_paths.data;
-      __pyx_t_8.memview = __pyx_v_paths.memview;
-      __PYX_INC_MEMVIEW(&__pyx_t_8, 0);
-      {
+    if (unlikely(!__pyx_v_trafo->point_itow.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 153, __pyx_L1_error)}
+    __pyx_t_5 = __pyx_v_trafo->point_itow;
+    __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
+    if (unlikely(__pyx_v_save_steps == 0)) {
+      #ifdef WITH_THREAD
+      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+      #endif
+      PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+      #ifdef WITH_THREAD
+      __Pyx_PyGILState_Release(__pyx_gilstate_save);
+      #endif
+      __PYX_ERR(0, 153, __pyx_L1_error)
+    }
+    else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_k))) {
+      #ifdef WITH_THREAD
+      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+      #endif
+      PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
+      #ifdef WITH_THREAD
+      __Pyx_PyGILState_Release(__pyx_gilstate_save);
+      #endif
+      __PYX_ERR(0, 153, __pyx_L1_error)
+    }
+    __pyx_t_8.data = __pyx_v_paths.data;
+    __pyx_t_8.memview = __pyx_v_paths.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_8, 0);
+    {
     Py_ssize_t __pyx_tmp_idx = (__Pyx_div_int(__pyx_v_k, __pyx_v_save_steps) + 1);
     Py_ssize_t __pyx_tmp_stride = __pyx_v_paths.strides[0];
         __pyx_t_8.data += __pyx_tmp_idx * __pyx_tmp_stride;
@@ -5953,57 +5795,57 @@ __pyx_t_8.shape[0] = __pyx_v_paths.shape[1];
 __pyx_t_8.strides[0] = __pyx_v_paths.strides[1];
     __pyx_t_8.suboffsets[0] = -1;
 
-if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_5, __pyx_t_8, 1, 1, 0) < 0)) __PYX_ERR(0, 151, __pyx_L4_error)
-      __PYX_XDEC_MEMVIEW(&__pyx_t_8, 0);
-      __pyx_t_8.memview = NULL;
-      __pyx_t_8.data = NULL;
-      __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
-      __pyx_t_5.memview = NULL;
-      __pyx_t_5.data = NULL;
-    }
-    __pyx_L7_break:;
+if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_5, __pyx_t_8, 1, 1, 0) < 0)) __PYX_ERR(0, 153, __pyx_L1_error)
+    __PYX_XDEC_MEMVIEW(&__pyx_t_8, 0);
+    __pyx_t_8.memview = NULL;
+    __pyx_t_8.data = NULL;
+    __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
+    __pyx_t_5.memview = NULL;
+    __pyx_t_5.data = NULL;
+  }
+  __pyx_L4_break:;
 
-    /* "bonndit/tracking/tracking_prob.pyx":152
+  /* "bonndit/tracking/tracking_prob.pyx":154
  * 		trafo.itow(paths[k//save_steps + 1])
  * 		paths[k//save_steps + 1] = trafo.point_itow
  * 	if k == 0:             # <<<<<<<<<<<<<<
  * 		trafo.itow(paths[k//save_steps])
  * 		paths[k//save_steps] = trafo.point_itow
  */
-    __pyx_t_7 = ((__pyx_v_k == 0) != 0);
-    if (__pyx_t_7) {
+  __pyx_t_7 = ((__pyx_v_k == 0) != 0);
+  if (__pyx_t_7) {
 
-      /* "bonndit/tracking/tracking_prob.pyx":153
+    /* "bonndit/tracking/tracking_prob.pyx":155
  * 		paths[k//save_steps + 1] = trafo.point_itow
  * 	if k == 0:
  * 		trafo.itow(paths[k//save_steps])             # <<<<<<<<<<<<<<
  * 		paths[k//save_steps] = trafo.point_itow
  * 	return True
  */
-      if (unlikely(__pyx_v_save_steps == 0)) {
-        #ifdef WITH_THREAD
-        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-        #endif
-        PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-        #ifdef WITH_THREAD
-        __Pyx_PyGILState_Release(__pyx_gilstate_save);
-        #endif
-        __PYX_ERR(0, 153, __pyx_L4_error)
-      }
-      else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_k))) {
-        #ifdef WITH_THREAD
-        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-        #endif
-        PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-        #ifdef WITH_THREAD
-        __Pyx_PyGILState_Release(__pyx_gilstate_save);
-        #endif
-        __PYX_ERR(0, 153, __pyx_L4_error)
-      }
-      __pyx_t_5.data = __pyx_v_paths.data;
-      __pyx_t_5.memview = __pyx_v_paths.memview;
-      __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
-      {
+    if (unlikely(__pyx_v_save_steps == 0)) {
+      #ifdef WITH_THREAD
+      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+      #endif
+      PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+      #ifdef WITH_THREAD
+      __Pyx_PyGILState_Release(__pyx_gilstate_save);
+      #endif
+      __PYX_ERR(0, 155, __pyx_L1_error)
+    }
+    else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_k))) {
+      #ifdef WITH_THREAD
+      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+      #endif
+      PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
+      #ifdef WITH_THREAD
+      __Pyx_PyGILState_Release(__pyx_gilstate_save);
+      #endif
+      __PYX_ERR(0, 155, __pyx_L1_error)
+    }
+    __pyx_t_5.data = __pyx_v_paths.data;
+    __pyx_t_5.memview = __pyx_v_paths.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
+    {
     Py_ssize_t __pyx_tmp_idx = __Pyx_div_int(__pyx_v_k, __pyx_v_save_steps);
     Py_ssize_t __pyx_tmp_stride = __pyx_v_paths.strides[0];
         __pyx_t_5.data += __pyx_tmp_idx * __pyx_tmp_stride;
@@ -6014,44 +5856,44 @@ __pyx_t_5.strides[0] = __pyx_v_paths.strides[1];
     __pyx_t_5.suboffsets[0] = -1;
 
 ((struct __pyx_vtabstruct_7bonndit_8tracking_4ItoW_Trafo *)__pyx_v_trafo->__pyx_vtab)->itow(__pyx_v_trafo, __pyx_t_5);
-      __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
-      __pyx_t_5.memview = NULL;
-      __pyx_t_5.data = NULL;
+    __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
+    __pyx_t_5.memview = NULL;
+    __pyx_t_5.data = NULL;
 
-      /* "bonndit/tracking/tracking_prob.pyx":154
+    /* "bonndit/tracking/tracking_prob.pyx":156
  * 	if k == 0:
  * 		trafo.itow(paths[k//save_steps])
  * 		paths[k//save_steps] = trafo.point_itow             # <<<<<<<<<<<<<<
  * 	return True
  * 
  */
-      if (unlikely(!__pyx_v_trafo->point_itow.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 154, __pyx_L4_error)}
-      __pyx_t_5 = __pyx_v_trafo->point_itow;
-      __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
-      if (unlikely(__pyx_v_save_steps == 0)) {
-        #ifdef WITH_THREAD
-        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-        #endif
-        PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-        #ifdef WITH_THREAD
-        __Pyx_PyGILState_Release(__pyx_gilstate_save);
-        #endif
-        __PYX_ERR(0, 154, __pyx_L4_error)
-      }
-      else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_k))) {
-        #ifdef WITH_THREAD
-        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-        #endif
-        PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-        #ifdef WITH_THREAD
-        __Pyx_PyGILState_Release(__pyx_gilstate_save);
-        #endif
-        __PYX_ERR(0, 154, __pyx_L4_error)
-      }
-      __pyx_t_8.data = __pyx_v_paths.data;
-      __pyx_t_8.memview = __pyx_v_paths.memview;
-      __PYX_INC_MEMVIEW(&__pyx_t_8, 0);
-      {
+    if (unlikely(!__pyx_v_trafo->point_itow.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 156, __pyx_L1_error)}
+    __pyx_t_5 = __pyx_v_trafo->point_itow;
+    __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
+    if (unlikely(__pyx_v_save_steps == 0)) {
+      #ifdef WITH_THREAD
+      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+      #endif
+      PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+      #ifdef WITH_THREAD
+      __Pyx_PyGILState_Release(__pyx_gilstate_save);
+      #endif
+      __PYX_ERR(0, 156, __pyx_L1_error)
+    }
+    else if (sizeof(int) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_save_steps == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_k))) {
+      #ifdef WITH_THREAD
+      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+      #endif
+      PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
+      #ifdef WITH_THREAD
+      __Pyx_PyGILState_Release(__pyx_gilstate_save);
+      #endif
+      __PYX_ERR(0, 156, __pyx_L1_error)
+    }
+    __pyx_t_8.data = __pyx_v_paths.data;
+    __pyx_t_8.memview = __pyx_v_paths.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_8, 0);
+    {
     Py_ssize_t __pyx_tmp_idx = __Pyx_div_int(__pyx_v_k, __pyx_v_save_steps);
     Py_ssize_t __pyx_tmp_stride = __pyx_v_paths.strides[0];
         __pyx_t_8.data += __pyx_tmp_idx * __pyx_tmp_stride;
@@ -6061,55 +5903,32 @@ __pyx_t_8.shape[0] = __pyx_v_paths.shape[1];
 __pyx_t_8.strides[0] = __pyx_v_paths.strides[1];
     __pyx_t_8.suboffsets[0] = -1;
 
-if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_5, __pyx_t_8, 1, 1, 0) < 0)) __PYX_ERR(0, 154, __pyx_L4_error)
-      __PYX_XDEC_MEMVIEW(&__pyx_t_8, 0);
-      __pyx_t_8.memview = NULL;
-      __pyx_t_8.data = NULL;
-      __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
-      __pyx_t_5.memview = NULL;
-      __pyx_t_5.data = NULL;
+if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_5, __pyx_t_8, 1, 1, 0) < 0)) __PYX_ERR(0, 156, __pyx_L1_error)
+    __PYX_XDEC_MEMVIEW(&__pyx_t_8, 0);
+    __pyx_t_8.memview = NULL;
+    __pyx_t_8.data = NULL;
+    __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
+    __pyx_t_5.memview = NULL;
+    __pyx_t_5.data = NULL;
 
-      /* "bonndit/tracking/tracking_prob.pyx":152
+    /* "bonndit/tracking/tracking_prob.pyx":154
  * 		trafo.itow(paths[k//save_steps + 1])
  * 		paths[k//save_steps + 1] = trafo.point_itow
  * 	if k == 0:             # <<<<<<<<<<<<<<
  * 		trafo.itow(paths[k//save_steps])
  * 		paths[k//save_steps] = trafo.point_itow
  */
-    }
+  }
 
-    /* "bonndit/tracking/tracking_prob.pyx":155
+  /* "bonndit/tracking/tracking_prob.pyx":157
  * 		trafo.itow(paths[k//save_steps])
  * 		paths[k//save_steps] = trafo.point_itow
  * 	return True             # <<<<<<<<<<<<<<
  * 
  * cpdef tracking_all(vector_field, wm_mask, seeds, tracking_parameters, postprocessing, ukf_parameters, trilinear_parameters, logging, saving):
  */
-    __pyx_r = 1;
-    goto __pyx_L3_return;
-  }
-
-  /* "bonndit/tracking/tracking_prob.pyx":83
- * cdef bint forward_tracking(double[:,:] paths,  Interpolation interpolate,
- *                        Integration integrate, Trafo trafo, Validator validator, int max_track_length, int save_steps, double[:,:] features, possible_features feature_save) nogil except *:
- * 	"""             # <<<<<<<<<<<<<<
- *         This function do the tracking into one direction.
- * 	@param paths: empty path array to save the streamline points.
- */
-  /*finally:*/ {
-    __pyx_L3_return: {
-      #ifdef WITH_THREAD
-      __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-      #endif
-      goto __pyx_L0;
-    }
-    __pyx_L4_error: {
-      #ifdef WITH_THREAD
-      __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-      #endif
-      goto __pyx_L1_error;
-    }
-  }
+  __pyx_r = 1;
+  goto __pyx_L0;
 
   /* "bonndit/tracking/tracking_prob.pyx":81
  * 				break
@@ -6120,24 +5939,25 @@ if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_5, __pyx_t_8, 1, 1, 0) < 0))
  */
 
   /* function exit code */
-  __pyx_r = 0;
-  goto __pyx_L0;
   __pyx_L1_error:;
   __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
   __PYX_XDEC_MEMVIEW(&__pyx_t_8, 0);
-  __Pyx_XDECREF(__pyx_t_9);
-  __Pyx_XDECREF(__pyx_t_10);
-  __PYX_XDEC_MEMVIEW(&__pyx_t_16, 0);
-  __Pyx_AddTraceback("bonndit.tracking.tracking_prob.forward_tracking", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_14, 0);
+  {
+    #ifdef WITH_THREAD
+    PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
+    #endif
+    __Pyx_AddTraceback("bonndit.tracking.tracking_prob.forward_tracking", __pyx_clineno, __pyx_lineno, __pyx_filename);
+    #ifdef WITH_THREAD
+    __Pyx_PyGILState_Release(__pyx_gilstate_save);
+    #endif
+  }
   __pyx_r = -1;
   __pyx_L0:;
-  #ifdef WITH_THREAD
-  __Pyx_PyGILState_Release(__pyx_gilstate_save);
-  #endif
   return __pyx_r;
 }
 
-/* "bonndit/tracking/tracking_prob.pyx":157
+/* "bonndit/tracking/tracking_prob.pyx":159
  * 	return True
  * 
  * cpdef tracking_all(vector_field, wm_mask, seeds, tracking_parameters, postprocessing, ukf_parameters, trilinear_parameters, logging, saving):             # <<<<<<<<<<<<<<
@@ -6226,71 +6046,25 @@ static PyObject *__pyx_f_7bonndit_8tracking_13tracking_prob_tracking_all(PyObjec
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("tracking_all", 0);
 
-  /* "bonndit/tracking/tracking_prob.pyx":195
+  /* "bonndit/tracking/tracking_prob.pyx":197
  * 	cdef Validator validator
  * 	#select appropriate model
  * 	if tracking_parameters['prob'] == "Gaussian":             # <<<<<<<<<<<<<<
  * 		directionGetter = Gaussian(0, tracking_parameters['variance'])
  * 	elif tracking_parameters['prob'] == "Laplacian":
  */
-  __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_prob); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 195, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_prob); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 197, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = (__Pyx_PyUnicode_Equals(__pyx_t_1, __pyx_n_u_Gaussian, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 195, __pyx_L1_error)
+  __pyx_t_2 = (__Pyx_PyUnicode_Equals(__pyx_t_1, __pyx_n_u_Gaussian, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 197, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_t_2) {
 
-    /* "bonndit/tracking/tracking_prob.pyx":196
+    /* "bonndit/tracking/tracking_prob.pyx":198
  * 	#select appropriate model
  * 	if tracking_parameters['prob'] == "Gaussian":
  * 		directionGetter = Gaussian(0, tracking_parameters['variance'])             # <<<<<<<<<<<<<<
  * 	elif tracking_parameters['prob'] == "Laplacian":
  * 		directionGetter = Laplacian(0, tracking_parameters['variance'])
- */
-    __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_variance); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 196, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 196, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __Pyx_INCREF(__pyx_int_0);
-    __Pyx_GIVEREF(__pyx_int_0);
-    PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_int_0);
-    __Pyx_GIVEREF(__pyx_t_1);
-    PyTuple_SET_ITEM(__pyx_t_3, 1, __pyx_t_1);
-    __pyx_t_1 = 0;
-    __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7bonndit_8tracking_16alignedDirection_Gaussian), __pyx_t_3, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 196, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_v_directionGetter = ((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_t_1);
-    __pyx_t_1 = 0;
-
-    /* "bonndit/tracking/tracking_prob.pyx":195
- * 	cdef Validator validator
- * 	#select appropriate model
- * 	if tracking_parameters['prob'] == "Gaussian":             # <<<<<<<<<<<<<<
- * 		directionGetter = Gaussian(0, tracking_parameters['variance'])
- * 	elif tracking_parameters['prob'] == "Laplacian":
- */
-    goto __pyx_L3;
-  }
-
-  /* "bonndit/tracking/tracking_prob.pyx":197
- * 	if tracking_parameters['prob'] == "Gaussian":
- * 		directionGetter = Gaussian(0, tracking_parameters['variance'])
- * 	elif tracking_parameters['prob'] == "Laplacian":             # <<<<<<<<<<<<<<
- * 		directionGetter = Laplacian(0, tracking_parameters['variance'])
- * 	elif tracking_parameters['prob'] == "ScalarOld":
- */
-  __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_prob); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 197, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = (__Pyx_PyUnicode_Equals(__pyx_t_1, __pyx_n_u_Laplacian, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 197, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (__pyx_t_2) {
-
-    /* "bonndit/tracking/tracking_prob.pyx":198
- * 		directionGetter = Gaussian(0, tracking_parameters['variance'])
- * 	elif tracking_parameters['prob'] == "Laplacian":
- * 		directionGetter = Laplacian(0, tracking_parameters['variance'])             # <<<<<<<<<<<<<<
- * 	elif tracking_parameters['prob'] == "ScalarOld":
- * 		directionGetter = ScalarOld(tracking_parameters['expectation'], tracking_parameters['variance'])
  */
     __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_variance); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 198, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
@@ -6302,13 +6076,59 @@ static PyObject *__pyx_f_7bonndit_8tracking_13tracking_prob_tracking_all(PyObjec
     __Pyx_GIVEREF(__pyx_t_1);
     PyTuple_SET_ITEM(__pyx_t_3, 1, __pyx_t_1);
     __pyx_t_1 = 0;
-    __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7bonndit_8tracking_16alignedDirection_Laplacian), __pyx_t_3, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 198, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7bonndit_8tracking_16alignedDirection_Gaussian), __pyx_t_3, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 198, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __pyx_v_directionGetter = ((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_t_1);
     __pyx_t_1 = 0;
 
     /* "bonndit/tracking/tracking_prob.pyx":197
+ * 	cdef Validator validator
+ * 	#select appropriate model
+ * 	if tracking_parameters['prob'] == "Gaussian":             # <<<<<<<<<<<<<<
+ * 		directionGetter = Gaussian(0, tracking_parameters['variance'])
+ * 	elif tracking_parameters['prob'] == "Laplacian":
+ */
+    goto __pyx_L3;
+  }
+
+  /* "bonndit/tracking/tracking_prob.pyx":199
+ * 	if tracking_parameters['prob'] == "Gaussian":
+ * 		directionGetter = Gaussian(0, tracking_parameters['variance'])
+ * 	elif tracking_parameters['prob'] == "Laplacian":             # <<<<<<<<<<<<<<
+ * 		directionGetter = Laplacian(0, tracking_parameters['variance'])
+ * 	elif tracking_parameters['prob'] == "ScalarOld":
+ */
+  __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_prob); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 199, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = (__Pyx_PyUnicode_Equals(__pyx_t_1, __pyx_n_u_Laplacian, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 199, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  if (__pyx_t_2) {
+
+    /* "bonndit/tracking/tracking_prob.pyx":200
+ * 		directionGetter = Gaussian(0, tracking_parameters['variance'])
+ * 	elif tracking_parameters['prob'] == "Laplacian":
+ * 		directionGetter = Laplacian(0, tracking_parameters['variance'])             # <<<<<<<<<<<<<<
+ * 	elif tracking_parameters['prob'] == "ScalarOld":
+ * 		directionGetter = ScalarOld(tracking_parameters['expectation'], tracking_parameters['variance'])
+ */
+    __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_variance); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 200, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 200, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_INCREF(__pyx_int_0);
+    __Pyx_GIVEREF(__pyx_int_0);
+    PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_int_0);
+    __Pyx_GIVEREF(__pyx_t_1);
+    PyTuple_SET_ITEM(__pyx_t_3, 1, __pyx_t_1);
+    __pyx_t_1 = 0;
+    __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7bonndit_8tracking_16alignedDirection_Laplacian), __pyx_t_3, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 200, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __pyx_v_directionGetter = ((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_t_1);
+    __pyx_t_1 = 0;
+
+    /* "bonndit/tracking/tracking_prob.pyx":199
  * 	if tracking_parameters['prob'] == "Gaussian":
  * 		directionGetter = Gaussian(0, tracking_parameters['variance'])
  * 	elif tracking_parameters['prob'] == "Laplacian":             # <<<<<<<<<<<<<<
@@ -6318,31 +6138,31 @@ static PyObject *__pyx_f_7bonndit_8tracking_13tracking_prob_tracking_all(PyObjec
     goto __pyx_L3;
   }
 
-  /* "bonndit/tracking/tracking_prob.pyx":199
+  /* "bonndit/tracking/tracking_prob.pyx":201
  * 	elif tracking_parameters['prob'] == "Laplacian":
  * 		directionGetter = Laplacian(0, tracking_parameters['variance'])
  * 	elif tracking_parameters['prob'] == "ScalarOld":             # <<<<<<<<<<<<<<
  * 		directionGetter = ScalarOld(tracking_parameters['expectation'], tracking_parameters['variance'])
  * 	elif tracking_parameters['prob'] == "ScalarNew":
  */
-  __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_prob); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 199, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_prob); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 201, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = (__Pyx_PyUnicode_Equals(__pyx_t_1, __pyx_n_u_ScalarOld, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 199, __pyx_L1_error)
+  __pyx_t_2 = (__Pyx_PyUnicode_Equals(__pyx_t_1, __pyx_n_u_ScalarOld, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 201, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_t_2) {
 
-    /* "bonndit/tracking/tracking_prob.pyx":200
+    /* "bonndit/tracking/tracking_prob.pyx":202
  * 		directionGetter = Laplacian(0, tracking_parameters['variance'])
  * 	elif tracking_parameters['prob'] == "ScalarOld":
  * 		directionGetter = ScalarOld(tracking_parameters['expectation'], tracking_parameters['variance'])             # <<<<<<<<<<<<<<
  * 	elif tracking_parameters['prob'] == "ScalarNew":
  * 		directionGetter = ScalarNew(tracking_parameters['expectation'], tracking_parameters['variance'])
  */
-    __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_expectation); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 200, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_expectation); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 202, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_variance); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 200, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_variance); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 202, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = PyTuple_New(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 200, __pyx_L1_error)
+    __pyx_t_4 = PyTuple_New(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 202, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_GIVEREF(__pyx_t_1);
     PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_1);
@@ -6350,13 +6170,13 @@ static PyObject *__pyx_f_7bonndit_8tracking_13tracking_prob_tracking_all(PyObjec
     PyTuple_SET_ITEM(__pyx_t_4, 1, __pyx_t_3);
     __pyx_t_1 = 0;
     __pyx_t_3 = 0;
-    __pyx_t_3 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7bonndit_8tracking_16alignedDirection_ScalarOld), __pyx_t_4, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 200, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7bonndit_8tracking_16alignedDirection_ScalarOld), __pyx_t_4, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 202, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_v_directionGetter = ((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_t_3);
     __pyx_t_3 = 0;
 
-    /* "bonndit/tracking/tracking_prob.pyx":199
+    /* "bonndit/tracking/tracking_prob.pyx":201
  * 	elif tracking_parameters['prob'] == "Laplacian":
  * 		directionGetter = Laplacian(0, tracking_parameters['variance'])
  * 	elif tracking_parameters['prob'] == "ScalarOld":             # <<<<<<<<<<<<<<
@@ -6366,31 +6186,31 @@ static PyObject *__pyx_f_7bonndit_8tracking_13tracking_prob_tracking_all(PyObjec
     goto __pyx_L3;
   }
 
-  /* "bonndit/tracking/tracking_prob.pyx":201
+  /* "bonndit/tracking/tracking_prob.pyx":203
  * 	elif tracking_parameters['prob'] == "ScalarOld":
  * 		directionGetter = ScalarOld(tracking_parameters['expectation'], tracking_parameters['variance'])
  * 	elif tracking_parameters['prob'] == "ScalarNew":             # <<<<<<<<<<<<<<
  * 		directionGetter = ScalarNew(tracking_parameters['expectation'], tracking_parameters['variance'])
  * 	elif tracking_parameters['prob'] == "Deterministic":
  */
-  __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_prob); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 201, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_prob); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 203, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_2 = (__Pyx_PyUnicode_Equals(__pyx_t_3, __pyx_n_u_ScalarNew, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 201, __pyx_L1_error)
+  __pyx_t_2 = (__Pyx_PyUnicode_Equals(__pyx_t_3, __pyx_n_u_ScalarNew, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 203, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   if (__pyx_t_2) {
 
-    /* "bonndit/tracking/tracking_prob.pyx":202
+    /* "bonndit/tracking/tracking_prob.pyx":204
  * 		directionGetter = ScalarOld(tracking_parameters['expectation'], tracking_parameters['variance'])
  * 	elif tracking_parameters['prob'] == "ScalarNew":
  * 		directionGetter = ScalarNew(tracking_parameters['expectation'], tracking_parameters['variance'])             # <<<<<<<<<<<<<<
  * 	elif tracking_parameters['prob'] == "Deterministic":
  * 		directionGetter = Deterministic(tracking_parameters['expectation'], tracking_parameters['variance'])
  */
-    __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_expectation); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 202, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_expectation); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 204, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_variance); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 202, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_variance); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 204, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 202, __pyx_L1_error)
+    __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 204, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_GIVEREF(__pyx_t_3);
     PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_3);
@@ -6398,13 +6218,13 @@ static PyObject *__pyx_f_7bonndit_8tracking_13tracking_prob_tracking_all(PyObjec
     PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_t_4);
     __pyx_t_3 = 0;
     __pyx_t_4 = 0;
-    __pyx_t_4 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7bonndit_8tracking_16alignedDirection_ScalarNew), __pyx_t_1, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 202, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7bonndit_8tracking_16alignedDirection_ScalarNew), __pyx_t_1, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 204, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __pyx_v_directionGetter = ((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_t_4);
     __pyx_t_4 = 0;
 
-    /* "bonndit/tracking/tracking_prob.pyx":201
+    /* "bonndit/tracking/tracking_prob.pyx":203
  * 	elif tracking_parameters['prob'] == "ScalarOld":
  * 		directionGetter = ScalarOld(tracking_parameters['expectation'], tracking_parameters['variance'])
  * 	elif tracking_parameters['prob'] == "ScalarNew":             # <<<<<<<<<<<<<<
@@ -6414,31 +6234,31 @@ static PyObject *__pyx_f_7bonndit_8tracking_13tracking_prob_tracking_all(PyObjec
     goto __pyx_L3;
   }
 
-  /* "bonndit/tracking/tracking_prob.pyx":203
+  /* "bonndit/tracking/tracking_prob.pyx":205
  * 	elif tracking_parameters['prob'] == "ScalarNew":
  * 		directionGetter = ScalarNew(tracking_parameters['expectation'], tracking_parameters['variance'])
  * 	elif tracking_parameters['prob'] == "Deterministic":             # <<<<<<<<<<<<<<
  * 		directionGetter = Deterministic(tracking_parameters['expectation'], tracking_parameters['variance'])
  * 	elif tracking_parameters['prob'] == "Deterministic2":
  */
-  __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_prob); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 203, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_prob); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 205, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_2 = (__Pyx_PyUnicode_Equals(__pyx_t_4, __pyx_n_u_Deterministic, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 203, __pyx_L1_error)
+  __pyx_t_2 = (__Pyx_PyUnicode_Equals(__pyx_t_4, __pyx_n_u_Deterministic, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 205, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   if (__pyx_t_2) {
 
-    /* "bonndit/tracking/tracking_prob.pyx":204
+    /* "bonndit/tracking/tracking_prob.pyx":206
  * 		directionGetter = ScalarNew(tracking_parameters['expectation'], tracking_parameters['variance'])
  * 	elif tracking_parameters['prob'] == "Deterministic":
  * 		directionGetter = Deterministic(tracking_parameters['expectation'], tracking_parameters['variance'])             # <<<<<<<<<<<<<<
  * 	elif tracking_parameters['prob'] == "Deterministic2":
  * 		directionGetter = Deterministic2(tracking_parameters['expectation'], tracking_parameters['variance'])
  */
-    __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_expectation); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 204, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_expectation); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 206, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_variance); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 204, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_variance); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 206, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 204, __pyx_L1_error)
+    __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 206, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_GIVEREF(__pyx_t_4);
     PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_4);
@@ -6446,13 +6266,13 @@ static PyObject *__pyx_f_7bonndit_8tracking_13tracking_prob_tracking_all(PyObjec
     PyTuple_SET_ITEM(__pyx_t_3, 1, __pyx_t_1);
     __pyx_t_4 = 0;
     __pyx_t_1 = 0;
-    __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7bonndit_8tracking_16alignedDirection_Deterministic), __pyx_t_3, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 204, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7bonndit_8tracking_16alignedDirection_Deterministic), __pyx_t_3, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 206, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __pyx_v_directionGetter = ((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "bonndit/tracking/tracking_prob.pyx":203
+    /* "bonndit/tracking/tracking_prob.pyx":205
  * 	elif tracking_parameters['prob'] == "ScalarNew":
  * 		directionGetter = ScalarNew(tracking_parameters['expectation'], tracking_parameters['variance'])
  * 	elif tracking_parameters['prob'] == "Deterministic":             # <<<<<<<<<<<<<<
@@ -6462,31 +6282,31 @@ static PyObject *__pyx_f_7bonndit_8tracking_13tracking_prob_tracking_all(PyObjec
     goto __pyx_L3;
   }
 
-  /* "bonndit/tracking/tracking_prob.pyx":205
+  /* "bonndit/tracking/tracking_prob.pyx":207
  * 	elif tracking_parameters['prob'] == "Deterministic":
  * 		directionGetter = Deterministic(tracking_parameters['expectation'], tracking_parameters['variance'])
  * 	elif tracking_parameters['prob'] == "Deterministic2":             # <<<<<<<<<<<<<<
  * 		directionGetter = Deterministic2(tracking_parameters['expectation'], tracking_parameters['variance'])
  * 	else:
  */
-  __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_prob); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 205, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_prob); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 207, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = (__Pyx_PyUnicode_Equals(__pyx_t_1, __pyx_n_u_Deterministic2, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 205, __pyx_L1_error)
+  __pyx_t_2 = (__Pyx_PyUnicode_Equals(__pyx_t_1, __pyx_n_u_Deterministic2, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 207, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_t_2) {
 
-    /* "bonndit/tracking/tracking_prob.pyx":206
+    /* "bonndit/tracking/tracking_prob.pyx":208
  * 		directionGetter = Deterministic(tracking_parameters['expectation'], tracking_parameters['variance'])
  * 	elif tracking_parameters['prob'] == "Deterministic2":
  * 		directionGetter = Deterministic2(tracking_parameters['expectation'], tracking_parameters['variance'])             # <<<<<<<<<<<<<<
  * 	else:
  * 		logging.error('Gaussian or Laplacian or Scalar are available so far. ')
  */
-    __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_expectation); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 206, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_expectation); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 208, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_variance); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 206, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_variance); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 208, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = PyTuple_New(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 206, __pyx_L1_error)
+    __pyx_t_4 = PyTuple_New(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 208, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_GIVEREF(__pyx_t_1);
     PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_1);
@@ -6494,13 +6314,13 @@ static PyObject *__pyx_f_7bonndit_8tracking_13tracking_prob_tracking_all(PyObjec
     PyTuple_SET_ITEM(__pyx_t_4, 1, __pyx_t_3);
     __pyx_t_1 = 0;
     __pyx_t_3 = 0;
-    __pyx_t_3 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7bonndit_8tracking_16alignedDirection_Deterministic2), __pyx_t_4, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 206, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7bonndit_8tracking_16alignedDirection_Deterministic2), __pyx_t_4, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 208, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_v_directionGetter = ((struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_t_3);
     __pyx_t_3 = 0;
 
-    /* "bonndit/tracking/tracking_prob.pyx":205
+    /* "bonndit/tracking/tracking_prob.pyx":207
  * 	elif tracking_parameters['prob'] == "Deterministic":
  * 		directionGetter = Deterministic(tracking_parameters['expectation'], tracking_parameters['variance'])
  * 	elif tracking_parameters['prob'] == "Deterministic2":             # <<<<<<<<<<<<<<
@@ -6510,7 +6330,7 @@ static PyObject *__pyx_f_7bonndit_8tracking_13tracking_prob_tracking_all(PyObjec
     goto __pyx_L3;
   }
 
-  /* "bonndit/tracking/tracking_prob.pyx":208
+  /* "bonndit/tracking/tracking_prob.pyx":210
  * 		directionGetter = Deterministic2(tracking_parameters['expectation'], tracking_parameters['variance'])
  * 	else:
  * 		logging.error('Gaussian or Laplacian or Scalar are available so far. ')             # <<<<<<<<<<<<<<
@@ -6518,7 +6338,7 @@ static PyObject *__pyx_f_7bonndit_8tracking_13tracking_prob_tracking_all(PyObjec
  * 
  */
   /*else*/ {
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_logging, __pyx_n_s_error); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 208, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_logging, __pyx_n_s_error); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 210, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_1 = NULL;
     if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_4))) {
@@ -6532,12 +6352,12 @@ static PyObject *__pyx_f_7bonndit_8tracking_13tracking_prob_tracking_all(PyObjec
     }
     __pyx_t_3 = (__pyx_t_1) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_1, __pyx_kp_u_Gaussian_or_Laplacian_or_Scalar) : __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_kp_u_Gaussian_or_Laplacian_or_Scalar);
     __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
-    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 208, __pyx_L1_error)
+    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 210, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-    /* "bonndit/tracking/tracking_prob.pyx":209
+    /* "bonndit/tracking/tracking_prob.pyx":211
  * 	else:
  * 		logging.error('Gaussian or Laplacian or Scalar are available so far. ')
  * 		return 0             # <<<<<<<<<<<<<<
@@ -6551,19 +6371,19 @@ static PyObject *__pyx_f_7bonndit_8tracking_13tracking_prob_tracking_all(PyObjec
   }
   __pyx_L3:;
 
-  /* "bonndit/tracking/tracking_prob.pyx":211
+  /* "bonndit/tracking/tracking_prob.pyx":213
  * 		return 0
  * 
  * 	trafo = <Trafo> Trafo(np.float64(tracking_parameters['space directions']), np.float64(tracking_parameters['space origin']))             # <<<<<<<<<<<<<<
  * 	trafo_matrix = np.zeros((4,4))
  * 	trafo_matrix[:3,:3] = tracking_parameters['space directions']
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 211, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 213, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_float64); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 211, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_float64); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 213, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_kp_u_space_directions); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 211, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_kp_u_space_directions); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 213, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_5 = NULL;
   if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_1))) {
@@ -6578,15 +6398,15 @@ static PyObject *__pyx_f_7bonndit_8tracking_13tracking_prob_tracking_all(PyObjec
   __pyx_t_3 = (__pyx_t_5) ? __Pyx_PyObject_Call2Args(__pyx_t_1, __pyx_t_5, __pyx_t_4) : __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 211, __pyx_L1_error)
+  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 213, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 211, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 213, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_float64); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 211, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_float64); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 213, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_kp_u_space_origin); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 211, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_kp_u_space_origin); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 213, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_6 = NULL;
   if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_5))) {
@@ -6601,10 +6421,10 @@ static PyObject *__pyx_f_7bonndit_8tracking_13tracking_prob_tracking_all(PyObjec
   __pyx_t_1 = (__pyx_t_6) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_6, __pyx_t_4) : __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_4);
   __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 211, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 213, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 211, __pyx_L1_error)
+  __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 213, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_GIVEREF(__pyx_t_3);
   PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_3);
@@ -6612,7 +6432,7 @@ static PyObject *__pyx_f_7bonndit_8tracking_13tracking_prob_tracking_all(PyObjec
   PyTuple_SET_ITEM(__pyx_t_5, 1, __pyx_t_1);
   __pyx_t_3 = 0;
   __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7bonndit_8tracking_4ItoW_Trafo), __pyx_t_5, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 211, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7bonndit_8tracking_4ItoW_Trafo), __pyx_t_5, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 213, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __pyx_t_5 = __pyx_t_1;
@@ -6621,16 +6441,16 @@ static PyObject *__pyx_f_7bonndit_8tracking_13tracking_prob_tracking_all(PyObjec
   __pyx_v_trafo = ((struct __pyx_obj_7bonndit_8tracking_4ItoW_Trafo *)__pyx_t_5);
   __pyx_t_5 = 0;
 
-  /* "bonndit/tracking/tracking_prob.pyx":212
+  /* "bonndit/tracking/tracking_prob.pyx":214
  * 
  * 	trafo = <Trafo> Trafo(np.float64(tracking_parameters['space directions']), np.float64(tracking_parameters['space origin']))
  * 	trafo_matrix = np.zeros((4,4))             # <<<<<<<<<<<<<<
  * 	trafo_matrix[:3,:3] = tracking_parameters['space directions']
  * 	trafo_matrix[:3,3] = tracking_parameters['space origin']
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 212, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 214, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_zeros); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 212, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_zeros); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 214, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_t_1 = NULL;
@@ -6645,89 +6465,89 @@ static PyObject *__pyx_f_7bonndit_8tracking_13tracking_prob_tracking_all(PyObjec
   }
   __pyx_t_5 = (__pyx_t_1) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_1, __pyx_tuple_) : __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_tuple_);
   __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 212, __pyx_L1_error)
+  if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 214, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_v_trafo_matrix = __pyx_t_5;
   __pyx_t_5 = 0;
 
-  /* "bonndit/tracking/tracking_prob.pyx":213
+  /* "bonndit/tracking/tracking_prob.pyx":215
  * 	trafo = <Trafo> Trafo(np.float64(tracking_parameters['space directions']), np.float64(tracking_parameters['space origin']))
  * 	trafo_matrix = np.zeros((4,4))
  * 	trafo_matrix[:3,:3] = tracking_parameters['space directions']             # <<<<<<<<<<<<<<
  * 	trafo_matrix[:3,3] = tracking_parameters['space origin']
  * 	trafo_matrix[3,3] = 1
  */
-  __pyx_t_5 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_kp_u_space_directions); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 213, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_kp_u_space_directions); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 215, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (unlikely(PyObject_SetItem(__pyx_v_trafo_matrix, __pyx_tuple__3, __pyx_t_5) < 0)) __PYX_ERR(0, 213, __pyx_L1_error)
+  if (unlikely(PyObject_SetItem(__pyx_v_trafo_matrix, __pyx_tuple__3, __pyx_t_5) < 0)) __PYX_ERR(0, 215, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "bonndit/tracking/tracking_prob.pyx":214
+  /* "bonndit/tracking/tracking_prob.pyx":216
  * 	trafo_matrix = np.zeros((4,4))
  * 	trafo_matrix[:3,:3] = tracking_parameters['space directions']
  * 	trafo_matrix[:3,3] = tracking_parameters['space origin']             # <<<<<<<<<<<<<<
  * 	trafo_matrix[3,3] = 1
  * 	validator = Validator(wm_mask,np.array(wm_mask.shape, dtype=np.intc), tracking_parameters['wmmin'], postprocessing['inclusion'], postprocessing['exclusion'], tracking_parameters['max_angle'], trafo, tracking_parameters['stepsize'])
  */
-  __pyx_t_5 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_kp_u_space_origin); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 214, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_kp_u_space_origin); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 216, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (unlikely(PyObject_SetItem(__pyx_v_trafo_matrix, __pyx_tuple__4, __pyx_t_5) < 0)) __PYX_ERR(0, 214, __pyx_L1_error)
+  if (unlikely(PyObject_SetItem(__pyx_v_trafo_matrix, __pyx_tuple__4, __pyx_t_5) < 0)) __PYX_ERR(0, 216, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "bonndit/tracking/tracking_prob.pyx":215
+  /* "bonndit/tracking/tracking_prob.pyx":217
  * 	trafo_matrix[:3,:3] = tracking_parameters['space directions']
  * 	trafo_matrix[:3,3] = tracking_parameters['space origin']
  * 	trafo_matrix[3,3] = 1             # <<<<<<<<<<<<<<
  * 	validator = Validator(wm_mask,np.array(wm_mask.shape, dtype=np.intc), tracking_parameters['wmmin'], postprocessing['inclusion'], postprocessing['exclusion'], tracking_parameters['max_angle'], trafo, tracking_parameters['stepsize'])
  * 
  */
-  if (unlikely(PyObject_SetItem(__pyx_v_trafo_matrix, __pyx_tuple__5, __pyx_int_1) < 0)) __PYX_ERR(0, 215, __pyx_L1_error)
+  if (unlikely(PyObject_SetItem(__pyx_v_trafo_matrix, __pyx_tuple__5, __pyx_int_1) < 0)) __PYX_ERR(0, 217, __pyx_L1_error)
 
-  /* "bonndit/tracking/tracking_prob.pyx":216
+  /* "bonndit/tracking/tracking_prob.pyx":218
  * 	trafo_matrix[:3,3] = tracking_parameters['space origin']
  * 	trafo_matrix[3,3] = 1
  * 	validator = Validator(wm_mask,np.array(wm_mask.shape, dtype=np.intc), tracking_parameters['wmmin'], postprocessing['inclusion'], postprocessing['exclusion'], tracking_parameters['max_angle'], trafo, tracking_parameters['stepsize'])             # <<<<<<<<<<<<<<
  * 
  * 	if tracking_parameters['ukf'] == "MultiTensor":
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 216, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 218, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_array); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 216, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_array); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 218, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_wm_mask, __pyx_n_s_shape); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 216, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_wm_mask, __pyx_n_s_shape); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 218, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 216, __pyx_L1_error)
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 218, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_5);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_5);
   __pyx_t_5 = 0;
-  __pyx_t_5 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 216, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 218, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 216, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 218, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_intc); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 216, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_intc); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 218, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_dtype, __pyx_t_6) < 0) __PYX_ERR(0, 216, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_dtype, __pyx_t_6) < 0) __PYX_ERR(0, 218, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  __pyx_t_6 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_1, __pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 216, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_1, __pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 218, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_5 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_wmmin); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 216, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_wmmin); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 218, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_postprocessing, __pyx_n_u_inclusion); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 216, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_postprocessing, __pyx_n_u_inclusion); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 218, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_postprocessing, __pyx_n_u_exclusion); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 216, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_postprocessing, __pyx_n_u_exclusion); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 218, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_max_angle); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 216, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_max_angle); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 218, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_7 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_stepsize); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 216, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_stepsize); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 218, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_8 = PyTuple_New(8); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 216, __pyx_L1_error)
+  __pyx_t_8 = PyTuple_New(8); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 218, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __Pyx_INCREF(__pyx_v_wm_mask);
   __Pyx_GIVEREF(__pyx_v_wm_mask);
@@ -6753,58 +6573,58 @@ static PyObject *__pyx_f_7bonndit_8tracking_13tracking_prob_tracking_all(PyObjec
   __pyx_t_3 = 0;
   __pyx_t_4 = 0;
   __pyx_t_7 = 0;
-  __pyx_t_7 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7bonndit_8tracking_8stopping_Validator), __pyx_t_8, NULL); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 216, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7bonndit_8tracking_8stopping_Validator), __pyx_t_8, NULL); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 218, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
   __pyx_v_validator = ((struct __pyx_obj_7bonndit_8tracking_8stopping_Validator *)__pyx_t_7);
   __pyx_t_7 = 0;
 
-  /* "bonndit/tracking/tracking_prob.pyx":218
+  /* "bonndit/tracking/tracking_prob.pyx":220
  * 	validator = Validator(wm_mask,np.array(wm_mask.shape, dtype=np.intc), tracking_parameters['wmmin'], postprocessing['inclusion'], postprocessing['exclusion'], tracking_parameters['max_angle'], trafo, tracking_parameters['stepsize'])
  * 
  * 	if tracking_parameters['ukf'] == "MultiTensor":             # <<<<<<<<<<<<<<
  * 		integrate = EulerUKF(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo,
  * 							 float(tracking_parameters['stepsize']))
  */
-  __pyx_t_7 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_ukf); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 218, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_ukf); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 220, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_2 = (__Pyx_PyUnicode_Equals(__pyx_t_7, __pyx_n_u_MultiTensor, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 218, __pyx_L1_error)
+  __pyx_t_2 = (__Pyx_PyUnicode_Equals(__pyx_t_7, __pyx_n_u_MultiTensor, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 220, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   if (__pyx_t_2) {
 
-    /* "bonndit/tracking/tracking_prob.pyx":219
+    /* "bonndit/tracking/tracking_prob.pyx":221
  * 
  * 	if tracking_parameters['ukf'] == "MultiTensor":
  * 		integrate = EulerUKF(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo,             # <<<<<<<<<<<<<<
  * 							 float(tracking_parameters['stepsize']))
  * 	elif tracking_parameters['integration'] == "Euler":
  */
-    __pyx_t_7 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_kp_u_space_directions); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 219, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_kp_u_space_directions); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 221, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_8 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_kp_u_space_origin); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 219, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_kp_u_space_origin); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 221, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
 
-    /* "bonndit/tracking/tracking_prob.pyx":220
+    /* "bonndit/tracking/tracking_prob.pyx":222
  * 	if tracking_parameters['ukf'] == "MultiTensor":
  * 		integrate = EulerUKF(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo,
  * 							 float(tracking_parameters['stepsize']))             # <<<<<<<<<<<<<<
  * 	elif tracking_parameters['integration'] == "Euler":
  * 		integrate = Euler(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo, float(tracking_parameters['stepsize']))
  */
-    __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_stepsize); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 220, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_stepsize); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 222, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_3 = __Pyx_PyNumber_Float(__pyx_t_4); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 220, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyNumber_Float(__pyx_t_4); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 222, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "bonndit/tracking/tracking_prob.pyx":219
+    /* "bonndit/tracking/tracking_prob.pyx":221
  * 
  * 	if tracking_parameters['ukf'] == "MultiTensor":
  * 		integrate = EulerUKF(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo,             # <<<<<<<<<<<<<<
  * 							 float(tracking_parameters['stepsize']))
  * 	elif tracking_parameters['integration'] == "Euler":
  */
-    __pyx_t_4 = PyTuple_New(4); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 219, __pyx_L1_error)
+    __pyx_t_4 = PyTuple_New(4); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 221, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_GIVEREF(__pyx_t_7);
     PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_7);
@@ -6818,13 +6638,13 @@ static PyObject *__pyx_f_7bonndit_8tracking_13tracking_prob_tracking_all(PyObjec
     __pyx_t_7 = 0;
     __pyx_t_8 = 0;
     __pyx_t_3 = 0;
-    __pyx_t_3 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7bonndit_8tracking_11integration_EulerUKF), __pyx_t_4, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 219, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7bonndit_8tracking_11integration_EulerUKF), __pyx_t_4, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 221, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_v_integrate = ((struct __pyx_obj_7bonndit_8tracking_11integration_Integration *)__pyx_t_3);
     __pyx_t_3 = 0;
 
-    /* "bonndit/tracking/tracking_prob.pyx":218
+    /* "bonndit/tracking/tracking_prob.pyx":220
  * 	validator = Validator(wm_mask,np.array(wm_mask.shape, dtype=np.intc), tracking_parameters['wmmin'], postprocessing['inclusion'], postprocessing['exclusion'], tracking_parameters['max_angle'], trafo, tracking_parameters['stepsize'])
  * 
  * 	if tracking_parameters['ukf'] == "MultiTensor":             # <<<<<<<<<<<<<<
@@ -6834,36 +6654,36 @@ static PyObject *__pyx_f_7bonndit_8tracking_13tracking_prob_tracking_all(PyObjec
     goto __pyx_L4;
   }
 
-  /* "bonndit/tracking/tracking_prob.pyx":221
+  /* "bonndit/tracking/tracking_prob.pyx":223
  * 		integrate = EulerUKF(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo,
  * 							 float(tracking_parameters['stepsize']))
  * 	elif tracking_parameters['integration'] == "Euler":             # <<<<<<<<<<<<<<
  * 		integrate = Euler(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo, float(tracking_parameters['stepsize']))
  * 	else:
  */
-  __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_integration); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 221, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_integration); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 223, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_2 = (__Pyx_PyUnicode_Equals(__pyx_t_3, __pyx_n_u_Euler, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 221, __pyx_L1_error)
+  __pyx_t_2 = (__Pyx_PyUnicode_Equals(__pyx_t_3, __pyx_n_u_Euler, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 223, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   if (__pyx_t_2) {
 
-    /* "bonndit/tracking/tracking_prob.pyx":222
+    /* "bonndit/tracking/tracking_prob.pyx":224
  * 							 float(tracking_parameters['stepsize']))
  * 	elif tracking_parameters['integration'] == "Euler":
  * 		integrate = Euler(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo, float(tracking_parameters['stepsize']))             # <<<<<<<<<<<<<<
  * 	else:
  * 		logging.error('Only Euler is available so far. Hence set Euler as argument.')
  */
-    __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_kp_u_space_directions); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 222, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_kp_u_space_directions); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 224, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_kp_u_space_origin); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 222, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_kp_u_space_origin); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 224, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_8 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_stepsize); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 222, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_stepsize); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 224, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
-    __pyx_t_7 = __Pyx_PyNumber_Float(__pyx_t_8); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 222, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyNumber_Float(__pyx_t_8); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 224, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __pyx_t_8 = PyTuple_New(4); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 222, __pyx_L1_error)
+    __pyx_t_8 = PyTuple_New(4); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 224, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_GIVEREF(__pyx_t_3);
     PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_t_3);
@@ -6877,13 +6697,13 @@ static PyObject *__pyx_f_7bonndit_8tracking_13tracking_prob_tracking_all(PyObjec
     __pyx_t_3 = 0;
     __pyx_t_4 = 0;
     __pyx_t_7 = 0;
-    __pyx_t_7 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7bonndit_8tracking_11integration_Euler), __pyx_t_8, NULL); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 222, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7bonndit_8tracking_11integration_Euler), __pyx_t_8, NULL); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 224, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     __pyx_v_integrate = ((struct __pyx_obj_7bonndit_8tracking_11integration_Integration *)__pyx_t_7);
     __pyx_t_7 = 0;
 
-    /* "bonndit/tracking/tracking_prob.pyx":221
+    /* "bonndit/tracking/tracking_prob.pyx":223
  * 		integrate = EulerUKF(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo,
  * 							 float(tracking_parameters['stepsize']))
  * 	elif tracking_parameters['integration'] == "Euler":             # <<<<<<<<<<<<<<
@@ -6893,7 +6713,7 @@ static PyObject *__pyx_f_7bonndit_8tracking_13tracking_prob_tracking_all(PyObjec
     goto __pyx_L4;
   }
 
-  /* "bonndit/tracking/tracking_prob.pyx":224
+  /* "bonndit/tracking/tracking_prob.pyx":226
  * 		integrate = Euler(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo, float(tracking_parameters['stepsize']))
  * 	else:
  * 		logging.error('Only Euler is available so far. Hence set Euler as argument.')             # <<<<<<<<<<<<<<
@@ -6901,7 +6721,7 @@ static PyObject *__pyx_f_7bonndit_8tracking_13tracking_prob_tracking_all(PyObjec
  * 
  */
   /*else*/ {
-    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_v_logging, __pyx_n_s_error); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 224, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_v_logging, __pyx_n_s_error); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 226, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __pyx_t_4 = NULL;
     if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_8))) {
@@ -6915,12 +6735,12 @@ static PyObject *__pyx_f_7bonndit_8tracking_13tracking_prob_tracking_all(PyObjec
     }
     __pyx_t_7 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_8, __pyx_t_4, __pyx_kp_u_Only_Euler_is_available_so_far_H) : __Pyx_PyObject_CallOneArg(__pyx_t_8, __pyx_kp_u_Only_Euler_is_available_so_far_H);
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 224, __pyx_L1_error)
+    if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 226, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-    /* "bonndit/tracking/tracking_prob.pyx":225
+    /* "bonndit/tracking/tracking_prob.pyx":227
  * 	else:
  * 		logging.error('Only Euler is available so far. Hence set Euler as argument.')
  * 		return 0             # <<<<<<<<<<<<<<
@@ -6934,59 +6754,59 @@ static PyObject *__pyx_f_7bonndit_8tracking_13tracking_prob_tracking_all(PyObjec
   }
   __pyx_L4:;
 
-  /* "bonndit/tracking/tracking_prob.pyx":227
+  /* "bonndit/tracking/tracking_prob.pyx":229
  * 		return 0
  * 
  * 	cdef int[:] dim = np.array(vector_field.shape, dtype=np.int32)             # <<<<<<<<<<<<<<
  * 
  * 	if tracking_parameters['ukf'] == "MultiTensor":
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_np); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 227, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_np); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 229, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_array); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 227, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_array); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 229, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_v_vector_field, __pyx_n_s_shape); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 227, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_v_vector_field, __pyx_n_s_shape); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 229, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_4 = PyTuple_New(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 227, __pyx_L1_error)
+  __pyx_t_4 = PyTuple_New(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 229, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_GIVEREF(__pyx_t_7);
   PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_7);
   __pyx_t_7 = 0;
-  __pyx_t_7 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 227, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 229, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 227, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 229, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_int32); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 227, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_int32); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 229, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (PyDict_SetItem(__pyx_t_7, __pyx_n_s_dtype, __pyx_t_1) < 0) __PYX_ERR(0, 227, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_7, __pyx_n_s_dtype, __pyx_t_1) < 0) __PYX_ERR(0, 229, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_8, __pyx_t_4, __pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 227, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_8, __pyx_t_4, __pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 229, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  __pyx_t_9 = __Pyx_PyObject_to_MemoryviewSlice_ds_int(__pyx_t_1, PyBUF_WRITABLE); if (unlikely(!__pyx_t_9.memview)) __PYX_ERR(0, 227, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyObject_to_MemoryviewSlice_ds_int(__pyx_t_1, PyBUF_WRITABLE); if (unlikely(!__pyx_t_9.memview)) __PYX_ERR(0, 229, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_dim = __pyx_t_9;
   __pyx_t_9.memview = NULL;
   __pyx_t_9.data = NULL;
 
-  /* "bonndit/tracking/tracking_prob.pyx":229
+  /* "bonndit/tracking/tracking_prob.pyx":231
  * 	cdef int[:] dim = np.array(vector_field.shape, dtype=np.int32)
  * 
  * 	if tracking_parameters['ukf'] == "MultiTensor":             # <<<<<<<<<<<<<<
  * 		interpolate = UKFMultiTensor(vector_field, dim[2:5], directionGetter, **ukf_parameters)
  * 	elif tracking_parameters['ukf'] == "LowRank":
  */
-  __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_ukf); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 229, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_ukf); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 231, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = (__Pyx_PyUnicode_Equals(__pyx_t_1, __pyx_n_u_MultiTensor, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 229, __pyx_L1_error)
+  __pyx_t_2 = (__Pyx_PyUnicode_Equals(__pyx_t_1, __pyx_n_u_MultiTensor, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 231, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_t_2) {
 
-    /* "bonndit/tracking/tracking_prob.pyx":230
+    /* "bonndit/tracking/tracking_prob.pyx":232
  * 
  * 	if tracking_parameters['ukf'] == "MultiTensor":
  * 		interpolate = UKFMultiTensor(vector_field, dim[2:5], directionGetter, **ukf_parameters)             # <<<<<<<<<<<<<<
@@ -7011,15 +6831,15 @@ static PyObject *__pyx_f_7bonndit_8tracking_13tracking_prob_tracking_all(PyObjec
     0,
     1) < 0))
 {
-    __PYX_ERR(0, 230, __pyx_L1_error)
+    __PYX_ERR(0, 232, __pyx_L1_error)
 }
 
-__pyx_t_1 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 230, __pyx_L1_error)
+__pyx_t_1 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 232, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __PYX_XDEC_MEMVIEW(&__pyx_t_9, 1);
     __pyx_t_9.memview = NULL;
     __pyx_t_9.data = NULL;
-    __pyx_t_7 = PyTuple_New(3); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 230, __pyx_L1_error)
+    __pyx_t_7 = PyTuple_New(3); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 232, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_INCREF(__pyx_v_vector_field);
     __Pyx_GIVEREF(__pyx_v_vector_field);
@@ -7032,23 +6852,23 @@ __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __p
     __pyx_t_1 = 0;
     if (unlikely(__pyx_v_ukf_parameters == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "argument after ** must be a mapping, not NoneType");
-      __PYX_ERR(0, 230, __pyx_L1_error)
+      __PYX_ERR(0, 232, __pyx_L1_error)
     }
     if (likely(PyDict_CheckExact(__pyx_v_ukf_parameters))) {
-      __pyx_t_1 = PyDict_Copy(__pyx_v_ukf_parameters); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 230, __pyx_L1_error)
+      __pyx_t_1 = PyDict_Copy(__pyx_v_ukf_parameters); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 232, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
     } else {
-      __pyx_t_1 = PyObject_CallFunctionObjArgs((PyObject*)&PyDict_Type, __pyx_v_ukf_parameters, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 230, __pyx_L1_error)
+      __pyx_t_1 = PyObject_CallFunctionObjArgs((PyObject*)&PyDict_Type, __pyx_v_ukf_parameters, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 232, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
     }
-    __pyx_t_4 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7bonndit_8tracking_13interpolation_UKFMultiTensor), __pyx_t_7, __pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 230, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7bonndit_8tracking_13interpolation_UKFMultiTensor), __pyx_t_7, __pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 232, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __pyx_v_interpolate = ((struct __pyx_obj_7bonndit_8tracking_13interpolation_Interpolation *)__pyx_t_4);
     __pyx_t_4 = 0;
 
-    /* "bonndit/tracking/tracking_prob.pyx":229
+    /* "bonndit/tracking/tracking_prob.pyx":231
  * 	cdef int[:] dim = np.array(vector_field.shape, dtype=np.int32)
  * 
  * 	if tracking_parameters['ukf'] == "MultiTensor":             # <<<<<<<<<<<<<<
@@ -7058,20 +6878,20 @@ __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __p
     goto __pyx_L5;
   }
 
-  /* "bonndit/tracking/tracking_prob.pyx":231
+  /* "bonndit/tracking/tracking_prob.pyx":233
  * 	if tracking_parameters['ukf'] == "MultiTensor":
  * 		interpolate = UKFMultiTensor(vector_field, dim[2:5], directionGetter, **ukf_parameters)
  * 	elif tracking_parameters['ukf'] == "LowRank":             # <<<<<<<<<<<<<<
  * 		interpolate = UKFFodf(vector_field, dim[2:5], directionGetter, **ukf_parameters)
  * 	elif tracking_parameters['interpolation'] == "FACT":
  */
-  __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_ukf); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 231, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_ukf); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 233, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_2 = (__Pyx_PyUnicode_Equals(__pyx_t_4, __pyx_n_u_LowRank, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 231, __pyx_L1_error)
+  __pyx_t_2 = (__Pyx_PyUnicode_Equals(__pyx_t_4, __pyx_n_u_LowRank, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 233, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   if (__pyx_t_2) {
 
-    /* "bonndit/tracking/tracking_prob.pyx":232
+    /* "bonndit/tracking/tracking_prob.pyx":234
  * 		interpolate = UKFMultiTensor(vector_field, dim[2:5], directionGetter, **ukf_parameters)
  * 	elif tracking_parameters['ukf'] == "LowRank":
  * 		interpolate = UKFFodf(vector_field, dim[2:5], directionGetter, **ukf_parameters)             # <<<<<<<<<<<<<<
@@ -7096,15 +6916,15 @@ __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __p
     0,
     1) < 0))
 {
-    __PYX_ERR(0, 232, __pyx_L1_error)
+    __PYX_ERR(0, 234, __pyx_L1_error)
 }
 
-__pyx_t_4 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 232, __pyx_L1_error)
+__pyx_t_4 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 234, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __PYX_XDEC_MEMVIEW(&__pyx_t_9, 1);
     __pyx_t_9.memview = NULL;
     __pyx_t_9.data = NULL;
-    __pyx_t_1 = PyTuple_New(3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 232, __pyx_L1_error)
+    __pyx_t_1 = PyTuple_New(3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 234, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_INCREF(__pyx_v_vector_field);
     __Pyx_GIVEREF(__pyx_v_vector_field);
@@ -7117,23 +6937,23 @@ __pyx_t_4 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __p
     __pyx_t_4 = 0;
     if (unlikely(__pyx_v_ukf_parameters == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "argument after ** must be a mapping, not NoneType");
-      __PYX_ERR(0, 232, __pyx_L1_error)
+      __PYX_ERR(0, 234, __pyx_L1_error)
     }
     if (likely(PyDict_CheckExact(__pyx_v_ukf_parameters))) {
-      __pyx_t_4 = PyDict_Copy(__pyx_v_ukf_parameters); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 232, __pyx_L1_error)
+      __pyx_t_4 = PyDict_Copy(__pyx_v_ukf_parameters); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 234, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
     } else {
-      __pyx_t_4 = PyObject_CallFunctionObjArgs((PyObject*)&PyDict_Type, __pyx_v_ukf_parameters, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 232, __pyx_L1_error)
+      __pyx_t_4 = PyObject_CallFunctionObjArgs((PyObject*)&PyDict_Type, __pyx_v_ukf_parameters, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 234, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
     }
-    __pyx_t_7 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7bonndit_8tracking_13interpolation_UKFFodf), __pyx_t_1, __pyx_t_4); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 232, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7bonndit_8tracking_13interpolation_UKFFodf), __pyx_t_1, __pyx_t_4); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 234, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_v_interpolate = ((struct __pyx_obj_7bonndit_8tracking_13interpolation_Interpolation *)__pyx_t_7);
     __pyx_t_7 = 0;
 
-    /* "bonndit/tracking/tracking_prob.pyx":231
+    /* "bonndit/tracking/tracking_prob.pyx":233
  * 	if tracking_parameters['ukf'] == "MultiTensor":
  * 		interpolate = UKFMultiTensor(vector_field, dim[2:5], directionGetter, **ukf_parameters)
  * 	elif tracking_parameters['ukf'] == "LowRank":             # <<<<<<<<<<<<<<
@@ -7143,98 +6963,25 @@ __pyx_t_4 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __p
     goto __pyx_L5;
   }
 
-  /* "bonndit/tracking/tracking_prob.pyx":233
+  /* "bonndit/tracking/tracking_prob.pyx":235
  * 	elif tracking_parameters['ukf'] == "LowRank":
  * 		interpolate = UKFFodf(vector_field, dim[2:5], directionGetter, **ukf_parameters)
  * 	elif tracking_parameters['interpolation'] == "FACT":             # <<<<<<<<<<<<<<
  * 		interpolate = FACT(vector_field, dim[2:5], directionGetter )
  * 	elif tracking_parameters['interpolation'] == "Trilinear":
  */
-  __pyx_t_7 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_interpolation); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 233, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_interpolation); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 235, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_2 = (__Pyx_PyUnicode_Equals(__pyx_t_7, __pyx_n_u_FACT, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 233, __pyx_L1_error)
+  __pyx_t_2 = (__Pyx_PyUnicode_Equals(__pyx_t_7, __pyx_n_u_FACT, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 235, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   if (__pyx_t_2) {
 
-    /* "bonndit/tracking/tracking_prob.pyx":234
+    /* "bonndit/tracking/tracking_prob.pyx":236
  * 		interpolate = UKFFodf(vector_field, dim[2:5], directionGetter, **ukf_parameters)
  * 	elif tracking_parameters['interpolation'] == "FACT":
  * 		interpolate = FACT(vector_field, dim[2:5], directionGetter )             # <<<<<<<<<<<<<<
  * 	elif tracking_parameters['interpolation'] == "Trilinear":
  * 		interpolate = Trilinear(vector_field, dim[2:5], directionGetter)
- */
-    __pyx_t_9.data = __pyx_v_dim.data;
-    __pyx_t_9.memview = __pyx_v_dim.memview;
-    __PYX_INC_MEMVIEW(&__pyx_t_9, 0);
-    __pyx_t_10 = -1;
-    if (unlikely(__pyx_memoryview_slice_memviewslice(
-    &__pyx_t_9,
-    __pyx_v_dim.shape[0], __pyx_v_dim.strides[0], __pyx_v_dim.suboffsets[0],
-    0,
-    0,
-    &__pyx_t_10,
-    2,
-    5,
-    0,
-    1,
-    1,
-    0,
-    1) < 0))
-{
-    __PYX_ERR(0, 234, __pyx_L1_error)
-}
-
-__pyx_t_7 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 234, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
-    __PYX_XDEC_MEMVIEW(&__pyx_t_9, 1);
-    __pyx_t_9.memview = NULL;
-    __pyx_t_9.data = NULL;
-    __pyx_t_4 = PyTuple_New(3); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 234, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    __Pyx_INCREF(__pyx_v_vector_field);
-    __Pyx_GIVEREF(__pyx_v_vector_field);
-    PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_v_vector_field);
-    __Pyx_GIVEREF(__pyx_t_7);
-    PyTuple_SET_ITEM(__pyx_t_4, 1, __pyx_t_7);
-    __Pyx_INCREF(((PyObject *)__pyx_v_directionGetter));
-    __Pyx_GIVEREF(((PyObject *)__pyx_v_directionGetter));
-    PyTuple_SET_ITEM(__pyx_t_4, 2, ((PyObject *)__pyx_v_directionGetter));
-    __pyx_t_7 = 0;
-    __pyx_t_7 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7bonndit_8tracking_13interpolation_FACT), __pyx_t_4, NULL); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 234, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_v_interpolate = ((struct __pyx_obj_7bonndit_8tracking_13interpolation_Interpolation *)__pyx_t_7);
-    __pyx_t_7 = 0;
-
-    /* "bonndit/tracking/tracking_prob.pyx":233
- * 	elif tracking_parameters['ukf'] == "LowRank":
- * 		interpolate = UKFFodf(vector_field, dim[2:5], directionGetter, **ukf_parameters)
- * 	elif tracking_parameters['interpolation'] == "FACT":             # <<<<<<<<<<<<<<
- * 		interpolate = FACT(vector_field, dim[2:5], directionGetter )
- * 	elif tracking_parameters['interpolation'] == "Trilinear":
- */
-    goto __pyx_L5;
-  }
-
-  /* "bonndit/tracking/tracking_prob.pyx":235
- * 	elif tracking_parameters['interpolation'] == "FACT":
- * 		interpolate = FACT(vector_field, dim[2:5], directionGetter )
- * 	elif tracking_parameters['interpolation'] == "Trilinear":             # <<<<<<<<<<<<<<
- * 		interpolate = Trilinear(vector_field, dim[2:5], directionGetter)
- * 	elif tracking_parameters['interpolation'] == "TrilinearFODF":
- */
-  __pyx_t_7 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_interpolation); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 235, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_2 = (__Pyx_PyUnicode_Equals(__pyx_t_7, __pyx_n_u_Trilinear, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 235, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  if (__pyx_t_2) {
-
-    /* "bonndit/tracking/tracking_prob.pyx":236
- * 		interpolate = FACT(vector_field, dim[2:5], directionGetter )
- * 	elif tracking_parameters['interpolation'] == "Trilinear":
- * 		interpolate = Trilinear(vector_field, dim[2:5], directionGetter)             # <<<<<<<<<<<<<<
- * 	elif tracking_parameters['interpolation'] == "TrilinearFODF":
- * 		interpolate = TrilinearFODF(vector_field, dim[2:5], directionGetter, **trilinear_parameters)
  */
     __pyx_t_9.data = __pyx_v_dim.data;
     __pyx_t_9.memview = __pyx_v_dim.memview;
@@ -7273,41 +7020,41 @@ __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __p
     __Pyx_GIVEREF(((PyObject *)__pyx_v_directionGetter));
     PyTuple_SET_ITEM(__pyx_t_4, 2, ((PyObject *)__pyx_v_directionGetter));
     __pyx_t_7 = 0;
-    __pyx_t_7 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7bonndit_8tracking_13interpolation_Trilinear), __pyx_t_4, NULL); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 236, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7bonndit_8tracking_13interpolation_FACT), __pyx_t_4, NULL); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 236, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_v_interpolate = ((struct __pyx_obj_7bonndit_8tracking_13interpolation_Interpolation *)__pyx_t_7);
     __pyx_t_7 = 0;
 
     /* "bonndit/tracking/tracking_prob.pyx":235
+ * 	elif tracking_parameters['ukf'] == "LowRank":
+ * 		interpolate = UKFFodf(vector_field, dim[2:5], directionGetter, **ukf_parameters)
+ * 	elif tracking_parameters['interpolation'] == "FACT":             # <<<<<<<<<<<<<<
+ * 		interpolate = FACT(vector_field, dim[2:5], directionGetter )
+ * 	elif tracking_parameters['interpolation'] == "Trilinear":
+ */
+    goto __pyx_L5;
+  }
+
+  /* "bonndit/tracking/tracking_prob.pyx":237
  * 	elif tracking_parameters['interpolation'] == "FACT":
  * 		interpolate = FACT(vector_field, dim[2:5], directionGetter )
  * 	elif tracking_parameters['interpolation'] == "Trilinear":             # <<<<<<<<<<<<<<
  * 		interpolate = Trilinear(vector_field, dim[2:5], directionGetter)
  * 	elif tracking_parameters['interpolation'] == "TrilinearFODF":
  */
-    goto __pyx_L5;
-  }
-
-  /* "bonndit/tracking/tracking_prob.pyx":237
- * 	elif tracking_parameters['interpolation'] == "Trilinear":
- * 		interpolate = Trilinear(vector_field, dim[2:5], directionGetter)
- * 	elif tracking_parameters['interpolation'] == "TrilinearFODF":             # <<<<<<<<<<<<<<
- * 		interpolate = TrilinearFODF(vector_field, dim[2:5], directionGetter, **trilinear_parameters)
- * 	else:
- */
   __pyx_t_7 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_interpolation); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 237, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_2 = (__Pyx_PyUnicode_Equals(__pyx_t_7, __pyx_n_u_TrilinearFODF, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 237, __pyx_L1_error)
+  __pyx_t_2 = (__Pyx_PyUnicode_Equals(__pyx_t_7, __pyx_n_u_Trilinear, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 237, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   if (__pyx_t_2) {
 
     /* "bonndit/tracking/tracking_prob.pyx":238
- * 		interpolate = Trilinear(vector_field, dim[2:5], directionGetter)
+ * 		interpolate = FACT(vector_field, dim[2:5], directionGetter )
+ * 	elif tracking_parameters['interpolation'] == "Trilinear":
+ * 		interpolate = Trilinear(vector_field, dim[2:5], directionGetter)             # <<<<<<<<<<<<<<
  * 	elif tracking_parameters['interpolation'] == "TrilinearFODF":
- * 		interpolate = TrilinearFODF(vector_field, dim[2:5], directionGetter, **trilinear_parameters)             # <<<<<<<<<<<<<<
- * 	else:
- * 		logging.error('FACT, Triliniear or UKF for MultiTensor and low rank approximation are available so far.')
+ * 		interpolate = TrilinearFODF(vector_field, dim[2:5], directionGetter, **trilinear_parameters)
  */
     __pyx_t_9.data = __pyx_v_dim.data;
     __pyx_t_9.memview = __pyx_v_dim.memview;
@@ -7346,25 +7093,98 @@ __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __p
     __Pyx_GIVEREF(((PyObject *)__pyx_v_directionGetter));
     PyTuple_SET_ITEM(__pyx_t_4, 2, ((PyObject *)__pyx_v_directionGetter));
     __pyx_t_7 = 0;
+    __pyx_t_7 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7bonndit_8tracking_13interpolation_Trilinear), __pyx_t_4, NULL); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 238, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_7);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __pyx_v_interpolate = ((struct __pyx_obj_7bonndit_8tracking_13interpolation_Interpolation *)__pyx_t_7);
+    __pyx_t_7 = 0;
+
+    /* "bonndit/tracking/tracking_prob.pyx":237
+ * 	elif tracking_parameters['interpolation'] == "FACT":
+ * 		interpolate = FACT(vector_field, dim[2:5], directionGetter )
+ * 	elif tracking_parameters['interpolation'] == "Trilinear":             # <<<<<<<<<<<<<<
+ * 		interpolate = Trilinear(vector_field, dim[2:5], directionGetter)
+ * 	elif tracking_parameters['interpolation'] == "TrilinearFODF":
+ */
+    goto __pyx_L5;
+  }
+
+  /* "bonndit/tracking/tracking_prob.pyx":239
+ * 	elif tracking_parameters['interpolation'] == "Trilinear":
+ * 		interpolate = Trilinear(vector_field, dim[2:5], directionGetter)
+ * 	elif tracking_parameters['interpolation'] == "TrilinearFODF":             # <<<<<<<<<<<<<<
+ * 		interpolate = TrilinearFODF(vector_field, dim[2:5], directionGetter, **trilinear_parameters)
+ * 	else:
+ */
+  __pyx_t_7 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_interpolation); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 239, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __pyx_t_2 = (__Pyx_PyUnicode_Equals(__pyx_t_7, __pyx_n_u_TrilinearFODF, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 239, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  if (__pyx_t_2) {
+
+    /* "bonndit/tracking/tracking_prob.pyx":240
+ * 		interpolate = Trilinear(vector_field, dim[2:5], directionGetter)
+ * 	elif tracking_parameters['interpolation'] == "TrilinearFODF":
+ * 		interpolate = TrilinearFODF(vector_field, dim[2:5], directionGetter, **trilinear_parameters)             # <<<<<<<<<<<<<<
+ * 	else:
+ * 		logging.error('FACT, Triliniear or UKF for MultiTensor and low rank approximation are available so far.')
+ */
+    __pyx_t_9.data = __pyx_v_dim.data;
+    __pyx_t_9.memview = __pyx_v_dim.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_9, 0);
+    __pyx_t_10 = -1;
+    if (unlikely(__pyx_memoryview_slice_memviewslice(
+    &__pyx_t_9,
+    __pyx_v_dim.shape[0], __pyx_v_dim.strides[0], __pyx_v_dim.suboffsets[0],
+    0,
+    0,
+    &__pyx_t_10,
+    2,
+    5,
+    0,
+    1,
+    1,
+    0,
+    1) < 0))
+{
+    __PYX_ERR(0, 240, __pyx_L1_error)
+}
+
+__pyx_t_7 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 240, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_7);
+    __PYX_XDEC_MEMVIEW(&__pyx_t_9, 1);
+    __pyx_t_9.memview = NULL;
+    __pyx_t_9.data = NULL;
+    __pyx_t_4 = PyTuple_New(3); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 240, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_INCREF(__pyx_v_vector_field);
+    __Pyx_GIVEREF(__pyx_v_vector_field);
+    PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_v_vector_field);
+    __Pyx_GIVEREF(__pyx_t_7);
+    PyTuple_SET_ITEM(__pyx_t_4, 1, __pyx_t_7);
+    __Pyx_INCREF(((PyObject *)__pyx_v_directionGetter));
+    __Pyx_GIVEREF(((PyObject *)__pyx_v_directionGetter));
+    PyTuple_SET_ITEM(__pyx_t_4, 2, ((PyObject *)__pyx_v_directionGetter));
+    __pyx_t_7 = 0;
     if (unlikely(__pyx_v_trilinear_parameters == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "argument after ** must be a mapping, not NoneType");
-      __PYX_ERR(0, 238, __pyx_L1_error)
+      __PYX_ERR(0, 240, __pyx_L1_error)
     }
     if (likely(PyDict_CheckExact(__pyx_v_trilinear_parameters))) {
-      __pyx_t_7 = PyDict_Copy(__pyx_v_trilinear_parameters); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 238, __pyx_L1_error)
+      __pyx_t_7 = PyDict_Copy(__pyx_v_trilinear_parameters); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 240, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
     } else {
-      __pyx_t_7 = PyObject_CallFunctionObjArgs((PyObject*)&PyDict_Type, __pyx_v_trilinear_parameters, NULL); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 238, __pyx_L1_error)
+      __pyx_t_7 = PyObject_CallFunctionObjArgs((PyObject*)&PyDict_Type, __pyx_v_trilinear_parameters, NULL); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 240, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
     }
-    __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7bonndit_8tracking_13interpolation_TrilinearFODF), __pyx_t_4, __pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 238, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7bonndit_8tracking_13interpolation_TrilinearFODF), __pyx_t_4, __pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 240, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     __pyx_v_interpolate = ((struct __pyx_obj_7bonndit_8tracking_13interpolation_Interpolation *)__pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "bonndit/tracking/tracking_prob.pyx":237
+    /* "bonndit/tracking/tracking_prob.pyx":239
  * 	elif tracking_parameters['interpolation'] == "Trilinear":
  * 		interpolate = Trilinear(vector_field, dim[2:5], directionGetter)
  * 	elif tracking_parameters['interpolation'] == "TrilinearFODF":             # <<<<<<<<<<<<<<
@@ -7374,7 +7194,7 @@ __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __p
     goto __pyx_L5;
   }
 
-  /* "bonndit/tracking/tracking_prob.pyx":240
+  /* "bonndit/tracking/tracking_prob.pyx":242
  * 		interpolate = TrilinearFODF(vector_field, dim[2:5], directionGetter, **trilinear_parameters)
  * 	else:
  * 		logging.error('FACT, Triliniear or UKF for MultiTensor and low rank approximation are available so far.')             # <<<<<<<<<<<<<<
@@ -7382,7 +7202,7 @@ __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __p
  * 	cdef int i, j, k, l, m = seeds.shape[0]
  */
   /*else*/ {
-    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_v_logging, __pyx_n_s_error); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 240, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_v_logging, __pyx_n_s_error); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 242, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __pyx_t_4 = NULL;
     if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_7))) {
@@ -7396,12 +7216,12 @@ __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __p
     }
     __pyx_t_1 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_7, __pyx_t_4, __pyx_kp_u_FACT_Triliniear_or_UKF_for_Multi) : __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_kp_u_FACT_Triliniear_or_UKF_for_Multi);
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 240, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 242, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "bonndit/tracking/tracking_prob.pyx":241
+    /* "bonndit/tracking/tracking_prob.pyx":243
  * 	else:
  * 		logging.error('FACT, Triliniear or UKF for MultiTensor and low rank approximation are available so far.')
  * 		return 0             # <<<<<<<<<<<<<<
@@ -7415,52 +7235,52 @@ __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __p
   }
   __pyx_L5:;
 
-  /* "bonndit/tracking/tracking_prob.pyx":242
+  /* "bonndit/tracking/tracking_prob.pyx":244
  * 		logging.error('FACT, Triliniear or UKF for MultiTensor and low rank approximation are available so far.')
  * 		return 0
  * 	cdef int i, j, k, l, m = seeds.shape[0]             # <<<<<<<<<<<<<<
  * 	# Array to save Polygons
  * 	cdef double[:,:,:,:,:] paths = np.zeros((1 if saving['file'] else m, tracking_parameters['samples'], tracking_parameters['max_track_length'], 2, 3),dtype=np.float64)
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_seeds, __pyx_n_s_shape); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 242, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_seeds, __pyx_n_s_shape); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 244, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_7 = __Pyx_GetItemInt(__pyx_t_1, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 242, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_GetItemInt(__pyx_t_1, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 244, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_10 = __Pyx_PyInt_As_int(__pyx_t_7); if (unlikely((__pyx_t_10 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 242, __pyx_L1_error)
+  __pyx_t_10 = __Pyx_PyInt_As_int(__pyx_t_7); if (unlikely((__pyx_t_10 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 244, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   __pyx_v_m = __pyx_t_10;
 
-  /* "bonndit/tracking/tracking_prob.pyx":244
+  /* "bonndit/tracking/tracking_prob.pyx":246
  * 	cdef int i, j, k, l, m = seeds.shape[0]
  * 	# Array to save Polygons
  * 	cdef double[:,:,:,:,:] paths = np.zeros((1 if saving['file'] else m, tracking_parameters['samples'], tracking_parameters['max_track_length'], 2, 3),dtype=np.float64)             # <<<<<<<<<<<<<<
  * 	# Array to save features belonging to polygons
  * 	cdef double[:,:,:,:,:] features = np.zeros((1 if saving['file'] else m, tracking_parameters['samples'], tracking_parameters['max_track_length'], 2, saving['features']['len']),dtype=np.float64)
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_np); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 244, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_np); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 246, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_zeros); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 244, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_zeros); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 246, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_saving, __pyx_n_u_file); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 244, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_saving, __pyx_n_u_file); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 246, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 244, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 246, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   if (__pyx_t_2) {
     __Pyx_INCREF(__pyx_int_1);
     __pyx_t_7 = __pyx_int_1;
   } else {
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_m); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 244, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_m); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 246, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_7 = __pyx_t_4;
     __pyx_t_4 = 0;
   }
-  __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_samples); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 244, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_samples); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 246, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_8 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_max_track_length); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 244, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_max_track_length); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 246, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
-  __pyx_t_3 = PyTuple_New(5); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 244, __pyx_L1_error)
+  __pyx_t_3 = PyTuple_New(5); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 246, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_GIVEREF(__pyx_t_7);
   PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_7);
@@ -7477,66 +7297,66 @@ __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __p
   __pyx_t_7 = 0;
   __pyx_t_4 = 0;
   __pyx_t_8 = 0;
-  __pyx_t_8 = PyTuple_New(1); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 244, __pyx_L1_error)
+  __pyx_t_8 = PyTuple_New(1); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 246, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __Pyx_GIVEREF(__pyx_t_3);
   PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_t_3);
   __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 244, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 246, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 244, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 246, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_float64); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 244, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_float64); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 246, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_dtype, __pyx_t_7) < 0) __PYX_ERR(0, 244, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_dtype, __pyx_t_7) < 0) __PYX_ERR(0, 246, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_8, __pyx_t_3); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 244, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_8, __pyx_t_3); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 246, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_11 = __Pyx_PyObject_to_MemoryviewSlice_dsdsdsdsds_double(__pyx_t_7, PyBUF_WRITABLE); if (unlikely(!__pyx_t_11.memview)) __PYX_ERR(0, 244, __pyx_L1_error)
+  __pyx_t_11 = __Pyx_PyObject_to_MemoryviewSlice_dsdsdsdsds_double(__pyx_t_7, PyBUF_WRITABLE); if (unlikely(!__pyx_t_11.memview)) __PYX_ERR(0, 246, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   __pyx_v_paths = __pyx_t_11;
   __pyx_t_11.memview = NULL;
   __pyx_t_11.data = NULL;
 
-  /* "bonndit/tracking/tracking_prob.pyx":246
+  /* "bonndit/tracking/tracking_prob.pyx":248
  * 	cdef double[:,:,:,:,:] paths = np.zeros((1 if saving['file'] else m, tracking_parameters['samples'], tracking_parameters['max_track_length'], 2, 3),dtype=np.float64)
  * 	# Array to save features belonging to polygons
  * 	cdef double[:,:,:,:,:] features = np.zeros((1 if saving['file'] else m, tracking_parameters['samples'], tracking_parameters['max_track_length'], 2, saving['features']['len']),dtype=np.float64)             # <<<<<<<<<<<<<<
  * 	# loop through all seeds.
  * 	tracks = []
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_np); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 246, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_np); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 248, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_zeros); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 246, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_zeros); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 248, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  __pyx_t_8 = __Pyx_PyObject_Dict_GetItem(__pyx_v_saving, __pyx_n_u_file); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 246, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyObject_Dict_GetItem(__pyx_v_saving, __pyx_n_u_file); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 248, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
-  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_8); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 246, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_8); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 248, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
   if (__pyx_t_2) {
     __Pyx_INCREF(__pyx_int_1);
     __pyx_t_7 = __pyx_int_1;
   } else {
-    __pyx_t_8 = __Pyx_PyInt_From_int(__pyx_v_m); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 246, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyInt_From_int(__pyx_v_m); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 248, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __pyx_t_7 = __pyx_t_8;
     __pyx_t_8 = 0;
   }
-  __pyx_t_8 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_samples); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 246, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_samples); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 248, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
-  __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_max_track_length); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 246, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_max_track_length); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 248, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_saving, __pyx_n_u_features); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 246, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_saving, __pyx_n_u_features); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 248, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_Dict_GetItem(__pyx_t_4, __pyx_n_u_len); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 246, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_Dict_GetItem(__pyx_t_4, __pyx_n_u_len); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 248, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = PyTuple_New(5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 246, __pyx_L1_error)
+  __pyx_t_4 = PyTuple_New(5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 248, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_GIVEREF(__pyx_t_7);
   PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_7);
@@ -7553,56 +7373,56 @@ __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __p
   __pyx_t_8 = 0;
   __pyx_t_1 = 0;
   __pyx_t_5 = 0;
-  __pyx_t_5 = PyTuple_New(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 246, __pyx_L1_error)
+  __pyx_t_5 = PyTuple_New(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 248, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_GIVEREF(__pyx_t_4);
   PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_4);
   __pyx_t_4 = 0;
-  __pyx_t_4 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 246, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 248, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 246, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 248, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_float64); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 246, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_float64); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 248, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_dtype, __pyx_t_8) < 0) __PYX_ERR(0, 246, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_dtype, __pyx_t_8) < 0) __PYX_ERR(0, 248, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-  __pyx_t_8 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_5, __pyx_t_4); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 246, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_5, __pyx_t_4); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 248, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_11 = __Pyx_PyObject_to_MemoryviewSlice_dsdsdsdsds_double(__pyx_t_8, PyBUF_WRITABLE); if (unlikely(!__pyx_t_11.memview)) __PYX_ERR(0, 246, __pyx_L1_error)
+  __pyx_t_11 = __Pyx_PyObject_to_MemoryviewSlice_dsdsdsdsds_double(__pyx_t_8, PyBUF_WRITABLE); if (unlikely(!__pyx_t_11.memview)) __PYX_ERR(0, 248, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
   __pyx_v_features = __pyx_t_11;
   __pyx_t_11.memview = NULL;
   __pyx_t_11.data = NULL;
 
-  /* "bonndit/tracking/tracking_prob.pyx":248
+  /* "bonndit/tracking/tracking_prob.pyx":250
  * 	cdef double[:,:,:,:,:] features = np.zeros((1 if saving['file'] else m, tracking_parameters['samples'], tracking_parameters['max_track_length'], 2, saving['features']['len']),dtype=np.float64)
  * 	# loop through all seeds.
  * 	tracks = []             # <<<<<<<<<<<<<<
  * 	tracks_len = []
  * 	k = 0
  */
-  __pyx_t_8 = PyList_New(0); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 248, __pyx_L1_error)
+  __pyx_t_8 = PyList_New(0); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 250, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __pyx_v_tracks = ((PyObject*)__pyx_t_8);
   __pyx_t_8 = 0;
 
-  /* "bonndit/tracking/tracking_prob.pyx":249
+  /* "bonndit/tracking/tracking_prob.pyx":251
  * 	# loop through all seeds.
  * 	tracks = []
  * 	tracks_len = []             # <<<<<<<<<<<<<<
  * 	k = 0
  * 
  */
-  __pyx_t_8 = PyList_New(0); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 249, __pyx_L1_error)
+  __pyx_t_8 = PyList_New(0); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 251, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __pyx_v_tracks_len = ((PyObject*)__pyx_t_8);
   __pyx_t_8 = 0;
 
-  /* "bonndit/tracking/tracking_prob.pyx":250
+  /* "bonndit/tracking/tracking_prob.pyx":252
  * 	tracks = []
  * 	tracks_len = []
  * 	k = 0             # <<<<<<<<<<<<<<
@@ -7611,36 +7431,36 @@ __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __p
  */
   __pyx_v_k = 0;
 
-  /* "bonndit/tracking/tracking_prob.pyx":252
+  /* "bonndit/tracking/tracking_prob.pyx":254
  * 	k = 0
  * 
  * 	for i in tqdm(range(m), disable=not tracking_parameters['verbose']):             # <<<<<<<<<<<<<<
  * 		#k = 0 if saving['file'] else k+=1
  * 		if saving['file']:
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_tqdm); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 252, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_tqdm); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 254, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
-  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_m); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 252, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_m); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 254, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_CallOneArg(__pyx_builtin_range, __pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 252, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_CallOneArg(__pyx_builtin_range, __pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 254, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = PyTuple_New(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 252, __pyx_L1_error)
+  __pyx_t_4 = PyTuple_New(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 254, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_GIVEREF(__pyx_t_5);
   PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_5);
   __pyx_t_5 = 0;
-  __pyx_t_5 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 252, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 254, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_verbose); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 252, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_verbose); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 254, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 252, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 254, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyBool_FromLong((!__pyx_t_2)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 252, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyBool_FromLong((!__pyx_t_2)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 254, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_disable, __pyx_t_3) < 0) __PYX_ERR(0, 252, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_disable, __pyx_t_3) < 0) __PYX_ERR(0, 254, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_8, __pyx_t_4, __pyx_t_5); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 252, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_8, __pyx_t_4, __pyx_t_5); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 254, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
@@ -7649,9 +7469,9 @@ __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __p
     __pyx_t_5 = __pyx_t_3; __Pyx_INCREF(__pyx_t_5); __pyx_t_12 = 0;
     __pyx_t_13 = NULL;
   } else {
-    __pyx_t_12 = -1; __pyx_t_5 = PyObject_GetIter(__pyx_t_3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 252, __pyx_L1_error)
+    __pyx_t_12 = -1; __pyx_t_5 = PyObject_GetIter(__pyx_t_3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 254, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_13 = Py_TYPE(__pyx_t_5)->tp_iternext; if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 252, __pyx_L1_error)
+    __pyx_t_13 = Py_TYPE(__pyx_t_5)->tp_iternext; if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 254, __pyx_L1_error)
   }
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   for (;;) {
@@ -7659,17 +7479,17 @@ __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __p
       if (likely(PyList_CheckExact(__pyx_t_5))) {
         if (__pyx_t_12 >= PyList_GET_SIZE(__pyx_t_5)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_3 = PyList_GET_ITEM(__pyx_t_5, __pyx_t_12); __Pyx_INCREF(__pyx_t_3); __pyx_t_12++; if (unlikely(0 < 0)) __PYX_ERR(0, 252, __pyx_L1_error)
+        __pyx_t_3 = PyList_GET_ITEM(__pyx_t_5, __pyx_t_12); __Pyx_INCREF(__pyx_t_3); __pyx_t_12++; if (unlikely(0 < 0)) __PYX_ERR(0, 254, __pyx_L1_error)
         #else
-        __pyx_t_3 = PySequence_ITEM(__pyx_t_5, __pyx_t_12); __pyx_t_12++; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 252, __pyx_L1_error)
+        __pyx_t_3 = PySequence_ITEM(__pyx_t_5, __pyx_t_12); __pyx_t_12++; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 254, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_3);
         #endif
       } else {
         if (__pyx_t_12 >= PyTuple_GET_SIZE(__pyx_t_5)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_3 = PyTuple_GET_ITEM(__pyx_t_5, __pyx_t_12); __Pyx_INCREF(__pyx_t_3); __pyx_t_12++; if (unlikely(0 < 0)) __PYX_ERR(0, 252, __pyx_L1_error)
+        __pyx_t_3 = PyTuple_GET_ITEM(__pyx_t_5, __pyx_t_12); __Pyx_INCREF(__pyx_t_3); __pyx_t_12++; if (unlikely(0 < 0)) __PYX_ERR(0, 254, __pyx_L1_error)
         #else
-        __pyx_t_3 = PySequence_ITEM(__pyx_t_5, __pyx_t_12); __pyx_t_12++; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 252, __pyx_L1_error)
+        __pyx_t_3 = PySequence_ITEM(__pyx_t_5, __pyx_t_12); __pyx_t_12++; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 254, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_3);
         #endif
       }
@@ -7679,30 +7499,30 @@ __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __p
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else __PYX_ERR(0, 252, __pyx_L1_error)
+          else __PYX_ERR(0, 254, __pyx_L1_error)
         }
         break;
       }
       __Pyx_GOTREF(__pyx_t_3);
     }
-    __pyx_t_10 = __Pyx_PyInt_As_int(__pyx_t_3); if (unlikely((__pyx_t_10 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 252, __pyx_L1_error)
+    __pyx_t_10 = __Pyx_PyInt_As_int(__pyx_t_3); if (unlikely((__pyx_t_10 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 254, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __pyx_v_i = __pyx_t_10;
 
-    /* "bonndit/tracking/tracking_prob.pyx":254
+    /* "bonndit/tracking/tracking_prob.pyx":256
  * 	for i in tqdm(range(m), disable=not tracking_parameters['verbose']):
  * 		#k = 0 if saving['file'] else k+=1
  * 		if saving['file']:             # <<<<<<<<<<<<<<
  * 			k = 0
  * 		else: k = k +1
  */
-    __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_saving, __pyx_n_u_file); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 254, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_saving, __pyx_n_u_file); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 256, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 254, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 256, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     if (__pyx_t_2) {
 
-      /* "bonndit/tracking/tracking_prob.pyx":255
+      /* "bonndit/tracking/tracking_prob.pyx":257
  * 		#k = 0 if saving['file'] else k+=1
  * 		if saving['file']:
  * 			k = 0             # <<<<<<<<<<<<<<
@@ -7711,7 +7531,7 @@ __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __p
  */
       __pyx_v_k = 0;
 
-      /* "bonndit/tracking/tracking_prob.pyx":254
+      /* "bonndit/tracking/tracking_prob.pyx":256
  * 	for i in tqdm(range(m), disable=not tracking_parameters['verbose']):
  * 		#k = 0 if saving['file'] else k+=1
  * 		if saving['file']:             # <<<<<<<<<<<<<<
@@ -7721,7 +7541,7 @@ __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __p
       goto __pyx_L8;
     }
 
-    /* "bonndit/tracking/tracking_prob.pyx":256
+    /* "bonndit/tracking/tracking_prob.pyx":258
  * 		if saving['file']:
  * 			k = 0
  * 		else: k = k +1             # <<<<<<<<<<<<<<
@@ -7733,41 +7553,41 @@ __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __p
     }
     __pyx_L8:;
 
-    /* "bonndit/tracking/tracking_prob.pyx":258
+    /* "bonndit/tracking/tracking_prob.pyx":260
  * 		else: k = k +1
  * 		#Convert seedpoint
  * 		trafo.wtoi(seeds[i][:3])             # <<<<<<<<<<<<<<
  * 		for j in range(tracking_parameters['samples']):
  * 			validator.set_path_zero(paths[k,j, :, 1, :], features[k,j, :, 1, :])
  */
-    __pyx_t_3 = __Pyx_GetItemInt(__pyx_v_seeds, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 258, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_GetItemInt(__pyx_v_seeds, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 260, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = __Pyx_PyObject_GetSlice(__pyx_t_3, 0, 3, NULL, NULL, &__pyx_slice__2, 0, 1, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 258, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetSlice(__pyx_t_3, 0, 3, NULL, NULL, &__pyx_slice__2, 0, 1, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 260, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_14 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(__pyx_t_4, PyBUF_WRITABLE); if (unlikely(!__pyx_t_14.memview)) __PYX_ERR(0, 258, __pyx_L1_error)
+    __pyx_t_14 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(__pyx_t_4, PyBUF_WRITABLE); if (unlikely(!__pyx_t_14.memview)) __PYX_ERR(0, 260, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     ((struct __pyx_vtabstruct_7bonndit_8tracking_4ItoW_Trafo *)__pyx_v_trafo->__pyx_vtab)->wtoi(__pyx_v_trafo, __pyx_t_14);
     __PYX_XDEC_MEMVIEW(&__pyx_t_14, 1);
     __pyx_t_14.memview = NULL;
     __pyx_t_14.data = NULL;
 
-    /* "bonndit/tracking/tracking_prob.pyx":259
+    /* "bonndit/tracking/tracking_prob.pyx":261
  * 		#Convert seedpoint
  * 		trafo.wtoi(seeds[i][:3])
  * 		for j in range(tracking_parameters['samples']):             # <<<<<<<<<<<<<<
  * 			validator.set_path_zero(paths[k,j, :, 1, :], features[k,j, :, 1, :])
  * 			validator.set_path_zero(paths[k,j, :, 0, :], features[k,j, :, 0, :])
  */
-    __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_samples); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 259, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_samples); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 261, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_15 = __Pyx_PyInt_As_long(__pyx_t_4); if (unlikely((__pyx_t_15 == (long)-1) && PyErr_Occurred())) __PYX_ERR(0, 259, __pyx_L1_error)
+    __pyx_t_15 = __Pyx_PyInt_As_long(__pyx_t_4); if (unlikely((__pyx_t_15 == (long)-1) && PyErr_Occurred())) __PYX_ERR(0, 261, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_t_16 = __pyx_t_15;
     for (__pyx_t_10 = 0; __pyx_t_10 < __pyx_t_16; __pyx_t_10+=1) {
       __pyx_v_j = __pyx_t_10;
 
-      /* "bonndit/tracking/tracking_prob.pyx":260
+      /* "bonndit/tracking/tracking_prob.pyx":262
  * 		trafo.wtoi(seeds[i][:3])
  * 		for j in range(tracking_parameters['samples']):
  * 			validator.set_path_zero(paths[k,j, :, 1, :], features[k,j, :, 1, :])             # <<<<<<<<<<<<<<
@@ -7832,7 +7652,7 @@ __pyx_t_18.shape[1] = __pyx_v_features.shape[4];
 __pyx_t_18.strides[1] = __pyx_v_features.strides[4];
     __pyx_t_18.suboffsets[1] = -1;
 
-((struct __pyx_vtabstruct_7bonndit_8tracking_8stopping_Validator *)__pyx_v_validator->__pyx_vtab)->set_path_zero(__pyx_v_validator, __pyx_t_17, __pyx_t_18); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 260, __pyx_L1_error)
+((struct __pyx_vtabstruct_7bonndit_8tracking_8stopping_Validator *)__pyx_v_validator->__pyx_vtab)->set_path_zero(__pyx_v_validator, __pyx_t_17, __pyx_t_18); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 262, __pyx_L1_error)
       __PYX_XDEC_MEMVIEW(&__pyx_t_17, 1);
       __pyx_t_17.memview = NULL;
       __pyx_t_17.data = NULL;
@@ -7840,7 +7660,7 @@ __pyx_t_18.strides[1] = __pyx_v_features.strides[4];
       __pyx_t_18.memview = NULL;
       __pyx_t_18.data = NULL;
 
-      /* "bonndit/tracking/tracking_prob.pyx":261
+      /* "bonndit/tracking/tracking_prob.pyx":263
  * 		for j in range(tracking_parameters['samples']):
  * 			validator.set_path_zero(paths[k,j, :, 1, :], features[k,j, :, 1, :])
  * 			validator.set_path_zero(paths[k,j, :, 0, :], features[k,j, :, 0, :])             # <<<<<<<<<<<<<<
@@ -7905,7 +7725,7 @@ __pyx_t_17.shape[1] = __pyx_v_features.shape[4];
 __pyx_t_17.strides[1] = __pyx_v_features.strides[4];
     __pyx_t_17.suboffsets[1] = -1;
 
-((struct __pyx_vtabstruct_7bonndit_8tracking_8stopping_Validator *)__pyx_v_validator->__pyx_vtab)->set_path_zero(__pyx_v_validator, __pyx_t_18, __pyx_t_17); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 261, __pyx_L1_error)
+((struct __pyx_vtabstruct_7bonndit_8tracking_8stopping_Validator *)__pyx_v_validator->__pyx_vtab)->set_path_zero(__pyx_v_validator, __pyx_t_18, __pyx_t_17); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 263, __pyx_L1_error)
       __PYX_XDEC_MEMVIEW(&__pyx_t_18, 1);
       __pyx_t_18.memview = NULL;
       __pyx_t_18.data = NULL;
@@ -7913,14 +7733,14 @@ __pyx_t_17.strides[1] = __pyx_v_features.strides[4];
       __pyx_t_17.memview = NULL;
       __pyx_t_17.data = NULL;
 
-      /* "bonndit/tracking/tracking_prob.pyx":262
+      /* "bonndit/tracking/tracking_prob.pyx":264
  * 			validator.set_path_zero(paths[k,j, :, 1, :], features[k,j, :, 1, :])
  * 			validator.set_path_zero(paths[k,j, :, 0, :], features[k,j, :, 0, :])
  * 			paths[k,j, 0, 0] = trafo.point_wtoi             # <<<<<<<<<<<<<<
  * 			paths[k,j, 0, 1] = trafo.point_wtoi
  * 			if "Deterministic" in tracking_parameters['prob'] or tracking_parameters['ukf'] == "LowRank":
  */
-      if (unlikely(!__pyx_v_trafo->point_wtoi.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 262, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_trafo->point_wtoi.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 264, __pyx_L1_error)}
       __pyx_t_14 = __pyx_v_trafo->point_wtoi;
       __PYX_INC_MEMVIEW(&__pyx_t_14, 1);
       __pyx_t_19.data = __pyx_v_paths.data;
@@ -7954,7 +7774,7 @@ __pyx_t_19.shape[0] = __pyx_v_paths.shape[4];
 __pyx_t_19.strides[0] = __pyx_v_paths.strides[4];
     __pyx_t_19.suboffsets[0] = -1;
 
-if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_14, __pyx_t_19, 1, 1, 0) < 0)) __PYX_ERR(0, 262, __pyx_L1_error)
+if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_14, __pyx_t_19, 1, 1, 0) < 0)) __PYX_ERR(0, 264, __pyx_L1_error)
       __PYX_XDEC_MEMVIEW(&__pyx_t_19, 1);
       __pyx_t_19.memview = NULL;
       __pyx_t_19.data = NULL;
@@ -7962,14 +7782,14 @@ if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_14, __pyx_t_19, 1, 1, 0) < 0
       __pyx_t_14.memview = NULL;
       __pyx_t_14.data = NULL;
 
-      /* "bonndit/tracking/tracking_prob.pyx":263
+      /* "bonndit/tracking/tracking_prob.pyx":265
  * 			validator.set_path_zero(paths[k,j, :, 0, :], features[k,j, :, 0, :])
  * 			paths[k,j, 0, 0] = trafo.point_wtoi
  * 			paths[k,j, 0, 1] = trafo.point_wtoi             # <<<<<<<<<<<<<<
  * 			if "Deterministic" in tracking_parameters['prob'] or tracking_parameters['ukf'] == "LowRank":
  * 				for l in range(3):
  */
-      if (unlikely(!__pyx_v_trafo->point_wtoi.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 263, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_trafo->point_wtoi.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 265, __pyx_L1_error)}
       __pyx_t_14 = __pyx_v_trafo->point_wtoi;
       __PYX_INC_MEMVIEW(&__pyx_t_14, 1);
       __pyx_t_19.data = __pyx_v_paths.data;
@@ -8003,7 +7823,7 @@ __pyx_t_19.shape[0] = __pyx_v_paths.shape[4];
 __pyx_t_19.strides[0] = __pyx_v_paths.strides[4];
     __pyx_t_19.suboffsets[0] = -1;
 
-if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_14, __pyx_t_19, 1, 1, 0) < 0)) __PYX_ERR(0, 263, __pyx_L1_error)
+if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_14, __pyx_t_19, 1, 1, 0) < 0)) __PYX_ERR(0, 265, __pyx_L1_error)
       __PYX_XDEC_MEMVIEW(&__pyx_t_19, 1);
       __pyx_t_19.memview = NULL;
       __pyx_t_19.data = NULL;
@@ -8011,16 +7831,16 @@ if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_14, __pyx_t_19, 1, 1, 0) < 0
       __pyx_t_14.memview = NULL;
       __pyx_t_14.data = NULL;
 
-      /* "bonndit/tracking/tracking_prob.pyx":264
+      /* "bonndit/tracking/tracking_prob.pyx":266
  * 			paths[k,j, 0, 0] = trafo.point_wtoi
  * 			paths[k,j, 0, 1] = trafo.point_wtoi
  * 			if "Deterministic" in tracking_parameters['prob'] or tracking_parameters['ukf'] == "LowRank":             # <<<<<<<<<<<<<<
  * 				for l in range(3):
  * 					paths[k,j, 0, 0,l] +=  np.random.normal(0,1)
  */
-      __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_prob); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 264, __pyx_L1_error)
+      __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_prob); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 266, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
-      __pyx_t_20 = (__Pyx_PySequence_ContainsTF(__pyx_n_u_Deterministic, __pyx_t_4, Py_EQ)); if (unlikely(__pyx_t_20 < 0)) __PYX_ERR(0, 264, __pyx_L1_error)
+      __pyx_t_20 = (__Pyx_PySequence_ContainsTF(__pyx_n_u_Deterministic, __pyx_t_4, Py_EQ)); if (unlikely(__pyx_t_20 < 0)) __PYX_ERR(0, 266, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __pyx_t_21 = (__pyx_t_20 != 0);
       if (!__pyx_t_21) {
@@ -8028,15 +7848,15 @@ if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_14, __pyx_t_19, 1, 1, 0) < 0
         __pyx_t_2 = __pyx_t_21;
         goto __pyx_L12_bool_binop_done;
       }
-      __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_ukf); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 264, __pyx_L1_error)
+      __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_ukf); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 266, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
-      __pyx_t_21 = (__Pyx_PyUnicode_Equals(__pyx_t_4, __pyx_n_u_LowRank, Py_EQ)); if (unlikely(__pyx_t_21 < 0)) __PYX_ERR(0, 264, __pyx_L1_error)
+      __pyx_t_21 = (__Pyx_PyUnicode_Equals(__pyx_t_4, __pyx_n_u_LowRank, Py_EQ)); if (unlikely(__pyx_t_21 < 0)) __PYX_ERR(0, 266, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __pyx_t_2 = __pyx_t_21;
       __pyx_L12_bool_binop_done:;
       if (__pyx_t_2) {
 
-        /* "bonndit/tracking/tracking_prob.pyx":265
+        /* "bonndit/tracking/tracking_prob.pyx":267
  * 			paths[k,j, 0, 1] = trafo.point_wtoi
  * 			if "Deterministic" in tracking_parameters['prob'] or tracking_parameters['ukf'] == "LowRank":
  * 				for l in range(3):             # <<<<<<<<<<<<<<
@@ -8046,25 +7866,25 @@ if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_14, __pyx_t_19, 1, 1, 0) < 0
         for (__pyx_t_22 = 0; __pyx_t_22 < 3; __pyx_t_22+=1) {
           __pyx_v_l = __pyx_t_22;
 
-          /* "bonndit/tracking/tracking_prob.pyx":266
+          /* "bonndit/tracking/tracking_prob.pyx":268
  * 			if "Deterministic" in tracking_parameters['prob'] or tracking_parameters['ukf'] == "LowRank":
  * 				for l in range(3):
  * 					paths[k,j, 0, 0,l] +=  np.random.normal(0,1)             # <<<<<<<<<<<<<<
  * 					paths[k,j, 0, 1,l] = paths[k,j, 0, 0,l]
  * 
  */
-          __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 266, __pyx_L1_error)
+          __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 268, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_4);
-          __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_random); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 266, __pyx_L1_error)
+          __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_random); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 268, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_3);
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-          __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_normal); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 266, __pyx_L1_error)
+          __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_normal); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 268, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_4);
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-          __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_tuple__6, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 266, __pyx_L1_error)
+          __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_tuple__6, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 268, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_3);
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-          __pyx_t_23 = __pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_23 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 266, __pyx_L1_error)
+          __pyx_t_23 = __pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_23 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 268, __pyx_L1_error)
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
           __pyx_t_24 = __pyx_v_k;
           __pyx_t_25 = __pyx_v_j;
@@ -8073,7 +7893,7 @@ if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_14, __pyx_t_19, 1, 1, 0) < 0
           __pyx_t_28 = __pyx_v_l;
           *((double *) ( /* dim=4 */ (( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_paths.data + __pyx_t_24 * __pyx_v_paths.strides[0]) ) + __pyx_t_25 * __pyx_v_paths.strides[1]) ) + __pyx_t_26 * __pyx_v_paths.strides[2]) ) + __pyx_t_27 * __pyx_v_paths.strides[3]) ) + __pyx_t_28 * __pyx_v_paths.strides[4]) )) += __pyx_t_23;
 
-          /* "bonndit/tracking/tracking_prob.pyx":267
+          /* "bonndit/tracking/tracking_prob.pyx":269
  * 				for l in range(3):
  * 					paths[k,j, 0, 0,l] +=  np.random.normal(0,1)
  * 					paths[k,j, 0, 1,l] = paths[k,j, 0, 0,l]             # <<<<<<<<<<<<<<
@@ -8093,7 +7913,7 @@ if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_14, __pyx_t_19, 1, 1, 0) < 0
           *((double *) ( /* dim=4 */ (( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_paths.data + __pyx_t_29 * __pyx_v_paths.strides[0]) ) + __pyx_t_30 * __pyx_v_paths.strides[1]) ) + __pyx_t_31 * __pyx_v_paths.strides[2]) ) + __pyx_t_32 * __pyx_v_paths.strides[3]) ) + __pyx_t_33 * __pyx_v_paths.strides[4]) )) = (*((double *) ( /* dim=4 */ (( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_paths.data + __pyx_t_28 * __pyx_v_paths.strides[0]) ) + __pyx_t_27 * __pyx_v_paths.strides[1]) ) + __pyx_t_26 * __pyx_v_paths.strides[2]) ) + __pyx_t_25 * __pyx_v_paths.strides[3]) ) + __pyx_t_24 * __pyx_v_paths.strides[4]) )));
         }
 
-        /* "bonndit/tracking/tracking_prob.pyx":264
+        /* "bonndit/tracking/tracking_prob.pyx":266
  * 			paths[k,j, 0, 0] = trafo.point_wtoi
  * 			paths[k,j, 0, 1] = trafo.point_wtoi
  * 			if "Deterministic" in tracking_parameters['prob'] or tracking_parameters['ukf'] == "LowRank":             # <<<<<<<<<<<<<<
@@ -8103,37 +7923,37 @@ if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_14, __pyx_t_19, 1, 1, 0) < 0
       }
     }
 
-    /* "bonndit/tracking/tracking_prob.pyx":269
+    /* "bonndit/tracking/tracking_prob.pyx":271
  * 					paths[k,j, 0, 1,l] = paths[k,j, 0, 0,l]
  * 
  * 		if saving['features']['seedpoint'] >= 0:             # <<<<<<<<<<<<<<
  * 			features[k,:, 0, 0, saving['features']['seedpoint']] = 1
  * 			features[k,:, 0, 1, saving['features']['seedpoint']] = 1
  */
-    __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_saving, __pyx_n_u_features); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 269, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_saving, __pyx_n_u_features); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 271, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_t_3, __pyx_n_u_seedpoint); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 269, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_t_3, __pyx_n_u_seedpoint); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 271, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_3 = PyObject_RichCompare(__pyx_t_4, __pyx_int_0, Py_GE); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 269, __pyx_L1_error)
+    __pyx_t_3 = PyObject_RichCompare(__pyx_t_4, __pyx_int_0, Py_GE); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 271, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 269, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 271, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     if (__pyx_t_2) {
 
-      /* "bonndit/tracking/tracking_prob.pyx":270
+      /* "bonndit/tracking/tracking_prob.pyx":272
  * 
  * 		if saving['features']['seedpoint'] >= 0:
  * 			features[k,:, 0, 0, saving['features']['seedpoint']] = 1             # <<<<<<<<<<<<<<
  * 			features[k,:, 0, 1, saving['features']['seedpoint']] = 1
  * 	#	print("1", np.asarray(features[k,j,:,0]))
  */
-      __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_saving, __pyx_n_u_features); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 270, __pyx_L1_error)
+      __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_saving, __pyx_n_u_features); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 272, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
-      __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_t_3, __pyx_n_u_seedpoint); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 270, __pyx_L1_error)
+      __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_t_3, __pyx_n_u_seedpoint); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 272, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      __pyx_t_34 = __Pyx_PyIndex_AsSsize_t(__pyx_t_4); if (unlikely((__pyx_t_34 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 270, __pyx_L1_error)
+      __pyx_t_34 = __Pyx_PyIndex_AsSsize_t(__pyx_t_4); if (unlikely((__pyx_t_34 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 272, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __pyx_t_14.data = __pyx_v_features.data;
       __pyx_t_14.memview = __pyx_v_features.memview;
@@ -8156,6 +7976,69 @@ __pyx_t_14.strides[0] = __pyx_v_features.strides[1];
 
 {
     Py_ssize_t __pyx_tmp_idx = 0;
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_features.strides[3];
+        __pyx_t_14.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+{
+    Py_ssize_t __pyx_tmp_idx = __pyx_t_34;
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_features.strides[4];
+        __pyx_t_14.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+{
+          double __pyx_temp_scalar = 1.0;
+          {
+              Py_ssize_t __pyx_temp_extent_0 = __pyx_t_14.shape[0];
+              Py_ssize_t __pyx_temp_stride_0 = __pyx_t_14.strides[0];
+              char *__pyx_temp_pointer_0;
+              Py_ssize_t __pyx_temp_idx_0;
+              __pyx_temp_pointer_0 = __pyx_t_14.data;
+              for (__pyx_temp_idx_0 = 0; __pyx_temp_idx_0 < __pyx_temp_extent_0; __pyx_temp_idx_0++) {
+                *((double *) __pyx_temp_pointer_0) = __pyx_temp_scalar;
+                __pyx_temp_pointer_0 += __pyx_temp_stride_0;
+              }
+          }
+      }
+      __PYX_XDEC_MEMVIEW(&__pyx_t_14, 1);
+      __pyx_t_14.memview = NULL;
+      __pyx_t_14.data = NULL;
+
+      /* "bonndit/tracking/tracking_prob.pyx":273
+ * 		if saving['features']['seedpoint'] >= 0:
+ * 			features[k,:, 0, 0, saving['features']['seedpoint']] = 1
+ * 			features[k,:, 0, 1, saving['features']['seedpoint']] = 1             # <<<<<<<<<<<<<<
+ * 	#	print("1", np.asarray(features[k,j,:,0]))
+ * 	#	print("1", np.asarray(features[k,j,:,1]))
+ */
+      __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_saving, __pyx_n_u_features); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 273, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_4);
+      __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_t_4, __pyx_n_u_seedpoint); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 273, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+      __pyx_t_34 = __Pyx_PyIndex_AsSsize_t(__pyx_t_3); if (unlikely((__pyx_t_34 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 273, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __pyx_t_14.data = __pyx_v_features.data;
+      __pyx_t_14.memview = __pyx_v_features.memview;
+      __PYX_INC_MEMVIEW(&__pyx_t_14, 0);
+      {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_k;
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_features.strides[0];
+        __pyx_t_14.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_14.shape[0] = __pyx_v_features.shape[1];
+__pyx_t_14.strides[0] = __pyx_v_features.strides[1];
+    __pyx_t_14.suboffsets[0] = -1;
+
+{
+    Py_ssize_t __pyx_tmp_idx = 0;
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_features.strides[2];
+        __pyx_t_14.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+{
+    Py_ssize_t __pyx_tmp_idx = 1;
     Py_ssize_t __pyx_tmp_stride = __pyx_v_features.strides[3];
         __pyx_t_14.data += __pyx_tmp_idx * __pyx_tmp_stride;
 }
@@ -8185,69 +8068,6 @@ __pyx_t_14.strides[0] = __pyx_v_features.strides[1];
       __pyx_t_14.data = NULL;
 
       /* "bonndit/tracking/tracking_prob.pyx":271
- * 		if saving['features']['seedpoint'] >= 0:
- * 			features[k,:, 0, 0, saving['features']['seedpoint']] = 1
- * 			features[k,:, 0, 1, saving['features']['seedpoint']] = 1             # <<<<<<<<<<<<<<
- * 	#	print("1", np.asarray(features[k,j,:,0]))
- * 	#	print("1", np.asarray(features[k,j,:,1]))
- */
-      __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_saving, __pyx_n_u_features); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 271, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_4);
-      __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_t_4, __pyx_n_u_seedpoint); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 271, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_3);
-      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      __pyx_t_34 = __Pyx_PyIndex_AsSsize_t(__pyx_t_3); if (unlikely((__pyx_t_34 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 271, __pyx_L1_error)
-      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      __pyx_t_14.data = __pyx_v_features.data;
-      __pyx_t_14.memview = __pyx_v_features.memview;
-      __PYX_INC_MEMVIEW(&__pyx_t_14, 0);
-      {
-    Py_ssize_t __pyx_tmp_idx = __pyx_v_k;
-    Py_ssize_t __pyx_tmp_stride = __pyx_v_features.strides[0];
-        __pyx_t_14.data += __pyx_tmp_idx * __pyx_tmp_stride;
-}
-
-__pyx_t_14.shape[0] = __pyx_v_features.shape[1];
-__pyx_t_14.strides[0] = __pyx_v_features.strides[1];
-    __pyx_t_14.suboffsets[0] = -1;
-
-{
-    Py_ssize_t __pyx_tmp_idx = 0;
-    Py_ssize_t __pyx_tmp_stride = __pyx_v_features.strides[2];
-        __pyx_t_14.data += __pyx_tmp_idx * __pyx_tmp_stride;
-}
-
-{
-    Py_ssize_t __pyx_tmp_idx = 1;
-    Py_ssize_t __pyx_tmp_stride = __pyx_v_features.strides[3];
-        __pyx_t_14.data += __pyx_tmp_idx * __pyx_tmp_stride;
-}
-
-{
-    Py_ssize_t __pyx_tmp_idx = __pyx_t_34;
-    Py_ssize_t __pyx_tmp_stride = __pyx_v_features.strides[4];
-        __pyx_t_14.data += __pyx_tmp_idx * __pyx_tmp_stride;
-}
-
-{
-          double __pyx_temp_scalar = 1.0;
-          {
-              Py_ssize_t __pyx_temp_extent_0 = __pyx_t_14.shape[0];
-              Py_ssize_t __pyx_temp_stride_0 = __pyx_t_14.strides[0];
-              char *__pyx_temp_pointer_0;
-              Py_ssize_t __pyx_temp_idx_0;
-              __pyx_temp_pointer_0 = __pyx_t_14.data;
-              for (__pyx_temp_idx_0 = 0; __pyx_temp_idx_0 < __pyx_temp_extent_0; __pyx_temp_idx_0++) {
-                *((double *) __pyx_temp_pointer_0) = __pyx_temp_scalar;
-                __pyx_temp_pointer_0 += __pyx_temp_stride_0;
-              }
-          }
-      }
-      __PYX_XDEC_MEMVIEW(&__pyx_t_14, 1);
-      __pyx_t_14.memview = NULL;
-      __pyx_t_14.data = NULL;
-
-      /* "bonndit/tracking/tracking_prob.pyx":269
  * 					paths[k,j, 0, 1,l] = paths[k,j, 0, 0,l]
  * 
  * 		if saving['features']['seedpoint'] >= 0:             # <<<<<<<<<<<<<<
@@ -8256,7 +8076,7 @@ __pyx_t_14.strides[0] = __pyx_v_features.strides[1];
  */
     }
 
-    /* "bonndit/tracking/tracking_prob.pyx":275
+    /* "bonndit/tracking/tracking_prob.pyx":277
  * 	#	print("1", np.asarray(features[k,j,:,1]))
  * 		#Do the tracking for this seed with the direction
  * 		tracking(paths[k], seeds[i], seeds[i].shape[0], interpolate, integrate, trafo, validator, tracking_parameters['max_track_length'], tracking_parameters['sw_save'], tracking_parameters['samples'], features[k], saving['features'])             # <<<<<<<<<<<<<<
@@ -8288,31 +8108,31 @@ __pyx_t_35.shape[3] = __pyx_v_paths.shape[4];
 __pyx_t_35.strides[3] = __pyx_v_paths.strides[4];
     __pyx_t_35.suboffsets[3] = -1;
 
-__pyx_t_3 = __Pyx_GetItemInt(__pyx_v_seeds, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 275, __pyx_L1_error)
+__pyx_t_3 = __Pyx_GetItemInt(__pyx_v_seeds, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 277, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_14 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(__pyx_t_3, PyBUF_WRITABLE); if (unlikely(!__pyx_t_14.memview)) __PYX_ERR(0, 275, __pyx_L1_error)
+    __pyx_t_14 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(__pyx_t_3, PyBUF_WRITABLE); if (unlikely(!__pyx_t_14.memview)) __PYX_ERR(0, 277, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_3 = __Pyx_GetItemInt(__pyx_v_seeds, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 275, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_GetItemInt(__pyx_v_seeds, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 277, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_shape); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 275, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_shape); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 277, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_3 = __Pyx_GetItemInt(__pyx_t_4, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 275, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_GetItemInt(__pyx_t_4, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 277, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_10 = __Pyx_PyInt_As_int(__pyx_t_3); if (unlikely((__pyx_t_10 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 275, __pyx_L1_error)
+    __pyx_t_10 = __Pyx_PyInt_As_int(__pyx_t_3); if (unlikely((__pyx_t_10 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 277, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_max_track_length); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 275, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_max_track_length); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 277, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_22 = __Pyx_PyInt_As_int(__pyx_t_3); if (unlikely((__pyx_t_22 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 275, __pyx_L1_error)
+    __pyx_t_22 = __Pyx_PyInt_As_int(__pyx_t_3); if (unlikely((__pyx_t_22 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 277, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_sw_save); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 275, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_sw_save); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 277, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_36 = __Pyx_PyInt_As_int(__pyx_t_3); if (unlikely((__pyx_t_36 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 275, __pyx_L1_error)
+    __pyx_t_36 = __Pyx_PyInt_As_int(__pyx_t_3); if (unlikely((__pyx_t_36 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 277, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_samples); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 275, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_samples); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 277, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_37 = __Pyx_PyInt_As_int(__pyx_t_3); if (unlikely((__pyx_t_37 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 275, __pyx_L1_error)
+    __pyx_t_37 = __Pyx_PyInt_As_int(__pyx_t_3); if (unlikely((__pyx_t_37 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 277, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __pyx_t_38.data = __pyx_v_features.data;
     __pyx_t_38.memview = __pyx_v_features.memview;
@@ -8339,11 +8159,11 @@ __pyx_t_38.shape[3] = __pyx_v_features.shape[4];
 __pyx_t_38.strides[3] = __pyx_v_features.strides[4];
     __pyx_t_38.suboffsets[3] = -1;
 
-__pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_saving, __pyx_n_u_features); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 275, __pyx_L1_error)
+__pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_saving, __pyx_n_u_features); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 277, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_39 = __pyx_convert__from_py___pyx_t_7bonndit_8tracking_13tracking_prob_possible_features(__pyx_t_3); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 275, __pyx_L1_error)
+    __pyx_t_39 = __pyx_convert__from_py___pyx_t_7bonndit_8tracking_13tracking_prob_possible_features(__pyx_t_3); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 277, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_f_7bonndit_8tracking_13tracking_prob_tracking(__pyx_t_35, __pyx_t_14, __pyx_t_10, __pyx_v_interpolate, __pyx_v_integrate, __pyx_v_trafo, __pyx_v_validator, __pyx_t_22, __pyx_t_36, __pyx_t_37, __pyx_t_38, __pyx_t_39); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 275, __pyx_L1_error)
+    __pyx_f_7bonndit_8tracking_13tracking_prob_tracking(__pyx_t_35, __pyx_t_14, __pyx_t_10, __pyx_v_interpolate, __pyx_v_integrate, __pyx_v_trafo, __pyx_v_validator, __pyx_t_22, __pyx_t_36, __pyx_t_37, __pyx_t_38, __pyx_t_39); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 277, __pyx_L1_error)
     __PYX_XDEC_MEMVIEW(&__pyx_t_35, 1);
     __pyx_t_35.memview = NULL;
     __pyx_t_35.data = NULL;
@@ -8354,36 +8174,36 @@ __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_saving, __pyx_n_u_features); if 
     __pyx_t_38.memview = NULL;
     __pyx_t_38.data = NULL;
 
-    /* "bonndit/tracking/tracking_prob.pyx":278
+    /* "bonndit/tracking/tracking_prob.pyx":280
  * 		# delete all zero arrays.
  * 
  * 		for j in range(tracking_parameters['samples']):             # <<<<<<<<<<<<<<
  * 			path = np.concatenate((np.asarray(paths[k,j]),np.asarray(features[k,j])), axis=-1)
  * 		# seedpoint would be twice if first index is not skipped.
  */
-    __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_samples); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 278, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_samples); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 280, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_15 = __Pyx_PyInt_As_long(__pyx_t_3); if (unlikely((__pyx_t_15 == (long)-1) && PyErr_Occurred())) __PYX_ERR(0, 278, __pyx_L1_error)
+    __pyx_t_15 = __Pyx_PyInt_As_long(__pyx_t_3); if (unlikely((__pyx_t_15 == (long)-1) && PyErr_Occurred())) __PYX_ERR(0, 280, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __pyx_t_16 = __pyx_t_15;
     for (__pyx_t_37 = 0; __pyx_t_37 < __pyx_t_16; __pyx_t_37+=1) {
       __pyx_v_j = __pyx_t_37;
 
-      /* "bonndit/tracking/tracking_prob.pyx":279
+      /* "bonndit/tracking/tracking_prob.pyx":281
  * 
  * 		for j in range(tracking_parameters['samples']):
  * 			path = np.concatenate((np.asarray(paths[k,j]),np.asarray(features[k,j])), axis=-1)             # <<<<<<<<<<<<<<
  * 		# seedpoint would be twice if first index is not skipped.
  * 			path = np.concatenate((path[1:,0][::-1], path[:,1]))
  */
-      __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 279, __pyx_L1_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 281, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
-      __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_concatenate); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 279, __pyx_L1_error)
+      __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_concatenate); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 281, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_np); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 279, __pyx_L1_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_np); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 281, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_8);
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_asarray); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 279, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_asarray); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 281, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
       __pyx_t_40.data = __pyx_v_paths.data;
@@ -8413,7 +8233,7 @@ __pyx_t_40.shape[2] = __pyx_v_paths.shape[4];
 __pyx_t_40.strides[2] = __pyx_v_paths.strides[4];
     __pyx_t_40.suboffsets[2] = -1;
 
-__pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 279, __pyx_L1_error)
+__pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 281, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_8);
       __PYX_XDEC_MEMVIEW(&__pyx_t_40, 1);
       __pyx_t_40.memview = NULL;
@@ -8431,12 +8251,12 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
       __pyx_t_3 = (__pyx_t_7) ? __Pyx_PyObject_Call2Args(__pyx_t_1, __pyx_t_7, __pyx_t_8) : __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_t_8);
       __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-      if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 279, __pyx_L1_error)
+      if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 281, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_np); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 279, __pyx_L1_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_np); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 281, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_8);
-      __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_asarray); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 279, __pyx_L1_error)
+      __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_asarray); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 281, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
       __pyx_t_40.data = __pyx_v_features.data;
@@ -8466,7 +8286,7 @@ __pyx_t_40.shape[2] = __pyx_v_features.shape[4];
 __pyx_t_40.strides[2] = __pyx_v_features.strides[4];
     __pyx_t_40.suboffsets[2] = -1;
 
-__pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 279, __pyx_L1_error)
+__pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 281, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_8);
       __PYX_XDEC_MEMVIEW(&__pyx_t_40, 1);
       __pyx_t_40.memview = NULL;
@@ -8484,10 +8304,10 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
       __pyx_t_1 = (__pyx_t_6) ? __Pyx_PyObject_Call2Args(__pyx_t_7, __pyx_t_6, __pyx_t_8) : __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_8);
       __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 279, __pyx_L1_error)
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 281, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-      __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 279, __pyx_L1_error)
+      __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 281, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
       __Pyx_GIVEREF(__pyx_t_3);
       PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_3);
@@ -8495,15 +8315,15 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
       PyTuple_SET_ITEM(__pyx_t_7, 1, __pyx_t_1);
       __pyx_t_3 = 0;
       __pyx_t_1 = 0;
-      __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 279, __pyx_L1_error)
+      __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 281, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_GIVEREF(__pyx_t_7);
       PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_7);
       __pyx_t_7 = 0;
-      __pyx_t_7 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 279, __pyx_L1_error)
+      __pyx_t_7 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 281, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
-      if (PyDict_SetItem(__pyx_t_7, __pyx_n_s_axis, __pyx_int_neg_1) < 0) __PYX_ERR(0, 279, __pyx_L1_error)
-      __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_1, __pyx_t_7); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 279, __pyx_L1_error)
+      if (PyDict_SetItem(__pyx_t_7, __pyx_n_s_axis, __pyx_int_neg_1) < 0) __PYX_ERR(0, 281, __pyx_L1_error)
+      __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_1, __pyx_t_7); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 281, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -8511,26 +8331,26 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
       __Pyx_XDECREF_SET(__pyx_v_path, __pyx_t_3);
       __pyx_t_3 = 0;
 
-      /* "bonndit/tracking/tracking_prob.pyx":281
+      /* "bonndit/tracking/tracking_prob.pyx":283
  * 			path = np.concatenate((np.asarray(paths[k,j]),np.asarray(features[k,j])), axis=-1)
  * 		# seedpoint would be twice if first index is not skipped.
  * 			path = np.concatenate((path[1:,0][::-1], path[:,1]))             # <<<<<<<<<<<<<<
  * 			try:
  * 				to_exclude = np.all(path[:,:3] == 0, axis=1)
  */
-      __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_np); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 281, __pyx_L1_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_np); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 283, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_concatenate); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 281, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_concatenate); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 283, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-      __pyx_t_7 = __Pyx_PyObject_GetItem(__pyx_v_path, __pyx_tuple__8); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 281, __pyx_L1_error)
+      __pyx_t_7 = __Pyx_PyObject_GetItem(__pyx_v_path, __pyx_tuple__8); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 283, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
-      __pyx_t_4 = __Pyx_PyObject_GetItem(__pyx_t_7, __pyx_slice__9); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 281, __pyx_L1_error)
+      __pyx_t_4 = __Pyx_PyObject_GetItem(__pyx_t_7, __pyx_slice__9); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 283, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-      __pyx_t_7 = __Pyx_PyObject_GetItem(__pyx_v_path, __pyx_tuple__11); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 281, __pyx_L1_error)
+      __pyx_t_7 = __Pyx_PyObject_GetItem(__pyx_v_path, __pyx_tuple__11); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 283, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
-      __pyx_t_8 = PyTuple_New(2); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 281, __pyx_L1_error)
+      __pyx_t_8 = PyTuple_New(2); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 283, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_8);
       __Pyx_GIVEREF(__pyx_t_4);
       PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_t_4);
@@ -8551,13 +8371,13 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
       __pyx_t_3 = (__pyx_t_7) ? __Pyx_PyObject_Call2Args(__pyx_t_1, __pyx_t_7, __pyx_t_8) : __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_t_8);
       __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-      if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 281, __pyx_L1_error)
+      if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 283, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       __Pyx_DECREF_SET(__pyx_v_path, __pyx_t_3);
       __pyx_t_3 = 0;
 
-      /* "bonndit/tracking/tracking_prob.pyx":282
+      /* "bonndit/tracking/tracking_prob.pyx":284
  * 		# seedpoint would be twice if first index is not skipped.
  * 			path = np.concatenate((path[1:,0][::-1], path[:,1]))
  * 			try:             # <<<<<<<<<<<<<<
@@ -8573,32 +8393,32 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
         __Pyx_XGOTREF(__pyx_t_43);
         /*try:*/ {
 
-          /* "bonndit/tracking/tracking_prob.pyx":283
+          /* "bonndit/tracking/tracking_prob.pyx":285
  * 			path = np.concatenate((path[1:,0][::-1], path[:,1]))
  * 			try:
  * 				to_exclude = np.all(path[:,:3] == 0, axis=1)             # <<<<<<<<<<<<<<
  * 
  * 				path = path[~to_exclude]
  */
-          __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 283, __pyx_L19_error)
+          __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 285, __pyx_L19_error)
           __Pyx_GOTREF(__pyx_t_3);
-          __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_all); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 283, __pyx_L19_error)
+          __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_all); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 285, __pyx_L19_error)
           __Pyx_GOTREF(__pyx_t_1);
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-          __pyx_t_3 = __Pyx_PyObject_GetItem(__pyx_v_path, __pyx_tuple__12); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 283, __pyx_L19_error)
+          __pyx_t_3 = __Pyx_PyObject_GetItem(__pyx_v_path, __pyx_tuple__12); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 285, __pyx_L19_error)
           __Pyx_GOTREF(__pyx_t_3);
-          __pyx_t_8 = __Pyx_PyInt_EqObjC(__pyx_t_3, __pyx_int_0, 0, 0); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 283, __pyx_L19_error)
+          __pyx_t_8 = __Pyx_PyInt_EqObjC(__pyx_t_3, __pyx_int_0, 0, 0); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 285, __pyx_L19_error)
           __Pyx_GOTREF(__pyx_t_8);
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-          __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 283, __pyx_L19_error)
+          __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 285, __pyx_L19_error)
           __Pyx_GOTREF(__pyx_t_3);
           __Pyx_GIVEREF(__pyx_t_8);
           PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_8);
           __pyx_t_8 = 0;
-          __pyx_t_8 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 283, __pyx_L19_error)
+          __pyx_t_8 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 285, __pyx_L19_error)
           __Pyx_GOTREF(__pyx_t_8);
-          if (PyDict_SetItem(__pyx_t_8, __pyx_n_s_axis, __pyx_int_1) < 0) __PYX_ERR(0, 283, __pyx_L19_error)
-          __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_3, __pyx_t_8); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 283, __pyx_L19_error)
+          if (PyDict_SetItem(__pyx_t_8, __pyx_n_s_axis, __pyx_int_1) < 0) __PYX_ERR(0, 285, __pyx_L19_error)
+          __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_3, __pyx_t_8); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 285, __pyx_L19_error)
           __Pyx_GOTREF(__pyx_t_7);
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -8606,38 +8426,38 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
           __Pyx_XDECREF_SET(__pyx_v_to_exclude, __pyx_t_7);
           __pyx_t_7 = 0;
 
-          /* "bonndit/tracking/tracking_prob.pyx":285
+          /* "bonndit/tracking/tracking_prob.pyx":287
  * 				to_exclude = np.all(path[:,:3] == 0, axis=1)
  * 
  * 				path = path[~to_exclude]             # <<<<<<<<<<<<<<
  * 				if path.size == 0:
  * 					continue
  */
-          __pyx_t_7 = PyNumber_Invert(__pyx_v_to_exclude); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 285, __pyx_L19_error)
+          __pyx_t_7 = PyNumber_Invert(__pyx_v_to_exclude); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 287, __pyx_L19_error)
           __Pyx_GOTREF(__pyx_t_7);
-          __pyx_t_8 = __Pyx_PyObject_GetItem(__pyx_v_path, __pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 285, __pyx_L19_error)
+          __pyx_t_8 = __Pyx_PyObject_GetItem(__pyx_v_path, __pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 287, __pyx_L19_error)
           __Pyx_GOTREF(__pyx_t_8);
           __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
           __Pyx_DECREF_SET(__pyx_v_path, __pyx_t_8);
           __pyx_t_8 = 0;
 
-          /* "bonndit/tracking/tracking_prob.pyx":286
+          /* "bonndit/tracking/tracking_prob.pyx":288
  * 
  * 				path = path[~to_exclude]
  * 				if path.size == 0:             # <<<<<<<<<<<<<<
  * 					continue
  * 			#	print(path)
  */
-          __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_v_path, __pyx_n_s_size); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 286, __pyx_L19_error)
+          __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_v_path, __pyx_n_s_size); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 288, __pyx_L19_error)
           __Pyx_GOTREF(__pyx_t_8);
-          __pyx_t_7 = __Pyx_PyInt_EqObjC(__pyx_t_8, __pyx_int_0, 0, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 286, __pyx_L19_error)
+          __pyx_t_7 = __Pyx_PyInt_EqObjC(__pyx_t_8, __pyx_int_0, 0, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 288, __pyx_L19_error)
           __Pyx_GOTREF(__pyx_t_7);
           __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-          __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_7); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 286, __pyx_L19_error)
+          __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_7); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 288, __pyx_L19_error)
           __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
           if (__pyx_t_2) {
 
-            /* "bonndit/tracking/tracking_prob.pyx":287
+            /* "bonndit/tracking/tracking_prob.pyx":289
  * 				path = path[~to_exclude]
  * 				if path.size == 0:
  * 					continue             # <<<<<<<<<<<<<<
@@ -8646,7 +8466,7 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
  */
             goto __pyx_L25_try_continue;
 
-            /* "bonndit/tracking/tracking_prob.pyx":286
+            /* "bonndit/tracking/tracking_prob.pyx":288
  * 
  * 				path = path[~to_exclude]
  * 				if path.size == 0:             # <<<<<<<<<<<<<<
@@ -8655,38 +8475,38 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
  */
           }
 
-          /* "bonndit/tracking/tracking_prob.pyx":289
+          /* "bonndit/tracking/tracking_prob.pyx":291
  * 					continue
  * 			#	print(path)
  * 				if path.shape[0]>5:             # <<<<<<<<<<<<<<
  * 					# Work on disk or ram. Ram might be faster but for large files disk is preferable.
  * 					if saving['file']:
  */
-          __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_v_path, __pyx_n_s_shape); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 289, __pyx_L19_error)
+          __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_v_path, __pyx_n_s_shape); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 291, __pyx_L19_error)
           __Pyx_GOTREF(__pyx_t_7);
-          __pyx_t_8 = __Pyx_GetItemInt(__pyx_t_7, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 289, __pyx_L19_error)
+          __pyx_t_8 = __Pyx_GetItemInt(__pyx_t_7, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 291, __pyx_L19_error)
           __Pyx_GOTREF(__pyx_t_8);
           __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-          __pyx_t_7 = PyObject_RichCompare(__pyx_t_8, __pyx_int_5, Py_GT); __Pyx_XGOTREF(__pyx_t_7); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 289, __pyx_L19_error)
+          __pyx_t_7 = PyObject_RichCompare(__pyx_t_8, __pyx_int_5, Py_GT); __Pyx_XGOTREF(__pyx_t_7); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 291, __pyx_L19_error)
           __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-          __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_7); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 289, __pyx_L19_error)
+          __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_7); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 291, __pyx_L19_error)
           __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
           if (__pyx_t_2) {
 
-            /* "bonndit/tracking/tracking_prob.pyx":291
+            /* "bonndit/tracking/tracking_prob.pyx":293
  * 				if path.shape[0]>5:
  * 					# Work on disk or ram. Ram might be faster but for large files disk is preferable.
  * 					if saving['file']:             # <<<<<<<<<<<<<<
  * 						with open(saving['file'] + 'len', 'a') as f:
  * 							f.write(str(path.shape[0]) +'\n')
  */
-            __pyx_t_7 = __Pyx_PyObject_Dict_GetItem(__pyx_v_saving, __pyx_n_u_file); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 291, __pyx_L19_error)
+            __pyx_t_7 = __Pyx_PyObject_Dict_GetItem(__pyx_v_saving, __pyx_n_u_file); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 293, __pyx_L19_error)
             __Pyx_GOTREF(__pyx_t_7);
-            __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_7); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 291, __pyx_L19_error)
+            __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_7); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 293, __pyx_L19_error)
             __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
             if (__pyx_t_2) {
 
-              /* "bonndit/tracking/tracking_prob.pyx":292
+              /* "bonndit/tracking/tracking_prob.pyx":294
  * 					# Work on disk or ram. Ram might be faster but for large files disk is preferable.
  * 					if saving['file']:
  * 						with open(saving['file'] + 'len', 'a') as f:             # <<<<<<<<<<<<<<
@@ -8694,12 +8514,12 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
  * 						with open(saving['file'], 'a') as f:
  */
               /*with:*/ {
-                __pyx_t_7 = __Pyx_PyObject_Dict_GetItem(__pyx_v_saving, __pyx_n_u_file); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 292, __pyx_L19_error)
+                __pyx_t_7 = __Pyx_PyObject_Dict_GetItem(__pyx_v_saving, __pyx_n_u_file); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 294, __pyx_L19_error)
                 __Pyx_GOTREF(__pyx_t_7);
-                __pyx_t_8 = PyNumber_Add(__pyx_t_7, __pyx_n_u_len); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 292, __pyx_L19_error)
+                __pyx_t_8 = PyNumber_Add(__pyx_t_7, __pyx_n_u_len); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 294, __pyx_L19_error)
                 __Pyx_GOTREF(__pyx_t_8);
                 __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-                __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 292, __pyx_L19_error)
+                __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 294, __pyx_L19_error)
                 __Pyx_GOTREF(__pyx_t_7);
                 __Pyx_GIVEREF(__pyx_t_8);
                 PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_8);
@@ -8707,12 +8527,12 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
                 __Pyx_GIVEREF(__pyx_n_u_a);
                 PyTuple_SET_ITEM(__pyx_t_7, 1, __pyx_n_u_a);
                 __pyx_t_8 = 0;
-                __pyx_t_8 = __Pyx_PyObject_Call(__pyx_builtin_open, __pyx_t_7, NULL); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 292, __pyx_L19_error)
+                __pyx_t_8 = __Pyx_PyObject_Call(__pyx_builtin_open, __pyx_t_7, NULL); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 294, __pyx_L19_error)
                 __Pyx_GOTREF(__pyx_t_8);
                 __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-                __pyx_t_44 = __Pyx_PyObject_LookupSpecial(__pyx_t_8, __pyx_n_s_exit); if (unlikely(!__pyx_t_44)) __PYX_ERR(0, 292, __pyx_L19_error)
+                __pyx_t_44 = __Pyx_PyObject_LookupSpecial(__pyx_t_8, __pyx_n_s_exit); if (unlikely(!__pyx_t_44)) __PYX_ERR(0, 294, __pyx_L19_error)
                 __Pyx_GOTREF(__pyx_t_44);
-                __pyx_t_3 = __Pyx_PyObject_LookupSpecial(__pyx_t_8, __pyx_n_s_enter); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 292, __pyx_L30_error)
+                __pyx_t_3 = __Pyx_PyObject_LookupSpecial(__pyx_t_8, __pyx_n_s_enter); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 294, __pyx_L30_error)
                 __Pyx_GOTREF(__pyx_t_3);
                 __pyx_t_1 = NULL;
                 if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_3))) {
@@ -8726,7 +8546,7 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
                 }
                 __pyx_t_7 = (__pyx_t_1) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_1) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
                 __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
-                if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 292, __pyx_L30_error)
+                if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 294, __pyx_L30_error)
                 __Pyx_GOTREF(__pyx_t_7);
                 __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
                 __pyx_t_3 = __pyx_t_7;
@@ -8744,24 +8564,24 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
                       __Pyx_XDECREF_SET(__pyx_v_f, __pyx_t_3);
                       __pyx_t_3 = 0;
 
-                      /* "bonndit/tracking/tracking_prob.pyx":293
+                      /* "bonndit/tracking/tracking_prob.pyx":295
  * 					if saving['file']:
  * 						with open(saving['file'] + 'len', 'a') as f:
  * 							f.write(str(path.shape[0]) +'\n')             # <<<<<<<<<<<<<<
  * 						with open(saving['file'], 'a') as f:
  * 							for l in range(path.shape[0]):
  */
-                      __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_v_f, __pyx_n_s_write); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 293, __pyx_L36_error)
+                      __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_v_f, __pyx_n_s_write); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 295, __pyx_L36_error)
                       __Pyx_GOTREF(__pyx_t_8);
-                      __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_v_path, __pyx_n_s_shape); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 293, __pyx_L36_error)
+                      __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_v_path, __pyx_n_s_shape); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 295, __pyx_L36_error)
                       __Pyx_GOTREF(__pyx_t_7);
-                      __pyx_t_1 = __Pyx_GetItemInt(__pyx_t_7, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 293, __pyx_L36_error)
+                      __pyx_t_1 = __Pyx_GetItemInt(__pyx_t_7, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 295, __pyx_L36_error)
                       __Pyx_GOTREF(__pyx_t_1);
                       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-                      __pyx_t_7 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyUnicode_Type)), __pyx_t_1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 293, __pyx_L36_error)
+                      __pyx_t_7 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyUnicode_Type)), __pyx_t_1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 295, __pyx_L36_error)
                       __Pyx_GOTREF(__pyx_t_7);
                       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-                      __pyx_t_1 = __Pyx_PyUnicode_Concat(__pyx_t_7, __pyx_kp_u__13); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 293, __pyx_L36_error)
+                      __pyx_t_1 = __Pyx_PyUnicode_Concat(__pyx_t_7, __pyx_kp_u__13); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 295, __pyx_L36_error)
                       __Pyx_GOTREF(__pyx_t_1);
                       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
                       __pyx_t_7 = NULL;
@@ -8777,12 +8597,12 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
                       __pyx_t_3 = (__pyx_t_7) ? __Pyx_PyObject_Call2Args(__pyx_t_8, __pyx_t_7, __pyx_t_1) : __Pyx_PyObject_CallOneArg(__pyx_t_8, __pyx_t_1);
                       __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
                       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-                      if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 293, __pyx_L36_error)
+                      if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 295, __pyx_L36_error)
                       __Pyx_GOTREF(__pyx_t_3);
                       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
                       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-                      /* "bonndit/tracking/tracking_prob.pyx":292
+                      /* "bonndit/tracking/tracking_prob.pyx":294
  * 					# Work on disk or ram. Ram might be faster but for large files disk is preferable.
  * 					if saving['file']:
  * 						with open(saving['file'] + 'len', 'a') as f:             # <<<<<<<<<<<<<<
@@ -8812,20 +8632,20 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
                     __PYX_XDEC_MEMVIEW(&__pyx_t_9, 1);
                     /*except:*/ {
                       __Pyx_AddTraceback("bonndit.tracking.tracking_prob.tracking_all", __pyx_clineno, __pyx_lineno, __pyx_filename);
-                      if (__Pyx_GetException(&__pyx_t_3, &__pyx_t_8, &__pyx_t_1) < 0) __PYX_ERR(0, 292, __pyx_L38_except_error)
+                      if (__Pyx_GetException(&__pyx_t_3, &__pyx_t_8, &__pyx_t_1) < 0) __PYX_ERR(0, 294, __pyx_L38_except_error)
                       __Pyx_GOTREF(__pyx_t_3);
                       __Pyx_GOTREF(__pyx_t_8);
                       __Pyx_GOTREF(__pyx_t_1);
-                      __pyx_t_7 = PyTuple_Pack(3, __pyx_t_3, __pyx_t_8, __pyx_t_1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 292, __pyx_L38_except_error)
+                      __pyx_t_7 = PyTuple_Pack(3, __pyx_t_3, __pyx_t_8, __pyx_t_1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 294, __pyx_L38_except_error)
                       __Pyx_GOTREF(__pyx_t_7);
                       __pyx_t_48 = __Pyx_PyObject_Call(__pyx_t_44, __pyx_t_7, NULL);
                       __Pyx_DECREF(__pyx_t_44); __pyx_t_44 = 0;
                       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-                      if (unlikely(!__pyx_t_48)) __PYX_ERR(0, 292, __pyx_L38_except_error)
+                      if (unlikely(!__pyx_t_48)) __PYX_ERR(0, 294, __pyx_L38_except_error)
                       __Pyx_GOTREF(__pyx_t_48);
                       __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_48);
                       __Pyx_DECREF(__pyx_t_48); __pyx_t_48 = 0;
-                      if (__pyx_t_2 < 0) __PYX_ERR(0, 292, __pyx_L38_except_error)
+                      if (__pyx_t_2 < 0) __PYX_ERR(0, 294, __pyx_L38_except_error)
                       __pyx_t_21 = ((!(__pyx_t_2 != 0)) != 0);
                       if (__pyx_t_21) {
                         __Pyx_GIVEREF(__pyx_t_3);
@@ -8833,7 +8653,7 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
                         __Pyx_XGIVEREF(__pyx_t_1);
                         __Pyx_ErrRestoreWithState(__pyx_t_3, __pyx_t_8, __pyx_t_1);
                         __pyx_t_3 = 0; __pyx_t_8 = 0; __pyx_t_1 = 0; 
-                        __PYX_ERR(0, 292, __pyx_L38_except_error)
+                        __PYX_ERR(0, 294, __pyx_L38_except_error)
                       }
                       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
                       __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
@@ -8859,7 +8679,7 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
                     if (__pyx_t_44) {
                       __pyx_t_47 = __Pyx_PyObject_Call(__pyx_t_44, __pyx_tuple__14, NULL);
                       __Pyx_DECREF(__pyx_t_44); __pyx_t_44 = 0;
-                      if (unlikely(!__pyx_t_47)) __PYX_ERR(0, 292, __pyx_L19_error)
+                      if (unlikely(!__pyx_t_47)) __PYX_ERR(0, 294, __pyx_L19_error)
                       __Pyx_GOTREF(__pyx_t_47);
                       __Pyx_DECREF(__pyx_t_47); __pyx_t_47 = 0;
                     }
@@ -8874,7 +8694,7 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
                 __pyx_L47:;
               }
 
-              /* "bonndit/tracking/tracking_prob.pyx":294
+              /* "bonndit/tracking/tracking_prob.pyx":296
  * 						with open(saving['file'] + 'len', 'a') as f:
  * 							f.write(str(path.shape[0]) +'\n')
  * 						with open(saving['file'], 'a') as f:             # <<<<<<<<<<<<<<
@@ -8882,9 +8702,9 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
  * 								f.write(' '.join(map(str, path[l])) + "\n")
  */
               /*with:*/ {
-                __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_saving, __pyx_n_u_file); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 294, __pyx_L19_error)
+                __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_saving, __pyx_n_u_file); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 296, __pyx_L19_error)
                 __Pyx_GOTREF(__pyx_t_1);
-                __pyx_t_8 = PyTuple_New(2); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 294, __pyx_L19_error)
+                __pyx_t_8 = PyTuple_New(2); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 296, __pyx_L19_error)
                 __Pyx_GOTREF(__pyx_t_8);
                 __Pyx_GIVEREF(__pyx_t_1);
                 PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_t_1);
@@ -8892,12 +8712,12 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
                 __Pyx_GIVEREF(__pyx_n_u_a);
                 PyTuple_SET_ITEM(__pyx_t_8, 1, __pyx_n_u_a);
                 __pyx_t_1 = 0;
-                __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_open, __pyx_t_8, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 294, __pyx_L19_error)
+                __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_open, __pyx_t_8, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 296, __pyx_L19_error)
                 __Pyx_GOTREF(__pyx_t_1);
                 __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-                __pyx_t_44 = __Pyx_PyObject_LookupSpecial(__pyx_t_1, __pyx_n_s_exit); if (unlikely(!__pyx_t_44)) __PYX_ERR(0, 294, __pyx_L19_error)
+                __pyx_t_44 = __Pyx_PyObject_LookupSpecial(__pyx_t_1, __pyx_n_s_exit); if (unlikely(!__pyx_t_44)) __PYX_ERR(0, 296, __pyx_L19_error)
                 __Pyx_GOTREF(__pyx_t_44);
-                __pyx_t_3 = __Pyx_PyObject_LookupSpecial(__pyx_t_1, __pyx_n_s_enter); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 294, __pyx_L48_error)
+                __pyx_t_3 = __Pyx_PyObject_LookupSpecial(__pyx_t_1, __pyx_n_s_enter); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 296, __pyx_L48_error)
                 __Pyx_GOTREF(__pyx_t_3);
                 __pyx_t_7 = NULL;
                 if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_3))) {
@@ -8911,7 +8731,7 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
                 }
                 __pyx_t_8 = (__pyx_t_7) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_7) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
                 __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-                if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 294, __pyx_L48_error)
+                if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 296, __pyx_L48_error)
                 __Pyx_GOTREF(__pyx_t_8);
                 __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
                 __pyx_t_3 = __pyx_t_8;
@@ -8929,36 +8749,36 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
                       __Pyx_XDECREF_SET(__pyx_v_f, __pyx_t_3);
                       __pyx_t_3 = 0;
 
-                      /* "bonndit/tracking/tracking_prob.pyx":295
+                      /* "bonndit/tracking/tracking_prob.pyx":297
  * 							f.write(str(path.shape[0]) +'\n')
  * 						with open(saving['file'], 'a') as f:
  * 							for l in range(path.shape[0]):             # <<<<<<<<<<<<<<
  * 								f.write(' '.join(map(str, path[l])) + "\n")
  * 					else:
  */
-                      __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_path, __pyx_n_s_shape); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 295, __pyx_L54_error)
+                      __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_path, __pyx_n_s_shape); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 297, __pyx_L54_error)
                       __Pyx_GOTREF(__pyx_t_3);
-                      __pyx_t_1 = __Pyx_GetItemInt(__pyx_t_3, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 295, __pyx_L54_error)
+                      __pyx_t_1 = __Pyx_GetItemInt(__pyx_t_3, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 297, __pyx_L54_error)
                       __Pyx_GOTREF(__pyx_t_1);
                       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-                      __pyx_t_49 = __Pyx_PyInt_As_long(__pyx_t_1); if (unlikely((__pyx_t_49 == (long)-1) && PyErr_Occurred())) __PYX_ERR(0, 295, __pyx_L54_error)
+                      __pyx_t_49 = __Pyx_PyInt_As_long(__pyx_t_1); if (unlikely((__pyx_t_49 == (long)-1) && PyErr_Occurred())) __PYX_ERR(0, 297, __pyx_L54_error)
                       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
                       __pyx_t_50 = __pyx_t_49;
                       for (__pyx_t_36 = 0; __pyx_t_36 < __pyx_t_50; __pyx_t_36+=1) {
                         __pyx_v_l = __pyx_t_36;
 
-                        /* "bonndit/tracking/tracking_prob.pyx":296
+                        /* "bonndit/tracking/tracking_prob.pyx":298
  * 						with open(saving['file'], 'a') as f:
  * 							for l in range(path.shape[0]):
  * 								f.write(' '.join(map(str, path[l])) + "\n")             # <<<<<<<<<<<<<<
  * 					else:
  * 						tracks_len.append(path.shape[0])
  */
-                        __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_f, __pyx_n_s_write); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 296, __pyx_L54_error)
+                        __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_f, __pyx_n_s_write); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 298, __pyx_L54_error)
                         __Pyx_GOTREF(__pyx_t_3);
-                        __pyx_t_8 = __Pyx_GetItemInt(__pyx_v_path, __pyx_v_l, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 296, __pyx_L54_error)
+                        __pyx_t_8 = __Pyx_GetItemInt(__pyx_v_path, __pyx_v_l, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 298, __pyx_L54_error)
                         __Pyx_GOTREF(__pyx_t_8);
-                        __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 296, __pyx_L54_error)
+                        __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 298, __pyx_L54_error)
                         __Pyx_GOTREF(__pyx_t_7);
                         __Pyx_INCREF(((PyObject *)(&PyUnicode_Type)));
                         __Pyx_GIVEREF(((PyObject *)(&PyUnicode_Type)));
@@ -8966,13 +8786,13 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
                         __Pyx_GIVEREF(__pyx_t_8);
                         PyTuple_SET_ITEM(__pyx_t_7, 1, __pyx_t_8);
                         __pyx_t_8 = 0;
-                        __pyx_t_8 = __Pyx_PyObject_Call(__pyx_builtin_map, __pyx_t_7, NULL); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 296, __pyx_L54_error)
+                        __pyx_t_8 = __Pyx_PyObject_Call(__pyx_builtin_map, __pyx_t_7, NULL); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 298, __pyx_L54_error)
                         __Pyx_GOTREF(__pyx_t_8);
                         __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-                        __pyx_t_7 = PyUnicode_Join(__pyx_kp_u__15, __pyx_t_8); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 296, __pyx_L54_error)
+                        __pyx_t_7 = PyUnicode_Join(__pyx_kp_u__15, __pyx_t_8); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 298, __pyx_L54_error)
                         __Pyx_GOTREF(__pyx_t_7);
                         __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-                        __pyx_t_8 = __Pyx_PyUnicode_Concat(__pyx_t_7, __pyx_kp_u__13); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 296, __pyx_L54_error)
+                        __pyx_t_8 = __Pyx_PyUnicode_Concat(__pyx_t_7, __pyx_kp_u__13); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 298, __pyx_L54_error)
                         __Pyx_GOTREF(__pyx_t_8);
                         __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
                         __pyx_t_7 = NULL;
@@ -8988,13 +8808,13 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
                         __pyx_t_1 = (__pyx_t_7) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_7, __pyx_t_8) : __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_8);
                         __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
                         __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-                        if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 296, __pyx_L54_error)
+                        if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 298, __pyx_L54_error)
                         __Pyx_GOTREF(__pyx_t_1);
                         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
                         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
                       }
 
-                      /* "bonndit/tracking/tracking_prob.pyx":294
+                      /* "bonndit/tracking/tracking_prob.pyx":296
  * 						with open(saving['file'] + 'len', 'a') as f:
  * 							f.write(str(path.shape[0]) +'\n')
  * 						with open(saving['file'], 'a') as f:             # <<<<<<<<<<<<<<
@@ -9024,20 +8844,20 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
                     __PYX_XDEC_MEMVIEW(&__pyx_t_9, 1);
                     /*except:*/ {
                       __Pyx_AddTraceback("bonndit.tracking.tracking_prob.tracking_all", __pyx_clineno, __pyx_lineno, __pyx_filename);
-                      if (__Pyx_GetException(&__pyx_t_1, &__pyx_t_3, &__pyx_t_8) < 0) __PYX_ERR(0, 294, __pyx_L56_except_error)
+                      if (__Pyx_GetException(&__pyx_t_1, &__pyx_t_3, &__pyx_t_8) < 0) __PYX_ERR(0, 296, __pyx_L56_except_error)
                       __Pyx_GOTREF(__pyx_t_1);
                       __Pyx_GOTREF(__pyx_t_3);
                       __Pyx_GOTREF(__pyx_t_8);
-                      __pyx_t_7 = PyTuple_Pack(3, __pyx_t_1, __pyx_t_3, __pyx_t_8); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 294, __pyx_L56_except_error)
+                      __pyx_t_7 = PyTuple_Pack(3, __pyx_t_1, __pyx_t_3, __pyx_t_8); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 296, __pyx_L56_except_error)
                       __Pyx_GOTREF(__pyx_t_7);
                       __pyx_t_48 = __Pyx_PyObject_Call(__pyx_t_44, __pyx_t_7, NULL);
                       __Pyx_DECREF(__pyx_t_44); __pyx_t_44 = 0;
                       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-                      if (unlikely(!__pyx_t_48)) __PYX_ERR(0, 294, __pyx_L56_except_error)
+                      if (unlikely(!__pyx_t_48)) __PYX_ERR(0, 296, __pyx_L56_except_error)
                       __Pyx_GOTREF(__pyx_t_48);
                       __pyx_t_21 = __Pyx_PyObject_IsTrue(__pyx_t_48);
                       __Pyx_DECREF(__pyx_t_48); __pyx_t_48 = 0;
-                      if (__pyx_t_21 < 0) __PYX_ERR(0, 294, __pyx_L56_except_error)
+                      if (__pyx_t_21 < 0) __PYX_ERR(0, 296, __pyx_L56_except_error)
                       __pyx_t_2 = ((!(__pyx_t_21 != 0)) != 0);
                       if (__pyx_t_2) {
                         __Pyx_GIVEREF(__pyx_t_1);
@@ -9045,7 +8865,7 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
                         __Pyx_XGIVEREF(__pyx_t_8);
                         __Pyx_ErrRestoreWithState(__pyx_t_1, __pyx_t_3, __pyx_t_8);
                         __pyx_t_1 = 0; __pyx_t_3 = 0; __pyx_t_8 = 0; 
-                        __PYX_ERR(0, 294, __pyx_L56_except_error)
+                        __PYX_ERR(0, 296, __pyx_L56_except_error)
                       }
                       __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
                       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -9071,7 +8891,7 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
                     if (__pyx_t_44) {
                       __pyx_t_45 = __Pyx_PyObject_Call(__pyx_t_44, __pyx_tuple__14, NULL);
                       __Pyx_DECREF(__pyx_t_44); __pyx_t_44 = 0;
-                      if (unlikely(!__pyx_t_45)) __PYX_ERR(0, 294, __pyx_L19_error)
+                      if (unlikely(!__pyx_t_45)) __PYX_ERR(0, 296, __pyx_L19_error)
                       __Pyx_GOTREF(__pyx_t_45);
                       __Pyx_DECREF(__pyx_t_45); __pyx_t_45 = 0;
                     }
@@ -9086,7 +8906,7 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
                 __pyx_L67:;
               }
 
-              /* "bonndit/tracking/tracking_prob.pyx":291
+              /* "bonndit/tracking/tracking_prob.pyx":293
  * 				if path.shape[0]>5:
  * 					# Work on disk or ram. Ram might be faster but for large files disk is preferable.
  * 					if saving['file']:             # <<<<<<<<<<<<<<
@@ -9096,7 +8916,7 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
               goto __pyx_L29;
             }
 
-            /* "bonndit/tracking/tracking_prob.pyx":298
+            /* "bonndit/tracking/tracking_prob.pyx":300
  * 								f.write(' '.join(map(str, path[l])) + "\n")
  * 					else:
  * 						tracks_len.append(path.shape[0])             # <<<<<<<<<<<<<<
@@ -9104,15 +8924,15 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
  * 			except:
  */
             /*else*/ {
-              __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_v_path, __pyx_n_s_shape); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 298, __pyx_L19_error)
+              __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_v_path, __pyx_n_s_shape); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 300, __pyx_L19_error)
               __Pyx_GOTREF(__pyx_t_8);
-              __pyx_t_3 = __Pyx_GetItemInt(__pyx_t_8, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 298, __pyx_L19_error)
+              __pyx_t_3 = __Pyx_GetItemInt(__pyx_t_8, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 300, __pyx_L19_error)
               __Pyx_GOTREF(__pyx_t_3);
               __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-              __pyx_t_51 = __Pyx_PyList_Append(__pyx_v_tracks_len, __pyx_t_3); if (unlikely(__pyx_t_51 == ((int)-1))) __PYX_ERR(0, 298, __pyx_L19_error)
+              __pyx_t_51 = __Pyx_PyList_Append(__pyx_v_tracks_len, __pyx_t_3); if (unlikely(__pyx_t_51 == ((int)-1))) __PYX_ERR(0, 300, __pyx_L19_error)
               __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-              /* "bonndit/tracking/tracking_prob.pyx":299
+              /* "bonndit/tracking/tracking_prob.pyx":301
  * 					else:
  * 						tracks_len.append(path.shape[0])
  * 						tracks += [tuple(x) for x in path]             # <<<<<<<<<<<<<<
@@ -9120,32 +8940,32 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
  * 				pass
  */
               { /* enter inner scope */
-                __pyx_t_3 = PyList_New(0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 299, __pyx_L70_error)
+                __pyx_t_3 = PyList_New(0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 301, __pyx_L70_error)
                 __Pyx_GOTREF(__pyx_t_3);
                 if (likely(PyList_CheckExact(__pyx_v_path)) || PyTuple_CheckExact(__pyx_v_path)) {
                   __pyx_t_8 = __pyx_v_path; __Pyx_INCREF(__pyx_t_8); __pyx_t_34 = 0;
                   __pyx_t_52 = NULL;
                 } else {
-                  __pyx_t_34 = -1; __pyx_t_8 = PyObject_GetIter(__pyx_v_path); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 299, __pyx_L70_error)
+                  __pyx_t_34 = -1; __pyx_t_8 = PyObject_GetIter(__pyx_v_path); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 301, __pyx_L70_error)
                   __Pyx_GOTREF(__pyx_t_8);
-                  __pyx_t_52 = Py_TYPE(__pyx_t_8)->tp_iternext; if (unlikely(!__pyx_t_52)) __PYX_ERR(0, 299, __pyx_L70_error)
+                  __pyx_t_52 = Py_TYPE(__pyx_t_8)->tp_iternext; if (unlikely(!__pyx_t_52)) __PYX_ERR(0, 301, __pyx_L70_error)
                 }
                 for (;;) {
                   if (likely(!__pyx_t_52)) {
                     if (likely(PyList_CheckExact(__pyx_t_8))) {
                       if (__pyx_t_34 >= PyList_GET_SIZE(__pyx_t_8)) break;
                       #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-                      __pyx_t_1 = PyList_GET_ITEM(__pyx_t_8, __pyx_t_34); __Pyx_INCREF(__pyx_t_1); __pyx_t_34++; if (unlikely(0 < 0)) __PYX_ERR(0, 299, __pyx_L70_error)
+                      __pyx_t_1 = PyList_GET_ITEM(__pyx_t_8, __pyx_t_34); __Pyx_INCREF(__pyx_t_1); __pyx_t_34++; if (unlikely(0 < 0)) __PYX_ERR(0, 301, __pyx_L70_error)
                       #else
-                      __pyx_t_1 = PySequence_ITEM(__pyx_t_8, __pyx_t_34); __pyx_t_34++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 299, __pyx_L70_error)
+                      __pyx_t_1 = PySequence_ITEM(__pyx_t_8, __pyx_t_34); __pyx_t_34++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 301, __pyx_L70_error)
                       __Pyx_GOTREF(__pyx_t_1);
                       #endif
                     } else {
                       if (__pyx_t_34 >= PyTuple_GET_SIZE(__pyx_t_8)) break;
                       #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-                      __pyx_t_1 = PyTuple_GET_ITEM(__pyx_t_8, __pyx_t_34); __Pyx_INCREF(__pyx_t_1); __pyx_t_34++; if (unlikely(0 < 0)) __PYX_ERR(0, 299, __pyx_L70_error)
+                      __pyx_t_1 = PyTuple_GET_ITEM(__pyx_t_8, __pyx_t_34); __Pyx_INCREF(__pyx_t_1); __pyx_t_34++; if (unlikely(0 < 0)) __PYX_ERR(0, 301, __pyx_L70_error)
                       #else
-                      __pyx_t_1 = PySequence_ITEM(__pyx_t_8, __pyx_t_34); __pyx_t_34++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 299, __pyx_L70_error)
+                      __pyx_t_1 = PySequence_ITEM(__pyx_t_8, __pyx_t_34); __pyx_t_34++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 301, __pyx_L70_error)
                       __Pyx_GOTREF(__pyx_t_1);
                       #endif
                     }
@@ -9155,7 +8975,7 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
                       PyObject* exc_type = PyErr_Occurred();
                       if (exc_type) {
                         if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-                        else __PYX_ERR(0, 299, __pyx_L70_error)
+                        else __PYX_ERR(0, 301, __pyx_L70_error)
                       }
                       break;
                     }
@@ -9163,9 +8983,9 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
                   }
                   __Pyx_XDECREF_SET(__pyx_7genexpr__pyx_v_x, __pyx_t_1);
                   __pyx_t_1 = 0;
-                  __pyx_t_1 = __Pyx_PySequence_Tuple(__pyx_7genexpr__pyx_v_x); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 299, __pyx_L70_error)
+                  __pyx_t_1 = __Pyx_PySequence_Tuple(__pyx_7genexpr__pyx_v_x); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 301, __pyx_L70_error)
                   __Pyx_GOTREF(__pyx_t_1);
-                  if (unlikely(__Pyx_ListComp_Append(__pyx_t_3, (PyObject*)__pyx_t_1))) __PYX_ERR(0, 299, __pyx_L70_error)
+                  if (unlikely(__Pyx_ListComp_Append(__pyx_t_3, (PyObject*)__pyx_t_1))) __PYX_ERR(0, 301, __pyx_L70_error)
                   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
                 }
                 __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
@@ -9176,7 +8996,7 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
                 goto __pyx_L19_error;
                 __pyx_L73_exit_scope:;
               } /* exit inner scope */
-              __pyx_t_8 = PyNumber_InPlaceAdd(__pyx_v_tracks, __pyx_t_3); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 299, __pyx_L19_error)
+              __pyx_t_8 = PyNumber_InPlaceAdd(__pyx_v_tracks, __pyx_t_3); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 301, __pyx_L19_error)
               __Pyx_GOTREF(__pyx_t_8);
               __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
               __Pyx_DECREF_SET(__pyx_v_tracks, ((PyObject*)__pyx_t_8));
@@ -9184,7 +9004,7 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
             }
             __pyx_L29:;
 
-            /* "bonndit/tracking/tracking_prob.pyx":289
+            /* "bonndit/tracking/tracking_prob.pyx":291
  * 					continue
  * 			#	print(path)
  * 				if path.shape[0]>5:             # <<<<<<<<<<<<<<
@@ -9193,7 +9013,7 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
  */
           }
 
-          /* "bonndit/tracking/tracking_prob.pyx":282
+          /* "bonndit/tracking/tracking_prob.pyx":284
  * 		# seedpoint would be twice if first index is not skipped.
  * 			path = np.concatenate((path[1:,0][::-1], path[:,1]))
  * 			try:             # <<<<<<<<<<<<<<
@@ -9222,7 +9042,7 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
         __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
         __PYX_XDEC_MEMVIEW(&__pyx_t_9, 1);
 
-        /* "bonndit/tracking/tracking_prob.pyx":300
+        /* "bonndit/tracking/tracking_prob.pyx":302
  * 						tracks_len.append(path.shape[0])
  * 						tracks += [tuple(x) for x in path]
  * 			except:             # <<<<<<<<<<<<<<
@@ -9235,7 +9055,7 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
         }
         __pyx_L25_try_continue:;
 
-        /* "bonndit/tracking/tracking_prob.pyx":282
+        /* "bonndit/tracking/tracking_prob.pyx":284
  * 		# seedpoint would be twice if first index is not skipped.
  * 			path = np.concatenate((path[1:,0][::-1], path[:,1]))
  * 			try:             # <<<<<<<<<<<<<<
@@ -9257,7 +9077,7 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
       __pyx_L17_continue:;
     }
 
-    /* "bonndit/tracking/tracking_prob.pyx":252
+    /* "bonndit/tracking/tracking_prob.pyx":254
  * 	k = 0
  * 
  * 	for i in tqdm(range(m), disable=not tracking_parameters['verbose']):             # <<<<<<<<<<<<<<
@@ -9267,7 +9087,7 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
   }
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "bonndit/tracking/tracking_prob.pyx":303
+  /* "bonndit/tracking/tracking_prob.pyx":305
  * 				pass
  * 
  * 	return tracks, tracks_len             # <<<<<<<<<<<<<<
@@ -9275,7 +9095,7 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
  * 
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 303, __pyx_L1_error)
+  __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 305, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_INCREF(__pyx_v_tracks);
   __Pyx_GIVEREF(__pyx_v_tracks);
@@ -9287,7 +9107,7 @@ __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_t_40, 3, (PyObject *(*)(char *)) __
   __pyx_t_5 = 0;
   goto __pyx_L0;
 
-  /* "bonndit/tracking/tracking_prob.pyx":157
+  /* "bonndit/tracking/tracking_prob.pyx":159
  * 	return True
  * 
  * cpdef tracking_all(vector_field, wm_mask, seeds, tracking_parameters, postprocessing, ukf_parameters, trilinear_parameters, logging, saving):             # <<<<<<<<<<<<<<
@@ -9392,53 +9212,53 @@ static PyObject *__pyx_pw_7bonndit_8tracking_13tracking_prob_1tracking_all(PyObj
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_wm_mask)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("tracking_all", 1, 9, 9, 1); __PYX_ERR(0, 157, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("tracking_all", 1, 9, 9, 1); __PYX_ERR(0, 159, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_seeds)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("tracking_all", 1, 9, 9, 2); __PYX_ERR(0, 157, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("tracking_all", 1, 9, 9, 2); __PYX_ERR(0, 159, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  3:
         if (likely((values[3] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_tracking_parameters)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("tracking_all", 1, 9, 9, 3); __PYX_ERR(0, 157, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("tracking_all", 1, 9, 9, 3); __PYX_ERR(0, 159, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  4:
         if (likely((values[4] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_postprocessing)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("tracking_all", 1, 9, 9, 4); __PYX_ERR(0, 157, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("tracking_all", 1, 9, 9, 4); __PYX_ERR(0, 159, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  5:
         if (likely((values[5] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_ukf_parameters)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("tracking_all", 1, 9, 9, 5); __PYX_ERR(0, 157, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("tracking_all", 1, 9, 9, 5); __PYX_ERR(0, 159, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  6:
         if (likely((values[6] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_trilinear_parameters)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("tracking_all", 1, 9, 9, 6); __PYX_ERR(0, 157, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("tracking_all", 1, 9, 9, 6); __PYX_ERR(0, 159, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  7:
         if (likely((values[7] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_logging)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("tracking_all", 1, 9, 9, 7); __PYX_ERR(0, 157, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("tracking_all", 1, 9, 9, 7); __PYX_ERR(0, 159, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  8:
         if (likely((values[8] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_saving)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("tracking_all", 1, 9, 9, 8); __PYX_ERR(0, 157, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("tracking_all", 1, 9, 9, 8); __PYX_ERR(0, 159, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "tracking_all") < 0)) __PYX_ERR(0, 157, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "tracking_all") < 0)) __PYX_ERR(0, 159, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 9) {
       goto __pyx_L5_argtuple_error;
@@ -9465,7 +9285,7 @@ static PyObject *__pyx_pw_7bonndit_8tracking_13tracking_prob_1tracking_all(PyObj
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("tracking_all", 1, 9, 9, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 157, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("tracking_all", 1, 9, 9, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 159, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("bonndit.tracking.tracking_prob.tracking_all", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -9487,7 +9307,7 @@ static PyObject *__pyx_pf_7bonndit_8tracking_13tracking_prob_tracking_all(CYTHON
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("tracking_all", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_7bonndit_8tracking_13tracking_prob_tracking_all(__pyx_v_vector_field, __pyx_v_wm_mask, __pyx_v_seeds, __pyx_v_tracking_parameters, __pyx_v_postprocessing, __pyx_v_ukf_parameters, __pyx_v_trilinear_parameters, __pyx_v_logging, __pyx_v_saving, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 157, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_7bonndit_8tracking_13tracking_prob_tracking_all(__pyx_v_vector_field, __pyx_v_wm_mask, __pyx_v_seeds, __pyx_v_tracking_parameters, __pyx_v_postprocessing, __pyx_v_ukf_parameters, __pyx_v_trilinear_parameters, __pyx_v_logging, __pyx_v_saving, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 159, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -24185,8 +24005,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_u_fortran, __pyx_k_fortran, sizeof(__pyx_k_fortran), 0, 1, 0, 1},
   {&__pyx_n_s_getstate, __pyx_k_getstate, sizeof(__pyx_k_getstate), 0, 0, 1, 1},
   {&__pyx_kp_s_got_differing_extents_in_dimensi, __pyx_k_got_differing_extents_in_dimensi, sizeof(__pyx_k_got_differing_extents_in_dimensi), 0, 0, 1, 0},
-  {&__pyx_kp_u_i_break_fourth_at_k, __pyx_k_i_break_fourth_at_k, sizeof(__pyx_k_i_break_fourth_at_k), 0, 1, 0, 0},
-  {&__pyx_kp_u_i_break_third_at_k, __pyx_k_i_break_third_at_k, sizeof(__pyx_k_i_break_third_at_k), 0, 1, 0, 0},
   {&__pyx_n_s_id, __pyx_k_id, sizeof(__pyx_k_id), 0, 0, 1, 1},
   {&__pyx_n_s_import, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
   {&__pyx_n_u_inclusion, __pyx_k_inclusion, sizeof(__pyx_k_inclusion), 0, 1, 0, 1},
@@ -24220,7 +24038,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_path, __pyx_k_path, sizeof(__pyx_k_path), 0, 0, 1, 1},
   {&__pyx_n_s_pickle, __pyx_k_pickle, sizeof(__pyx_k_pickle), 0, 0, 1, 1},
   {&__pyx_n_s_postprocessing, __pyx_k_postprocessing, sizeof(__pyx_k_postprocessing), 0, 0, 1, 1},
-  {&__pyx_n_s_print, __pyx_k_print, sizeof(__pyx_k_print), 0, 0, 1, 1},
   {&__pyx_n_u_prob, __pyx_k_prob, sizeof(__pyx_k_prob), 0, 1, 0, 1},
   {&__pyx_n_s_prob_chosen, __pyx_k_prob_chosen, sizeof(__pyx_k_prob_chosen), 0, 0, 1, 1},
   {&__pyx_n_s_prob_others_0, __pyx_k_prob_others_0, sizeof(__pyx_k_prob_others_0), 0, 0, 1, 1},
@@ -24282,9 +24099,8 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
 };
 static CYTHON_SMALL_CODE int __Pyx_InitCachedBuiltins(void) {
   __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 46, __pyx_L1_error)
-  __pyx_builtin_print = __Pyx_GetBuiltinName(__pyx_n_s_print); if (!__pyx_builtin_print) __PYX_ERR(0, 112, __pyx_L1_error)
-  __pyx_builtin_open = __Pyx_GetBuiltinName(__pyx_n_s_open); if (!__pyx_builtin_open) __PYX_ERR(0, 292, __pyx_L1_error)
-  __pyx_builtin_map = __Pyx_GetBuiltinName(__pyx_n_s_map); if (!__pyx_builtin_map) __PYX_ERR(0, 296, __pyx_L1_error)
+  __pyx_builtin_open = __Pyx_GetBuiltinName(__pyx_n_s_open); if (!__pyx_builtin_open) __PYX_ERR(0, 294, __pyx_L1_error)
+  __pyx_builtin_map = __Pyx_GetBuiltinName(__pyx_n_s_map); if (!__pyx_builtin_map) __PYX_ERR(0, 298, __pyx_L1_error)
   __pyx_builtin_TypeError = __Pyx_GetBuiltinName(__pyx_n_s_TypeError); if (!__pyx_builtin_TypeError) __PYX_ERR(1, 14, __pyx_L1_error)
   __pyx_builtin_KeyError = __Pyx_GetBuiltinName(__pyx_n_s_KeyError); if (!__pyx_builtin_KeyError) __PYX_ERR(1, 18, __pyx_L1_error)
   __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) __PYX_ERR(1, 19, __pyx_L1_error)
@@ -24302,106 +24118,106 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "bonndit/tracking/tracking_prob.pyx":212
+  /* "bonndit/tracking/tracking_prob.pyx":214
  * 
  * 	trafo = <Trafo> Trafo(np.float64(tracking_parameters['space directions']), np.float64(tracking_parameters['space origin']))
  * 	trafo_matrix = np.zeros((4,4))             # <<<<<<<<<<<<<<
  * 	trafo_matrix[:3,:3] = tracking_parameters['space directions']
  * 	trafo_matrix[:3,3] = tracking_parameters['space origin']
  */
-  __pyx_tuple_ = PyTuple_Pack(2, __pyx_int_4, __pyx_int_4); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 212, __pyx_L1_error)
+  __pyx_tuple_ = PyTuple_Pack(2, __pyx_int_4, __pyx_int_4); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 214, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple_);
   __Pyx_GIVEREF(__pyx_tuple_);
 
-  /* "bonndit/tracking/tracking_prob.pyx":213
+  /* "bonndit/tracking/tracking_prob.pyx":215
  * 	trafo = <Trafo> Trafo(np.float64(tracking_parameters['space directions']), np.float64(tracking_parameters['space origin']))
  * 	trafo_matrix = np.zeros((4,4))
  * 	trafo_matrix[:3,:3] = tracking_parameters['space directions']             # <<<<<<<<<<<<<<
  * 	trafo_matrix[:3,3] = tracking_parameters['space origin']
  * 	trafo_matrix[3,3] = 1
  */
-  __pyx_slice__2 = PySlice_New(Py_None, __pyx_int_3, Py_None); if (unlikely(!__pyx_slice__2)) __PYX_ERR(0, 213, __pyx_L1_error)
+  __pyx_slice__2 = PySlice_New(Py_None, __pyx_int_3, Py_None); if (unlikely(!__pyx_slice__2)) __PYX_ERR(0, 215, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_slice__2);
   __Pyx_GIVEREF(__pyx_slice__2);
-  __pyx_tuple__3 = PyTuple_Pack(2, __pyx_slice__2, __pyx_slice__2); if (unlikely(!__pyx_tuple__3)) __PYX_ERR(0, 213, __pyx_L1_error)
+  __pyx_tuple__3 = PyTuple_Pack(2, __pyx_slice__2, __pyx_slice__2); if (unlikely(!__pyx_tuple__3)) __PYX_ERR(0, 215, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__3);
   __Pyx_GIVEREF(__pyx_tuple__3);
 
-  /* "bonndit/tracking/tracking_prob.pyx":214
+  /* "bonndit/tracking/tracking_prob.pyx":216
  * 	trafo_matrix = np.zeros((4,4))
  * 	trafo_matrix[:3,:3] = tracking_parameters['space directions']
  * 	trafo_matrix[:3,3] = tracking_parameters['space origin']             # <<<<<<<<<<<<<<
  * 	trafo_matrix[3,3] = 1
  * 	validator = Validator(wm_mask,np.array(wm_mask.shape, dtype=np.intc), tracking_parameters['wmmin'], postprocessing['inclusion'], postprocessing['exclusion'], tracking_parameters['max_angle'], trafo, tracking_parameters['stepsize'])
  */
-  __pyx_tuple__4 = PyTuple_Pack(2, __pyx_slice__2, __pyx_int_3); if (unlikely(!__pyx_tuple__4)) __PYX_ERR(0, 214, __pyx_L1_error)
+  __pyx_tuple__4 = PyTuple_Pack(2, __pyx_slice__2, __pyx_int_3); if (unlikely(!__pyx_tuple__4)) __PYX_ERR(0, 216, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__4);
   __Pyx_GIVEREF(__pyx_tuple__4);
 
-  /* "bonndit/tracking/tracking_prob.pyx":215
+  /* "bonndit/tracking/tracking_prob.pyx":217
  * 	trafo_matrix[:3,:3] = tracking_parameters['space directions']
  * 	trafo_matrix[:3,3] = tracking_parameters['space origin']
  * 	trafo_matrix[3,3] = 1             # <<<<<<<<<<<<<<
  * 	validator = Validator(wm_mask,np.array(wm_mask.shape, dtype=np.intc), tracking_parameters['wmmin'], postprocessing['inclusion'], postprocessing['exclusion'], tracking_parameters['max_angle'], trafo, tracking_parameters['stepsize'])
  * 
  */
-  __pyx_tuple__5 = PyTuple_Pack(2, __pyx_int_3, __pyx_int_3); if (unlikely(!__pyx_tuple__5)) __PYX_ERR(0, 215, __pyx_L1_error)
+  __pyx_tuple__5 = PyTuple_Pack(2, __pyx_int_3, __pyx_int_3); if (unlikely(!__pyx_tuple__5)) __PYX_ERR(0, 217, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__5);
   __Pyx_GIVEREF(__pyx_tuple__5);
 
-  /* "bonndit/tracking/tracking_prob.pyx":266
+  /* "bonndit/tracking/tracking_prob.pyx":268
  * 			if "Deterministic" in tracking_parameters['prob'] or tracking_parameters['ukf'] == "LowRank":
  * 				for l in range(3):
  * 					paths[k,j, 0, 0,l] +=  np.random.normal(0,1)             # <<<<<<<<<<<<<<
  * 					paths[k,j, 0, 1,l] = paths[k,j, 0, 0,l]
  * 
  */
-  __pyx_tuple__6 = PyTuple_Pack(2, __pyx_int_0, __pyx_int_1); if (unlikely(!__pyx_tuple__6)) __PYX_ERR(0, 266, __pyx_L1_error)
+  __pyx_tuple__6 = PyTuple_Pack(2, __pyx_int_0, __pyx_int_1); if (unlikely(!__pyx_tuple__6)) __PYX_ERR(0, 268, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__6);
   __Pyx_GIVEREF(__pyx_tuple__6);
 
-  /* "bonndit/tracking/tracking_prob.pyx":281
+  /* "bonndit/tracking/tracking_prob.pyx":283
  * 			path = np.concatenate((np.asarray(paths[k,j]),np.asarray(features[k,j])), axis=-1)
  * 		# seedpoint would be twice if first index is not skipped.
  * 			path = np.concatenate((path[1:,0][::-1], path[:,1]))             # <<<<<<<<<<<<<<
  * 			try:
  * 				to_exclude = np.all(path[:,:3] == 0, axis=1)
  */
-  __pyx_slice__7 = PySlice_New(__pyx_int_1, Py_None, Py_None); if (unlikely(!__pyx_slice__7)) __PYX_ERR(0, 281, __pyx_L1_error)
+  __pyx_slice__7 = PySlice_New(__pyx_int_1, Py_None, Py_None); if (unlikely(!__pyx_slice__7)) __PYX_ERR(0, 283, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_slice__7);
   __Pyx_GIVEREF(__pyx_slice__7);
-  __pyx_tuple__8 = PyTuple_Pack(2, __pyx_slice__7, __pyx_int_0); if (unlikely(!__pyx_tuple__8)) __PYX_ERR(0, 281, __pyx_L1_error)
+  __pyx_tuple__8 = PyTuple_Pack(2, __pyx_slice__7, __pyx_int_0); if (unlikely(!__pyx_tuple__8)) __PYX_ERR(0, 283, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__8);
   __Pyx_GIVEREF(__pyx_tuple__8);
-  __pyx_slice__9 = PySlice_New(Py_None, Py_None, __pyx_int_neg_1); if (unlikely(!__pyx_slice__9)) __PYX_ERR(0, 281, __pyx_L1_error)
+  __pyx_slice__9 = PySlice_New(Py_None, Py_None, __pyx_int_neg_1); if (unlikely(!__pyx_slice__9)) __PYX_ERR(0, 283, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_slice__9);
   __Pyx_GIVEREF(__pyx_slice__9);
-  __pyx_slice__10 = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice__10)) __PYX_ERR(0, 281, __pyx_L1_error)
+  __pyx_slice__10 = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice__10)) __PYX_ERR(0, 283, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_slice__10);
   __Pyx_GIVEREF(__pyx_slice__10);
-  __pyx_tuple__11 = PyTuple_Pack(2, __pyx_slice__10, __pyx_int_1); if (unlikely(!__pyx_tuple__11)) __PYX_ERR(0, 281, __pyx_L1_error)
+  __pyx_tuple__11 = PyTuple_Pack(2, __pyx_slice__10, __pyx_int_1); if (unlikely(!__pyx_tuple__11)) __PYX_ERR(0, 283, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__11);
   __Pyx_GIVEREF(__pyx_tuple__11);
 
-  /* "bonndit/tracking/tracking_prob.pyx":283
+  /* "bonndit/tracking/tracking_prob.pyx":285
  * 			path = np.concatenate((path[1:,0][::-1], path[:,1]))
  * 			try:
  * 				to_exclude = np.all(path[:,:3] == 0, axis=1)             # <<<<<<<<<<<<<<
  * 
  * 				path = path[~to_exclude]
  */
-  __pyx_tuple__12 = PyTuple_Pack(2, __pyx_slice__10, __pyx_slice__2); if (unlikely(!__pyx_tuple__12)) __PYX_ERR(0, 283, __pyx_L1_error)
+  __pyx_tuple__12 = PyTuple_Pack(2, __pyx_slice__10, __pyx_slice__2); if (unlikely(!__pyx_tuple__12)) __PYX_ERR(0, 285, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__12);
   __Pyx_GIVEREF(__pyx_tuple__12);
 
-  /* "bonndit/tracking/tracking_prob.pyx":292
+  /* "bonndit/tracking/tracking_prob.pyx":294
  * 					# Work on disk or ram. Ram might be faster but for large files disk is preferable.
  * 					if saving['file']:
  * 						with open(saving['file'] + 'len', 'a') as f:             # <<<<<<<<<<<<<<
  * 							f.write(str(path.shape[0]) +'\n')
  * 						with open(saving['file'], 'a') as f:
  */
-  __pyx_tuple__14 = PyTuple_Pack(3, Py_None, Py_None, Py_None); if (unlikely(!__pyx_tuple__14)) __PYX_ERR(0, 292, __pyx_L1_error)
+  __pyx_tuple__14 = PyTuple_Pack(3, Py_None, Py_None, Py_None); if (unlikely(!__pyx_tuple__14)) __PYX_ERR(0, 294, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__14);
   __Pyx_GIVEREF(__pyx_tuple__14);
 
@@ -25663,228 +25479,6 @@ static CYTHON_INLINE long __Pyx_div_long(long a, long b) {
     return q;
 }
 
-/* PyCFunctionFastCall */
-#if CYTHON_FAST_PYCCALL
-static CYTHON_INLINE PyObject * __Pyx_PyCFunction_FastCall(PyObject *func_obj, PyObject **args, Py_ssize_t nargs) {
-    PyCFunctionObject *func = (PyCFunctionObject*)func_obj;
-    PyCFunction meth = PyCFunction_GET_FUNCTION(func);
-    PyObject *self = PyCFunction_GET_SELF(func);
-    int flags = PyCFunction_GET_FLAGS(func);
-    assert(PyCFunction_Check(func));
-    assert(METH_FASTCALL == (flags & ~(METH_CLASS | METH_STATIC | METH_COEXIST | METH_KEYWORDS | METH_STACKLESS)));
-    assert(nargs >= 0);
-    assert(nargs == 0 || args != NULL);
-    /* _PyCFunction_FastCallDict() must not be called with an exception set,
-       because it may clear it (directly or indirectly) and so the
-       caller loses its exception */
-    assert(!PyErr_Occurred());
-    if ((PY_VERSION_HEX < 0x030700A0) || unlikely(flags & METH_KEYWORDS)) {
-        return (*((__Pyx_PyCFunctionFastWithKeywords)(void*)meth)) (self, args, nargs, NULL);
-    } else {
-        return (*((__Pyx_PyCFunctionFast)(void*)meth)) (self, args, nargs);
-    }
-}
-#endif
-
-/* PyFunctionFastCall */
-#if CYTHON_FAST_PYCALL
-static PyObject* __Pyx_PyFunction_FastCallNoKw(PyCodeObject *co, PyObject **args, Py_ssize_t na,
-                                               PyObject *globals) {
-    PyFrameObject *f;
-    PyThreadState *tstate = __Pyx_PyThreadState_Current;
-    PyObject **fastlocals;
-    Py_ssize_t i;
-    PyObject *result;
-    assert(globals != NULL);
-    /* XXX Perhaps we should create a specialized
-       PyFrame_New() that doesn't take locals, but does
-       take builtins without sanity checking them.
-       */
-    assert(tstate != NULL);
-    f = PyFrame_New(tstate, co, globals, NULL);
-    if (f == NULL) {
-        return NULL;
-    }
-    fastlocals = __Pyx_PyFrame_GetLocalsplus(f);
-    for (i = 0; i < na; i++) {
-        Py_INCREF(*args);
-        fastlocals[i] = *args++;
-    }
-    result = PyEval_EvalFrameEx(f,0);
-    ++tstate->recursion_depth;
-    Py_DECREF(f);
-    --tstate->recursion_depth;
-    return result;
-}
-#if 1 || PY_VERSION_HEX < 0x030600B1
-static PyObject *__Pyx_PyFunction_FastCallDict(PyObject *func, PyObject **args, Py_ssize_t nargs, PyObject *kwargs) {
-    PyCodeObject *co = (PyCodeObject *)PyFunction_GET_CODE(func);
-    PyObject *globals = PyFunction_GET_GLOBALS(func);
-    PyObject *argdefs = PyFunction_GET_DEFAULTS(func);
-    PyObject *closure;
-#if PY_MAJOR_VERSION >= 3
-    PyObject *kwdefs;
-#endif
-    PyObject *kwtuple, **k;
-    PyObject **d;
-    Py_ssize_t nd;
-    Py_ssize_t nk;
-    PyObject *result;
-    assert(kwargs == NULL || PyDict_Check(kwargs));
-    nk = kwargs ? PyDict_Size(kwargs) : 0;
-    if (Py_EnterRecursiveCall((char*)" while calling a Python object")) {
-        return NULL;
-    }
-    if (
-#if PY_MAJOR_VERSION >= 3
-            co->co_kwonlyargcount == 0 &&
-#endif
-            likely(kwargs == NULL || nk == 0) &&
-            co->co_flags == (CO_OPTIMIZED | CO_NEWLOCALS | CO_NOFREE)) {
-        if (argdefs == NULL && co->co_argcount == nargs) {
-            result = __Pyx_PyFunction_FastCallNoKw(co, args, nargs, globals);
-            goto done;
-        }
-        else if (nargs == 0 && argdefs != NULL
-                 && co->co_argcount == Py_SIZE(argdefs)) {
-            /* function called with no arguments, but all parameters have
-               a default value: use default values as arguments .*/
-            args = &PyTuple_GET_ITEM(argdefs, 0);
-            result =__Pyx_PyFunction_FastCallNoKw(co, args, Py_SIZE(argdefs), globals);
-            goto done;
-        }
-    }
-    if (kwargs != NULL) {
-        Py_ssize_t pos, i;
-        kwtuple = PyTuple_New(2 * nk);
-        if (kwtuple == NULL) {
-            result = NULL;
-            goto done;
-        }
-        k = &PyTuple_GET_ITEM(kwtuple, 0);
-        pos = i = 0;
-        while (PyDict_Next(kwargs, &pos, &k[i], &k[i+1])) {
-            Py_INCREF(k[i]);
-            Py_INCREF(k[i+1]);
-            i += 2;
-        }
-        nk = i / 2;
-    }
-    else {
-        kwtuple = NULL;
-        k = NULL;
-    }
-    closure = PyFunction_GET_CLOSURE(func);
-#if PY_MAJOR_VERSION >= 3
-    kwdefs = PyFunction_GET_KW_DEFAULTS(func);
-#endif
-    if (argdefs != NULL) {
-        d = &PyTuple_GET_ITEM(argdefs, 0);
-        nd = Py_SIZE(argdefs);
-    }
-    else {
-        d = NULL;
-        nd = 0;
-    }
-#if PY_MAJOR_VERSION >= 3
-    result = PyEval_EvalCodeEx((PyObject*)co, globals, (PyObject *)NULL,
-                               args, (int)nargs,
-                               k, (int)nk,
-                               d, (int)nd, kwdefs, closure);
-#else
-    result = PyEval_EvalCodeEx(co, globals, (PyObject *)NULL,
-                               args, (int)nargs,
-                               k, (int)nk,
-                               d, (int)nd, closure);
-#endif
-    Py_XDECREF(kwtuple);
-done:
-    Py_LeaveRecursiveCall();
-    return result;
-}
-#endif
-#endif
-
-/* PyObjectCall */
-#if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw) {
-    PyObject *result;
-    ternaryfunc call = Py_TYPE(func)->tp_call;
-    if (unlikely(!call))
-        return PyObject_Call(func, arg, kw);
-    if (unlikely(Py_EnterRecursiveCall((char*)" while calling a Python object")))
-        return NULL;
-    result = (*call)(func, arg, kw);
-    Py_LeaveRecursiveCall();
-    if (unlikely(!result) && unlikely(!PyErr_Occurred())) {
-        PyErr_SetString(
-            PyExc_SystemError,
-            "NULL result without error in PyObject_Call");
-    }
-    return result;
-}
-#endif
-
-/* PyObjectCallMethO */
-#if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE PyObject* __Pyx_PyObject_CallMethO(PyObject *func, PyObject *arg) {
-    PyObject *self, *result;
-    PyCFunction cfunc;
-    cfunc = PyCFunction_GET_FUNCTION(func);
-    self = PyCFunction_GET_SELF(func);
-    if (unlikely(Py_EnterRecursiveCall((char*)" while calling a Python object")))
-        return NULL;
-    result = cfunc(self, arg);
-    Py_LeaveRecursiveCall();
-    if (unlikely(!result) && unlikely(!PyErr_Occurred())) {
-        PyErr_SetString(
-            PyExc_SystemError,
-            "NULL result without error in PyObject_Call");
-    }
-    return result;
-}
-#endif
-
-/* PyObjectCallOneArg */
-#if CYTHON_COMPILING_IN_CPYTHON
-static PyObject* __Pyx__PyObject_CallOneArg(PyObject *func, PyObject *arg) {
-    PyObject *result;
-    PyObject *args = PyTuple_New(1);
-    if (unlikely(!args)) return NULL;
-    Py_INCREF(arg);
-    PyTuple_SET_ITEM(args, 0, arg);
-    result = __Pyx_PyObject_Call(func, args, NULL);
-    Py_DECREF(args);
-    return result;
-}
-static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg) {
-#if CYTHON_FAST_PYCALL
-    if (PyFunction_Check(func)) {
-        return __Pyx_PyFunction_FastCall(func, &arg, 1);
-    }
-#endif
-    if (likely(PyCFunction_Check(func))) {
-        if (likely(PyCFunction_GET_FLAGS(func) & METH_O)) {
-            return __Pyx_PyObject_CallMethO(func, arg);
-#if CYTHON_FAST_PYCCALL
-        } else if (__Pyx_PyFastCFunction_Check(func)) {
-            return __Pyx_PyCFunction_FastCall(func, &arg, 1);
-#endif
-        }
-    }
-    return __Pyx__PyObject_CallOneArg(func, arg);
-}
-#else
-static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg) {
-    PyObject *result;
-    PyObject *args = PyTuple_Pack(1, arg);
-    if (unlikely(!args)) return NULL;
-    result = __Pyx_PyObject_Call(func, args, NULL);
-    Py_DECREF(args);
-    return result;
-}
-#endif
-
 /* DivInt[int] */
 static CYTHON_INLINE int __Pyx_div_int(int a, int b) {
     int q = a / b;
@@ -26073,6 +25667,168 @@ return_ne:
 #endif
 }
 
+/* PyObjectCall */
+#if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw) {
+    PyObject *result;
+    ternaryfunc call = Py_TYPE(func)->tp_call;
+    if (unlikely(!call))
+        return PyObject_Call(func, arg, kw);
+    if (unlikely(Py_EnterRecursiveCall((char*)" while calling a Python object")))
+        return NULL;
+    result = (*call)(func, arg, kw);
+    Py_LeaveRecursiveCall();
+    if (unlikely(!result) && unlikely(!PyErr_Occurred())) {
+        PyErr_SetString(
+            PyExc_SystemError,
+            "NULL result without error in PyObject_Call");
+    }
+    return result;
+}
+#endif
+
+/* PyCFunctionFastCall */
+#if CYTHON_FAST_PYCCALL
+static CYTHON_INLINE PyObject * __Pyx_PyCFunction_FastCall(PyObject *func_obj, PyObject **args, Py_ssize_t nargs) {
+    PyCFunctionObject *func = (PyCFunctionObject*)func_obj;
+    PyCFunction meth = PyCFunction_GET_FUNCTION(func);
+    PyObject *self = PyCFunction_GET_SELF(func);
+    int flags = PyCFunction_GET_FLAGS(func);
+    assert(PyCFunction_Check(func));
+    assert(METH_FASTCALL == (flags & ~(METH_CLASS | METH_STATIC | METH_COEXIST | METH_KEYWORDS | METH_STACKLESS)));
+    assert(nargs >= 0);
+    assert(nargs == 0 || args != NULL);
+    /* _PyCFunction_FastCallDict() must not be called with an exception set,
+       because it may clear it (directly or indirectly) and so the
+       caller loses its exception */
+    assert(!PyErr_Occurred());
+    if ((PY_VERSION_HEX < 0x030700A0) || unlikely(flags & METH_KEYWORDS)) {
+        return (*((__Pyx_PyCFunctionFastWithKeywords)(void*)meth)) (self, args, nargs, NULL);
+    } else {
+        return (*((__Pyx_PyCFunctionFast)(void*)meth)) (self, args, nargs);
+    }
+}
+#endif
+
+/* PyFunctionFastCall */
+#if CYTHON_FAST_PYCALL
+static PyObject* __Pyx_PyFunction_FastCallNoKw(PyCodeObject *co, PyObject **args, Py_ssize_t na,
+                                               PyObject *globals) {
+    PyFrameObject *f;
+    PyThreadState *tstate = __Pyx_PyThreadState_Current;
+    PyObject **fastlocals;
+    Py_ssize_t i;
+    PyObject *result;
+    assert(globals != NULL);
+    /* XXX Perhaps we should create a specialized
+       PyFrame_New() that doesn't take locals, but does
+       take builtins without sanity checking them.
+       */
+    assert(tstate != NULL);
+    f = PyFrame_New(tstate, co, globals, NULL);
+    if (f == NULL) {
+        return NULL;
+    }
+    fastlocals = __Pyx_PyFrame_GetLocalsplus(f);
+    for (i = 0; i < na; i++) {
+        Py_INCREF(*args);
+        fastlocals[i] = *args++;
+    }
+    result = PyEval_EvalFrameEx(f,0);
+    ++tstate->recursion_depth;
+    Py_DECREF(f);
+    --tstate->recursion_depth;
+    return result;
+}
+#if 1 || PY_VERSION_HEX < 0x030600B1
+static PyObject *__Pyx_PyFunction_FastCallDict(PyObject *func, PyObject **args, Py_ssize_t nargs, PyObject *kwargs) {
+    PyCodeObject *co = (PyCodeObject *)PyFunction_GET_CODE(func);
+    PyObject *globals = PyFunction_GET_GLOBALS(func);
+    PyObject *argdefs = PyFunction_GET_DEFAULTS(func);
+    PyObject *closure;
+#if PY_MAJOR_VERSION >= 3
+    PyObject *kwdefs;
+#endif
+    PyObject *kwtuple, **k;
+    PyObject **d;
+    Py_ssize_t nd;
+    Py_ssize_t nk;
+    PyObject *result;
+    assert(kwargs == NULL || PyDict_Check(kwargs));
+    nk = kwargs ? PyDict_Size(kwargs) : 0;
+    if (Py_EnterRecursiveCall((char*)" while calling a Python object")) {
+        return NULL;
+    }
+    if (
+#if PY_MAJOR_VERSION >= 3
+            co->co_kwonlyargcount == 0 &&
+#endif
+            likely(kwargs == NULL || nk == 0) &&
+            co->co_flags == (CO_OPTIMIZED | CO_NEWLOCALS | CO_NOFREE)) {
+        if (argdefs == NULL && co->co_argcount == nargs) {
+            result = __Pyx_PyFunction_FastCallNoKw(co, args, nargs, globals);
+            goto done;
+        }
+        else if (nargs == 0 && argdefs != NULL
+                 && co->co_argcount == Py_SIZE(argdefs)) {
+            /* function called with no arguments, but all parameters have
+               a default value: use default values as arguments .*/
+            args = &PyTuple_GET_ITEM(argdefs, 0);
+            result =__Pyx_PyFunction_FastCallNoKw(co, args, Py_SIZE(argdefs), globals);
+            goto done;
+        }
+    }
+    if (kwargs != NULL) {
+        Py_ssize_t pos, i;
+        kwtuple = PyTuple_New(2 * nk);
+        if (kwtuple == NULL) {
+            result = NULL;
+            goto done;
+        }
+        k = &PyTuple_GET_ITEM(kwtuple, 0);
+        pos = i = 0;
+        while (PyDict_Next(kwargs, &pos, &k[i], &k[i+1])) {
+            Py_INCREF(k[i]);
+            Py_INCREF(k[i+1]);
+            i += 2;
+        }
+        nk = i / 2;
+    }
+    else {
+        kwtuple = NULL;
+        k = NULL;
+    }
+    closure = PyFunction_GET_CLOSURE(func);
+#if PY_MAJOR_VERSION >= 3
+    kwdefs = PyFunction_GET_KW_DEFAULTS(func);
+#endif
+    if (argdefs != NULL) {
+        d = &PyTuple_GET_ITEM(argdefs, 0);
+        nd = Py_SIZE(argdefs);
+    }
+    else {
+        d = NULL;
+        nd = 0;
+    }
+#if PY_MAJOR_VERSION >= 3
+    result = PyEval_EvalCodeEx((PyObject*)co, globals, (PyObject *)NULL,
+                               args, (int)nargs,
+                               k, (int)nk,
+                               d, (int)nd, kwdefs, closure);
+#else
+    result = PyEval_EvalCodeEx(co, globals, (PyObject *)NULL,
+                               args, (int)nargs,
+                               k, (int)nk,
+                               d, (int)nd, closure);
+#endif
+    Py_XDECREF(kwtuple);
+done:
+    Py_LeaveRecursiveCall();
+    return result;
+}
+#endif
+#endif
+
 /* PyObjectCall2Args */
 static CYTHON_UNUSED PyObject* __Pyx_PyObject_Call2Args(PyObject* function, PyObject* arg1, PyObject* arg2) {
     PyObject *args, *result = NULL;
@@ -26101,6 +25857,66 @@ static CYTHON_UNUSED PyObject* __Pyx_PyObject_Call2Args(PyObject* function, PyOb
 done:
     return result;
 }
+
+/* PyObjectCallMethO */
+#if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE PyObject* __Pyx_PyObject_CallMethO(PyObject *func, PyObject *arg) {
+    PyObject *self, *result;
+    PyCFunction cfunc;
+    cfunc = PyCFunction_GET_FUNCTION(func);
+    self = PyCFunction_GET_SELF(func);
+    if (unlikely(Py_EnterRecursiveCall((char*)" while calling a Python object")))
+        return NULL;
+    result = cfunc(self, arg);
+    Py_LeaveRecursiveCall();
+    if (unlikely(!result) && unlikely(!PyErr_Occurred())) {
+        PyErr_SetString(
+            PyExc_SystemError,
+            "NULL result without error in PyObject_Call");
+    }
+    return result;
+}
+#endif
+
+/* PyObjectCallOneArg */
+#if CYTHON_COMPILING_IN_CPYTHON
+static PyObject* __Pyx__PyObject_CallOneArg(PyObject *func, PyObject *arg) {
+    PyObject *result;
+    PyObject *args = PyTuple_New(1);
+    if (unlikely(!args)) return NULL;
+    Py_INCREF(arg);
+    PyTuple_SET_ITEM(args, 0, arg);
+    result = __Pyx_PyObject_Call(func, args, NULL);
+    Py_DECREF(args);
+    return result;
+}
+static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg) {
+#if CYTHON_FAST_PYCALL
+    if (PyFunction_Check(func)) {
+        return __Pyx_PyFunction_FastCall(func, &arg, 1);
+    }
+#endif
+    if (likely(PyCFunction_Check(func))) {
+        if (likely(PyCFunction_GET_FLAGS(func) & METH_O)) {
+            return __Pyx_PyObject_CallMethO(func, arg);
+#if CYTHON_FAST_PYCCALL
+        } else if (__Pyx_PyFastCFunction_Check(func)) {
+            return __Pyx_PyCFunction_FastCall(func, &arg, 1);
+#endif
+        }
+    }
+    return __Pyx__PyObject_CallOneArg(func, arg);
+}
+#else
+static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg) {
+    PyObject *result;
+    PyObject *args = PyTuple_Pack(1, arg);
+    if (unlikely(!args)) return NULL;
+    result = __Pyx_PyObject_Call(func, args, NULL);
+    Py_DECREF(args);
+    return result;
+}
+#endif
 
 /* PyDictVersioning */
 #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_TYPE_SLOTS

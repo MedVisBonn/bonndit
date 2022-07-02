@@ -11,7 +11,7 @@
         ],
         "depends": [],
         "include_dirs": [
-            "/tmp/pip-build-env-au8u3dlf/overlay/lib/python3.8/site-packages/numpy/core/include",
+            "/tmp/pip-build-env-u5xuccww/overlay/lib/python3.8/site-packages/numpy/core/include",
             "."
         ],
         "name": "bonndit.tracking.alignedDirection",
