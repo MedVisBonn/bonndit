@@ -163,16 +163,60 @@ cdef class TrilinearFODF(Interpolation):
 		self.fodf1 = np.zeros((16,))
 		self.length = np.zeros((3,))
 		self.empty = np.zeros((15,))
-		self.sigma_1 = kwargs['sigma_1']
+		if kwargs['r'] == -1:
+			kwargs['r'] = 2
+			while True:
+				kwargs['r'] += 1
+				if len(np.array(
+					[[i, j, k] for i in range(-int(kwargs['r']), int(kwargs['r']) + 1) for j in range(-int(kwargs['r']), int(kwargs['r']) + 1) for k in
+					 range(-int(kwargs['r']), int(kwargs['r']) + 1) if np.linalg.norm(np.dot(kwargs['trafo'], np.array([i, j, k]))) <= kwargs['r']],
+					dtype=np.intc)) >= 50:
+					break
+			self.auto = True
+			self.r = kwargs['r']
+		else:
+			self.auto = False
+			self.r = kwargs['r']
+
+
+		if kwargs['sigma_2'] == 0:
+			self.sigma_2 = 2 * ((np.linalg.norm(kwargs['trafo'] @ np.array((1, 0, 0))) + np.linalg.norm(kwargs['trafo'] @ np.array((0, 1, 0))) + np.linalg.norm(kwargs['trafo'] @ np.array((0, 0, 1)))) / 3) ** 2
+		else:
+			self.sigma_2 = kwargs['sigma_2']
+		self.neighbors = np.array(sorted([[i, j, k] for i in range(-int(kwargs['r']), 1 + int(kwargs['r'])) for j in
+										  range(-int(kwargs['r']), 1 + int(kwargs['r'])) for k in
+										  range(-int(kwargs['r']), 1 + int(kwargs['r']))],
+										 key=lambda x: np.linalg.norm(kwargs['trafo'] @ x)), dtype=np.int32)
+		if kwargs['sigma_1'] == 0:
+			skip = np.zeros(kwargs['data'].shape[1:])
+			neighbors = [x for x in self.neighbors if np.linalg.norm(kwargs['trafo'] @ x) <= kwargs['r']]
+			var = np.zeros((len(neighbors)) + kwargs['data'].shape[1:])
+
+			for i,j,k in np.ndindex(kwargs['data'].shape):
+				if kwargs['data'][0, i,j,k] == 0.0:
+					skip[i,j,k] = 1
+					continue
+
+				for index in range(neighbors.shape[0]):
+					if kwargs['data'].shape[1] > i + neighbors[index, 0] >= 0 \
+						and kwargs['data'].shape[2] > j + neighbors[index, 1] >= 0 \
+						and kwargs['data'].shape[3] > k + neighbors[index, 2] >= 0:
+						sub_vectors(isoten, kwargs['data'][1:, i,j,k], kwargs['data'][1:, i + neighbors[index, 0], j + neighbors[index, 1], k + neighbors[index, 2]])
+						var[index, i,j,k] = hota_4o3d_sym_norm(isoten)
+					else:
+						skip[i,j,k] = 1
+			#nu = np.mean(var[:, skip == 0])
+			self.sigma_1 = np.median(var[:, skip == 0])
+		else:
+			self.sigma_1 = kwargs['sigma_1']
 		self.best_dir_approx = np.zeros((3,3))
-		self.sigma_2 = kwargs['sigma_2']
+
 		self.point_diff = np.zeros((3,), dtype=DTYPE)
 		self.vlinear = np.zeros((8, kwargs['data'].shape[0]))
 		self.trafo = kwargs['trafo']
 		self.dist = np.zeros((3,), dtype=DTYPE)
 		self.r = kwargs['r']
 		self.rank = kwargs['rank']
-		self.neighbors = np.array(sorted([[i,j,k] for i in range(-int(kwargs['r']),1+int(kwargs['r'])) for j in range(-int(kwargs['r']),1+int(kwargs['r'])) for k in range(-int(kwargs['r']),1+int(kwargs['r']))], key=lambda x: np.linalg.norm(kwargs['trafo']@x)), dtype=np.int32)
 
 
 	cdef void trilinear(self, double[:] point) nogil except *:
@@ -205,7 +249,7 @@ cdef class TrilinearFODF(Interpolation):
 				self.point_diff[i] = point[i]%1
 			cblas_dgemv(CblasRowMajor, CblasNoTrans, 3,3,1, &self.trafo[0,0], 3, &self.point_diff[0], 1, 0, &self.dist[0], 1)
 			dis = cblas_dnrm2(3, &self.dist[0], 1)
-			if dis > self.r and index>27:
+			if dis > self.r or (index>27 and self.auto):
 				break
 			if self.data.shape[1] > point[0] + self.neighbors[index, 0] >= 0 \
 				and self.data.shape[2] > point[1] + self.neighbors[index, 1] >= 0 \
