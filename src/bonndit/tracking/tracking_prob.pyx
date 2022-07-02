@@ -7,7 +7,7 @@ from .alignedDirection cimport  Gaussian, Laplacian, ScalarOld, ScalarNew, Proba
 from .ItoW cimport Trafo
 from .stopping cimport Validator
 from .integration cimport  Euler, Integration, EulerUKF
-from .interpolation cimport  FACT, Trilinear, Interpolation, UKFFodf, UKFMultiTensor
+from .interpolation cimport  FACT, Trilinear, Interpolation, UKFFodf, UKFMultiTensor, TrilinearFODF
 from bonndit.utilc.cython_helpers cimport mult_with_scalar, sum_c, sum_c_int, set_zero_vector, sub_vectors, \
 	angle_deg, norm
 import numpy as np
@@ -235,7 +235,7 @@ cpdef tracking_all(vector_field, wm_mask, seeds, tracking_parameters, postproces
 	elif tracking_parameters['interpolation'] == "Trilinear":
 		interpolate = Trilinear(vector_field, dim[2:5], directionGetter)
 	elif tracking_parameters['interpolation'] == "TrilinearFODF":
-		interpolate = Trilinear(vector_field, dim[2:5], directionGetter, **trilinear_parameters)
+		interpolate = TrilinearFODF(vector_field, dim[2:5], directionGetter, **trilinear_parameters)
 	else:
 		logging.error('FACT, Triliniear or UKF for MultiTensor and low rank approximation are available so far.')
 		return 0

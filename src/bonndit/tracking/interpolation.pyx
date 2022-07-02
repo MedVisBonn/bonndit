@@ -164,6 +164,7 @@ cdef class TrilinearFODF(Interpolation):
 		self.length = np.zeros((3,))
 		self.empty = np.zeros((15,))
 		self.sigma_1 = kwargs['sigma_1']
+		self.best_dir_approx = np.zeros((3,3))
 		self.sigma_2 = kwargs['sigma_2']
 		self.point_diff = np.zeros((3,), dtype=DTYPE)
 		self.vlinear = np.zeros((8, kwargs['data'].shape[0]))
@@ -171,7 +172,7 @@ cdef class TrilinearFODF(Interpolation):
 		self.dist = np.zeros((3,), dtype=DTYPE)
 		self.r = kwargs['r']
 		self.rank = kwargs['rank']
-		self.neighbors = np.array([[i,j,k] for i in range(-kwargs['r'],1+kwargs['r']) for j in range(-kwargs['r'],1+kwargs['r']) for k in range(-kwargs['r'],1+kwargs['r'])], dtype=np.int64)
+		self.neighbors = np.array([[i,j,k] for i in range(-int(kwargs['r']),1+int(kwargs['r'])) for j in range(-int(kwargs['r']),1+int(kwargs['r'])) for k in range(-int(kwargs['r']),1+int(kwargs['r']))], dtype=np.int32)
 
 
 	cdef void trilinear(self, double[:] point) nogil except *:
@@ -228,10 +229,15 @@ cdef class TrilinearFODF(Interpolation):
 			self.neigh(point)
 		if self.fodf[0] == 0:
 			return -1
-		approx_initial(self.length, self.best_dir, tens, self.fodf[1:], self.rank, valsec, val,der, testv, anisoten, isoten)
+		set_zero_matrix(tens)
+	#	set_zero_vector(valsec)
+	#	set_zero_vector(val)
+		approx_initial(self.length, self.best_dir_approx, tens, self.fodf[1:], self.rank, valsec, val,der, testv, anisoten, isoten)
+
 		for i in range(3):
-			mult_with_scalar(self.best_dir[i], pow(self.length[i], 1/4), self.best_dir[i])
+			mult_with_scalar(self.best_dir[i], pow(self.length[i], 1/4), self.best_dir_approx[:,i])
 		self.prob.calculate_probabilities(self.best_dir, old_dir)
+		self.next_dir = self.prob.best_fit
 		return 0
 
 
