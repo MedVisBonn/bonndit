@@ -217,6 +217,7 @@ cdef class TrilinearFODF(Interpolation):
 		self.dist = np.zeros((3,), dtype=DTYPE)
 		self.r = kwargs['r']
 		self.rank = kwargs['rank']
+		print(self.sigma_2, self.sigma_1, self.r)
 
 
 	cdef void trilinear(self, double[:] point) nogil except *:
