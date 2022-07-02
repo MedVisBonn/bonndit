@@ -9,7 +9,7 @@ from .ItoW cimport Trafo
 from .stopping cimport Validator
 from .integration cimport Euler, Integration, EulerUKF
 from .interpolation cimport FACT, Trilinear, Interpolation, UKFFodf, \
-    UKFMultiTensor
+    UKFMultiTensor, TrilinearFODF
 from bonndit.utilc.cython_helpers cimport mult_with_scalar, sum_c, \
     sum_c_int, set_zero_vector, sub_vectors, \
     angle_deg, norm
@@ -287,7 +287,7 @@ cpdef tracking_all(
     elif tracking_parameters['interpolation'] == "Trilinear":
         interpolate = Trilinear(vector_field, dim[2:5], directionGetter)
     elif tracking_parameters['interpolation'] == "TrilinearFODF":
-        interpolate = Trilinear(
+        interpolate = TrilinearFODF(
             vector_field, dim[2:5], directionGetter,
             **trilinear_parameters)
     else:

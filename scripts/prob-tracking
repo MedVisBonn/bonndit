@@ -142,14 +142,14 @@ def main():
         help='decide between FACT interpolation and Trilinear interpolation.',
         default='Trilinear')
     parser.add_argument(
-        '--sigma1',
+        '--sigma_1',
         help=(
             'Only useful if interpolation is set to TrilinearFODF and '
             'dist>0. Controls sigma1 for low-rank approx'
         ),
         default='1')
     parser.add_argument(
-        '--sigma2',
+        '--sigma_2',
         help=(
             'Only useful if interpolation is set to TrilinearFODF and '
             'dist>0. Controls sigma2 for low-rank approx.'
@@ -357,8 +357,8 @@ def main():
     ukf_parameter = {}
     if args.interpolation == 'TrilinearFODF':
         trilinear_parameters = {
-            'data': load('ukf_data', args, 'fodf.nrrd', args.i, logging,
-                         nrrd.read),
+            'data': load('data', args, 'fodf.nrrd', args.i, logging,
+                         nrrd.read)[0],
             'sigma_1': float(args.sigma_1),
             'sigma_2': float(args.sigma_1),
             'trafo': meta['space directions'][-3:],
