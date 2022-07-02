@@ -190,7 +190,7 @@ cdef class TrilinearFODF(Interpolation):
 		if kwargs['sigma_1'] == 0:
 			skip = np.zeros(kwargs['data'].shape[1:])
 			neighbors = [x for x in self.neighbors if np.linalg.norm(kwargs['trafo'] @ x) <= kwargs['r']]
-			var = np.zeros((len(neighbors)) + kwargs['data'].shape[1:])
+			var = np.zeros((len(neighbors), ) + kwargs['data'].shape[1:])
 
 			for i,j,k in np.ndindex(kwargs['data'].shape):
 				if kwargs['data'][0, i,j,k] == 0.0:
