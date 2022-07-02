@@ -2,6 +2,7 @@
 #cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True,
 # warn.unused_results=True
 import Cython
+from tqdm import tqdm
 from bonndit.utilc.cython_helpers cimport add_pointwise, floor_pointwise_matrix, norm, mult_with_scalar,\
 	add_vectors, sub_vectors, scalar, clip, set_zero_vector, set_zero_matrix, sum_c, sum_c_int, set_zero_vector_int, \
 	angle_deg, set_zero_matrix_int, point_validator
@@ -192,7 +193,7 @@ cdef class TrilinearFODF(Interpolation):
 			neighbors = np.array([x for x in self.neighbors if np.linalg.norm(kwargs['trafo'] @ x) <= kwargs['r']])
 			var = np.zeros((len(neighbors), ) + kwargs['data'].shape[1:])
 
-			for i,j,k in np.ndindex(kwargs['data'].shape[1:]):
+			for i,j,k in tqdm(np.ndindex(kwargs['data'].shape[1:]), total=np.prod(kwargs['data'].shape[1:])):
 				if kwargs['data'][0, i,j,k] == 0.0:
 					skip[i,j,k] = 1
 					continue
