@@ -9,7 +9,7 @@ from .ItoW cimport Trafo
 
 cdef class Integration:
 
-	def __cinit__(self, double[:,:] ItoWMatrix, double[:] origin, Trafo trafo, double stepsize):
+	def __cinit__(self, double[:,:] ItoWMatrix, double[:] origin, Trafo trafo, double stepsize, **kwargs):
 		self.stepsize = stepsize
 		self.trafo = trafo
 		self.ItoW = ItoWMatrix
@@ -18,7 +18,7 @@ cdef class Integration:
 		self.three_vector = np.zeros((3,))
 		self.old_dir = np.ndarray((3,))
 
-	cdef void integrate(self, double[:] direction, double[:] coordinate) nogil:
+	cdef int integrate(self, double[:] direction, double[:] coordinate) nogil except *:
 		pass
 
 
@@ -38,7 +38,7 @@ cdef class FACT(Integration):
 
 # Euler Integration. Transform to world coordinates before integrating. Transform back afterwards.
 cdef class Euler(Integration):
-	cdef void integrate(self, double[:] direction, double[:] coordinate) nogil:
+	cdef int integrate(self, double[:] direction, double[:] coordinate) nogil except *:
 		""" Euler Integration
 
 		Converts itow and adds the current direction to the current position
@@ -52,13 +52,15 @@ cdef class Euler(Integration):
 		"""
 		#print("ssd", *coordinate)
 		self.trafo.itow(coordinate)
+		self.old_dir = direction
 		mult_with_scalar(self.three_vector, self.stepsize/norm(direction), direction)
 		add_vectors(self.three_vector, self.trafo.point_itow, self.three_vector)
 		self.trafo.wtoi(self.three_vector)
 		self.next_point = self.trafo.point_wtoi#self.three_vector #coordinate #self.trafo.point_wtoi
+		return 0
 
 cdef class EulerUKF(Integration):
-	cdef void integrate(self, double[:] direction, double[:] coordinate) nogil:
+	cdef int integrate(self, double[:] direction, double[:] coordinate) nogil except *:
 		""" Euler Integration
 
 		Converts itow and adds the current direction to the current position
@@ -71,26 +73,39 @@ cdef class EulerUKF(Integration):
 
 		"""
 		mult_with_scalar(self.three_vector, self.stepsize/norm(direction), direction)
+		self.old_dir = direction
 		add_vectors(self.next_point, coordinate, self.three_vector)
+		return 0
 
 
-"""
 # Calculate next steps according to Wikipedia https://de.wikipedia.org/wiki/Runge-Kutta-Verfahren for constant time?
 # best fit to current coordinate. Branching prohibited
-class RungeKutta(Integration):
-	def __init__(self, ItoWMatrix, origin, trafo, stepsize, interpolation):
+cdef class RungeKutta(Integration):
+	def __cinit__(self, double[:,:] ItoWMatrix, double[:] origin, Trafo trafo, double stepsize, **kwargs):
 		super().__init__(ItoWMatrix, origin, trafo, stepsize)
-		self.interpolate = interpolation
+		self.interpolate = kwargs['interpolate']
+		self.k1 =np.zeros((3,))
+		self.k2 =np.zeros((3,))
+		self.k2_x =np.zeros((3,))
 
-	def integrate(self, direction, coordinate):
-		k1 = direction
-		k2_x = self.trafo.wtoi(self.trafo.itow(coordinate) + self.stepsize / 2 * k1)
-		self.interpolate.interpolate(k2_x, k1, 1000, 1000)
-		k2 = self.interpolate.best_dir[0]
-		k3_x = self.trafo.wtoi(self.trafo.itow(coordinate) - self.stepsize * k1 + self.stepsize * 2 * k2)
-		self.interpolate.interpolate(k3_x, k1, 1000, 1000)
-		k3 = self.interpolate.best_dir[0]
-		return self.trafo.wtoi(
-			self.trafo.itow(coordinate) + self.stepsize * (1 / 6 * k1 + 4 / 6 * k2 + 1 / 6 * k3)), np.linalg.norm(
-			self.stepsize * (1 / 6 * k1 + 4 / 6 * k2 + 1 / 6 * k3))
-"""
+	cdef int integrate(self, double[:] direction, double[:] coordinate) nogil except *:
+		mult_with_scalar(self.three_vector, self.stepsize/(2*norm(direction)), direction)
+		self.trafo.itow(coordinate)
+		add_vectors(self.three_vector, self.trafo.point_itow, self.three_vector)
+		self.trafo.wtoi(self.three_vector)
+		self.k2_x = self.trafo.point_wtoi
+		if self.interpolate.interpolate(self.k2_x, direction, 1) != 0:
+			return 1
+		self.k2 = self.interpolate.next_dir
+		
+		self.old_dir = self.k1
+		if sum_c(self.k2) == 0 or sum_c(self.k2) != sum_c(self.k2):
+			return 1
+		mult_with_scalar(self.k1, self.stepsize/norm(self.k2), self.k2)
+		self.trafo.itow(coordinate)
+		add_vectors(self.k2, self.trafo.point_itow, self.k1)
+		self.trafo.wtoi(self.k2)
+		self.next_point = self.trafo.point_wtoi
+		return 0
+
+

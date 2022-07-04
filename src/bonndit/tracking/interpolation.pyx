@@ -269,6 +269,7 @@ cdef class TrilinearFODF(Interpolation):
 			mult_with_scalar(self.fodf, 1/scale, self.fodf1)
 
 	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) nogil except *:
+	#	with gil: print(np.array(old_dir))
 		# Initialize with last step. Except we are starting again.
 		if r==0:
 			set_zero_matrix(self.best_dir)
