@@ -7,7 +7,7 @@ from .alignedDirection cimport Gaussian, Laplacian, ScalarOld, ScalarNew, \
     Probabilities, Deterministic, Deterministic2
 from .ItoW cimport Trafo
 from .stopping cimport Validator
-from .integration cimport Euler, Integration, EulerUKF
+from .integration cimport Euler, Integration, EulerUKF, RungeKutta
 from .interpolation cimport FACT, Trilinear, Interpolation, UKFFodf, \
     UKFMultiTensor, TrilinearFODF
 from bonndit.utilc.cython_helpers cimport mult_with_scalar, sum_c, \
@@ -144,9 +144,22 @@ cdef bint forward_tracking(
         if validator.next_point_checker(interpolate.next_dir):
             set_zero_vector(paths[(k - 1) // save_steps + 1])
             break
-        integrate.integrate(
+
+        if integrate.integrate(
             interpolate.next_dir,
-            paths[(k - 1) // save_steps + 1])
+            paths[(k - 1) // save_steps + 1]) != 0:
+            trafo.itow(paths[(k - 1) // save_steps + 1])
+            paths[(k - 1) // save_steps + 1] = trafo.point_itow
+        # with gil:
+        # print('i break fourth at k = ',  str(k))
+            break
+        if sum_c(integrate.next_point) == 0:
+            trafo.itow(paths[(k - 1) // save_steps + 1])
+            paths[(k - 1) // save_steps + 1] = trafo.point_itow
+        # with gil:
+        # print('i break fourth at k = ',  str(k))
+            break
+
         # update old dir
         paths[k // save_steps + 1] = integrate.next_point
         # check if next dir is near region of interest:
@@ -181,7 +194,7 @@ cdef bint forward_tracking(
             paths[:k // save_steps],
             features[k // save_steps:k // save_steps + 1, 1]):
             return False
-        integrate.old_dir = interpolate.next_dir
+        # integrate.old_dir = interpolate.next_dir
     else:
         trafo.itow(paths[k // save_steps + 1])
         paths[k // save_steps + 1] = trafo.point_itow
@@ -262,17 +275,7 @@ cpdef tracking_all(
         postprocessing['exclusion'], tracking_parameters['max_angle'],
         trafo, tracking_parameters['stepsize'])
 
-    if tracking_parameters['ukf'] == "MultiTensor":
-        integrate = EulerUKF(tracking_parameters['space directions'],
-            tracking_parameters['space origin'], trafo,
-            float(tracking_parameters['stepsize']))
-    elif tracking_parameters['integration'] == "Euler":
-        integrate = Euler(tracking_parameters['space directions'],
-            tracking_parameters['space origin'], trafo,
-            float(tracking_parameters['stepsize']))
-    else:
-        logging.error('Only Euler is available so far. Hence set Euler as argument.')
-        return 0
+
 
     cdef int[:] dim = np.array(vector_field.shape, dtype=np.int32)
 
@@ -295,6 +298,24 @@ cpdef tracking_all(
     else:
         logging.error('FACT, Triliniear or UKF for MultiTensor and low rank approximation are available so far.')
         return 0
+
+    if tracking_parameters['ukf'] == "MultiTensor":
+        integrate = EulerUKF(tracking_parameters['space directions'],
+            tracking_parameters['space origin'], trafo,
+            float(tracking_parameters['stepsize']))
+    elif tracking_parameters['integration'] == "Euler":
+        integrate = Euler(tracking_parameters['space directions'],
+            tracking_parameters['space origin'], trafo,
+            float(tracking_parameters['stepsize']))
+    elif tracking_parameters['integration'] == "RungeKutta":
+        integrate = RungeKutta(tracking_parameters['space directions'],
+            tracking_parameters['space origin'], trafo,
+            float(tracking_parameters['stepsize']),
+            **{'interpolate': interpolate})
+    else:
+        logging.error('Only Euler is available so far. Hence set Euler as argument.')
+        return 0
+
     cdef int i, j, k, l, m = seeds.shape[0]
     # Array to save Polygons
     cdef double[
