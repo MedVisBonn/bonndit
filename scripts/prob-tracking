@@ -6,6 +6,7 @@ import logging
 from bonndit.tracking.tracking_prob import tracking_all
 import argparse
 import nrrd
+import nibabel as nib
 import os
 import numpy as np
 from plyfile import PlyElement, PlyData
@@ -198,7 +199,16 @@ def main():
 		logging.error("The input multivector field has to have 5 dimensions.")
 		raise Exception()
 	logging.info("Multivectorfield loaded")
-	wm_mask, _ = load('wmvolume', args, 'wmvolume.nrrd', args.i, logging, nrrd.read)
+	if 'wmvolume' not in args:
+		wm_mask, _ = load('wmvolume', args, 'wmvolume.nrrd', args.i, logging, nrrd.read)
+	elif args.wmvolume.endswith('nrrd'):
+		wm_mask, _ = load('wmvolume', args, 'wmvolume.nrrd', args.i, logging, nrrd.read)
+	elif args.wmvolume.endswith('nii.gz'):
+		wm_mask = load('wmvolume', args, 'wmvolume.nrrd', args.i, logging, nib.load)
+		wm_mask = wm_mask.get_fdata()
+	else:
+		logging.error("Wmvolume has wrong format. Only nii.gz and nrrd are accepted.")
+		raise Exception()
 	if vector_field.shape[-3:] != wm_mask.shape:
 		logging.error("Vectorfield (x,y,z) and wm mask have to have same dimensions.")
 		raise Exception()
@@ -227,7 +237,7 @@ def main():
 		# data = ""
 		else:
 			logging.error('Only LowRank and MultiTensor are possible options for the ukf flag.')
-	if 'disk' in args:
+	if args.disk:
 		logging.info(
 			'Streamlines are temporarily written to {} which is {} after creating streamines'.format(args.disk_file,
 																									 'kept' if not args.disk_delete else 'deleted'))
