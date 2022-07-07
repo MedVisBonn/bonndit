@@ -171,7 +171,7 @@ cdef class TrilinearFODF(Interpolation):
 				if len(np.array(
 					[[i, j, k] for i in range(-int(kwargs['r']), int(kwargs['r']) + 1) for j in range(-int(kwargs['r']), int(kwargs['r']) + 1) for k in
 					 range(-int(kwargs['r']), int(kwargs['r']) + 1) if np.linalg.norm(np.dot(kwargs['trafo'], np.array([i, j, k]))) <= kwargs['r']],
-					dtype=np.intc)) >= 50:
+					dtype=np.intc)) >= 90:
 					break
 			self.auto = True
 			self.r = kwargs['r']
@@ -181,7 +181,7 @@ cdef class TrilinearFODF(Interpolation):
 
 
 		if kwargs['sigma_2'] == 0:
-			self.sigma_2 = 2 * ((np.linalg.norm(kwargs['trafo'] @ np.array((1, 0, 0))) + np.linalg.norm(kwargs['trafo'] @ np.array((0, 1, 0))) + np.linalg.norm(kwargs['trafo'] @ np.array((0, 0, 1)))) / 3) ** 2
+			self.sigma_2 = ((np.linalg.norm(kwargs['trafo'] @ np.array((1, 0, 0))) + np.linalg.norm(kwargs['trafo'] @ np.array((0, 1, 0))) + np.linalg.norm(kwargs['trafo'] @ np.array((0, 0, 1)))) / 3) ** 2
 		else:
 			self.sigma_2 = kwargs['sigma_2']
 		self.neighbors = np.array(sorted([[i, j, k] for i in range(-int(kwargs['r']), 1 + int(kwargs['r'])) for j in
