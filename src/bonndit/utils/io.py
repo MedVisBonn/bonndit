@@ -72,13 +72,11 @@ def metadata_checker(ref, *kwargs):
                 ).format(
                     file.get_filename())
                 raise Exception(msg)
+            print(I[0, 0], I[1, 1], I[2, 2])
             output.append(
                 nib.Nifti1Image(
                     file.get_fdata()[
-                        :: I[0, 0],
-                        :: I[1, 1],
-                        :: I[2, 2]],
-                    ref))
+                        ::int(I[0, 0]), ::int(I[1, 1]), ::int(I[2, 2])], ref))
     return output
 
 
