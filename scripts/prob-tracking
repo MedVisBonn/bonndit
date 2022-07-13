@@ -162,7 +162,7 @@ def main():
             'Only useful if interpolation is set to TrilinearFODF. Radius '
             'of points to include'
         ),
-        default='Trilinear')
+        default=0)
     parser.add_argument(
         '--rank',
         help=(
