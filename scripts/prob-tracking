@@ -115,6 +115,9 @@ def main():
 	parser.add_argument('--sigma_1',
 						help='Only useful if interpolation is set to TrilinearFODF and dist>0. Controls sigma1 for low-rank approx',
 						default='1')
+	parser.add_argument('--data',
+						help='Only useful if interpolation is set to TrilinearFODF and dist>0. Controls sigma1 for low-rank approx',
+						default=argparse.SUPPRESS)
 	parser.add_argument('--sigma_2',
 						help='Only useful if interpolation is set to TrilinearFODF and dist>0. Controls sigma2 for low-rank approx.',
 						default='1')
