@@ -4154,7 +4154,7 @@ static int __pyx_pf_7bonndit_8tracking_11integration_10RungeKutta___cinit__(stru
  * 		self.k2 =np.zeros((3,))
  * 		self.k2_x =np.zeros((3,))             # <<<<<<<<<<<<<<
  * 
- * 	cdef int integrate(self, double[:] direction, double[:] coordinate) nogil except *:
+ * 
  */
   __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 89, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
@@ -4212,8 +4212,8 @@ static int __pyx_pf_7bonndit_8tracking_11integration_10RungeKutta___cinit__(stru
   return __pyx_r;
 }
 
-/* "bonndit/tracking/integration.pyx":91
- * 		self.k2_x =np.zeros((3,))
+/* "bonndit/tracking/integration.pyx":93
+ * 
  * 
  * 	cdef int integrate(self, double[:] direction, double[:] coordinate) nogil except *:             # <<<<<<<<<<<<<<
  * 		mult_with_scalar(self.three_vector, self.stepsize/(2*norm(direction)), direction)
@@ -4231,14 +4231,14 @@ static int __pyx_f_7bonndit_8tracking_11integration_10RungeKutta_integrate(struc
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
 
-  /* "bonndit/tracking/integration.pyx":92
+  /* "bonndit/tracking/integration.pyx":94
  * 
  * 	cdef int integrate(self, double[:] direction, double[:] coordinate) nogil except *:
  * 		mult_with_scalar(self.three_vector, self.stepsize/(2*norm(direction)), direction)             # <<<<<<<<<<<<<<
  * 		self.trafo.itow(coordinate)
  * 		add_vectors(self.three_vector, self.trafo.point_itow, self.three_vector)
  */
-  if (unlikely(!__pyx_v_self->__pyx_base.three_vector.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 92, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->__pyx_base.three_vector.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 94, __pyx_L1_error)}
   __pyx_t_1 = (2.0 * __pyx_f_7bonndit_5utilc_14cython_helpers_norm(__pyx_v_direction));
   if (unlikely(__pyx_t_1 == 0)) {
     #ifdef WITH_THREAD
@@ -4248,11 +4248,11 @@ static int __pyx_f_7bonndit_8tracking_11integration_10RungeKutta_integrate(struc
     #ifdef WITH_THREAD
     __Pyx_PyGILState_Release(__pyx_gilstate_save);
     #endif
-    __PYX_ERR(1, 92, __pyx_L1_error)
+    __PYX_ERR(1, 94, __pyx_L1_error)
   }
   __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_self->__pyx_base.three_vector, (__pyx_v_self->__pyx_base.stepsize / __pyx_t_1), __pyx_v_direction);
 
-  /* "bonndit/tracking/integration.pyx":93
+  /* "bonndit/tracking/integration.pyx":95
  * 	cdef int integrate(self, double[:] direction, double[:] coordinate) nogil except *:
  * 		mult_with_scalar(self.three_vector, self.stepsize/(2*norm(direction)), direction)
  * 		self.trafo.itow(coordinate)             # <<<<<<<<<<<<<<
@@ -4261,36 +4261,36 @@ static int __pyx_f_7bonndit_8tracking_11integration_10RungeKutta_integrate(struc
  */
   ((struct __pyx_vtabstruct_7bonndit_8tracking_4ItoW_Trafo *)__pyx_v_self->__pyx_base.trafo->__pyx_vtab)->itow(__pyx_v_self->__pyx_base.trafo, __pyx_v_coordinate);
 
-  /* "bonndit/tracking/integration.pyx":94
+  /* "bonndit/tracking/integration.pyx":96
  * 		mult_with_scalar(self.three_vector, self.stepsize/(2*norm(direction)), direction)
  * 		self.trafo.itow(coordinate)
  * 		add_vectors(self.three_vector, self.trafo.point_itow, self.three_vector)             # <<<<<<<<<<<<<<
  * 		self.trafo.wtoi(self.three_vector)
  * 		self.k2_x = self.trafo.point_wtoi
  */
-  if (unlikely(!__pyx_v_self->__pyx_base.three_vector.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 94, __pyx_L1_error)}
-  if (unlikely(!__pyx_v_self->__pyx_base.trafo->point_itow.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 94, __pyx_L1_error)}
-  if (unlikely(!__pyx_v_self->__pyx_base.three_vector.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 94, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->__pyx_base.three_vector.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 96, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->__pyx_base.trafo->point_itow.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 96, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->__pyx_base.three_vector.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 96, __pyx_L1_error)}
   __pyx_f_7bonndit_5utilc_14cython_helpers_add_vectors(__pyx_v_self->__pyx_base.three_vector, __pyx_v_self->__pyx_base.trafo->point_itow, __pyx_v_self->__pyx_base.three_vector);
 
-  /* "bonndit/tracking/integration.pyx":95
+  /* "bonndit/tracking/integration.pyx":97
  * 		self.trafo.itow(coordinate)
  * 		add_vectors(self.three_vector, self.trafo.point_itow, self.three_vector)
  * 		self.trafo.wtoi(self.three_vector)             # <<<<<<<<<<<<<<
  * 		self.k2_x = self.trafo.point_wtoi
- * 		if self.interpolate.interpolate(self.k2_x, direction, 1) != 0:
+ * 		if self.interpolate.interpolate(self.k2_x, self.old_dir, 1) != 0:
  */
-  if (unlikely(!__pyx_v_self->__pyx_base.three_vector.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 95, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->__pyx_base.three_vector.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 97, __pyx_L1_error)}
   ((struct __pyx_vtabstruct_7bonndit_8tracking_4ItoW_Trafo *)__pyx_v_self->__pyx_base.trafo->__pyx_vtab)->wtoi(__pyx_v_self->__pyx_base.trafo, __pyx_v_self->__pyx_base.three_vector);
 
-  /* "bonndit/tracking/integration.pyx":96
+  /* "bonndit/tracking/integration.pyx":98
  * 		add_vectors(self.three_vector, self.trafo.point_itow, self.three_vector)
  * 		self.trafo.wtoi(self.three_vector)
  * 		self.k2_x = self.trafo.point_wtoi             # <<<<<<<<<<<<<<
- * 		if self.interpolate.interpolate(self.k2_x, direction, 1) != 0:
+ * 		if self.interpolate.interpolate(self.k2_x, self.old_dir, 1) != 0:
  * 			return 1
  */
-  if (unlikely(!__pyx_v_self->__pyx_base.trafo->point_wtoi.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 96, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->__pyx_base.trafo->point_wtoi.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 98, __pyx_L1_error)}
   __pyx_t_2 = __pyx_v_self->__pyx_base.trafo->point_wtoi;
   __PYX_INC_MEMVIEW(&__pyx_t_2, 0);
   __PYX_XDEC_MEMVIEW(&__pyx_v_self->k2_x, 0);
@@ -4298,45 +4298,46 @@ static int __pyx_f_7bonndit_8tracking_11integration_10RungeKutta_integrate(struc
   __pyx_t_2.memview = NULL;
   __pyx_t_2.data = NULL;
 
-  /* "bonndit/tracking/integration.pyx":97
+  /* "bonndit/tracking/integration.pyx":99
  * 		self.trafo.wtoi(self.three_vector)
  * 		self.k2_x = self.trafo.point_wtoi
- * 		if self.interpolate.interpolate(self.k2_x, direction, 1) != 0:             # <<<<<<<<<<<<<<
+ * 		if self.interpolate.interpolate(self.k2_x, self.old_dir, 1) != 0:             # <<<<<<<<<<<<<<
  * 			return 1
  * 		self.k2 = self.interpolate.next_dir
  */
-  if (unlikely(!__pyx_v_self->k2_x.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 97, __pyx_L1_error)}
-  __pyx_t_3 = ((struct __pyx_vtabstruct_7bonndit_8tracking_13interpolation_Interpolation *)__pyx_v_self->interpolate->__pyx_vtab)->interpolate(__pyx_v_self->interpolate, __pyx_v_self->k2_x, __pyx_v_direction, 1); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(1, 97, __pyx_L1_error)
+  if (unlikely(!__pyx_v_self->k2_x.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 99, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->__pyx_base.old_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 99, __pyx_L1_error)}
+  __pyx_t_3 = ((struct __pyx_vtabstruct_7bonndit_8tracking_13interpolation_Interpolation *)__pyx_v_self->interpolate->__pyx_vtab)->interpolate(__pyx_v_self->interpolate, __pyx_v_self->k2_x, __pyx_v_self->__pyx_base.old_dir, 1); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(1, 99, __pyx_L1_error)
   __pyx_t_4 = ((__pyx_t_3 != 0) != 0);
   if (__pyx_t_4) {
 
-    /* "bonndit/tracking/integration.pyx":98
+    /* "bonndit/tracking/integration.pyx":100
  * 		self.k2_x = self.trafo.point_wtoi
- * 		if self.interpolate.interpolate(self.k2_x, direction, 1) != 0:
+ * 		if self.interpolate.interpolate(self.k2_x, self.old_dir, 1) != 0:
  * 			return 1             # <<<<<<<<<<<<<<
  * 		self.k2 = self.interpolate.next_dir
- * 
+ * 		self.old_dir = self.k2
  */
     __pyx_r = 1;
     goto __pyx_L0;
 
-    /* "bonndit/tracking/integration.pyx":97
+    /* "bonndit/tracking/integration.pyx":99
  * 		self.trafo.wtoi(self.three_vector)
  * 		self.k2_x = self.trafo.point_wtoi
- * 		if self.interpolate.interpolate(self.k2_x, direction, 1) != 0:             # <<<<<<<<<<<<<<
+ * 		if self.interpolate.interpolate(self.k2_x, self.old_dir, 1) != 0:             # <<<<<<<<<<<<<<
  * 			return 1
  * 		self.k2 = self.interpolate.next_dir
  */
   }
 
-  /* "bonndit/tracking/integration.pyx":99
- * 		if self.interpolate.interpolate(self.k2_x, direction, 1) != 0:
+  /* "bonndit/tracking/integration.pyx":101
+ * 		if self.interpolate.interpolate(self.k2_x, self.old_dir, 1) != 0:
  * 			return 1
  * 		self.k2 = self.interpolate.next_dir             # <<<<<<<<<<<<<<
- * 
- * 		self.old_dir = self.k1
+ * 		self.old_dir = self.k2
+ * 		if sum_c(self.k2) == 0 or sum_c(self.k2) != sum_c(self.k2):
  */
-  if (unlikely(!__pyx_v_self->interpolate->next_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 99, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->interpolate->next_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 101, __pyx_L1_error)}
   __pyx_t_2 = __pyx_v_self->interpolate->next_dir;
   __PYX_INC_MEMVIEW(&__pyx_t_2, 0);
   __PYX_XDEC_MEMVIEW(&__pyx_v_self->k2, 0);
@@ -4344,44 +4345,44 @@ static int __pyx_f_7bonndit_8tracking_11integration_10RungeKutta_integrate(struc
   __pyx_t_2.memview = NULL;
   __pyx_t_2.data = NULL;
 
-  /* "bonndit/tracking/integration.pyx":101
+  /* "bonndit/tracking/integration.pyx":102
+ * 			return 1
  * 		self.k2 = self.interpolate.next_dir
- * 
- * 		self.old_dir = self.k1             # <<<<<<<<<<<<<<
+ * 		self.old_dir = self.k2             # <<<<<<<<<<<<<<
  * 		if sum_c(self.k2) == 0 or sum_c(self.k2) != sum_c(self.k2):
  * 			return 1
  */
-  if (unlikely(!__pyx_v_self->k1.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 101, __pyx_L1_error)}
-  __pyx_t_2 = __pyx_v_self->k1;
+  if (unlikely(!__pyx_v_self->k2.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 102, __pyx_L1_error)}
+  __pyx_t_2 = __pyx_v_self->k2;
   __PYX_INC_MEMVIEW(&__pyx_t_2, 0);
   __PYX_XDEC_MEMVIEW(&__pyx_v_self->__pyx_base.old_dir, 0);
   __pyx_v_self->__pyx_base.old_dir = __pyx_t_2;
   __pyx_t_2.memview = NULL;
   __pyx_t_2.data = NULL;
 
-  /* "bonndit/tracking/integration.pyx":102
- * 
- * 		self.old_dir = self.k1
+  /* "bonndit/tracking/integration.pyx":103
+ * 		self.k2 = self.interpolate.next_dir
+ * 		self.old_dir = self.k2
  * 		if sum_c(self.k2) == 0 or sum_c(self.k2) != sum_c(self.k2):             # <<<<<<<<<<<<<<
  * 			return 1
  * 		mult_with_scalar(self.k1, self.stepsize/norm(self.k2), self.k2)
  */
-  if (unlikely(!__pyx_v_self->k2.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 102, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->k2.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 103, __pyx_L1_error)}
   __pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_v_self->k2) == 0.0) != 0);
   if (!__pyx_t_5) {
   } else {
     __pyx_t_4 = __pyx_t_5;
     goto __pyx_L5_bool_binop_done;
   }
-  if (unlikely(!__pyx_v_self->k2.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 102, __pyx_L1_error)}
-  if (unlikely(!__pyx_v_self->k2.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 102, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->k2.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 103, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->k2.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 103, __pyx_L1_error)}
   __pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_v_self->k2) != __pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_v_self->k2)) != 0);
   __pyx_t_4 = __pyx_t_5;
   __pyx_L5_bool_binop_done:;
   if (__pyx_t_4) {
 
-    /* "bonndit/tracking/integration.pyx":103
- * 		self.old_dir = self.k1
+    /* "bonndit/tracking/integration.pyx":104
+ * 		self.old_dir = self.k2
  * 		if sum_c(self.k2) == 0 or sum_c(self.k2) != sum_c(self.k2):
  * 			return 1             # <<<<<<<<<<<<<<
  * 		mult_with_scalar(self.k1, self.stepsize/norm(self.k2), self.k2)
@@ -4390,24 +4391,24 @@ static int __pyx_f_7bonndit_8tracking_11integration_10RungeKutta_integrate(struc
     __pyx_r = 1;
     goto __pyx_L0;
 
-    /* "bonndit/tracking/integration.pyx":102
- * 
- * 		self.old_dir = self.k1
+    /* "bonndit/tracking/integration.pyx":103
+ * 		self.k2 = self.interpolate.next_dir
+ * 		self.old_dir = self.k2
  * 		if sum_c(self.k2) == 0 or sum_c(self.k2) != sum_c(self.k2):             # <<<<<<<<<<<<<<
  * 			return 1
  * 		mult_with_scalar(self.k1, self.stepsize/norm(self.k2), self.k2)
  */
   }
 
-  /* "bonndit/tracking/integration.pyx":104
+  /* "bonndit/tracking/integration.pyx":105
  * 		if sum_c(self.k2) == 0 or sum_c(self.k2) != sum_c(self.k2):
  * 			return 1
  * 		mult_with_scalar(self.k1, self.stepsize/norm(self.k2), self.k2)             # <<<<<<<<<<<<<<
  * 		self.trafo.itow(coordinate)
  * 		add_vectors(self.k2, self.trafo.point_itow, self.k1)
  */
-  if (unlikely(!__pyx_v_self->k1.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 104, __pyx_L1_error)}
-  if (unlikely(!__pyx_v_self->k2.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 104, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->k1.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 105, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->k2.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 105, __pyx_L1_error)}
   __pyx_t_1 = __pyx_f_7bonndit_5utilc_14cython_helpers_norm(__pyx_v_self->k2);
   if (unlikely(__pyx_t_1 == 0)) {
     #ifdef WITH_THREAD
@@ -4417,12 +4418,12 @@ static int __pyx_f_7bonndit_8tracking_11integration_10RungeKutta_integrate(struc
     #ifdef WITH_THREAD
     __Pyx_PyGILState_Release(__pyx_gilstate_save);
     #endif
-    __PYX_ERR(1, 104, __pyx_L1_error)
+    __PYX_ERR(1, 105, __pyx_L1_error)
   }
-  if (unlikely(!__pyx_v_self->k2.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 104, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->k2.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 105, __pyx_L1_error)}
   __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_self->k1, (__pyx_v_self->__pyx_base.stepsize / __pyx_t_1), __pyx_v_self->k2);
 
-  /* "bonndit/tracking/integration.pyx":105
+  /* "bonndit/tracking/integration.pyx":106
  * 			return 1
  * 		mult_with_scalar(self.k1, self.stepsize/norm(self.k2), self.k2)
  * 		self.trafo.itow(coordinate)             # <<<<<<<<<<<<<<
@@ -4431,36 +4432,36 @@ static int __pyx_f_7bonndit_8tracking_11integration_10RungeKutta_integrate(struc
  */
   ((struct __pyx_vtabstruct_7bonndit_8tracking_4ItoW_Trafo *)__pyx_v_self->__pyx_base.trafo->__pyx_vtab)->itow(__pyx_v_self->__pyx_base.trafo, __pyx_v_coordinate);
 
-  /* "bonndit/tracking/integration.pyx":106
+  /* "bonndit/tracking/integration.pyx":107
  * 		mult_with_scalar(self.k1, self.stepsize/norm(self.k2), self.k2)
  * 		self.trafo.itow(coordinate)
  * 		add_vectors(self.k2, self.trafo.point_itow, self.k1)             # <<<<<<<<<<<<<<
  * 		self.trafo.wtoi(self.k2)
  * 		self.next_point = self.trafo.point_wtoi
  */
-  if (unlikely(!__pyx_v_self->k2.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 106, __pyx_L1_error)}
-  if (unlikely(!__pyx_v_self->__pyx_base.trafo->point_itow.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 106, __pyx_L1_error)}
-  if (unlikely(!__pyx_v_self->k1.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 106, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->k2.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 107, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->__pyx_base.trafo->point_itow.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 107, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->k1.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 107, __pyx_L1_error)}
   __pyx_f_7bonndit_5utilc_14cython_helpers_add_vectors(__pyx_v_self->k2, __pyx_v_self->__pyx_base.trafo->point_itow, __pyx_v_self->k1);
 
-  /* "bonndit/tracking/integration.pyx":107
+  /* "bonndit/tracking/integration.pyx":108
  * 		self.trafo.itow(coordinate)
  * 		add_vectors(self.k2, self.trafo.point_itow, self.k1)
  * 		self.trafo.wtoi(self.k2)             # <<<<<<<<<<<<<<
  * 		self.next_point = self.trafo.point_wtoi
  * 		return 0
  */
-  if (unlikely(!__pyx_v_self->k2.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 107, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->k2.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 108, __pyx_L1_error)}
   ((struct __pyx_vtabstruct_7bonndit_8tracking_4ItoW_Trafo *)__pyx_v_self->__pyx_base.trafo->__pyx_vtab)->wtoi(__pyx_v_self->__pyx_base.trafo, __pyx_v_self->k2);
 
-  /* "bonndit/tracking/integration.pyx":108
+  /* "bonndit/tracking/integration.pyx":109
  * 		add_vectors(self.k2, self.trafo.point_itow, self.k1)
  * 		self.trafo.wtoi(self.k2)
  * 		self.next_point = self.trafo.point_wtoi             # <<<<<<<<<<<<<<
  * 		return 0
  * 
  */
-  if (unlikely(!__pyx_v_self->__pyx_base.trafo->point_wtoi.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 108, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->__pyx_base.trafo->point_wtoi.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(1, 109, __pyx_L1_error)}
   __pyx_t_2 = __pyx_v_self->__pyx_base.trafo->point_wtoi;
   __PYX_INC_MEMVIEW(&__pyx_t_2, 0);
   __PYX_XDEC_MEMVIEW(&__pyx_v_self->__pyx_base.next_point, 0);
@@ -4468,7 +4469,7 @@ static int __pyx_f_7bonndit_8tracking_11integration_10RungeKutta_integrate(struc
   __pyx_t_2.memview = NULL;
   __pyx_t_2.data = NULL;
 
-  /* "bonndit/tracking/integration.pyx":109
+  /* "bonndit/tracking/integration.pyx":110
  * 		self.trafo.wtoi(self.k2)
  * 		self.next_point = self.trafo.point_wtoi
  * 		return 0             # <<<<<<<<<<<<<<
@@ -4478,8 +4479,8 @@ static int __pyx_f_7bonndit_8tracking_11integration_10RungeKutta_integrate(struc
   __pyx_r = 0;
   goto __pyx_L0;
 
-  /* "bonndit/tracking/integration.pyx":91
- * 		self.k2_x =np.zeros((3,))
+  /* "bonndit/tracking/integration.pyx":93
+ * 
  * 
  * 	cdef int integrate(self, double[:] direction, double[:] coordinate) nogil except *:             # <<<<<<<<<<<<<<
  * 		mult_with_scalar(self.three_vector, self.stepsize/(2*norm(direction)), direction)
