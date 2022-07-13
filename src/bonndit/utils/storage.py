@@ -242,7 +242,7 @@ def load(filename, dtype=None):
         img = NIB.load(filename)
         data = img.get_fdata()
         data = apply_dtype(data, dtype)
-        affine = img.get_affine()
+        affine = img.affine
         meta = affine_to_meta3d(affine)
 
         return data, meta

@@ -9,7 +9,7 @@ from bonndit.utilc.cython_helpers cimport add_pointwise, floor_pointwise_matrix,
 import numpy as np
 import time
 from bonndit.utilc.cython_helpers cimport dm2toc
-from bonndit.utilc.hota cimport hota_4o3d_sym_norm
+from bonndit.utilc.hota cimport hota_4o3d_sym_norm, hota_4o3d_sym_eval
 from bonndit.utilc.lowrank cimport approx_initial
 from .ItoW cimport Trafo
 cdef int[:,:] permute_poss = np.array([[0,1,2],[0,2,1], [1,0,2], [1,2,0], [2,1,0], [2,0,1]], dtype=np.int32)
@@ -284,8 +284,9 @@ cdef class TrilinearFODF(Interpolation):
 		if self.fodf[0] == 0:
 			return -1
 		set_zero_matrix(tens)
-	#	set_zero_vector(valsec)
-	#	set_zero_vector(val)
+		for i in range(3):
+			hota_4o3d_sym_eval(tens[i, :], self.length[i], self.best_dir_approx[:, i])
+			sub_vectors(self.fodf[1:], self.fodf[1:], tens[i,:])
 		approx_initial(self.length, self.best_dir_approx, tens, self.fodf[1:], self.rank, valsec, val,der, testv, anisoten, isoten)
 
 		for i in range(3):

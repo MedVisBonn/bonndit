@@ -123,7 +123,7 @@ def main():
 						default='1')
 	parser.add_argument('--dist',
 						help='Only useful if interpolation is set to TrilinearFODF. Radius of points to include',
-						default='Trilinear')
+						default=0)
 	parser.add_argument('--rank', help='Only useful if interpolation is set to TrilinearFODF. Rank of low-rank approx.',
 						default='Trilinear')
 
