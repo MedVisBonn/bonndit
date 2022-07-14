@@ -99,7 +99,7 @@ cdef class RungeKutta(Integration):
 		if self.interpolate.interpolate(self.k2_x, self.old_dir, 1) != 0:
 			return 1
 		self.k2 = self.interpolate.next_dir
-		self.old_dir = self.k2
+		self.old_dir = self.interpolate.next_dir
 	#	with gil: print(np.array(self.old_dir))
 		if sum_c(self.k2) == 0 or sum_c(self.k2) != sum_c(self.k2):
 			return 1
