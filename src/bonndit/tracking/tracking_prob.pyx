@@ -303,7 +303,7 @@ cpdef tracking_all(
         integrate = EulerUKF(tracking_parameters['space directions'],
             tracking_parameters['space origin'], trafo,
             float(tracking_parameters['stepsize']))
-    elif tracking_parameters['integration'] == "Euler":
+    elif tracking_parameters['ls'] == "Euler":
         integrate = Euler(tracking_parameters['space directions'],
             tracking_parameters['space origin'], trafo,
             float(tracking_parameters['stepsize']))
