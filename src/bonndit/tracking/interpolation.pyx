@@ -591,9 +591,9 @@ cdef class UKFMultiTensor(UKF):
 		self._kalman.linear(point, self.y, self.mlinear, self.data)
 		# If we are at the seed. Initialize the Kalmanfilter
 		if restart == 0:
-			with gil:
+			#with gil:
 				##print(np.array(self.y))
-				self._model.kinit(self.mean, point, old_dir, self.P, self.y)
+			self._model.kinit(self.mean, point, old_dir, self.P, self.y)
 		# Run Kalmannfilter
 		info = self._kalman.update_kalman_parameters(self.mean, self.P, self.y)
 		#cblas_dcopy(self.mean.shape[0], &self.mean[0], 1, &self.tmpmean[0], 1)

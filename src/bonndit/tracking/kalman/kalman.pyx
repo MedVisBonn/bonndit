@@ -53,7 +53,7 @@ cdef class Kalman:
 			n = <int> point[1] + j
 			o = <int> point[2] + k
 
-			dm2toc(&vlinear[i, 0], data[m,n,o],  vlinear.shape[1])
+			dm2toc(&vlinear[i, 0], data[:,m,n,o],  vlinear.shape[1])
 		for i in range(4):
 			cblas_dscal(vlinear.shape[1], (1 + floor(point[2]) - point[2]), &vlinear[i, 0], 1)
 			cblas_daxpy(vlinear.shape[1], (point[2] - floor(point[2])), &vlinear[4+i, 0], 1, &vlinear[i,0], 1)

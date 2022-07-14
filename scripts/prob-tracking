@@ -300,8 +300,8 @@ def main():
 			'measurement noise': np.array(args.ukf_mnoise, dtype=np.float64) if 'ukf_mnoise' in args else ""
 		}
 		if args.ukf == "MultiTensor":
-			if ukf_parameter['data'].shape[-1] != ukf_parameter['gradients'].shape[0]:
-				if ukf_parameter['data'].shape[-1] != ukf_parameter['gradients'].T.shape[1]:
+			if ukf_parameter['data'].shape[0] != ukf_parameter['gradients'].shape[0]:
+				if ukf_parameter['data'].shape[0] != ukf_parameter['gradients'].T.shape[1]:
 					logging.error('Data has to have the same dimension in the last column of bvecs')
 					raise Exception()
 				ukf_parameter['gradients'] = ukf_parameter['gradients'].T
