@@ -249,7 +249,7 @@ cpdef tracking_all(vector_field, wm_mask, seeds, tracking_parameters, postproces
 		return 0
 
 	if tracking_parameters['ukf'] == "MultiTensor":
-		integrate = EulerUKF(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo,
+		integrate = Euler(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo,
 							 float(tracking_parameters['stepsize']))
 	elif tracking_parameters['integration'] == "Euler":
 		integrate = Euler(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo, float(tracking_parameters['stepsize']))
