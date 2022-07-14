@@ -404,9 +404,9 @@ def main():
                                           dtype=np.float64) if 'ukf_mnoise' in args else ""
         }
         if args.ukf == "MultiTensor":
-            if ukf_parameter['data'].shape[-1] \
+            if ukf_parameter['data'].shape[0] \
                     != ukf_parameter['gradients'].shape[0]:
-                if ukf_parameter['data'].shape[-1] \
+                if ukf_parameter['data'].shape[0] \
                         != ukf_parameter['gradients'].T.shape[1]:
                     logging.error(
                         (
