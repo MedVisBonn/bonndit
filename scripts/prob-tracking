@@ -234,9 +234,9 @@ def main():
 			data = np.moveaxis(data, 0, -1)
 			data = data[:, :, :, 1:]
 			print(data.shape)
-			bvals = ""
-			bvecs = ""
-			baseline = ""
+			bvals = None
+			bvecs = None
+			baseline = None
 		# data = ""
 		else:
 			logging.error('Only LowRank and MultiTensor are possible options for the ukf flag.')
@@ -292,7 +292,7 @@ def main():
 			#	'vector_field': np.array(vector_field, dtype=np.float64),
 			'dim_model': int(args.ukf_dim_model),
 			'model': 'fodf' if args.ukf == "LowRank" else 'MultiTensor',
-			'gradients': bvecs.astype(np.float64).T if bvecs != "" else "",
+			'gradients': bvecs.astype(np.float64).T if bvecs is not None else "",
 			'baseline': baseline,
 			'b': bvals,
 			'b0': 3000,

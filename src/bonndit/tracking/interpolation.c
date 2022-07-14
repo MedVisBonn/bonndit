@@ -19,7 +19,7 @@
             "-Wl,--no-as-needed"
         ],
         "include_dirs": [
-            "/tmp/pip-build-env-jn4_ct2b/overlay/lib/python3.8/site-packages/numpy/core/include",
+            "/tmp/pip-build-env-gbd8qtqy/overlay/lib/python3.8/site-packages/numpy/core/include",
             "/opt/intel/oneapi/mkl/2022.0.2/include"
         ],
         "libraries": [
