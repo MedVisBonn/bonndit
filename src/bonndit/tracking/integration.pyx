@@ -114,8 +114,6 @@ cdef class RungeKutta(Integration):
         self.k2 = np.zeros((3,))
         self.k2_x = np.zeros((3,))
 
-
-
     cdef int integrate(
         self, double[:] direction,
         double[:] coordinate
@@ -129,10 +127,11 @@ cdef class RungeKutta(Integration):
             self.three_vector)
         self.trafo.wtoi(self.three_vector)
         self.k2_x = self.trafo.point_wtoi
-        if self.interpolate.interpolate(self.k2_x, self.old_dir, 1) != 0:
+        if self.interpolate.interpolate(self.k2_x, direction, 1) != 0:
             return 1
         self.k2 = self.interpolate.next_dir
-        self.old_dir = self.interpolate.next_dir
+
+        self.old_dir = self.k1
         if sum_c(self.k2) == 0 or sum_c(self.k2) != sum_c(self.k2):
             return 1
         mult_with_scalar(self.k1, self.stepsize / norm(self.k2), self.k2)
