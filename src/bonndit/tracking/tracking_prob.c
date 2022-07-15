@@ -1548,10 +1548,10 @@ struct __pyx_obj_7bonndit_8tracking_11integration_Integration {
 
 
 /* "integration.pxd":18
- * 	cdef int integrate(self, double[:], double[:]) nogil
+ * 	cdef int integrate(self, double[:], double[:]) nogil except *
  * 
  * cdef class Euler(Integration):             # <<<<<<<<<<<<<<
- * 	cdef int integrate(self, double[:], double[:]) nogil
+ * 	cdef int integrate(self, double[:], double[:]) nogil except *
  * 
  */
 struct __pyx_obj_7bonndit_8tracking_11integration_Euler {
@@ -1560,10 +1560,10 @@ struct __pyx_obj_7bonndit_8tracking_11integration_Euler {
 
 
 /* "integration.pxd":21
- * 	cdef int integrate(self, double[:], double[:]) nogil
+ * 	cdef int integrate(self, double[:], double[:]) nogil except *
  * 
  * cdef class EulerUKF(Integration):             # <<<<<<<<<<<<<<
- * 	cdef int integrate(self, double[:], double[:]) nogil
+ * 	cdef int integrate(self, double[:], double[:]) nogil except *
  * 
  */
 struct __pyx_obj_7bonndit_8tracking_11integration_EulerUKF {
@@ -1572,7 +1572,7 @@ struct __pyx_obj_7bonndit_8tracking_11integration_EulerUKF {
 
 
 /* "integration.pxd":24
- * 	cdef int integrate(self, double[:], double[:]) nogil
+ * 	cdef int integrate(self, double[:], double[:]) nogil except *
  * 
  * cdef class RungeKutta(Integration):             # <<<<<<<<<<<<<<
  * 	cdef Interpolation interpolate
@@ -2069,10 +2069,10 @@ static struct __pyx_vtabstruct_7bonndit_8tracking_11integration_Integration *__p
 
 
 /* "integration.pxd":18
- * 	cdef int integrate(self, double[:], double[:]) nogil
+ * 	cdef int integrate(self, double[:], double[:]) nogil except *
  * 
  * cdef class Euler(Integration):             # <<<<<<<<<<<<<<
- * 	cdef int integrate(self, double[:], double[:]) nogil
+ * 	cdef int integrate(self, double[:], double[:]) nogil except *
  * 
  */
 
@@ -2083,10 +2083,10 @@ static struct __pyx_vtabstruct_7bonndit_8tracking_11integration_Euler *__pyx_vta
 
 
 /* "integration.pxd":21
- * 	cdef int integrate(self, double[:], double[:]) nogil
+ * 	cdef int integrate(self, double[:], double[:]) nogil except *
  * 
  * cdef class EulerUKF(Integration):             # <<<<<<<<<<<<<<
- * 	cdef int integrate(self, double[:], double[:]) nogil
+ * 	cdef int integrate(self, double[:], double[:]) nogil except *
  * 
  */
 
@@ -2097,7 +2097,7 @@ static struct __pyx_vtabstruct_7bonndit_8tracking_11integration_EulerUKF *__pyx_
 
 
 /* "integration.pxd":24
- * 	cdef int integrate(self, double[:], double[:]) nogil
+ * 	cdef int integrate(self, double[:], double[:]) nogil except *
  * 
  * cdef class RungeKutta(Integration):             # <<<<<<<<<<<<<<
  * 	cdef Interpolation interpolate
@@ -3018,6 +3018,7 @@ static const char __pyx_k_O[] = "O";
 static const char __pyx_k_a[] = "a";
 static const char __pyx_k_c[] = "c";
 static const char __pyx_k_id[] = "id";
+static const char __pyx_k_ls[] = "ls";
 static const char __pyx_k_np[] = "np";
 static const char __pyx_k__13[] = "\n";
 static const char __pyx_k__15[] = " ";
@@ -3286,6 +3287,7 @@ static PyObject *__pyx_kp_s_itemsize_0_for_cython_array;
 static PyObject *__pyx_n_s_len;
 static PyObject *__pyx_n_u_len;
 static PyObject *__pyx_n_s_logging;
+static PyObject *__pyx_n_u_ls;
 static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_s_map;
 static PyObject *__pyx_n_u_max_angle;
@@ -5069,10 +5071,11 @@ __pyx_t_5.shape[0] = __pyx_v_paths.shape[1];
 __pyx_t_5.strides[0] = __pyx_v_paths.strides[1];
     __pyx_t_5.suboffsets[0] = -1;
 
-__pyx_t_7 = ((((struct __pyx_vtabstruct_7bonndit_8tracking_11integration_Integration *)__pyx_v_integrate->__pyx_vtab)->integrate(__pyx_v_integrate, __pyx_v_interpolate->next_dir, __pyx_t_5) != 0) != 0);
+__pyx_t_9 = ((struct __pyx_vtabstruct_7bonndit_8tracking_11integration_Integration *)__pyx_v_integrate->__pyx_vtab)->integrate(__pyx_v_integrate, __pyx_v_interpolate->next_dir, __pyx_t_5); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 128, __pyx_L1_error)
     __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
     __pyx_t_5.memview = NULL;
     __pyx_t_5.data = NULL;
+    __pyx_t_7 = ((__pyx_t_9 != 0) != 0);
     if (__pyx_t_7) {
 
       /* "bonndit/tracking/tracking_prob.pyx":129
@@ -7332,7 +7335,7 @@ __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __p
  * 		return 0
  * 
  * 	if tracking_parameters['ukf'] == "MultiTensor":             # <<<<<<<<<<<<<<
- * 		integrate = EulerUKF(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo,
+ * 		integrate = Euler(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo,
  * 							 float(tracking_parameters['stepsize']))
  */
   __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_ukf); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 251, __pyx_L1_error)
@@ -7344,9 +7347,9 @@ __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __p
     /* "bonndit/tracking/tracking_prob.pyx":252
  * 
  * 	if tracking_parameters['ukf'] == "MultiTensor":
- * 		integrate = EulerUKF(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo,             # <<<<<<<<<<<<<<
+ * 		integrate = Euler(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo,             # <<<<<<<<<<<<<<
  * 							 float(tracking_parameters['stepsize']))
- * 	elif tracking_parameters['integration'] == "Euler":
+ * 	elif tracking_parameters['ls'] == "Euler":
  */
     __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_kp_u_space_directions); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 252, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
@@ -7355,9 +7358,9 @@ __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __p
 
     /* "bonndit/tracking/tracking_prob.pyx":253
  * 	if tracking_parameters['ukf'] == "MultiTensor":
- * 		integrate = EulerUKF(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo,
+ * 		integrate = Euler(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo,
  * 							 float(tracking_parameters['stepsize']))             # <<<<<<<<<<<<<<
- * 	elif tracking_parameters['integration'] == "Euler":
+ * 	elif tracking_parameters['ls'] == "Euler":
  * 		integrate = Euler(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo, float(tracking_parameters['stepsize']))
  */
     __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_stepsize); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 253, __pyx_L1_error)
@@ -7369,9 +7372,9 @@ __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __p
     /* "bonndit/tracking/tracking_prob.pyx":252
  * 
  * 	if tracking_parameters['ukf'] == "MultiTensor":
- * 		integrate = EulerUKF(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo,             # <<<<<<<<<<<<<<
+ * 		integrate = Euler(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo,             # <<<<<<<<<<<<<<
  * 							 float(tracking_parameters['stepsize']))
- * 	elif tracking_parameters['integration'] == "Euler":
+ * 	elif tracking_parameters['ls'] == "Euler":
  */
     __pyx_t_4 = PyTuple_New(4); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 252, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
@@ -7387,7 +7390,7 @@ __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __p
     __pyx_t_1 = 0;
     __pyx_t_7 = 0;
     __pyx_t_8 = 0;
-    __pyx_t_8 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7bonndit_8tracking_11integration_EulerUKF), __pyx_t_4, NULL); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 252, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7bonndit_8tracking_11integration_Euler), __pyx_t_4, NULL); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 252, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_v_integrate = ((struct __pyx_obj_7bonndit_8tracking_11integration_Integration *)__pyx_t_8);
@@ -7397,20 +7400,20 @@ __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __p
  * 		return 0
  * 
  * 	if tracking_parameters['ukf'] == "MultiTensor":             # <<<<<<<<<<<<<<
- * 		integrate = EulerUKF(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo,
+ * 		integrate = Euler(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo,
  * 							 float(tracking_parameters['stepsize']))
  */
     goto __pyx_L5;
   }
 
   /* "bonndit/tracking/tracking_prob.pyx":254
- * 		integrate = EulerUKF(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo,
+ * 		integrate = Euler(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo,
  * 							 float(tracking_parameters['stepsize']))
- * 	elif tracking_parameters['integration'] == "Euler":             # <<<<<<<<<<<<<<
+ * 	elif tracking_parameters['ls'] == "Euler":             # <<<<<<<<<<<<<<
  * 		integrate = Euler(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo, float(tracking_parameters['stepsize']))
  * 	elif tracking_parameters['integration'] == "RungeKutta":
  */
-  __pyx_t_8 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_integration); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 254, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyObject_Dict_GetItem(__pyx_v_tracking_parameters, __pyx_n_u_ls); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 254, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __pyx_t_2 = (__Pyx_PyUnicode_Equals(__pyx_t_8, __pyx_n_u_Euler, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 254, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
@@ -7418,7 +7421,7 @@ __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __p
 
     /* "bonndit/tracking/tracking_prob.pyx":255
  * 							 float(tracking_parameters['stepsize']))
- * 	elif tracking_parameters['integration'] == "Euler":
+ * 	elif tracking_parameters['ls'] == "Euler":
  * 		integrate = Euler(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo, float(tracking_parameters['stepsize']))             # <<<<<<<<<<<<<<
  * 	elif tracking_parameters['integration'] == "RungeKutta":
  * 		integrate = RungeKutta(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo, float(tracking_parameters['stepsize']), **{'interpolate': interpolate})
@@ -7453,9 +7456,9 @@ __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __p
     __pyx_t_1 = 0;
 
     /* "bonndit/tracking/tracking_prob.pyx":254
- * 		integrate = EulerUKF(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo,
+ * 		integrate = Euler(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo,
  * 							 float(tracking_parameters['stepsize']))
- * 	elif tracking_parameters['integration'] == "Euler":             # <<<<<<<<<<<<<<
+ * 	elif tracking_parameters['ls'] == "Euler":             # <<<<<<<<<<<<<<
  * 		integrate = Euler(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo, float(tracking_parameters['stepsize']))
  * 	elif tracking_parameters['integration'] == "RungeKutta":
  */
@@ -7463,7 +7466,7 @@ __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __p
   }
 
   /* "bonndit/tracking/tracking_prob.pyx":256
- * 	elif tracking_parameters['integration'] == "Euler":
+ * 	elif tracking_parameters['ls'] == "Euler":
  * 		integrate = Euler(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo, float(tracking_parameters['stepsize']))
  * 	elif tracking_parameters['integration'] == "RungeKutta":             # <<<<<<<<<<<<<<
  * 		integrate = RungeKutta(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo, float(tracking_parameters['stepsize']), **{'interpolate': interpolate})
@@ -7516,7 +7519,7 @@ __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_t_9, 1, (PyObject *(*)(char *)) __p
     __pyx_t_7 = 0;
 
     /* "bonndit/tracking/tracking_prob.pyx":256
- * 	elif tracking_parameters['integration'] == "Euler":
+ * 	elif tracking_parameters['ls'] == "Euler":
  * 		integrate = Euler(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo, float(tracking_parameters['stepsize']))
  * 	elif tracking_parameters['integration'] == "RungeKutta":             # <<<<<<<<<<<<<<
  * 		integrate = RungeKutta(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo, float(tracking_parameters['stepsize']), **{'interpolate': interpolate})
@@ -24350,6 +24353,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_len, __pyx_k_len, sizeof(__pyx_k_len), 0, 0, 1, 1},
   {&__pyx_n_u_len, __pyx_k_len, sizeof(__pyx_k_len), 0, 1, 0, 1},
   {&__pyx_n_s_logging, __pyx_k_logging, sizeof(__pyx_k_logging), 0, 0, 1, 1},
+  {&__pyx_n_u_ls, __pyx_k_ls, sizeof(__pyx_k_ls), 0, 1, 0, 1},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
   {&__pyx_n_s_map, __pyx_k_map, sizeof(__pyx_k_map), 0, 0, 1, 1},
   {&__pyx_n_u_max_angle, __pyx_k_max_angle, sizeof(__pyx_k_max_angle), 0, 1, 0, 1},
