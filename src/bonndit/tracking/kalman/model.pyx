@@ -226,7 +226,7 @@ cdef mti(x, y, gradients, tensor_num, GLOBAL_TENSOR_UNPACK_VALUE):
 		orth = orthonormal_from_sphere(x[i * 3], x[i * 3 + 1])
 		D = x[i * 3 + 2] * (np.outer(orth[0], orth[0])) + x[i * 3 + 2] / 8 * (np.outer(orth[1], orth[1]) + np.outer(orth[2], orth[2]))
 		for j in range(gradients.shape[0]):
-			z[j] -= 1 / tensor_num * np.exp(- 3000 * (gradients[j] @ D @ gradients[j].T) * GLOBAL_TENSOR_UNPACK_VALUE)
+			z[j] -= 1 / tensor_num * np.exp(- 1000 * (gradients[j] @ D @ gradients[j].T) * GLOBAL_TENSOR_UNPACK_VALUE)
 	return z
 
 
