@@ -319,6 +319,6 @@ cdef mti(x, y, gradients, tensor_num, GLOBAL_TENSOR_UNPACK_VALUE):
         for j in range(gradients.shape[0]):
             z[j] -= 1 / tensor_num \
                 * np.exp(
-                -3000 * (gradients[j] @ D @ gradients[j].T)
+                -1000 * (gradients[j] @ D @ gradients[j].T)
                 * GLOBAL_TENSOR_UNPACK_VALUE)
     return z

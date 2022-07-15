@@ -300,10 +300,10 @@ cpdef tracking_all(
         return 0
 
     if tracking_parameters['ukf'] == "MultiTensor":
-        integrate = Euler(tracking_parameters['space directions'],
+        integrate = EulerUKF(tracking_parameters['space directions'],
             tracking_parameters['space origin'], trafo,
             float(tracking_parameters['stepsize']))
-    elif tracking_parameters['ls'] == "Euler":
+    elif tracking_parameters['integration'] == "Euler":
         integrate = Euler(tracking_parameters['space directions'],
             tracking_parameters['space origin'], trafo,
             float(tracking_parameters['stepsize']))
