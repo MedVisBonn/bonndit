@@ -606,7 +606,11 @@ cdef class UKFMultiTensor(UKF):
 
 		# Use alw
 		for i in range(self._model.num_tensors):
-			self.best_dir[3*i: 3*(i+1)] = self.mean[5*i: 5*i + 3]
+			if fa(self.mean[5*i + 3],self.mean[5*i + 4],self.mean[5*i + 4]) < 0.15:
+				self.best_dir[3*i: 3*(i+1)] = self.mean[5*i: 5*i + 3]
+			else:
+				self.mean[5 * i + 4] = min(self.mean[5*i + 3], self.mean[5*i + 4])
+				set_zero_vector(self.best_dir[3*i: 3*(i+1)])
 		self.prob.calculate_probabilities(self.best_dir, old_dir)
 		self.next_dir = self.prob.best_fit
 #		if self._model.num_tensors == 1:
@@ -645,10 +649,10 @@ cdef class UKFMultiTensor(UKF):
 
 
 		#		#with gil: print('dir', np.array(self.next_dir))
-		z = 0
-
-		if fa(self.mean[5 + 3],self.mean[5 + 4],self.mean[5 + 4]) < 0.15:
-			z += 1
+#		z = 0
+#
+#		if fa(self.mean[5 + 3],self.mean[5 + 4],self.mean[5 + 4]) < 0.15:
+#			z += 1
 
 		return info
 

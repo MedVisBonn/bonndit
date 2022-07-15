@@ -14,7 +14,7 @@ import os
 import numpy as np
 from plyfile import PlyElement, PlyData
 
-from bonndit.utils.io import fsl_gtab_to_worldspace
+from bonndit.utils.io import fsl_gtab_to_worldspace, fsl_flip_sign
 
 path_tree = []
 
@@ -306,10 +306,8 @@ def main():
 			'measurement noise': np.array(args.ukf_mnoise, dtype=np.float64) if 'ukf_mnoise' in args else ""
 		}
 		if args.ukf == "MultiTensor":
-			gtab = gradient_table(bvals, bvecs)
-			gtab = fsl_gtab_to_worldspace(gtab, meta['space directions'])
-			ukf_parameter['gradients'] = gtab.bvecs.T
-			ukf_parameter['b'] = gtab.bvals
+			bvecs = fsl_flip_sign(bvecs, meta['space directions'][0:3,0:3])
+			ukf_parameter['gradients'] = np.dot(bvecs, np.transpose(meta['space directions'][0:3,0:3]))
 			logging.info('Rotation to worldspace finished')
 			if ukf_parameter['data'].shape[0] != ukf_parameter['gradients'].shape[0]:
 				if ukf_parameter['data'].shape[0] != ukf_parameter['gradients'].T.shape[1]:
