@@ -19,7 +19,7 @@
             "-Wl,--no-as-needed"
         ],
         "include_dirs": [
-            "/tmp/pip-build-env-jn4_ct2b/overlay/lib/python3.8/site-packages/numpy/core/include",
+            "/tmp/pip-build-env-1fnhz221/overlay/lib/python3.8/site-packages/numpy/core/include",
             "/opt/intel/oneapi/mkl/2022.0.2/include"
         ],
         "libraries": [
@@ -12937,7 +12937,7 @@ static int __pyx_pf_7bonndit_8tracking_13interpolation_3UKF___cinit__(struct __p
  * 		self.P = np.zeros((kwargs['dim_model'],kwargs['dim_model']), dtype=np.float64)
  * 		self.y = np.zeros((kwargs['data'].shape[3],), dtype=np.float64)             # <<<<<<<<<<<<<<
  * 		if kwargs['baseline'] != "" and kwargs['model'] != 'fodf':
- * 			self.data = kwargs['data']/kwargs['baseline'][:,:,:,np.newaxis]
+ * 			self.data = kwargs['data']/kwargs['baseline'][np.newaxis,:,:,:]
  */
   __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 521, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
@@ -12987,7 +12987,7 @@ static int __pyx_pf_7bonndit_8tracking_13interpolation_3UKF___cinit__(struct __p
  * 		self.P = np.zeros((kwargs['dim_model'],kwargs['dim_model']), dtype=np.float64)
  * 		self.y = np.zeros((kwargs['data'].shape[3],), dtype=np.float64)
  * 		if kwargs['baseline'] != "" and kwargs['model'] != 'fodf':             # <<<<<<<<<<<<<<
- * 			self.data = kwargs['data']/kwargs['baseline'][:,:,:,np.newaxis]
+ * 			self.data = kwargs['data']/kwargs['baseline'][np.newaxis,:,:,:]
  * 		else:
  */
   __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_kwargs, __pyx_n_u_baseline); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 522, __pyx_L1_error)
@@ -13010,7 +13010,7 @@ static int __pyx_pf_7bonndit_8tracking_13interpolation_3UKF___cinit__(struct __p
     /* "bonndit/tracking/interpolation.pyx":523
  * 		self.y = np.zeros((kwargs['data'].shape[3],), dtype=np.float64)
  * 		if kwargs['baseline'] != "" and kwargs['model'] != 'fodf':
- * 			self.data = kwargs['data']/kwargs['baseline'][:,:,:,np.newaxis]             # <<<<<<<<<<<<<<
+ * 			self.data = kwargs['data']/kwargs['baseline'][np.newaxis,:,:,:]             # <<<<<<<<<<<<<<
  * 		else:
  * 			self.data = kwargs['data']
  */
@@ -13025,17 +13025,17 @@ static int __pyx_pf_7bonndit_8tracking_13interpolation_3UKF___cinit__(struct __p
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __pyx_t_3 = PyTuple_New(4); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 523, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __Pyx_INCREF(__pyx_slice__19);
-    __Pyx_GIVEREF(__pyx_slice__19);
-    PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_slice__19);
+    __Pyx_GIVEREF(__pyx_t_4);
+    PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_4);
     __Pyx_INCREF(__pyx_slice__19);
     __Pyx_GIVEREF(__pyx_slice__19);
     PyTuple_SET_ITEM(__pyx_t_3, 1, __pyx_slice__19);
     __Pyx_INCREF(__pyx_slice__19);
     __Pyx_GIVEREF(__pyx_slice__19);
     PyTuple_SET_ITEM(__pyx_t_3, 2, __pyx_slice__19);
-    __Pyx_GIVEREF(__pyx_t_4);
-    PyTuple_SET_ITEM(__pyx_t_3, 3, __pyx_t_4);
+    __Pyx_INCREF(__pyx_slice__19);
+    __Pyx_GIVEREF(__pyx_slice__19);
+    PyTuple_SET_ITEM(__pyx_t_3, 3, __pyx_slice__19);
     __pyx_t_4 = 0;
     __pyx_t_4 = __Pyx_PyObject_GetItem(__pyx_t_5, __pyx_t_3); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 523, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
@@ -13056,14 +13056,14 @@ static int __pyx_pf_7bonndit_8tracking_13interpolation_3UKF___cinit__(struct __p
  * 		self.P = np.zeros((kwargs['dim_model'],kwargs['dim_model']), dtype=np.float64)
  * 		self.y = np.zeros((kwargs['data'].shape[3],), dtype=np.float64)
  * 		if kwargs['baseline'] != "" and kwargs['model'] != 'fodf':             # <<<<<<<<<<<<<<
- * 			self.data = kwargs['data']/kwargs['baseline'][:,:,:,np.newaxis]
+ * 			self.data = kwargs['data']/kwargs['baseline'][np.newaxis,:,:,:]
  * 		else:
  */
     goto __pyx_L3;
   }
 
   /* "bonndit/tracking/interpolation.pyx":525
- * 			self.data = kwargs['data']/kwargs['baseline'][:,:,:,np.newaxis]
+ * 			self.data = kwargs['data']/kwargs['baseline'][np.newaxis,:,:,:]
  * 		else:
  * 			self.data = kwargs['data']             # <<<<<<<<<<<<<<
  * 		if kwargs['model'] == 'fodf':
