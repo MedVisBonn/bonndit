@@ -1,5 +1,5 @@
 #%%cython --annotate
-#cython: language_level=3, boundscheck=False,
+#cython: language_level=3, boundscheck=False, profile=True,
 import cython
 from libc.math cimport acos, pi, exp, fabs, cos, pow, tanh
 from libc.stdlib cimport rand, srand, RAND_MAX
@@ -33,7 +33,7 @@ cdef class Probabilities:
     cdef void aligned_direction(
         self, double[:, :] vectors,
         double[:] direction
-    ) nogil except *:
+    ) :  # nogil  except *:
         """
 
 		@param vectors:
@@ -65,7 +65,7 @@ cdef class Probabilities:
                 self.angles[i] = 180
                 mult_with_scalar(self.test_vectors[i], 0, vectors[i])
 
-    cdef void random_choice(self, double[:] direction) nogil except *:
+    cdef void random_choice(self, double[:] direction) :  # nogil  except *:
         """
 
 		@param direction:
@@ -107,7 +107,7 @@ cdef class Probabilities:
     cdef void calculate_probabilities(
         self, double[:, :] vectors,
         double[:] direction
-    ) nogil except *:
+    ) :  # nogil except *:
         pass
 
 
@@ -115,7 +115,7 @@ cdef class Gaussian(Probabilities):
     cdef void calculate_probabilities(
         self, double[:, :] vectors,
         double[:] direction
-    ) nogil except *:
+    ) :  # nogil except *:
         """
 
 		@param vectors:
@@ -136,7 +136,7 @@ cdef class Laplacian(Probabilities):
     cdef void calculate_probabilities(
         self, double[:, :] vectors,
         double[:] direction
-    ) nogil except *:
+    ) :  # nogil except *:
         """
 
 		@param vectors:
@@ -157,7 +157,7 @@ cdef class ScalarOld(Probabilities):
     cdef void calculate_probabilities(
         self, double[:, :] vectors,
         double[:] direction
-    ) nogil except *:
+    ) :  # nogil except *:
         """
 
 		@param vectors:
@@ -195,7 +195,7 @@ cdef class ScalarNew(Probabilities):
     cdef void calculate_probabilities(
         self, double[:, :] vectors,
         double[:] direction
-    ) nogil except *:
+    ) :  # nogil  except *:
         """
 
 		@param vectors:
@@ -222,7 +222,7 @@ cdef class Deterministic2(Probabilities):
     cdef void calculate_probabilities(
         self, double[:, :] vectors,
         double[:] direction
-    ) nogil except *:
+    ) :  # nogil  except *:
         """
 
 		@param vectors:
@@ -257,7 +257,7 @@ cdef class Deterministic(Probabilities):
     cdef void calculate_probabilities(
         self, double[:, :] vectors,
         double[:] direction
-    ) nogil except *:
+    ) :  # nogil  except *:
         """
 
 		@param vectors:

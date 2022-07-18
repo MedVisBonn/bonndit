@@ -1,4 +1,4 @@
-#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True,
+#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, profile=True
 # warn.unused_results=True
 import sys
 import nrrd
@@ -32,7 +32,7 @@ cdef void tracking(
     Integration integrate, Trafo trafo, Validator validator,
     int max_track_length, int save_steps,
     int samples, double[:, :, :, :] features, possible_features features_save
-) nogil except *:
+) :  # nogil except *:
     """
         Initializes the tracking for one seed in both directions.
 	@param paths:
@@ -97,7 +97,7 @@ cdef bint forward_tracking(
     Integration integrate, Trafo trafo, Validator validator,
     int max_track_length, int save_steps, double[:, :] features,
     possible_features feature_save
-) nogil except *:
+) :  # nogil except *:
     """
         This function do the tracking into one direction.
 	@param paths: empty path array to save the streamline points.

@@ -19,7 +19,7 @@
             "-Wl,--no-as-needed"
         ],
         "include_dirs": [
-            "/tmp/pip-build-env-1fnhz221/overlay/lib/python3.8/site-packages/numpy/core/include",
+            "/tmp/pip-build-env-5vbzudk3/overlay/lib/python3.8/site-packages/numpy/core/include",
             "/opt/intel/oneapi/mkl/2022.0.2/include"
         ],
         "libraries": [
@@ -1135,10 +1135,10 @@ struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities {
 
 
 /* "alignedDirection.pxd":15
- * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
  * 
  * cdef class Gaussian(Probabilities):             # <<<<<<<<<<<<<<
- * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
  * 
  */
 struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Gaussian {
@@ -1147,10 +1147,10 @@ struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Gaussian {
 
 
 /* "alignedDirection.pxd":18
- * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
  * 
  * cdef class Laplacian(Probabilities):             # <<<<<<<<<<<<<<
- * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
  * 
  */
 struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Laplacian {
@@ -1159,10 +1159,10 @@ struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Laplacian {
 
 
 /* "alignedDirection.pxd":21
- * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
  * 
  * cdef class ScalarOld(Probabilities):             # <<<<<<<<<<<<<<
- * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
  * 
  */
 struct __pyx_obj_7bonndit_8tracking_16alignedDirection_ScalarOld {
@@ -1171,10 +1171,10 @@ struct __pyx_obj_7bonndit_8tracking_16alignedDirection_ScalarOld {
 
 
 /* "alignedDirection.pxd":24
- * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
  * 
  * cdef class ScalarNew(Probabilities):             # <<<<<<<<<<<<<<
- * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
  * 
  */
 struct __pyx_obj_7bonndit_8tracking_16alignedDirection_ScalarNew {
@@ -1183,10 +1183,10 @@ struct __pyx_obj_7bonndit_8tracking_16alignedDirection_ScalarNew {
 
 
 /* "alignedDirection.pxd":27
- * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
  * 
  * cdef class Deterministic(Probabilities):             # <<<<<<<<<<<<<<
- * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
  * 
  */
 struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic {
@@ -1195,10 +1195,10 @@ struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic {
 
 
 /* "alignedDirection.pxd":30
- * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
  * 
  * cdef class Deterministic2(Probabilities):             # <<<<<<<<<<<<<<
- * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
  */
 struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Deterministic2 {
   struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities __pyx_base;
@@ -1314,10 +1314,10 @@ struct __pyx_obj_7bonndit_8tracking_13interpolation_Interpolation {
 
 
 /* "bonndit/tracking/interpolation.pxd":26
- * 	cdef int interpolate(self, double[:], double[:], int) nogil except *
+ * 	cdef int interpolate(self, double[:], double[:], int) # nogil except *
  * 
  * cdef class FACT(Interpolation):             # <<<<<<<<<<<<<<
- * 	cdef int interpolate(self, double[:], double[:], int) nogil except *
+ * 	cdef int interpolate(self, double[:], double[:], int) # nogil except *
  * 
  */
 struct __pyx_obj_7bonndit_8tracking_13interpolation_FACT {
@@ -1346,7 +1346,7 @@ struct __pyx_obj_7bonndit_8tracking_13interpolation_Trilinear {
 
 
 /* "bonndit/tracking/interpolation.pxd":44
- * 	cdef void permute(self, double[:]) nogil except *
+ * 	cdef void permute(self, double[:]) # nogil except *
  * 
  * cdef class TrilinearFODF(Interpolation):             # <<<<<<<<<<<<<<
  * 	cdef double[:,:,:,:] data
@@ -1374,7 +1374,7 @@ struct __pyx_obj_7bonndit_8tracking_13interpolation_TrilinearFODF {
 
 
 /* "bonndit/tracking/interpolation.pxd":65
- * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) nogil except *
+ * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) # nogil except *
  * 
  * cdef class UKF(Interpolation):             # <<<<<<<<<<<<<<
  * 	cdef double[:] mean
@@ -1393,10 +1393,10 @@ struct __pyx_obj_7bonndit_8tracking_13interpolation_UKF {
 
 
 /* "bonndit/tracking/interpolation.pxd":75
- * 	cdef int interpolate(self, double[:], double[:], int) nogil except *
+ * 	cdef int interpolate(self, double[:], double[:], int) # nogil except *
  * 
  * cdef class UKFFodf(UKF):             # <<<<<<<<<<<<<<
- * 	cdef int interpolate(self, double[:], double[:], int) nogil except *
+ * 	cdef int interpolate(self, double[:], double[:], int) # nogil except *
  * 
  */
 struct __pyx_obj_7bonndit_8tracking_13interpolation_UKFFodf {
@@ -1405,10 +1405,10 @@ struct __pyx_obj_7bonndit_8tracking_13interpolation_UKFFodf {
 
 
 /* "bonndit/tracking/interpolation.pxd":78
- * 	cdef int interpolate(self, double[:], double[:], int) nogil except *
+ * 	cdef int interpolate(self, double[:], double[:], int) # nogil except *
  * 
  * cdef class UKFMultiTensor(UKF):             # <<<<<<<<<<<<<<
- * 	cdef int interpolate(self, double[:], double[:], int) nogil except *
+ * 	cdef int interpolate(self, double[:], double[:], int) # nogil except *
  * 
  */
 struct __pyx_obj_7bonndit_8tracking_13interpolation_UKFMultiTensor {
@@ -1541,10 +1541,10 @@ static struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Probabiliti
 
 
 /* "alignedDirection.pxd":15
- * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
  * 
  * cdef class Gaussian(Probabilities):             # <<<<<<<<<<<<<<
- * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
  * 
  */
 
@@ -1555,10 +1555,10 @@ static struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Gaussian *_
 
 
 /* "alignedDirection.pxd":18
- * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
  * 
  * cdef class Laplacian(Probabilities):             # <<<<<<<<<<<<<<
- * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
  * 
  */
 
@@ -1569,10 +1569,10 @@ static struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Laplacian *
 
 
 /* "alignedDirection.pxd":21
- * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
  * 
  * cdef class ScalarOld(Probabilities):             # <<<<<<<<<<<<<<
- * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
  * 
  */
 
@@ -1583,10 +1583,10 @@ static struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_ScalarOld *
 
 
 /* "alignedDirection.pxd":24
- * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
  * 
  * cdef class ScalarNew(Probabilities):             # <<<<<<<<<<<<<<
- * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
  * 
  */
 
@@ -1597,10 +1597,10 @@ static struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_ScalarNew *
 
 
 /* "alignedDirection.pxd":27
- * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
  * 
  * cdef class Deterministic(Probabilities):             # <<<<<<<<<<<<<<
- * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
  * 
  */
 
@@ -1611,10 +1611,10 @@ static struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Determinist
 
 
 /* "alignedDirection.pxd":30
- * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
  * 
  * cdef class Deterministic2(Probabilities):             # <<<<<<<<<<<<<<
- * 	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+ * 	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
  */
 
 struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Deterministic2 {
@@ -1706,7 +1706,7 @@ static struct __pyx_vtabstruct_7bonndit_8tracking_13interpolation_Interpolation 
  * 
  * 
  * cdef class FACT(Interpolation):             # <<<<<<<<<<<<<<
- * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) nogil except *:
+ * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) : # : # : # nogil except *:
  * 		cdef int i
  */
 
@@ -1931,6 +1931,274 @@ static int __Pyx_ParseOptionalKeywords(PyObject *kwds, PyObject **argnames[],\
         __Pyx__ArgTypeTest(obj, type, name, exact))
 static int __Pyx__ArgTypeTest(PyObject *obj, PyTypeObject *type, const char *name, int exact);
 
+/* PyThreadStateGet.proto */
+#if CYTHON_FAST_THREAD_STATE
+#define __Pyx_PyThreadState_declare  PyThreadState *__pyx_tstate;
+#define __Pyx_PyThreadState_assign  __pyx_tstate = __Pyx_PyThreadState_Current;
+#define __Pyx_PyErr_Occurred()  __pyx_tstate->curexc_type
+#else
+#define __Pyx_PyThreadState_declare
+#define __Pyx_PyThreadState_assign
+#define __Pyx_PyErr_Occurred()  PyErr_Occurred()
+#endif
+
+/* PyErrFetchRestore.proto */
+#if CYTHON_FAST_THREAD_STATE
+#define __Pyx_PyErr_Clear() __Pyx_ErrRestore(NULL, NULL, NULL)
+#define __Pyx_ErrRestoreWithState(type, value, tb)  __Pyx_ErrRestoreInState(PyThreadState_GET(), type, value, tb)
+#define __Pyx_ErrFetchWithState(type, value, tb)    __Pyx_ErrFetchInState(PyThreadState_GET(), type, value, tb)
+#define __Pyx_ErrRestore(type, value, tb)  __Pyx_ErrRestoreInState(__pyx_tstate, type, value, tb)
+#define __Pyx_ErrFetch(type, value, tb)    __Pyx_ErrFetchInState(__pyx_tstate, type, value, tb)
+static CYTHON_INLINE void __Pyx_ErrRestoreInState(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb);
+static CYTHON_INLINE void __Pyx_ErrFetchInState(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb);
+#if CYTHON_COMPILING_IN_CPYTHON
+#define __Pyx_PyErr_SetNone(exc) (Py_INCREF(exc), __Pyx_ErrRestore((exc), NULL, NULL))
+#else
+#define __Pyx_PyErr_SetNone(exc) PyErr_SetNone(exc)
+#endif
+#else
+#define __Pyx_PyErr_Clear() PyErr_Clear()
+#define __Pyx_PyErr_SetNone(exc) PyErr_SetNone(exc)
+#define __Pyx_ErrRestoreWithState(type, value, tb)  PyErr_Restore(type, value, tb)
+#define __Pyx_ErrFetchWithState(type, value, tb)  PyErr_Fetch(type, value, tb)
+#define __Pyx_ErrRestoreInState(tstate, type, value, tb)  PyErr_Restore(type, value, tb)
+#define __Pyx_ErrFetchInState(tstate, type, value, tb)  PyErr_Fetch(type, value, tb)
+#define __Pyx_ErrRestore(type, value, tb)  PyErr_Restore(type, value, tb)
+#define __Pyx_ErrFetch(type, value, tb)  PyErr_Fetch(type, value, tb)
+#endif
+
+/* Profile.proto */
+#ifndef CYTHON_PROFILE
+#if CYTHON_COMPILING_IN_PYPY || CYTHON_COMPILING_IN_PYSTON
+  #define CYTHON_PROFILE 0
+#else
+  #define CYTHON_PROFILE 1
+#endif
+#endif
+#ifndef CYTHON_TRACE_NOGIL
+  #define CYTHON_TRACE_NOGIL 0
+#else
+  #if CYTHON_TRACE_NOGIL && !defined(CYTHON_TRACE)
+    #define CYTHON_TRACE 1
+  #endif
+#endif
+#ifndef CYTHON_TRACE
+  #define CYTHON_TRACE 0
+#endif
+#if CYTHON_TRACE
+  #undef CYTHON_PROFILE_REUSE_FRAME
+#endif
+#ifndef CYTHON_PROFILE_REUSE_FRAME
+  #define CYTHON_PROFILE_REUSE_FRAME 0
+#endif
+#if CYTHON_PROFILE || CYTHON_TRACE
+  #include "compile.h"
+  #include "frameobject.h"
+  #include "traceback.h"
+#if PY_VERSION_HEX >= 0x030b00a6
+  #ifndef Py_BUILD_CORE
+    #define Py_BUILD_CORE 1
+  #endif
+  #include "internal/pycore_frame.h"
+#endif
+  #if CYTHON_PROFILE_REUSE_FRAME
+    #define CYTHON_FRAME_MODIFIER static
+    #define CYTHON_FRAME_DEL(frame)
+  #else
+    #define CYTHON_FRAME_MODIFIER
+    #define CYTHON_FRAME_DEL(frame) Py_CLEAR(frame)
+  #endif
+  #define __Pyx_TraceDeclarations\
+      static PyCodeObject *__pyx_frame_code = NULL;\
+      CYTHON_FRAME_MODIFIER PyFrameObject *__pyx_frame = NULL;\
+      int __Pyx_use_tracing = 0;
+  #define __Pyx_TraceFrameInit(codeobj)\
+      if (codeobj) __pyx_frame_code = (PyCodeObject*) codeobj;
+#if PY_VERSION_HEX >= 0x030b00a2
+  #define __Pyx_IsTracing(tstate, check_tracing, check_funcs)\
+     (unlikely((tstate)->cframe->use_tracing) &&\
+         (!(check_tracing) || !(tstate)->tracing) &&\
+         (!(check_funcs) || (tstate)->c_profilefunc || (CYTHON_TRACE && (tstate)->c_tracefunc)))
+  #define __Pyx_EnterTracing(tstate) PyThreadState_EnterTracing(tstate)
+  #define __Pyx_LeaveTracing(tstate) PyThreadState_LeaveTracing(tstate)
+#elif PY_VERSION_HEX >= 0x030a00b1
+  #define __Pyx_IsTracing(tstate, check_tracing, check_funcs)\
+     (unlikely((tstate)->cframe->use_tracing) &&\
+         (!(check_tracing) || !(tstate)->tracing) &&\
+         (!(check_funcs) || (tstate)->c_profilefunc || (CYTHON_TRACE && (tstate)->c_tracefunc)))
+  #define __Pyx_EnterTracing(tstate)\
+      do { tstate->tracing++; tstate->cframe->use_tracing = 0; } while (0)
+  #define __Pyx_LeaveTracing(tstate)\
+      do {\
+          tstate->tracing--;\
+          tstate->cframe->use_tracing = ((CYTHON_TRACE && tstate->c_tracefunc != NULL)\
+                                 || tstate->c_profilefunc != NULL);\
+      } while (0)
+#else
+  #define __Pyx_IsTracing(tstate, check_tracing, check_funcs)\
+     (unlikely((tstate)->use_tracing) &&\
+         (!(check_tracing) || !(tstate)->tracing) &&\
+         (!(check_funcs) || (tstate)->c_profilefunc || (CYTHON_TRACE && (tstate)->c_tracefunc)))
+  #define __Pyx_EnterTracing(tstate)\
+      do { tstate->tracing++; tstate->use_tracing = 0; } while (0)
+  #define __Pyx_LeaveTracing(tstate)\
+      do {\
+          tstate->tracing--;\
+          tstate->use_tracing = ((CYTHON_TRACE && tstate->c_tracefunc != NULL)\
+                                         || tstate->c_profilefunc != NULL);\
+      } while (0)
+#endif
+  #ifdef WITH_THREAD
+  #define __Pyx_TraceCall(funcname, srcfile, firstlineno, nogil, goto_error)\
+  if (nogil) {\
+      if (CYTHON_TRACE_NOGIL) {\
+          PyThreadState *tstate;\
+          PyGILState_STATE state = PyGILState_Ensure();\
+          tstate = __Pyx_PyThreadState_Current;\
+          if (__Pyx_IsTracing(tstate, 1, 1)) {\
+              __Pyx_use_tracing = __Pyx_TraceSetupAndCall(&__pyx_frame_code, &__pyx_frame, tstate, funcname, srcfile, firstlineno);\
+          }\
+          PyGILState_Release(state);\
+          if (unlikely(__Pyx_use_tracing < 0)) goto_error;\
+      }\
+  } else {\
+      PyThreadState* tstate = PyThreadState_GET();\
+      if (__Pyx_IsTracing(tstate, 1, 1)) {\
+          __Pyx_use_tracing = __Pyx_TraceSetupAndCall(&__pyx_frame_code, &__pyx_frame, tstate, funcname, srcfile, firstlineno);\
+          if (unlikely(__Pyx_use_tracing < 0)) goto_error;\
+      }\
+  }
+  #else
+  #define __Pyx_TraceCall(funcname, srcfile, firstlineno, nogil, goto_error)\
+  {   PyThreadState* tstate = PyThreadState_GET();\
+      if (__Pyx_IsTracing(tstate, 1, 1)) {\
+          __Pyx_use_tracing = __Pyx_TraceSetupAndCall(&__pyx_frame_code, &__pyx_frame, tstate, funcname, srcfile, firstlineno);\
+          if (unlikely(__Pyx_use_tracing < 0)) goto_error;\
+      }\
+  }
+  #endif
+  #define __Pyx_TraceException()\
+  if (likely(!__Pyx_use_tracing)); else {\
+      PyThreadState* tstate = __Pyx_PyThreadState_Current;\
+      if (__Pyx_IsTracing(tstate, 0, 1)) {\
+          __Pyx_EnterTracing(tstate);\
+          PyObject *exc_info = __Pyx_GetExceptionTuple(tstate);\
+          if (exc_info) {\
+              if (CYTHON_TRACE && tstate->c_tracefunc)\
+                  tstate->c_tracefunc(\
+                      tstate->c_traceobj, __pyx_frame, PyTrace_EXCEPTION, exc_info);\
+              tstate->c_profilefunc(\
+                  tstate->c_profileobj, __pyx_frame, PyTrace_EXCEPTION, exc_info);\
+              Py_DECREF(exc_info);\
+          }\
+          __Pyx_LeaveTracing(tstate);\
+      }\
+  }
+  static void __Pyx_call_return_trace_func(PyThreadState *tstate, PyFrameObject *frame, PyObject *result) {
+      PyObject *type, *value, *traceback;
+      __Pyx_ErrFetchInState(tstate, &type, &value, &traceback);
+      __Pyx_EnterTracing(tstate);
+      if (CYTHON_TRACE && tstate->c_tracefunc)
+          tstate->c_tracefunc(tstate->c_traceobj, frame, PyTrace_RETURN, result);
+      if (tstate->c_profilefunc)
+          tstate->c_profilefunc(tstate->c_profileobj, frame, PyTrace_RETURN, result);
+      CYTHON_FRAME_DEL(frame);
+      __Pyx_LeaveTracing(tstate);
+      __Pyx_ErrRestoreInState(tstate, type, value, traceback);
+  }
+  #ifdef WITH_THREAD
+  #define __Pyx_TraceReturn(result, nogil)\
+  if (likely(!__Pyx_use_tracing)); else {\
+      if (nogil) {\
+          if (CYTHON_TRACE_NOGIL) {\
+              PyThreadState *tstate;\
+              PyGILState_STATE state = PyGILState_Ensure();\
+              tstate = __Pyx_PyThreadState_Current;\
+              if (__Pyx_IsTracing(tstate, 0, 0)) {\
+                  __Pyx_call_return_trace_func(tstate, __pyx_frame, (PyObject*)result);\
+              }\
+              PyGILState_Release(state);\
+          }\
+      } else {\
+          PyThreadState* tstate = __Pyx_PyThreadState_Current;\
+          if (__Pyx_IsTracing(tstate, 0, 0)) {\
+              __Pyx_call_return_trace_func(tstate, __pyx_frame, (PyObject*)result);\
+          }\
+      }\
+  }
+  #else
+  #define __Pyx_TraceReturn(result, nogil)\
+  if (likely(!__Pyx_use_tracing)); else {\
+      PyThreadState* tstate = __Pyx_PyThreadState_Current;\
+      if (__Pyx_IsTracing(tstate, 0, 0)) {\
+          __Pyx_call_return_trace_func(tstate, __pyx_frame, (PyObject*)result);\
+      }\
+  }
+  #endif
+  static PyCodeObject *__Pyx_createFrameCodeObject(const char *funcname, const char *srcfile, int firstlineno);
+  static int __Pyx_TraceSetupAndCall(PyCodeObject** code, PyFrameObject** frame, PyThreadState* tstate, const char *funcname, const char *srcfile, int firstlineno);
+#else
+  #define __Pyx_TraceDeclarations
+  #define __Pyx_TraceFrameInit(codeobj)
+  #define __Pyx_TraceCall(funcname, srcfile, firstlineno, nogil, goto_error)   if ((1)); else goto_error;
+  #define __Pyx_TraceException()
+  #define __Pyx_TraceReturn(result, nogil)
+#endif
+#if CYTHON_TRACE
+  static int __Pyx_call_line_trace_func(PyThreadState *tstate, PyFrameObject *frame, int lineno) {
+      int ret;
+      PyObject *type, *value, *traceback;
+      __Pyx_ErrFetchInState(tstate, &type, &value, &traceback);
+      __Pyx_PyFrame_SetLineNumber(frame, lineno);
+      __Pyx_EnterTracing(tstate);
+      ret = tstate->c_tracefunc(tstate->c_traceobj, frame, PyTrace_LINE, NULL);
+      __Pyx_LeaveTracing(tstate);
+      if (likely(!ret)) {
+          __Pyx_ErrRestoreInState(tstate, type, value, traceback);
+      } else {
+          Py_XDECREF(type);
+          Py_XDECREF(value);
+          Py_XDECREF(traceback);
+      }
+      return ret;
+  }
+  #ifdef WITH_THREAD
+  #define __Pyx_TraceLine(lineno, nogil, goto_error)\
+  if (likely(!__Pyx_use_tracing)); else {\
+      if (nogil) {\
+          if (CYTHON_TRACE_NOGIL) {\
+              int ret = 0;\
+              PyThreadState *tstate;\
+              PyGILState_STATE state = PyGILState_Ensure();\
+              tstate = __Pyx_PyThreadState_Current;\
+              if (__Pyx_IsTracing(tstate, 0, 0) && tstate->c_tracefunc && __pyx_frame->f_trace) {\
+                  ret = __Pyx_call_line_trace_func(tstate, __pyx_frame, lineno);\
+              }\
+              PyGILState_Release(state);\
+              if (unlikely(ret)) goto_error;\
+          }\
+      } else {\
+          PyThreadState* tstate = __Pyx_PyThreadState_Current;\
+          if (__Pyx_IsTracing(tstate, 0, 0) && tstate->c_tracefunc && __pyx_frame->f_trace) {\
+              int ret = __Pyx_call_line_trace_func(tstate, __pyx_frame, lineno);\
+              if (unlikely(ret)) goto_error;\
+          }\
+      }\
+  }
+  #else
+  #define __Pyx_TraceLine(lineno, nogil, goto_error)\
+  if (likely(!__Pyx_use_tracing)); else {\
+      PyThreadState* tstate = __Pyx_PyThreadState_Current;\
+      if (__Pyx_IsTracing(tstate, 0, 0) && tstate->c_tracefunc && __pyx_frame->f_trace) {\
+          int ret = __Pyx_call_line_trace_func(tstate, __pyx_frame, lineno);\
+          if (unlikely(ret)) goto_error;\
+      }\
+  }
+  #endif
+#else
+  #define __Pyx_TraceLine(lineno, nogil, goto_error)   if ((1)); else goto_error;
+#endif
+
 /* MemviewSliceInit.proto */
 #define __Pyx_BUF_MAX_NDIMS %(BUF_MAX_NDIMS)d
 #define __Pyx_MEMVIEW_DIRECT   1
@@ -2013,45 +2281,6 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg
 
 /* None.proto */
 static CYTHON_INLINE void __Pyx_RaiseUnboundLocalError(const char *varname);
-
-/* None.proto */
-static void __Pyx_RaiseUnboundMemoryviewSliceNogil(const char *varname);
-
-/* PyThreadStateGet.proto */
-#if CYTHON_FAST_THREAD_STATE
-#define __Pyx_PyThreadState_declare  PyThreadState *__pyx_tstate;
-#define __Pyx_PyThreadState_assign  __pyx_tstate = __Pyx_PyThreadState_Current;
-#define __Pyx_PyErr_Occurred()  __pyx_tstate->curexc_type
-#else
-#define __Pyx_PyThreadState_declare
-#define __Pyx_PyThreadState_assign
-#define __Pyx_PyErr_Occurred()  PyErr_Occurred()
-#endif
-
-/* PyErrFetchRestore.proto */
-#if CYTHON_FAST_THREAD_STATE
-#define __Pyx_PyErr_Clear() __Pyx_ErrRestore(NULL, NULL, NULL)
-#define __Pyx_ErrRestoreWithState(type, value, tb)  __Pyx_ErrRestoreInState(PyThreadState_GET(), type, value, tb)
-#define __Pyx_ErrFetchWithState(type, value, tb)    __Pyx_ErrFetchInState(PyThreadState_GET(), type, value, tb)
-#define __Pyx_ErrRestore(type, value, tb)  __Pyx_ErrRestoreInState(__pyx_tstate, type, value, tb)
-#define __Pyx_ErrFetch(type, value, tb)    __Pyx_ErrFetchInState(__pyx_tstate, type, value, tb)
-static CYTHON_INLINE void __Pyx_ErrRestoreInState(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb);
-static CYTHON_INLINE void __Pyx_ErrFetchInState(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb);
-#if CYTHON_COMPILING_IN_CPYTHON
-#define __Pyx_PyErr_SetNone(exc) (Py_INCREF(exc), __Pyx_ErrRestore((exc), NULL, NULL))
-#else
-#define __Pyx_PyErr_SetNone(exc) PyErr_SetNone(exc)
-#endif
-#else
-#define __Pyx_PyErr_Clear() PyErr_Clear()
-#define __Pyx_PyErr_SetNone(exc) PyErr_SetNone(exc)
-#define __Pyx_ErrRestoreWithState(type, value, tb)  PyErr_Restore(type, value, tb)
-#define __Pyx_ErrFetchWithState(type, value, tb)  PyErr_Fetch(type, value, tb)
-#define __Pyx_ErrRestoreInState(tstate, type, value, tb)  PyErr_Restore(type, value, tb)
-#define __Pyx_ErrFetchInState(tstate, type, value, tb)  PyErr_Fetch(type, value, tb)
-#define __Pyx_ErrRestore(type, value, tb)  PyErr_Restore(type, value, tb)
-#define __Pyx_ErrFetch(type, value, tb)  PyErr_Fetch(type, value, tb)
-#endif
 
 /* WriteUnraisableException.proto */
 static void __Pyx_WriteUnraisable(const char *name, int clineno,
@@ -2644,9 +2873,6 @@ static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_dsdsds
 /* ObjectToMemviewSlice.proto */
 static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_dsdsdsds_int(PyObject *, int writable_flag);
 
-/* None.proto */
-static CYTHON_INLINE int __Pyx_ErrOccurredWithGIL(void); /* proto */
-
 /* MemviewDtypeToObject.proto */
 static CYTHON_INLINE PyObject *__pyx_memview_get_double(const char *itemp);
 static CYTHON_INLINE int __pyx_memview_set_double(const char *itemp, PyObject *obj);
@@ -2873,7 +3099,7 @@ static const char __pyx_k_r[] = "r";
 static const char __pyx_k_id[] = "id";
 static const char __pyx_k_np[] = "np";
 static const char __pyx_k_UKF[] = "UKF";
-static const char __pyx_k__32[] = "";
+static const char __pyx_k__31[] = "";
 static const char __pyx_k_dot[] = "dot";
 static const char __pyx_k_key[] = "key";
 static const char __pyx_k_new[] = "__new__";
@@ -2976,7 +3202,6 @@ static const char __pyx_k_allocate_buffer[] = "allocate_buffer";
 static const char __pyx_k_dtype_is_object[] = "dtype_is_object";
 static const char __pyx_k_pyx_PickleError[] = "__pyx_PickleError";
 static const char __pyx_k_setstate_cython[] = "__setstate_cython__";
-static const char __pyx_k_I_do_not_converge[] = "I do not converge";
 static const char __pyx_k_pyx_unpickle_Enum[] = "__pyx_unpickle_Enum";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
 static const char __pyx_k_strided_and_direct[] = "<strided and direct>";
@@ -3016,7 +3241,6 @@ static PyObject *__pyx_n_s_DTYPE;
 static PyObject *__pyx_n_s_Ellipsis;
 static PyObject *__pyx_kp_s_Empty_shape_tuple_for_cython_arr;
 static PyObject *__pyx_n_s_FACT;
-static PyObject *__pyx_kp_u_I_do_not_converge;
 static PyObject *__pyx_kp_s_Incompatible_checksums_0x_x_vs_0;
 static PyObject *__pyx_n_s_IndexError;
 static PyObject *__pyx_kp_s_Indirect_dimensions_not_supporte;
@@ -3038,7 +3262,7 @@ static PyObject *__pyx_n_s_UKFMultiTensor;
 static PyObject *__pyx_kp_s_Unable_to_convert_item_to_object;
 static PyObject *__pyx_n_s_ValueError;
 static PyObject *__pyx_n_s_View_MemoryView;
-static PyObject *__pyx_kp_u__32;
+static PyObject *__pyx_kp_u__31;
 static PyObject *__pyx_n_s_allocate_buffer;
 static PyObject *__pyx_n_s_array;
 static PyObject *__pyx_n_s_base;
@@ -3264,7 +3488,7 @@ static PyObject *__pyx_tuple__27;
 static PyObject *__pyx_tuple__28;
 static PyObject *__pyx_tuple__29;
 static PyObject *__pyx_tuple__30;
-static PyObject *__pyx_tuple__31;
+static PyObject *__pyx_tuple__32;
 static PyObject *__pyx_tuple__33;
 static PyObject *__pyx_tuple__34;
 static PyObject *__pyx_tuple__35;
@@ -3287,7 +3511,6 @@ static PyObject *__pyx_tuple__51;
 static PyObject *__pyx_tuple__52;
 static PyObject *__pyx_tuple__53;
 static PyObject *__pyx_tuple__54;
-static PyObject *__pyx_tuple__55;
 static PyObject *__pyx_tuple__56;
 static PyObject *__pyx_tuple__57;
 static PyObject *__pyx_tuple__58;
@@ -3299,7 +3522,7 @@ static PyObject *__pyx_tuple__63;
 static PyObject *__pyx_tuple__64;
 static PyObject *__pyx_tuple__65;
 static PyObject *__pyx_tuple__66;
-static PyObject *__pyx_codeobj__67;
+static PyObject *__pyx_codeobj__55;
 /* Late includes */
 
 /* "bonndit/tracking/interpolation.pyx":41
@@ -3397,6 +3620,7 @@ static int __pyx_pw_7bonndit_8tracking_13interpolation_13Interpolation_1__cinit_
 
 static int __pyx_pf_7bonndit_8tracking_13interpolation_13Interpolation___cinit__(struct __pyx_obj_7bonndit_8tracking_13interpolation_Interpolation *__pyx_v_self, __Pyx_memviewslice __pyx_v_vector_field, __Pyx_memviewslice __pyx_v_grid, struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *__pyx_v_prob, CYTHON_UNUSED PyObject *__pyx_v_kwargs) {
   int __pyx_r;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
@@ -3412,6 +3636,7 @@ static int __pyx_pf_7bonndit_8tracking_13interpolation_13Interpolation___cinit__
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__cinit__", 0);
+  __Pyx_TraceCall("__cinit__", __pyx_f[0], 41, 0, __PYX_ERR(0, 41, __pyx_L1_error));
 
   /* "bonndit/tracking/interpolation.pyx":42
  * 
@@ -3678,6 +3903,7 @@ static int __pyx_pf_7bonndit_8tracking_13interpolation_13Interpolation___cinit__
   __pyx_L0:;
   __PYX_XDEC_MEMVIEW(&__pyx_v_vector_field, 1);
   __PYX_XDEC_MEMVIEW(&__pyx_v_grid, 1);
+  __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -3685,15 +3911,19 @@ static int __pyx_pf_7bonndit_8tracking_13interpolation_13Interpolation___cinit__
 /* "bonndit/tracking/interpolation.pyx":54
  * 
  * 
- * 	cdef void calc_cube(self,double[:] point) nogil:             # <<<<<<<<<<<<<<
+ * 	cdef void calc_cube(self,double[:] point) : # : # : # nogil:             # <<<<<<<<<<<<<<
  * 		""" This function calculates the cube around a point.
  * 
  */
 
 static void __pyx_f_7bonndit_8tracking_13interpolation_13Interpolation_calc_cube(struct __pyx_obj_7bonndit_8tracking_13interpolation_Interpolation *__pyx_v_self, __Pyx_memviewslice __pyx_v_point) {
+  __Pyx_TraceDeclarations
+  __Pyx_RefNannyDeclarations
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("calc_cube", 0);
+  __Pyx_TraceCall("calc_cube", __pyx_f[0], 54, 0, __PYX_ERR(0, 54, __pyx_L1_error));
 
   /* "bonndit/tracking/interpolation.pyx":66
  * 
@@ -3703,7 +3933,7 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_13Interpolation_calc_cube
  * 
  */
   if (unlikely(!__pyx_v_self->floor_point.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 66, __pyx_L1_error)}
-  if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_neigh.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("neigh"); __PYX_ERR(0, 66, __pyx_L1_error) }
+  if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_neigh.memview)) { __Pyx_RaiseUnboundLocalError("neigh"); __PYX_ERR(0, 66, __pyx_L1_error) }
   __pyx_f_7bonndit_5utilc_14cython_helpers_add_pointwise(__pyx_v_self->floor_point, __pyx_v_7bonndit_8tracking_13interpolation_neigh, __pyx_v_point);
 
   /* "bonndit/tracking/interpolation.pyx":67
@@ -3711,7 +3941,7 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_13Interpolation_calc_cube
  * 		add_pointwise(self.floor_point, neigh, point)
  * 		floor_pointwise_matrix(self.floor_point, self.floor_point)             # <<<<<<<<<<<<<<
  * 
- * 	cdef void nearest_neigh(self,double[:] point) nogil:
+ * 	cdef void nearest_neigh(self,double[:] point) : # : # : # nogil:
  */
   if (unlikely(!__pyx_v_self->floor_point.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 67, __pyx_L1_error)}
   if (unlikely(!__pyx_v_self->floor_point.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 67, __pyx_L1_error)}
@@ -3720,7 +3950,7 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_13Interpolation_calc_cube
   /* "bonndit/tracking/interpolation.pyx":54
  * 
  * 
- * 	cdef void calc_cube(self,double[:] point) nogil:             # <<<<<<<<<<<<<<
+ * 	cdef void calc_cube(self,double[:] point) : # : # : # nogil:             # <<<<<<<<<<<<<<
  * 		""" This function calculates the cube around a point.
  * 
  */
@@ -3728,14 +3958,16 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_13Interpolation_calc_cube
   /* function exit code */
   goto __pyx_L0;
   __pyx_L1_error:;
-  __Pyx_WriteUnraisable("bonndit.tracking.interpolation.Interpolation.calc_cube", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 1);
+  __Pyx_WriteUnraisable("bonndit.tracking.interpolation.Interpolation.calc_cube", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
   __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 0);
+  __Pyx_RefNannyFinishContext();
 }
 
 /* "bonndit/tracking/interpolation.pyx":69
  * 		floor_pointwise_matrix(self.floor_point, self.floor_point)
  * 
- * 	cdef void nearest_neigh(self,double[:] point) nogil:             # <<<<<<<<<<<<<<
+ * 	cdef void nearest_neigh(self,double[:] point) : # : # : # nogil:             # <<<<<<<<<<<<<<
  * 		""" Return the nearest neighbour to a given point by l2 norm. Therefore uses the cube around a point and calc
  * 		the distance to all other points.
  */
@@ -3745,12 +3977,16 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_13Interpolation_nearest_n
   double __pyx_v_act_dist;
   int __pyx_v_index;
   int __pyx_v_best_ind;
+  __Pyx_TraceDeclarations
+  __Pyx_RefNannyDeclarations
   __Pyx_memviewslice __pyx_t_1 = { 0, 0, { 0 }, { 0 }, { 0 } };
   int __pyx_t_2;
   int __pyx_t_3;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("nearest_neigh", 0);
+  __Pyx_TraceCall("nearest_neigh", __pyx_f[0], 69, 0, __PYX_ERR(0, 69, __pyx_L1_error));
 
   /* "bonndit/tracking/interpolation.pyx":83
  * 		cdef double dist, act_dist
@@ -3784,7 +4020,7 @@ __pyx_t_1.strides[0] = __pyx_v_self->floor_point.strides[1];
     __pyx_t_1.suboffsets[0] = -1;
 
 __pyx_f_7bonndit_5utilc_14cython_helpers_sub_vectors(__pyx_v_self->vector, __pyx_t_1, __pyx_v_point);
-  __PYX_XDEC_MEMVIEW(&__pyx_t_1, 0);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_1, 1);
   __pyx_t_1.memview = NULL;
   __pyx_t_1.data = NULL;
 
@@ -3831,7 +4067,7 @@ __pyx_t_1.strides[0] = __pyx_v_self->floor_point.strides[1];
     __pyx_t_1.suboffsets[0] = -1;
 
 __pyx_f_7bonndit_5utilc_14cython_helpers_sub_vectors(__pyx_v_self->vector, __pyx_t_1, __pyx_v_point);
-    __PYX_XDEC_MEMVIEW(&__pyx_t_1, 0);
+    __PYX_XDEC_MEMVIEW(&__pyx_t_1, 1);
     __pyx_t_1.memview = NULL;
     __pyx_t_1.data = NULL;
 
@@ -3895,7 +4131,7 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_sub_vectors(__pyx_v_self->vector, __pyx
   /* "bonndit/tracking/interpolation.pyx":69
  * 		floor_pointwise_matrix(self.floor_point, self.floor_point)
  * 
- * 	cdef void nearest_neigh(self,double[:] point) nogil:             # <<<<<<<<<<<<<<
+ * 	cdef void nearest_neigh(self,double[:] point) : # : # : # nogil:             # <<<<<<<<<<<<<<
  * 		""" Return the nearest neighbour to a given point by l2 norm. Therefore uses the cube around a point and calc
  * 		the distance to all other points.
  */
@@ -3903,21 +4139,25 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_sub_vectors(__pyx_v_self->vector, __pyx
   /* function exit code */
   goto __pyx_L0;
   __pyx_L1_error:;
-  __PYX_XDEC_MEMVIEW(&__pyx_t_1, 0);
-  __Pyx_WriteUnraisable("bonndit.tracking.interpolation.Interpolation.nearest_neigh", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_1, 1);
+  __Pyx_WriteUnraisable("bonndit.tracking.interpolation.Interpolation.nearest_neigh", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
   __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 0);
+  __Pyx_RefNannyFinishContext();
 }
 
 /* "bonndit/tracking/interpolation.pyx":98
  * 
  * 	#somehow slicing is not possible
- * 	cdef void set_vector(self, int index, int j) nogil:             # <<<<<<<<<<<<<<
+ * 	cdef void set_vector(self, int index, int j) : # : # : # nogil:             # <<<<<<<<<<<<<<
  * 		cdef int i
  * 		for i in range(3):
  */
 
 static void __pyx_f_7bonndit_8tracking_13interpolation_13Interpolation_set_vector(struct __pyx_obj_7bonndit_8tracking_13interpolation_Interpolation *__pyx_v_self, int __pyx_v_index, int __pyx_v_j) {
   int __pyx_v_i;
+  __Pyx_TraceDeclarations
+  __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   Py_ssize_t __pyx_t_2;
   Py_ssize_t __pyx_t_3;
@@ -3934,9 +4174,11 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_13Interpolation_set_vecto
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("set_vector", 0);
+  __Pyx_TraceCall("set_vector", __pyx_f[0], 98, 0, __PYX_ERR(0, 98, __pyx_L1_error));
 
   /* "bonndit/tracking/interpolation.pyx":100
- * 	cdef void set_vector(self, int index, int j) nogil:
+ * 	cdef void set_vector(self, int index, int j) : # : # : # nogil:
  * 		cdef int i
  * 		for i in range(3):             # <<<<<<<<<<<<<<
  * 			self.vector[i] = self.vector_field[i + 1, j, int(self.floor_point[index, 0]),
@@ -3991,7 +4233,7 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_13Interpolation_set_vecto
   /* "bonndit/tracking/interpolation.pyx":98
  * 
  * 	#somehow slicing is not possible
- * 	cdef void set_vector(self, int index, int j) nogil:             # <<<<<<<<<<<<<<
+ * 	cdef void set_vector(self, int index, int j) : # : # : # nogil:             # <<<<<<<<<<<<<<
  * 		cdef int i
  * 		for i in range(3):
  */
@@ -3999,20 +4241,24 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_13Interpolation_set_vecto
   /* function exit code */
   goto __pyx_L0;
   __pyx_L1_error:;
-  __Pyx_WriteUnraisable("bonndit.tracking.interpolation.Interpolation.set_vector", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 1);
+  __Pyx_WriteUnraisable("bonndit.tracking.interpolation.Interpolation.set_vector", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
   __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 0);
+  __Pyx_RefNannyFinishContext();
 }
 
 /* "bonndit/tracking/interpolation.pyx":106
  * 
  * 	#@Cython.cdivision(True)
- * 	cdef void main_dir(self, double[:] point) nogil:             # <<<<<<<<<<<<<<
+ * 	cdef void main_dir(self, double[:] point) : # : # : # nogil:             # <<<<<<<<<<<<<<
  * 			cdef double zero = 0
  * 			self.nearest_neigh(point)
  */
 
 static void __pyx_f_7bonndit_8tracking_13interpolation_13Interpolation_main_dir(struct __pyx_obj_7bonndit_8tracking_13interpolation_Interpolation *__pyx_v_self, __Pyx_memviewslice __pyx_v_point) {
   CYTHON_UNUSED double __pyx_v_zero;
+  __Pyx_TraceDeclarations
+  __Pyx_RefNannyDeclarations
   Py_ssize_t __pyx_t_1;
   Py_ssize_t __pyx_t_2;
   Py_ssize_t __pyx_t_3;
@@ -4027,10 +4273,12 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_13Interpolation_main_dir(
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("main_dir", 0);
+  __Pyx_TraceCall("main_dir", __pyx_f[0], 106, 0, __PYX_ERR(0, 106, __pyx_L1_error));
 
   /* "bonndit/tracking/interpolation.pyx":107
  * 	#@Cython.cdivision(True)
- * 	cdef void main_dir(self, double[:] point) nogil:
+ * 	cdef void main_dir(self, double[:] point) : # : # : # nogil:
  * 			cdef double zero = 0             # <<<<<<<<<<<<<<
  * 			self.nearest_neigh(point)
  * 			self.set_vector(self.best_ind, 0)
@@ -4038,7 +4286,7 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_13Interpolation_main_dir(
   __pyx_v_zero = 0.0;
 
   /* "bonndit/tracking/interpolation.pyx":108
- * 	cdef void main_dir(self, double[:] point) nogil:
+ * 	cdef void main_dir(self, double[:] point) : # : # : # nogil:
  * 			cdef double zero = 0
  * 			self.nearest_neigh(point)             # <<<<<<<<<<<<<<
  * 			self.set_vector(self.best_ind, 0)
@@ -4084,7 +4332,7 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_13Interpolation_main_dir(
  * 			                                                   int(self.floor_point[ self.best_ind, 1]),
  * 			                                                  int(self.floor_point[self.best_ind, 2])], 0.25), self.vector)             # <<<<<<<<<<<<<<
  * 
- * 	cdef int interpolate(self,double[:] point, double[:] old_dir, int r) nogil except *:
+ * 	cdef int interpolate(self,double[:] point, double[:] old_dir, int r) : # : # : # nogil except *:
  */
   if (unlikely(!__pyx_v_self->floor_point.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 112, __pyx_L1_error)}
   __pyx_t_5 = __pyx_v_self->best_ind;
@@ -4108,7 +4356,7 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_13Interpolation_main_dir(
  * 			                                                   int(self.floor_point[ self.best_ind, 1]),
  * 			                                                  int(self.floor_point[self.best_ind, 2])], 0.25), self.vector)             # <<<<<<<<<<<<<<
  * 
- * 	cdef int interpolate(self,double[:] point, double[:] old_dir, int r) nogil except *:
+ * 	cdef int interpolate(self,double[:] point, double[:] old_dir, int r) : # : # : # nogil except *:
  */
   if (unlikely(!__pyx_v_self->vector.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 112, __pyx_L1_error)}
 
@@ -4124,7 +4372,7 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_13Interpolation_main_dir(
   /* "bonndit/tracking/interpolation.pyx":106
  * 
  * 	#@Cython.cdivision(True)
- * 	cdef void main_dir(self, double[:] point) nogil:             # <<<<<<<<<<<<<<
+ * 	cdef void main_dir(self, double[:] point) : # : # : # nogil:             # <<<<<<<<<<<<<<
  * 			cdef double zero = 0
  * 			self.nearest_neigh(point)
  */
@@ -4132,23 +4380,39 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_13Interpolation_main_dir(
   /* function exit code */
   goto __pyx_L0;
   __pyx_L1_error:;
-  __Pyx_WriteUnraisable("bonndit.tracking.interpolation.Interpolation.main_dir", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 1);
+  __Pyx_WriteUnraisable("bonndit.tracking.interpolation.Interpolation.main_dir", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
   __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 0);
+  __Pyx_RefNannyFinishContext();
 }
 
 /* "bonndit/tracking/interpolation.pyx":114
  * 			                                                  int(self.floor_point[self.best_ind, 2])], 0.25), self.vector)
  * 
- * 	cdef int interpolate(self,double[:] point, double[:] old_dir, int r) nogil except *:             # <<<<<<<<<<<<<<
+ * 	cdef int interpolate(self,double[:] point, double[:] old_dir, int r) : # : # : # nogil except *:             # <<<<<<<<<<<<<<
  * 		pass
  * 
  */
 
 static int __pyx_f_7bonndit_8tracking_13interpolation_13Interpolation_interpolate(CYTHON_UNUSED struct __pyx_obj_7bonndit_8tracking_13interpolation_Interpolation *__pyx_v_self, CYTHON_UNUSED __Pyx_memviewslice __pyx_v_point, CYTHON_UNUSED __Pyx_memviewslice __pyx_v_old_dir, CYTHON_UNUSED int __pyx_v_r) {
   int __pyx_r;
+  __Pyx_TraceDeclarations
+  __Pyx_RefNannyDeclarations
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("interpolate", 0);
+  __Pyx_TraceCall("interpolate", __pyx_f[0], 114, 0, __PYX_ERR(0, 114, __pyx_L1_error));
 
   /* function exit code */
   __pyx_r = 0;
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_WriteUnraisable("bonndit.tracking.interpolation.Interpolation.interpolate", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 0);
+  __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
@@ -4173,12 +4437,14 @@ static PyObject *__pyx_pw_7bonndit_8tracking_13interpolation_13Interpolation_3__
 
 static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_13Interpolation_2__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_7bonndit_8tracking_13interpolation_Interpolation *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__reduce_cython__", 0);
+  __Pyx_TraceCall("__reduce_cython__", __pyx_f[1], 1, 0, __PYX_ERR(1, 1, __pyx_L1_error));
 
   /* "(tree fragment)":2
  * def __reduce_cython__(self):
@@ -4204,6 +4470,7 @@ static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_13Interpolation_2__
   __Pyx_AddTraceback("bonndit.tracking.interpolation.Interpolation.__reduce_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -4230,12 +4497,14 @@ static PyObject *__pyx_pw_7bonndit_8tracking_13interpolation_13Interpolation_5__
 
 static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_13Interpolation_4__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_7bonndit_8tracking_13interpolation_Interpolation *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__setstate_cython__", 0);
+  __Pyx_TraceCall("__setstate_cython__", __pyx_f[1], 3, 0, __PYX_ERR(1, 3, __pyx_L1_error));
 
   /* "(tree fragment)":4
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
@@ -4261,6 +4530,7 @@ static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_13Interpolation_4__
   __Pyx_AddTraceback("bonndit.tracking.interpolation.Interpolation.__setstate_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -4268,7 +4538,7 @@ static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_13Interpolation_4__
 /* "bonndit/tracking/interpolation.pyx":119
  * 
  * cdef class FACT(Interpolation):
- * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) nogil except *:             # <<<<<<<<<<<<<<
+ * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) : # : # : # nogil except *:             # <<<<<<<<<<<<<<
  * 		cdef int i
  * 		cdef double l, max_value
  */
@@ -4278,6 +4548,8 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_4FACT_interpolate(struct _
   double __pyx_v_l;
   double __pyx_v_max_value;
   int __pyx_r;
+  __Pyx_TraceDeclarations
+  __Pyx_RefNannyDeclarations
   Py_ssize_t __pyx_t_1;
   Py_ssize_t __pyx_t_2;
   Py_ssize_t __pyx_t_3;
@@ -4317,6 +4589,8 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_4FACT_interpolate(struct _
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("interpolate", 0);
+  __Pyx_TraceCall("interpolate", __pyx_f[0], 119, 0, __PYX_ERR(0, 119, __pyx_L1_error));
 
   /* "bonndit/tracking/interpolation.pyx":122
  * 		cdef int i
@@ -4654,7 +4928,7 @@ __pyx_t_36.strides[0] = __pyx_v_self->__pyx_base.best_dir.strides[1];
 
 if (unlikely(!__pyx_v_self->__pyx_base.vector.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 143, __pyx_L1_error)}
     __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_t_36, __pyx_v_l, __pyx_v_self->__pyx_base.vector);
-    __PYX_XDEC_MEMVIEW(&__pyx_t_36, 0);
+    __PYX_XDEC_MEMVIEW(&__pyx_t_36, 1);
     __pyx_t_36.memview = NULL;
     __pyx_t_36.data = NULL;
   }
@@ -4667,7 +4941,7 @@ if (unlikely(!__pyx_v_self->__pyx_base.vector.memview)) {PyErr_SetString(PyExc_A
  * 		return 0
  */
   if (unlikely(!__pyx_v_self->__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 145, __pyx_L1_error)}
-  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self->__pyx_base.prob->__pyx_vtab)->calculate_probabilities(__pyx_v_self->__pyx_base.prob, __pyx_v_self->__pyx_base.best_dir, __pyx_v_old_dir); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 145, __pyx_L1_error)
+  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self->__pyx_base.prob->__pyx_vtab)->calculate_probabilities(__pyx_v_self->__pyx_base.prob, __pyx_v_self->__pyx_base.best_dir, __pyx_v_old_dir);
 
   /* "bonndit/tracking/interpolation.pyx":146
  * 		#printf('%i \n', thread_id)<
@@ -4693,25 +4967,19 @@ if (unlikely(!__pyx_v_self->__pyx_base.vector.memview)) {PyErr_SetString(PyExc_A
   /* "bonndit/tracking/interpolation.pyx":119
  * 
  * cdef class FACT(Interpolation):
- * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) nogil except *:             # <<<<<<<<<<<<<<
+ * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) : # : # : # nogil except *:             # <<<<<<<<<<<<<<
  * 		cdef int i
  * 		cdef double l, max_value
  */
 
   /* function exit code */
   __pyx_L1_error:;
-  __PYX_XDEC_MEMVIEW(&__pyx_t_36, 0);
-  {
-    #ifdef WITH_THREAD
-    PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-    #endif
-    __Pyx_AddTraceback("bonndit.tracking.interpolation.FACT.interpolate", __pyx_clineno, __pyx_lineno, __pyx_filename);
-    #ifdef WITH_THREAD
-    __Pyx_PyGILState_Release(__pyx_gilstate_save);
-    #endif
-  }
+  __PYX_XDEC_MEMVIEW(&__pyx_t_36, 1);
+  __Pyx_WriteUnraisable("bonndit.tracking.interpolation.FACT.interpolate", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
   __pyx_r = 0;
   __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 0);
+  __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
@@ -4736,12 +5004,14 @@ static PyObject *__pyx_pw_7bonndit_8tracking_13interpolation_4FACT_1__reduce_cyt
 
 static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_4FACT___reduce_cython__(CYTHON_UNUSED struct __pyx_obj_7bonndit_8tracking_13interpolation_FACT *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__reduce_cython__", 0);
+  __Pyx_TraceCall("__reduce_cython__", __pyx_f[1], 1, 0, __PYX_ERR(1, 1, __pyx_L1_error));
 
   /* "(tree fragment)":2
  * def __reduce_cython__(self):
@@ -4767,6 +5037,7 @@ static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_4FACT___reduce_cyth
   __Pyx_AddTraceback("bonndit.tracking.interpolation.FACT.__reduce_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -4793,12 +5064,14 @@ static PyObject *__pyx_pw_7bonndit_8tracking_13interpolation_4FACT_3__setstate_c
 
 static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_4FACT_2__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_7bonndit_8tracking_13interpolation_FACT *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__setstate_cython__", 0);
+  __Pyx_TraceCall("__setstate_cython__", __pyx_f[1], 3, 0, __PYX_ERR(1, 3, __pyx_L1_error));
 
   /* "(tree fragment)":4
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
@@ -4824,6 +5097,7 @@ static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_4FACT_2__setstate_c
   __Pyx_AddTraceback("bonndit.tracking.interpolation.FACT.__setstate_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -4947,6 +5221,7 @@ static PyObject *__pyx_lambda_funcdef_lambda(PyObject *__pyx_self, PyObject *__p
   struct __pyx_obj_7bonndit_8tracking_13interpolation___pyx_scope_struct____cinit__ *__pyx_cur_scope;
   struct __pyx_obj_7bonndit_8tracking_13interpolation___pyx_scope_struct____cinit__ *__pyx_outer_scope;
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
@@ -4958,6 +5233,7 @@ static PyObject *__pyx_lambda_funcdef_lambda(PyObject *__pyx_self, PyObject *__p
   __Pyx_RefNannySetupContext("lambda", 0);
   __pyx_outer_scope = (struct __pyx_obj_7bonndit_8tracking_13interpolation___pyx_scope_struct____cinit__ *) __Pyx_CyFunction_GetClosure(__pyx_self);
   __pyx_cur_scope = __pyx_outer_scope;
+  __Pyx_TraceCall("lambda", __pyx_f[0], 190, 0, __PYX_ERR(0, 190, __pyx_L1_error));
   __Pyx_XDECREF(__pyx_r);
   __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 190, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
@@ -5007,6 +5283,7 @@ static PyObject *__pyx_lambda_funcdef_lambda(PyObject *__pyx_self, PyObject *__p
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -5036,6 +5313,7 @@ static int __pyx_pf_7bonndit_8tracking_13interpolation_13TrilinearFODF___cinit__
   PyObject *__pyx_8genexpr3__pyx_v_k = NULL;
   PyObject *__pyx_8genexpr4__pyx_v_x = NULL;
   int __pyx_r;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
@@ -5080,6 +5358,7 @@ static int __pyx_pf_7bonndit_8tracking_13interpolation_13TrilinearFODF___cinit__
   } else {
     __Pyx_GOTREF(__pyx_cur_scope);
   }
+  __Pyx_TraceCall("__cinit__", __pyx_f[0], 160, 0, __PYX_ERR(0, 160, __pyx_L1_error));
   __pyx_cur_scope->__pyx_v_kwargs = __pyx_v_kwargs;
   __Pyx_INCREF(__pyx_cur_scope->__pyx_v_kwargs);
   __Pyx_GIVEREF(__pyx_cur_scope->__pyx_v_kwargs);
@@ -7674,6 +7953,7 @@ static int __pyx_pf_7bonndit_8tracking_13interpolation_13TrilinearFODF___cinit__
   __PYX_XDEC_MEMVIEW(&__pyx_v_vector_field, 1);
   __PYX_XDEC_MEMVIEW(&__pyx_v_grid, 1);
   __Pyx_DECREF(((PyObject *)__pyx_cur_scope));
+  __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -7681,7 +7961,7 @@ static int __pyx_pf_7bonndit_8tracking_13interpolation_13TrilinearFODF___cinit__
 /* "bonndit/tracking/interpolation.pyx":224
  * 
  * 
- * 	cdef void trilinear(self, double[:] point) nogil except *:             # <<<<<<<<<<<<<<
+ * 	cdef void trilinear(self, double[:] point) : # : # : # nogil except *:             # <<<<<<<<<<<<<<
  * 		cdef int i, j, k, m,n,o
  * 		for i in range(8):
  */
@@ -7693,6 +7973,8 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_13TrilinearFODF_trilinear
   int __pyx_v_m;
   int __pyx_v_n;
   int __pyx_v_o;
+  __Pyx_TraceDeclarations
+  __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   Py_ssize_t __pyx_t_2;
   Py_ssize_t __pyx_t_3;
@@ -7704,9 +7986,11 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_13TrilinearFODF_trilinear
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("trilinear", 0);
+  __Pyx_TraceCall("trilinear", __pyx_f[0], 224, 0, __PYX_ERR(0, 224, __pyx_L1_error));
 
   /* "bonndit/tracking/interpolation.pyx":226
- * 	cdef void trilinear(self, double[:] point) nogil except *:
+ * 	cdef void trilinear(self, double[:] point) : # : # : # nogil except *:
  * 		cdef int i, j, k, m,n,o
  * 		for i in range(8):             # <<<<<<<<<<<<<<
  * 			j = <int> floor(i / 2) % 2
@@ -7800,8 +8084,8 @@ __pyx_t_4.strides[0] = __pyx_v_self->data.strides[0];
 }
 
 if (unlikely(!__pyx_v_self->vlinear.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 233, __pyx_L1_error)}
-    __pyx_f_7bonndit_5utilc_14cython_helpers_dm2toc((&(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->vlinear.data + __pyx_t_2 * __pyx_v_self->vlinear.strides[0]) ) + __pyx_t_3 * __pyx_v_self->vlinear.strides[1]) )))), __pyx_t_4, (__pyx_v_self->vlinear.shape[1])); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 233, __pyx_L1_error)
-    __PYX_XDEC_MEMVIEW(&__pyx_t_4, 0);
+    __pyx_f_7bonndit_5utilc_14cython_helpers_dm2toc((&(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->vlinear.data + __pyx_t_2 * __pyx_v_self->vlinear.strides[0]) ) + __pyx_t_3 * __pyx_v_self->vlinear.strides[1]) )))), __pyx_t_4, (__pyx_v_self->vlinear.shape[1])); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 233, __pyx_L1_error)
+    __PYX_XDEC_MEMVIEW(&__pyx_t_4, 1);
     __pyx_t_4.memview = NULL;
     __pyx_t_4.data = NULL;
   }
@@ -7829,7 +8113,7 @@ if (unlikely(!__pyx_v_self->vlinear.memview)) {PyErr_SetString(PyExc_AttributeEr
     if (unlikely(!__pyx_v_self->vlinear.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 235, __pyx_L1_error)}
     __pyx_t_5 = __pyx_v_i;
     __pyx_t_6 = 0;
-    cblas_dscal((__pyx_v_self->vlinear.shape[1]), ((1.0 + floor((*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_3 * __pyx_v_point.strides[0]) ))))) - (*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_2 * __pyx_v_point.strides[0]) )))), (&(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->vlinear.data + __pyx_t_5 * __pyx_v_self->vlinear.strides[0]) ) + __pyx_t_6 * __pyx_v_self->vlinear.strides[1]) )))), 1); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 235, __pyx_L1_error)
+    cblas_dscal((__pyx_v_self->vlinear.shape[1]), ((1.0 + floor((*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_3 * __pyx_v_point.strides[0]) ))))) - (*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_2 * __pyx_v_point.strides[0]) )))), (&(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->vlinear.data + __pyx_t_5 * __pyx_v_self->vlinear.strides[0]) ) + __pyx_t_6 * __pyx_v_self->vlinear.strides[1]) )))), 1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 235, __pyx_L1_error)
 
     /* "bonndit/tracking/interpolation.pyx":236
  * 		for i in range(4):
@@ -7847,7 +8131,7 @@ if (unlikely(!__pyx_v_self->vlinear.memview)) {PyErr_SetString(PyExc_AttributeEr
     if (unlikely(!__pyx_v_self->vlinear.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 236, __pyx_L1_error)}
     __pyx_t_7 = __pyx_v_i;
     __pyx_t_8 = 0;
-    cblas_daxpy((__pyx_v_self->vlinear.shape[1]), ((*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_6 * __pyx_v_point.strides[0]) ))) - floor((*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_5 * __pyx_v_point.strides[0]) ))))), (&(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->vlinear.data + __pyx_t_2 * __pyx_v_self->vlinear.strides[0]) ) + __pyx_t_3 * __pyx_v_self->vlinear.strides[1]) )))), 1, (&(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->vlinear.data + __pyx_t_7 * __pyx_v_self->vlinear.strides[0]) ) + __pyx_t_8 * __pyx_v_self->vlinear.strides[1]) )))), 1); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 236, __pyx_L1_error)
+    cblas_daxpy((__pyx_v_self->vlinear.shape[1]), ((*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_6 * __pyx_v_point.strides[0]) ))) - floor((*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_5 * __pyx_v_point.strides[0]) ))))), (&(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->vlinear.data + __pyx_t_2 * __pyx_v_self->vlinear.strides[0]) ) + __pyx_t_3 * __pyx_v_self->vlinear.strides[1]) )))), 1, (&(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->vlinear.data + __pyx_t_7 * __pyx_v_self->vlinear.strides[0]) ) + __pyx_t_8 * __pyx_v_self->vlinear.strides[1]) )))), 1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 236, __pyx_L1_error)
   }
 
   /* "bonndit/tracking/interpolation.pyx":237
@@ -7873,7 +8157,7 @@ if (unlikely(!__pyx_v_self->vlinear.memview)) {PyErr_SetString(PyExc_AttributeEr
     if (unlikely(!__pyx_v_self->vlinear.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 238, __pyx_L1_error)}
     __pyx_t_3 = __pyx_v_i;
     __pyx_t_2 = 0;
-    cblas_dscal((__pyx_v_self->vlinear.shape[1]), ((1.0 + floor((*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_8 * __pyx_v_point.strides[0]) ))))) - (*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_7 * __pyx_v_point.strides[0]) )))), (&(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->vlinear.data + __pyx_t_3 * __pyx_v_self->vlinear.strides[0]) ) + __pyx_t_2 * __pyx_v_self->vlinear.strides[1]) )))), 1); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 238, __pyx_L1_error)
+    cblas_dscal((__pyx_v_self->vlinear.shape[1]), ((1.0 + floor((*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_8 * __pyx_v_point.strides[0]) ))))) - (*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_7 * __pyx_v_point.strides[0]) )))), (&(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->vlinear.data + __pyx_t_3 * __pyx_v_self->vlinear.strides[0]) ) + __pyx_t_2 * __pyx_v_self->vlinear.strides[1]) )))), 1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 238, __pyx_L1_error)
 
     /* "bonndit/tracking/interpolation.pyx":239
  * 		for i in range(2):
@@ -7891,7 +8175,7 @@ if (unlikely(!__pyx_v_self->vlinear.memview)) {PyErr_SetString(PyExc_AttributeEr
     if (unlikely(!__pyx_v_self->vlinear.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 239, __pyx_L1_error)}
     __pyx_t_5 = __pyx_v_i;
     __pyx_t_6 = 0;
-    cblas_daxpy((__pyx_v_self->vlinear.shape[1]), ((*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_2 * __pyx_v_point.strides[0]) ))) - floor((*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_3 * __pyx_v_point.strides[0]) ))))), (&(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->vlinear.data + __pyx_t_7 * __pyx_v_self->vlinear.strides[0]) ) + __pyx_t_8 * __pyx_v_self->vlinear.strides[1]) )))), 1, (&(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->vlinear.data + __pyx_t_5 * __pyx_v_self->vlinear.strides[0]) ) + __pyx_t_6 * __pyx_v_self->vlinear.strides[1]) )))), 1); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 239, __pyx_L1_error)
+    cblas_daxpy((__pyx_v_self->vlinear.shape[1]), ((*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_2 * __pyx_v_point.strides[0]) ))) - floor((*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_3 * __pyx_v_point.strides[0]) ))))), (&(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->vlinear.data + __pyx_t_7 * __pyx_v_self->vlinear.strides[0]) ) + __pyx_t_8 * __pyx_v_self->vlinear.strides[1]) )))), 1, (&(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->vlinear.data + __pyx_t_5 * __pyx_v_self->vlinear.strides[0]) ) + __pyx_t_6 * __pyx_v_self->vlinear.strides[1]) )))), 1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 239, __pyx_L1_error)
   }
 
   /* "bonndit/tracking/interpolation.pyx":240
@@ -7907,7 +8191,7 @@ if (unlikely(!__pyx_v_self->vlinear.memview)) {PyErr_SetString(PyExc_AttributeEr
   if (unlikely(!__pyx_v_self->vlinear.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 240, __pyx_L1_error)}
   __pyx_t_8 = 0;
   __pyx_t_7 = 0;
-  cblas_dscal((__pyx_v_self->vlinear.shape[1]), ((1.0 + floor((*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_6 * __pyx_v_point.strides[0]) ))))) - (*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_5 * __pyx_v_point.strides[0]) )))), (&(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->vlinear.data + __pyx_t_8 * __pyx_v_self->vlinear.strides[0]) ) + __pyx_t_7 * __pyx_v_self->vlinear.strides[1]) )))), 1); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 240, __pyx_L1_error)
+  cblas_dscal((__pyx_v_self->vlinear.shape[1]), ((1.0 + floor((*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_6 * __pyx_v_point.strides[0]) ))))) - (*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_5 * __pyx_v_point.strides[0]) )))), (&(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->vlinear.data + __pyx_t_8 * __pyx_v_self->vlinear.strides[0]) ) + __pyx_t_7 * __pyx_v_self->vlinear.strides[1]) )))), 1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 240, __pyx_L1_error)
 
   /* "bonndit/tracking/interpolation.pyx":241
  * 			cblas_daxpy(self.vlinear.shape[1], (point[1] - floor(point[1])), &self.vlinear[2 + i, 0], 1, &self.vlinear[i, 0], 1)
@@ -7925,14 +8209,14 @@ if (unlikely(!__pyx_v_self->vlinear.memview)) {PyErr_SetString(PyExc_AttributeEr
   if (unlikely(!__pyx_v_self->vlinear.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 241, __pyx_L1_error)}
   __pyx_t_3 = 0;
   __pyx_t_2 = 0;
-  cblas_daxpy((__pyx_v_self->vlinear.shape[1]), ((*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_7 * __pyx_v_point.strides[0]) ))) - floor((*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_8 * __pyx_v_point.strides[0]) ))))), (&(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->vlinear.data + __pyx_t_5 * __pyx_v_self->vlinear.strides[0]) ) + __pyx_t_6 * __pyx_v_self->vlinear.strides[1]) )))), 1, (&(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->vlinear.data + __pyx_t_3 * __pyx_v_self->vlinear.strides[0]) ) + __pyx_t_2 * __pyx_v_self->vlinear.strides[1]) )))), 1); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 241, __pyx_L1_error)
+  cblas_daxpy((__pyx_v_self->vlinear.shape[1]), ((*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_7 * __pyx_v_point.strides[0]) ))) - floor((*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_8 * __pyx_v_point.strides[0]) ))))), (&(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->vlinear.data + __pyx_t_5 * __pyx_v_self->vlinear.strides[0]) ) + __pyx_t_6 * __pyx_v_self->vlinear.strides[1]) )))), 1, (&(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->vlinear.data + __pyx_t_3 * __pyx_v_self->vlinear.strides[0]) ) + __pyx_t_2 * __pyx_v_self->vlinear.strides[1]) )))), 1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 241, __pyx_L1_error)
 
   /* "bonndit/tracking/interpolation.pyx":242
  * 		cblas_dscal(self.vlinear.shape[1], (1 + floor(point[0]) - point[0]), &self.vlinear[0, 0], 1)
  * 		cblas_daxpy(self.vlinear.shape[1], (point[0] - floor(point[0])), &self.vlinear[1,0], 1, &self.vlinear[0,0], 1)
  * 		cblas_dcopy(self.vlinear.shape[1], &self.vlinear[0,0], 1, &self.fodf[0], 1)             # <<<<<<<<<<<<<<
  * 
- * 	cdef void neigh(self, double[:] point) nogil except *:
+ * 	cdef void neigh(self, double[:] point) : # : # : # nogil except *:
  */
   if (unlikely(!__pyx_v_self->vlinear.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 242, __pyx_L1_error)}
   if (unlikely(!__pyx_v_self->vlinear.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 242, __pyx_L1_error)}
@@ -7940,12 +8224,12 @@ if (unlikely(!__pyx_v_self->vlinear.memview)) {PyErr_SetString(PyExc_AttributeEr
   __pyx_t_3 = 0;
   if (unlikely(!__pyx_v_self->fodf.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 242, __pyx_L1_error)}
   __pyx_t_6 = 0;
-  cblas_dcopy((__pyx_v_self->vlinear.shape[1]), (&(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->vlinear.data + __pyx_t_2 * __pyx_v_self->vlinear.strides[0]) ) + __pyx_t_3 * __pyx_v_self->vlinear.strides[1]) )))), 1, (&(*((double *) ( /* dim=0 */ (__pyx_v_self->fodf.data + __pyx_t_6 * __pyx_v_self->fodf.strides[0]) )))), 1); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 242, __pyx_L1_error)
+  cblas_dcopy((__pyx_v_self->vlinear.shape[1]), (&(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->vlinear.data + __pyx_t_2 * __pyx_v_self->vlinear.strides[0]) ) + __pyx_t_3 * __pyx_v_self->vlinear.strides[1]) )))), 1, (&(*((double *) ( /* dim=0 */ (__pyx_v_self->fodf.data + __pyx_t_6 * __pyx_v_self->fodf.strides[0]) )))), 1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 242, __pyx_L1_error)
 
   /* "bonndit/tracking/interpolation.pyx":224
  * 
  * 
- * 	cdef void trilinear(self, double[:] point) nogil except *:             # <<<<<<<<<<<<<<
+ * 	cdef void trilinear(self, double[:] point) : # : # : # nogil except *:             # <<<<<<<<<<<<<<
  * 		cdef int i, j, k, m,n,o
  * 		for i in range(8):
  */
@@ -7953,25 +8237,19 @@ if (unlikely(!__pyx_v_self->vlinear.memview)) {PyErr_SetString(PyExc_AttributeEr
   /* function exit code */
   goto __pyx_L0;
   __pyx_L1_error:;
-  __PYX_XDEC_MEMVIEW(&__pyx_t_4, 0);
-  {
-    #ifdef WITH_THREAD
-    PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-    #endif
-    __Pyx_AddTraceback("bonndit.tracking.interpolation.TrilinearFODF.trilinear", __pyx_clineno, __pyx_lineno, __pyx_filename);
-    #ifdef WITH_THREAD
-    __Pyx_PyGILState_Release(__pyx_gilstate_save);
-    #endif
-  }
+  __PYX_XDEC_MEMVIEW(&__pyx_t_4, 1);
+  __Pyx_WriteUnraisable("bonndit.tracking.interpolation.TrilinearFODF.trilinear", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
   __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 0);
+  __Pyx_RefNannyFinishContext();
 }
 
 /* "bonndit/tracking/interpolation.pyx":244
  * 		cblas_dcopy(self.vlinear.shape[1], &self.vlinear[0,0], 1, &self.fodf[0], 1)
  * 
- * 	cdef void neigh(self, double[:] point) nogil except *:             # <<<<<<<<<<<<<<
+ * 	cdef void neigh(self, double[:] point) : # : # : # nogil except *:             # <<<<<<<<<<<<<<
  * 		cdef double scale = 0, dis=0
- * 		cdef int i, index
+ * 		cdef int i, index, p_0 = <int> point[0], p_1 = <int> point[1], p_2 = <int> point[2]
  */
 
 static void __pyx_f_7bonndit_8tracking_13interpolation_13TrilinearFODF_neigh(struct __pyx_obj_7bonndit_8tracking_13interpolation_TrilinearFODF *__pyx_v_self, __Pyx_memviewslice __pyx_v_point) {
@@ -7979,11 +8257,16 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_13TrilinearFODF_neigh(str
   double __pyx_v_dis;
   int __pyx_v_i;
   int __pyx_v_index;
-  int __pyx_t_1;
+  int __pyx_v_p_0;
+  int __pyx_v_p_1;
+  int __pyx_v_p_2;
+  __Pyx_TraceDeclarations
+  __Pyx_RefNannyDeclarations
+  Py_ssize_t __pyx_t_1;
   int __pyx_t_2;
   int __pyx_t_3;
   int __pyx_t_4;
-  Py_ssize_t __pyx_t_5;
+  int __pyx_t_5;
   Py_ssize_t __pyx_t_6;
   Py_ssize_t __pyx_t_7;
   Py_ssize_t __pyx_t_8;
@@ -7994,42 +8277,55 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_13TrilinearFODF_neigh(str
   __Pyx_memviewslice __pyx_t_13 = { 0, 0, { 0 }, { 0 }, { 0 } };
   Py_ssize_t __pyx_t_14;
   Py_ssize_t __pyx_t_15;
-  Py_ssize_t __pyx_t_16;
-  Py_ssize_t __pyx_t_17;
-  Py_ssize_t __pyx_t_18;
-  __Pyx_memviewslice __pyx_t_19 = { 0, 0, { 0 }, { 0 }, { 0 } };
-  double __pyx_t_20;
-  double __pyx_t_21;
+  __Pyx_memviewslice __pyx_t_16 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  double __pyx_t_17;
+  double __pyx_t_18;
+  Py_ssize_t __pyx_t_19;
+  Py_ssize_t __pyx_t_20;
+  Py_ssize_t __pyx_t_21;
   Py_ssize_t __pyx_t_22;
   Py_ssize_t __pyx_t_23;
-  Py_ssize_t __pyx_t_24;
-  Py_ssize_t __pyx_t_25;
-  Py_ssize_t __pyx_t_26;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("neigh", 0);
+  __Pyx_TraceCall("neigh", __pyx_f[0], 244, 0, __PYX_ERR(0, 244, __pyx_L1_error));
 
   /* "bonndit/tracking/interpolation.pyx":245
  * 
- * 	cdef void neigh(self, double[:] point) nogil except *:
+ * 	cdef void neigh(self, double[:] point) : # : # : # nogil except *:
  * 		cdef double scale = 0, dis=0             # <<<<<<<<<<<<<<
- * 		cdef int i, index
+ * 		cdef int i, index, p_0 = <int> point[0], p_1 = <int> point[1], p_2 = <int> point[2]
  * 		self.trilinear(point)
  */
   __pyx_v_scale = 0.0;
   __pyx_v_dis = 0.0;
 
+  /* "bonndit/tracking/interpolation.pyx":246
+ * 	cdef void neigh(self, double[:] point) : # : # : # nogil except *:
+ * 		cdef double scale = 0, dis=0
+ * 		cdef int i, index, p_0 = <int> point[0], p_1 = <int> point[1], p_2 = <int> point[2]             # <<<<<<<<<<<<<<
+ * 		self.trilinear(point)
+ * 		set_zero_vector(self.fodf1)
+ */
+  __pyx_t_1 = 0;
+  __pyx_v_p_0 = ((int)(*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_1 * __pyx_v_point.strides[0]) ))));
+  __pyx_t_1 = 1;
+  __pyx_v_p_1 = ((int)(*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_1 * __pyx_v_point.strides[0]) ))));
+  __pyx_t_1 = 2;
+  __pyx_v_p_2 = ((int)(*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_1 * __pyx_v_point.strides[0]) ))));
+
   /* "bonndit/tracking/interpolation.pyx":247
  * 		cdef double scale = 0, dis=0
- * 		cdef int i, index
+ * 		cdef int i, index, p_0 = <int> point[0], p_1 = <int> point[1], p_2 = <int> point[2]
  * 		self.trilinear(point)             # <<<<<<<<<<<<<<
  * 		set_zero_vector(self.fodf1)
  * 		for index in range(<int> self.neighbors.shape[0]):
  */
-  ((struct __pyx_vtabstruct_7bonndit_8tracking_13interpolation_TrilinearFODF *)__pyx_v_self->__pyx_base.__pyx_vtab)->trilinear(__pyx_v_self, __pyx_v_point); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 247, __pyx_L1_error)
+  ((struct __pyx_vtabstruct_7bonndit_8tracking_13interpolation_TrilinearFODF *)__pyx_v_self->__pyx_base.__pyx_vtab)->trilinear(__pyx_v_self, __pyx_v_point);
 
   /* "bonndit/tracking/interpolation.pyx":248
- * 		cdef int i, index
+ * 		cdef int i, index, p_0 = <int> point[0], p_1 = <int> point[1], p_2 = <int> point[2]
  * 		self.trilinear(point)
  * 		set_zero_vector(self.fodf1)             # <<<<<<<<<<<<<<
  * 		for index in range(<int> self.neighbors.shape[0]):
@@ -8046,10 +8342,10 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_13TrilinearFODF_neigh(str
  * 				self.point_diff[i] = point[i]%1
  */
   if (unlikely(!__pyx_v_self->neighbors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 249, __pyx_L1_error)}
-  __pyx_t_1 = ((int)(__pyx_v_self->neighbors.shape[0]));
-  __pyx_t_2 = __pyx_t_1;
-  for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
-    __pyx_v_index = __pyx_t_3;
+  __pyx_t_2 = ((int)(__pyx_v_self->neighbors.shape[0]));
+  __pyx_t_3 = __pyx_t_2;
+  for (__pyx_t_4 = 0; __pyx_t_4 < __pyx_t_3; __pyx_t_4+=1) {
+    __pyx_v_index = __pyx_t_4;
 
     /* "bonndit/tracking/interpolation.pyx":250
  * 		set_zero_vector(self.fodf1)
@@ -8058,8 +8354,8 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_13TrilinearFODF_neigh(str
  * 				self.point_diff[i] = point[i]%1
  * 			cblas_dgemv(CblasRowMajor, CblasNoTrans, 3,3,1, &self.trafo[0,0], 3, &self.point_diff[0], 1, 0, &self.dist[0], 1)
  */
-    for (__pyx_t_4 = 0; __pyx_t_4 < 3; __pyx_t_4+=1) {
-      __pyx_v_i = __pyx_t_4;
+    for (__pyx_t_5 = 0; __pyx_t_5 < 3; __pyx_t_5+=1) {
+      __pyx_v_i = __pyx_t_5;
 
       /* "bonndit/tracking/interpolation.pyx":251
  * 		for index in range(<int> self.neighbors.shape[0]):
@@ -8068,10 +8364,10 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_13TrilinearFODF_neigh(str
  * 			cblas_dgemv(CblasRowMajor, CblasNoTrans, 3,3,1, &self.trafo[0,0], 3, &self.point_diff[0], 1, 0, &self.dist[0], 1)
  * 			dis = cblas_dnrm2(3, &self.dist[0], 1)
  */
-      __pyx_t_5 = __pyx_v_i;
+      __pyx_t_1 = __pyx_v_i;
       if (unlikely(!__pyx_v_self->point_diff.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 251, __pyx_L1_error)}
       __pyx_t_6 = __pyx_v_i;
-      *((double *) ( /* dim=0 */ (__pyx_v_self->point_diff.data + __pyx_t_6 * __pyx_v_self->point_diff.strides[0]) )) = __Pyx_mod_double((*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_5 * __pyx_v_point.strides[0]) ))), 1.0);
+      *((double *) ( /* dim=0 */ (__pyx_v_self->point_diff.data + __pyx_t_6 * __pyx_v_self->point_diff.strides[0]) )) = __Pyx_mod_double((*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_1 * __pyx_v_point.strides[0]) ))), 1.0);
     }
 
     /* "bonndit/tracking/interpolation.pyx":252
@@ -8082,13 +8378,13 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_13TrilinearFODF_neigh(str
  * 			if dis > self.r or (index>27 and self.auto):
  */
     if (unlikely(!__pyx_v_self->trafo.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 252, __pyx_L1_error)}
-    __pyx_t_5 = 0;
+    __pyx_t_1 = 0;
     __pyx_t_6 = 0;
     if (unlikely(!__pyx_v_self->point_diff.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 252, __pyx_L1_error)}
     __pyx_t_7 = 0;
     if (unlikely(!__pyx_v_self->dist.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 252, __pyx_L1_error)}
     __pyx_t_8 = 0;
-    cblas_dgemv(CblasRowMajor, CblasNoTrans, 3, 3, 1.0, (&(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->trafo.data + __pyx_t_5 * __pyx_v_self->trafo.strides[0]) ) + __pyx_t_6 * __pyx_v_self->trafo.strides[1]) )))), 3, (&(*((double *) ( /* dim=0 */ (__pyx_v_self->point_diff.data + __pyx_t_7 * __pyx_v_self->point_diff.strides[0]) )))), 1, 0.0, (&(*((double *) ( /* dim=0 */ (__pyx_v_self->dist.data + __pyx_t_8 * __pyx_v_self->dist.strides[0]) )))), 1); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 252, __pyx_L1_error)
+    cblas_dgemv(CblasRowMajor, CblasNoTrans, 3, 3, 1.0, (&(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->trafo.data + __pyx_t_1 * __pyx_v_self->trafo.strides[0]) ) + __pyx_t_6 * __pyx_v_self->trafo.strides[1]) )))), 3, (&(*((double *) ( /* dim=0 */ (__pyx_v_self->point_diff.data + __pyx_t_7 * __pyx_v_self->point_diff.strides[0]) )))), 1, 0.0, (&(*((double *) ( /* dim=0 */ (__pyx_v_self->dist.data + __pyx_t_8 * __pyx_v_self->dist.strides[0]) )))), 1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 252, __pyx_L1_error)
 
     /* "bonndit/tracking/interpolation.pyx":253
  * 				self.point_diff[i] = point[i]%1
@@ -8099,7 +8395,7 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_13TrilinearFODF_neigh(str
  */
     if (unlikely(!__pyx_v_self->dist.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 253, __pyx_L1_error)}
     __pyx_t_8 = 0;
-    __pyx_t_9 = cblas_dnrm2(3, (&(*((double *) ( /* dim=0 */ (__pyx_v_self->dist.data + __pyx_t_8 * __pyx_v_self->dist.strides[0]) )))), 1); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 253, __pyx_L1_error)
+    __pyx_t_9 = cblas_dnrm2(3, (&(*((double *) ( /* dim=0 */ (__pyx_v_self->dist.data + __pyx_t_8 * __pyx_v_self->dist.strides[0]) )))), 1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 253, __pyx_L1_error)
     __pyx_v_dis = __pyx_t_9;
 
     /* "bonndit/tracking/interpolation.pyx":254
@@ -8173,7 +8469,7 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_13TrilinearFODF_neigh(str
  * 			if self.data.shape[1] > point[0] + self.neighbors[index, 0] >= 0 \
  * 				and self.data.shape[2] > point[1] + self.neighbors[index, 1] >= 0 \             # <<<<<<<<<<<<<<
  * 				and self.data.shape[3] > point[2] + self.neighbors[index, 2] >= 0:
- * 				sub_vectors(self.empty, self.fodf[1:], self.data[1:, <int> point[0] + self.neighbors[index, 0], \
+ * 				sub_vectors(self.empty, self.fodf[1:], self.data[1:, p_0 + self.neighbors[index, 0], \
  */
     if (unlikely(!__pyx_v_self->data.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 257, __pyx_L1_error)}
     __pyx_t_6 = 1;
@@ -8196,8 +8492,8 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_13TrilinearFODF_neigh(str
  * 			if self.data.shape[1] > point[0] + self.neighbors[index, 0] >= 0 \
  * 				and self.data.shape[2] > point[1] + self.neighbors[index, 1] >= 0 \
  * 				and self.data.shape[3] > point[2] + self.neighbors[index, 2] >= 0:             # <<<<<<<<<<<<<<
- * 				sub_vectors(self.empty, self.fodf[1:], self.data[1:, <int> point[0] + self.neighbors[index, 0], \
- * 												  <int> point[1] + self.neighbors[index, 1], \
+ * 				sub_vectors(self.empty, self.fodf[1:], self.data[1:, p_0 + self.neighbors[index, 0], \
+ * 												  p_1 + self.neighbors[index, 1], \
  */
     if (unlikely(!__pyx_v_self->data.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 258, __pyx_L1_error)}
     __pyx_t_8 = 2;
@@ -8225,22 +8521,22 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_13TrilinearFODF_neigh(str
       /* "bonndit/tracking/interpolation.pyx":259
  * 				and self.data.shape[2] > point[1] + self.neighbors[index, 1] >= 0 \
  * 				and self.data.shape[3] > point[2] + self.neighbors[index, 2] >= 0:
- * 				sub_vectors(self.empty, self.fodf[1:], self.data[1:, <int> point[0] + self.neighbors[index, 0], \             # <<<<<<<<<<<<<<
- * 												  <int> point[1] + self.neighbors[index, 1], \
- * 												  <int> point[2] + self.neighbors[index, 2]])
+ * 				sub_vectors(self.empty, self.fodf[1:], self.data[1:, p_0 + self.neighbors[index, 0], \             # <<<<<<<<<<<<<<
+ * 												  p_1 + self.neighbors[index, 1], \
+ * 												  p_2 + self.neighbors[index, 2]])
  */
       if (unlikely(!__pyx_v_self->empty.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 259, __pyx_L1_error)}
       if (unlikely(!__pyx_v_self->fodf.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 259, __pyx_L1_error)}
       __pyx_t_13.data = __pyx_v_self->fodf.data;
       __pyx_t_13.memview = __pyx_v_self->fodf.memview;
       __PYX_INC_MEMVIEW(&__pyx_t_13, 0);
-      __pyx_t_4 = -1;
+      __pyx_t_5 = -1;
       if (unlikely(__pyx_memoryview_slice_memviewslice(
     &__pyx_t_13,
     __pyx_v_self->fodf.shape[0], __pyx_v_self->fodf.strides[0], __pyx_v_self->fodf.suboffsets[0],
     0,
     0,
-    &__pyx_t_4,
+    &__pyx_t_5,
     1,
     0,
     0,
@@ -8253,52 +8549,49 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_13TrilinearFODF_neigh(str
 }
 
 if (unlikely(!__pyx_v_self->data.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 259, __pyx_L1_error)}
-      __pyx_t_6 = 0;
       if (unlikely(!__pyx_v_self->neighbors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 259, __pyx_L1_error)}
-      __pyx_t_7 = __pyx_v_index;
-      __pyx_t_8 = 0;
+      __pyx_t_6 = __pyx_v_index;
+      __pyx_t_7 = 0;
 
       /* "bonndit/tracking/interpolation.pyx":260
  * 				and self.data.shape[3] > point[2] + self.neighbors[index, 2] >= 0:
- * 				sub_vectors(self.empty, self.fodf[1:], self.data[1:, <int> point[0] + self.neighbors[index, 0], \
- * 												  <int> point[1] + self.neighbors[index, 1], \             # <<<<<<<<<<<<<<
- * 												  <int> point[2] + self.neighbors[index, 2]])
+ * 				sub_vectors(self.empty, self.fodf[1:], self.data[1:, p_0 + self.neighbors[index, 0], \
+ * 												  p_1 + self.neighbors[index, 1], \             # <<<<<<<<<<<<<<
+ * 												  p_2 + self.neighbors[index, 2]])
  * 				dis = exp(-pow(hota_4o3d_sym_norm(self.empty),2)/pow(self.sigma_1, 2))*dis/self.sigma_2
  */
-      __pyx_t_5 = 1;
       if (unlikely(!__pyx_v_self->neighbors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 260, __pyx_L1_error)}
-      __pyx_t_14 = __pyx_v_index;
-      __pyx_t_15 = 1;
+      __pyx_t_8 = __pyx_v_index;
+      __pyx_t_1 = 1;
 
       /* "bonndit/tracking/interpolation.pyx":261
- * 				sub_vectors(self.empty, self.fodf[1:], self.data[1:, <int> point[0] + self.neighbors[index, 0], \
- * 												  <int> point[1] + self.neighbors[index, 1], \
- * 												  <int> point[2] + self.neighbors[index, 2]])             # <<<<<<<<<<<<<<
+ * 				sub_vectors(self.empty, self.fodf[1:], self.data[1:, p_0 + self.neighbors[index, 0], \
+ * 												  p_1 + self.neighbors[index, 1], \
+ * 												  p_2 + self.neighbors[index, 2]])             # <<<<<<<<<<<<<<
  * 				dis = exp(-pow(hota_4o3d_sym_norm(self.empty),2)/pow(self.sigma_1, 2))*dis/self.sigma_2
  * 				scale += dis
  */
-      __pyx_t_16 = 2;
       if (unlikely(!__pyx_v_self->neighbors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 261, __pyx_L1_error)}
-      __pyx_t_17 = __pyx_v_index;
-      __pyx_t_18 = 2;
+      __pyx_t_14 = __pyx_v_index;
+      __pyx_t_15 = 2;
 
       /* "bonndit/tracking/interpolation.pyx":259
  * 				and self.data.shape[2] > point[1] + self.neighbors[index, 1] >= 0 \
  * 				and self.data.shape[3] > point[2] + self.neighbors[index, 2] >= 0:
- * 				sub_vectors(self.empty, self.fodf[1:], self.data[1:, <int> point[0] + self.neighbors[index, 0], \             # <<<<<<<<<<<<<<
- * 												  <int> point[1] + self.neighbors[index, 1], \
- * 												  <int> point[2] + self.neighbors[index, 2]])
+ * 				sub_vectors(self.empty, self.fodf[1:], self.data[1:, p_0 + self.neighbors[index, 0], \             # <<<<<<<<<<<<<<
+ * 												  p_1 + self.neighbors[index, 1], \
+ * 												  p_2 + self.neighbors[index, 2]])
  */
-      __pyx_t_19.data = __pyx_v_self->data.data;
-      __pyx_t_19.memview = __pyx_v_self->data.memview;
-      __PYX_INC_MEMVIEW(&__pyx_t_19, 0);
-      __pyx_t_4 = -1;
+      __pyx_t_16.data = __pyx_v_self->data.data;
+      __pyx_t_16.memview = __pyx_v_self->data.memview;
+      __PYX_INC_MEMVIEW(&__pyx_t_16, 0);
+      __pyx_t_5 = -1;
       if (unlikely(__pyx_memoryview_slice_memviewslice(
-    &__pyx_t_19,
+    &__pyx_t_16,
     __pyx_v_self->data.shape[0], __pyx_v_self->data.strides[0], __pyx_v_self->data.suboffsets[0],
     0,
     0,
-    &__pyx_t_4,
+    &__pyx_t_5,
     1,
     0,
     0,
@@ -8311,70 +8604,58 @@ if (unlikely(!__pyx_v_self->data.memview)) {PyErr_SetString(PyExc_AttributeError
 }
 
 {
-    Py_ssize_t __pyx_tmp_idx = (((int)(*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_6 * __pyx_v_point.strides[0]) )))) + (*((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->neighbors.data + __pyx_t_7 * __pyx_v_self->neighbors.strides[0]) ) + __pyx_t_8 * __pyx_v_self->neighbors.strides[1]) ))));
+    Py_ssize_t __pyx_tmp_idx = (__pyx_v_p_0 + (*((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->neighbors.data + __pyx_t_6 * __pyx_v_self->neighbors.strides[0]) ) + __pyx_t_7 * __pyx_v_self->neighbors.strides[1]) ))));
     Py_ssize_t __pyx_tmp_stride = __pyx_v_self->data.strides[1];
-        __pyx_t_19.data += __pyx_tmp_idx * __pyx_tmp_stride;
+        __pyx_t_16.data += __pyx_tmp_idx * __pyx_tmp_stride;
 }
 
 {
-    Py_ssize_t __pyx_tmp_idx = (((int)(*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_5 * __pyx_v_point.strides[0]) )))) + (*((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->neighbors.data + __pyx_t_14 * __pyx_v_self->neighbors.strides[0]) ) + __pyx_t_15 * __pyx_v_self->neighbors.strides[1]) ))));
+    Py_ssize_t __pyx_tmp_idx = (__pyx_v_p_1 + (*((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->neighbors.data + __pyx_t_8 * __pyx_v_self->neighbors.strides[0]) ) + __pyx_t_1 * __pyx_v_self->neighbors.strides[1]) ))));
     Py_ssize_t __pyx_tmp_stride = __pyx_v_self->data.strides[2];
-        __pyx_t_19.data += __pyx_tmp_idx * __pyx_tmp_stride;
+        __pyx_t_16.data += __pyx_tmp_idx * __pyx_tmp_stride;
 }
 
 {
-    Py_ssize_t __pyx_tmp_idx = (((int)(*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_16 * __pyx_v_point.strides[0]) )))) + (*((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->neighbors.data + __pyx_t_17 * __pyx_v_self->neighbors.strides[0]) ) + __pyx_t_18 * __pyx_v_self->neighbors.strides[1]) ))));
+    Py_ssize_t __pyx_tmp_idx = (__pyx_v_p_2 + (*((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->neighbors.data + __pyx_t_14 * __pyx_v_self->neighbors.strides[0]) ) + __pyx_t_15 * __pyx_v_self->neighbors.strides[1]) ))));
     Py_ssize_t __pyx_tmp_stride = __pyx_v_self->data.strides[3];
-        __pyx_t_19.data += __pyx_tmp_idx * __pyx_tmp_stride;
+        __pyx_t_16.data += __pyx_tmp_idx * __pyx_tmp_stride;
 }
 
-__pyx_f_7bonndit_5utilc_14cython_helpers_sub_vectors(__pyx_v_self->empty, __pyx_t_13, __pyx_t_19);
-      __PYX_XDEC_MEMVIEW(&__pyx_t_13, 0);
+__pyx_f_7bonndit_5utilc_14cython_helpers_sub_vectors(__pyx_v_self->empty, __pyx_t_13, __pyx_t_16);
+      __PYX_XDEC_MEMVIEW(&__pyx_t_13, 1);
       __pyx_t_13.memview = NULL;
       __pyx_t_13.data = NULL;
-      __PYX_XDEC_MEMVIEW(&__pyx_t_19, 0);
-      __pyx_t_19.memview = NULL;
-      __pyx_t_19.data = NULL;
+      __PYX_XDEC_MEMVIEW(&__pyx_t_16, 1);
+      __pyx_t_16.memview = NULL;
+      __pyx_t_16.data = NULL;
 
       /* "bonndit/tracking/interpolation.pyx":262
- * 												  <int> point[1] + self.neighbors[index, 1], \
- * 												  <int> point[2] + self.neighbors[index, 2]])
+ * 												  p_1 + self.neighbors[index, 1], \
+ * 												  p_2 + self.neighbors[index, 2]])
  * 				dis = exp(-pow(hota_4o3d_sym_norm(self.empty),2)/pow(self.sigma_1, 2))*dis/self.sigma_2             # <<<<<<<<<<<<<<
  * 				scale += dis
  * 				for i in range(16):
  */
       if (unlikely(!__pyx_v_self->empty.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 262, __pyx_L1_error)}
       __pyx_t_9 = (-pow(__pyx_f_7bonndit_5utilc_4hota_hota_4o3d_sym_norm(__pyx_v_self->empty), 2.0));
-      __pyx_t_20 = pow(__pyx_v_self->sigma_1, 2.0);
-      if (unlikely(__pyx_t_20 == 0)) {
-        #ifdef WITH_THREAD
-        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-        #endif
+      __pyx_t_17 = pow(__pyx_v_self->sigma_1, 2.0);
+      if (unlikely(__pyx_t_17 == 0)) {
         PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-        #ifdef WITH_THREAD
-        __Pyx_PyGILState_Release(__pyx_gilstate_save);
-        #endif
         __PYX_ERR(0, 262, __pyx_L1_error)
       }
-      __pyx_t_21 = (exp((__pyx_t_9 / __pyx_t_20)) * __pyx_v_dis);
+      __pyx_t_18 = (exp((__pyx_t_9 / __pyx_t_17)) * __pyx_v_dis);
       if (unlikely(__pyx_v_self->sigma_2 == 0)) {
-        #ifdef WITH_THREAD
-        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-        #endif
         PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-        #ifdef WITH_THREAD
-        __Pyx_PyGILState_Release(__pyx_gilstate_save);
-        #endif
         __PYX_ERR(0, 262, __pyx_L1_error)
       }
-      __pyx_v_dis = (__pyx_t_21 / __pyx_v_self->sigma_2);
+      __pyx_v_dis = (__pyx_t_18 / __pyx_v_self->sigma_2);
 
       /* "bonndit/tracking/interpolation.pyx":263
- * 												  <int> point[2] + self.neighbors[index, 2]])
+ * 												  p_2 + self.neighbors[index, 2]])
  * 				dis = exp(-pow(hota_4o3d_sym_norm(self.empty),2)/pow(self.sigma_1, 2))*dis/self.sigma_2
  * 				scale += dis             # <<<<<<<<<<<<<<
  * 				for i in range(16):
- * 					self.fodf1[i] += dis*self.data[i, <int> point[0] + self.neighbors[index, 0], \
+ * 					self.fodf1[i] += dis*self.data[i, p_0 + self.neighbors[index, 0], \
  */
       __pyx_v_scale = (__pyx_v_scale + __pyx_v_dis);
 
@@ -8382,45 +8663,42 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_sub_vectors(__pyx_v_self->empty, __pyx_
  * 				dis = exp(-pow(hota_4o3d_sym_norm(self.empty),2)/pow(self.sigma_1, 2))*dis/self.sigma_2
  * 				scale += dis
  * 				for i in range(16):             # <<<<<<<<<<<<<<
- * 					self.fodf1[i] += dis*self.data[i, <int> point[0] + self.neighbors[index, 0], \
- * 												  <int> point[1] + self.neighbors[index, 1], \
+ * 					self.fodf1[i] += dis*self.data[i, p_0 + self.neighbors[index, 0], \
+ * 												  p_1 + self.neighbors[index, 1], \
  */
-      for (__pyx_t_4 = 0; __pyx_t_4 < 16; __pyx_t_4+=1) {
-        __pyx_v_i = __pyx_t_4;
+      for (__pyx_t_5 = 0; __pyx_t_5 < 16; __pyx_t_5+=1) {
+        __pyx_v_i = __pyx_t_5;
 
         /* "bonndit/tracking/interpolation.pyx":265
  * 				scale += dis
  * 				for i in range(16):
- * 					self.fodf1[i] += dis*self.data[i, <int> point[0] + self.neighbors[index, 0], \             # <<<<<<<<<<<<<<
- * 												  <int> point[1] + self.neighbors[index, 1], \
- * 												  <int> point[2] + self.neighbors[index, 2]]
+ * 					self.fodf1[i] += dis*self.data[i, p_0 + self.neighbors[index, 0], \             # <<<<<<<<<<<<<<
+ * 												  p_1 + self.neighbors[index, 1], \
+ * 												  p_2 + self.neighbors[index, 2]]
  */
         if (unlikely(!__pyx_v_self->data.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 265, __pyx_L1_error)}
-        __pyx_t_18 = 0;
         if (unlikely(!__pyx_v_self->neighbors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 265, __pyx_L1_error)}
-        __pyx_t_17 = __pyx_v_index;
-        __pyx_t_16 = 0;
+        __pyx_t_15 = __pyx_v_index;
+        __pyx_t_14 = 0;
 
         /* "bonndit/tracking/interpolation.pyx":266
  * 				for i in range(16):
- * 					self.fodf1[i] += dis*self.data[i, <int> point[0] + self.neighbors[index, 0], \
- * 												  <int> point[1] + self.neighbors[index, 1], \             # <<<<<<<<<<<<<<
- * 												  <int> point[2] + self.neighbors[index, 2]]
+ * 					self.fodf1[i] += dis*self.data[i, p_0 + self.neighbors[index, 0], \
+ * 												  p_1 + self.neighbors[index, 1], \             # <<<<<<<<<<<<<<
+ * 												  p_2 + self.neighbors[index, 2]]
  * 		if scale > 0:
  */
-        __pyx_t_15 = 1;
         if (unlikely(!__pyx_v_self->neighbors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 266, __pyx_L1_error)}
-        __pyx_t_14 = __pyx_v_index;
-        __pyx_t_5 = 1;
+        __pyx_t_1 = __pyx_v_index;
+        __pyx_t_8 = 1;
 
         /* "bonndit/tracking/interpolation.pyx":267
- * 					self.fodf1[i] += dis*self.data[i, <int> point[0] + self.neighbors[index, 0], \
- * 												  <int> point[1] + self.neighbors[index, 1], \
- * 												  <int> point[2] + self.neighbors[index, 2]]             # <<<<<<<<<<<<<<
+ * 					self.fodf1[i] += dis*self.data[i, p_0 + self.neighbors[index, 0], \
+ * 												  p_1 + self.neighbors[index, 1], \
+ * 												  p_2 + self.neighbors[index, 2]]             # <<<<<<<<<<<<<<
  * 		if scale > 0:
  * 			mult_with_scalar(self.fodf, 1/scale, self.fodf1)
  */
-        __pyx_t_8 = 2;
         if (unlikely(!__pyx_v_self->neighbors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 267, __pyx_L1_error)}
         __pyx_t_7 = __pyx_v_index;
         __pyx_t_6 = 2;
@@ -8428,17 +8706,17 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_sub_vectors(__pyx_v_self->empty, __pyx_
         /* "bonndit/tracking/interpolation.pyx":265
  * 				scale += dis
  * 				for i in range(16):
- * 					self.fodf1[i] += dis*self.data[i, <int> point[0] + self.neighbors[index, 0], \             # <<<<<<<<<<<<<<
- * 												  <int> point[1] + self.neighbors[index, 1], \
- * 												  <int> point[2] + self.neighbors[index, 2]]
+ * 					self.fodf1[i] += dis*self.data[i, p_0 + self.neighbors[index, 0], \             # <<<<<<<<<<<<<<
+ * 												  p_1 + self.neighbors[index, 1], \
+ * 												  p_2 + self.neighbors[index, 2]]
  */
-        __pyx_t_22 = __pyx_v_i;
-        __pyx_t_23 = (((int)(*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_18 * __pyx_v_point.strides[0]) )))) + (*((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->neighbors.data + __pyx_t_17 * __pyx_v_self->neighbors.strides[0]) ) + __pyx_t_16 * __pyx_v_self->neighbors.strides[1]) ))));
-        __pyx_t_24 = (((int)(*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_15 * __pyx_v_point.strides[0]) )))) + (*((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->neighbors.data + __pyx_t_14 * __pyx_v_self->neighbors.strides[0]) ) + __pyx_t_5 * __pyx_v_self->neighbors.strides[1]) ))));
-        __pyx_t_25 = (((int)(*((double *) ( /* dim=0 */ (__pyx_v_point.data + __pyx_t_8 * __pyx_v_point.strides[0]) )))) + (*((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->neighbors.data + __pyx_t_7 * __pyx_v_self->neighbors.strides[0]) ) + __pyx_t_6 * __pyx_v_self->neighbors.strides[1]) ))));
+        __pyx_t_19 = __pyx_v_i;
+        __pyx_t_20 = (__pyx_v_p_0 + (*((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->neighbors.data + __pyx_t_15 * __pyx_v_self->neighbors.strides[0]) ) + __pyx_t_14 * __pyx_v_self->neighbors.strides[1]) ))));
+        __pyx_t_21 = (__pyx_v_p_1 + (*((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->neighbors.data + __pyx_t_1 * __pyx_v_self->neighbors.strides[0]) ) + __pyx_t_8 * __pyx_v_self->neighbors.strides[1]) ))));
+        __pyx_t_22 = (__pyx_v_p_2 + (*((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->neighbors.data + __pyx_t_7 * __pyx_v_self->neighbors.strides[0]) ) + __pyx_t_6 * __pyx_v_self->neighbors.strides[1]) ))));
         if (unlikely(!__pyx_v_self->fodf1.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 265, __pyx_L1_error)}
-        __pyx_t_26 = __pyx_v_i;
-        *((double *) ( /* dim=0 */ (__pyx_v_self->fodf1.data + __pyx_t_26 * __pyx_v_self->fodf1.strides[0]) )) += (__pyx_v_dis * (*((double *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->data.data + __pyx_t_22 * __pyx_v_self->data.strides[0]) ) + __pyx_t_23 * __pyx_v_self->data.strides[1]) ) + __pyx_t_24 * __pyx_v_self->data.strides[2]) ) + __pyx_t_25 * __pyx_v_self->data.strides[3]) ))));
+        __pyx_t_23 = __pyx_v_i;
+        *((double *) ( /* dim=0 */ (__pyx_v_self->fodf1.data + __pyx_t_23 * __pyx_v_self->fodf1.strides[0]) )) += (__pyx_v_dis * (*((double *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->data.data + __pyx_t_19 * __pyx_v_self->data.strides[0]) ) + __pyx_t_20 * __pyx_v_self->data.strides[1]) ) + __pyx_t_21 * __pyx_v_self->data.strides[2]) ) + __pyx_t_22 * __pyx_v_self->data.strides[3]) ))));
       }
 
       /* "bonndit/tracking/interpolation.pyx":256
@@ -8453,8 +8731,8 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_sub_vectors(__pyx_v_self->empty, __pyx_
   __pyx_L4_break:;
 
   /* "bonndit/tracking/interpolation.pyx":268
- * 												  <int> point[1] + self.neighbors[index, 1], \
- * 												  <int> point[2] + self.neighbors[index, 2]]
+ * 												  p_1 + self.neighbors[index, 1], \
+ * 												  p_2 + self.neighbors[index, 2]]
  * 		if scale > 0:             # <<<<<<<<<<<<<<
  * 			mult_with_scalar(self.fodf, 1/scale, self.fodf1)
  * 
@@ -8463,29 +8741,23 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_sub_vectors(__pyx_v_self->empty, __pyx_
   if (__pyx_t_10) {
 
     /* "bonndit/tracking/interpolation.pyx":269
- * 												  <int> point[2] + self.neighbors[index, 2]]
+ * 												  p_2 + self.neighbors[index, 2]]
  * 		if scale > 0:
  * 			mult_with_scalar(self.fodf, 1/scale, self.fodf1)             # <<<<<<<<<<<<<<
  * 
- * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) nogil except *:
+ * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) : # : # : # nogil except *:
  */
     if (unlikely(!__pyx_v_self->fodf.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 269, __pyx_L1_error)}
     if (unlikely(__pyx_v_scale == 0)) {
-      #ifdef WITH_THREAD
-      PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-      #endif
       PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-      #ifdef WITH_THREAD
-      __Pyx_PyGILState_Release(__pyx_gilstate_save);
-      #endif
       __PYX_ERR(0, 269, __pyx_L1_error)
     }
     if (unlikely(!__pyx_v_self->fodf1.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 269, __pyx_L1_error)}
     __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_self->fodf, (1.0 / __pyx_v_scale), __pyx_v_self->fodf1);
 
     /* "bonndit/tracking/interpolation.pyx":268
- * 												  <int> point[1] + self.neighbors[index, 1], \
- * 												  <int> point[2] + self.neighbors[index, 2]]
+ * 												  p_1 + self.neighbors[index, 1], \
+ * 												  p_2 + self.neighbors[index, 2]]
  * 		if scale > 0:             # <<<<<<<<<<<<<<
  * 			mult_with_scalar(self.fodf, 1/scale, self.fodf1)
  * 
@@ -8495,32 +8767,26 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_sub_vectors(__pyx_v_self->empty, __pyx_
   /* "bonndit/tracking/interpolation.pyx":244
  * 		cblas_dcopy(self.vlinear.shape[1], &self.vlinear[0,0], 1, &self.fodf[0], 1)
  * 
- * 	cdef void neigh(self, double[:] point) nogil except *:             # <<<<<<<<<<<<<<
+ * 	cdef void neigh(self, double[:] point) : # : # : # nogil except *:             # <<<<<<<<<<<<<<
  * 		cdef double scale = 0, dis=0
- * 		cdef int i, index
+ * 		cdef int i, index, p_0 = <int> point[0], p_1 = <int> point[1], p_2 = <int> point[2]
  */
 
   /* function exit code */
   goto __pyx_L0;
   __pyx_L1_error:;
-  __PYX_XDEC_MEMVIEW(&__pyx_t_13, 0);
-  __PYX_XDEC_MEMVIEW(&__pyx_t_19, 0);
-  {
-    #ifdef WITH_THREAD
-    PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-    #endif
-    __Pyx_AddTraceback("bonndit.tracking.interpolation.TrilinearFODF.neigh", __pyx_clineno, __pyx_lineno, __pyx_filename);
-    #ifdef WITH_THREAD
-    __Pyx_PyGILState_Release(__pyx_gilstate_save);
-    #endif
-  }
+  __PYX_XDEC_MEMVIEW(&__pyx_t_13, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_16, 1);
+  __Pyx_WriteUnraisable("bonndit.tracking.interpolation.TrilinearFODF.neigh", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
   __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 0);
+  __Pyx_RefNannyFinishContext();
 }
 
 /* "bonndit/tracking/interpolation.pyx":271
  * 			mult_with_scalar(self.fodf, 1/scale, self.fodf1)
  * 
- * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) nogil except *:             # <<<<<<<<<<<<<<
+ * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) : # : # : # nogil except *:             # <<<<<<<<<<<<<<
  * 	#	with gil: print(np.array(old_dir))
  * 		# Initialize with last step. Except we are starting again.
  */
@@ -8528,6 +8794,8 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_sub_vectors(__pyx_v_self->empty, __pyx_
 static int __pyx_f_7bonndit_8tracking_13interpolation_13TrilinearFODF_interpolate(struct __pyx_obj_7bonndit_8tracking_13interpolation_TrilinearFODF *__pyx_v_self, __Pyx_memviewslice __pyx_v_point, __Pyx_memviewslice __pyx_v_old_dir, int __pyx_v_r) {
   int __pyx_v_i;
   int __pyx_r;
+  __Pyx_TraceDeclarations
+  __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   Py_ssize_t __pyx_t_2;
   int __pyx_t_3;
@@ -8538,6 +8806,8 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_13TrilinearFODF_interpolat
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("interpolate", 0);
+  __Pyx_TraceCall("interpolate", __pyx_f[0], 271, 0, __PYX_ERR(0, 271, __pyx_L1_error));
 
   /* "bonndit/tracking/interpolation.pyx":274
  * 	#	with gil: print(np.array(old_dir))
@@ -8595,7 +8865,7 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_13TrilinearFODF_interpolat
  * 		else:
  * 			self.neigh(point)
  */
-    ((struct __pyx_vtabstruct_7bonndit_8tracking_13interpolation_TrilinearFODF *)__pyx_v_self->__pyx_base.__pyx_vtab)->trilinear(__pyx_v_self, __pyx_v_point); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 281, __pyx_L1_error)
+    ((struct __pyx_vtabstruct_7bonndit_8tracking_13interpolation_TrilinearFODF *)__pyx_v_self->__pyx_base.__pyx_vtab)->trilinear(__pyx_v_self, __pyx_v_point);
 
     /* "bonndit/tracking/interpolation.pyx":280
  * 
@@ -8615,7 +8885,7 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_13TrilinearFODF_interpolat
  * 			return -1
  */
   /*else*/ {
-    ((struct __pyx_vtabstruct_7bonndit_8tracking_13interpolation_TrilinearFODF *)__pyx_v_self->__pyx_base.__pyx_vtab)->neigh(__pyx_v_self, __pyx_v_point); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 283, __pyx_L1_error)
+    ((struct __pyx_vtabstruct_7bonndit_8tracking_13interpolation_TrilinearFODF *)__pyx_v_self->__pyx_base.__pyx_vtab)->neigh(__pyx_v_self, __pyx_v_point);
   }
   __pyx_L4:;
 
@@ -8657,7 +8927,7 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_13TrilinearFODF_interpolat
  * 		for i in range(3):
  * 			hota_4o3d_sym_eval(tens[i, :], self.length[i], self.best_dir_approx[:, i])
  */
-  if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_tens.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("tens"); __PYX_ERR(0, 286, __pyx_L1_error) }
+  if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_tens.memview)) { __Pyx_RaiseUnboundLocalError("tens"); __PYX_ERR(0, 286, __pyx_L1_error) }
   __pyx_f_7bonndit_5utilc_14cython_helpers_set_zero_matrix(__pyx_v_7bonndit_8tracking_13interpolation_tens);
 
   /* "bonndit/tracking/interpolation.pyx":287
@@ -8677,7 +8947,7 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_13TrilinearFODF_interpolat
  * 			sub_vectors(self.fodf[1:], self.fodf[1:], tens[i,:])
  * 		approx_initial(self.length, self.best_dir_approx, tens, self.fodf[1:], self.rank, valsec, val,der, testv, anisoten, isoten)
  */
-    if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_tens.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("tens"); __PYX_ERR(0, 288, __pyx_L1_error) }
+    if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_tens.memview)) { __Pyx_RaiseUnboundLocalError("tens"); __PYX_ERR(0, 288, __pyx_L1_error) }
     __pyx_t_4.data = __pyx_v_7bonndit_8tracking_13interpolation_tens.data;
     __pyx_t_4.memview = __pyx_v_7bonndit_8tracking_13interpolation_tens.memview;
     __PYX_INC_MEMVIEW(&__pyx_t_4, 0);
@@ -8708,10 +8978,10 @@ __pyx_t_5.strides[0] = __pyx_v_self->best_dir_approx.strides[0];
 }
 
 __pyx_f_7bonndit_5utilc_4hota_hota_4o3d_sym_eval(__pyx_t_4, (*((double *) ( /* dim=0 */ (__pyx_v_self->length.data + __pyx_t_2 * __pyx_v_self->length.strides[0]) ))), __pyx_t_5);
-    __PYX_XDEC_MEMVIEW(&__pyx_t_4, 0);
+    __PYX_XDEC_MEMVIEW(&__pyx_t_4, 1);
     __pyx_t_4.memview = NULL;
     __pyx_t_4.data = NULL;
-    __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
+    __PYX_XDEC_MEMVIEW(&__pyx_t_5, 1);
     __pyx_t_5.memview = NULL;
     __pyx_t_5.data = NULL;
 
@@ -8766,7 +9036,7 @@ if (unlikely(!__pyx_v_self->fodf.memview)) {PyErr_SetString(PyExc_AttributeError
     __PYX_ERR(0, 289, __pyx_L1_error)
 }
 
-if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_tens.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("tens"); __PYX_ERR(0, 289, __pyx_L1_error) }
+if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_tens.memview)) { __Pyx_RaiseUnboundLocalError("tens"); __PYX_ERR(0, 289, __pyx_L1_error) }
     __pyx_t_7.data = __pyx_v_7bonndit_8tracking_13interpolation_tens.data;
     __pyx_t_7.memview = __pyx_v_7bonndit_8tracking_13interpolation_tens.memview;
     __PYX_INC_MEMVIEW(&__pyx_t_7, 0);
@@ -8781,13 +9051,13 @@ __pyx_t_7.strides[0] = __pyx_v_7bonndit_8tracking_13interpolation_tens.strides[1
     __pyx_t_7.suboffsets[0] = -1;
 
 __pyx_f_7bonndit_5utilc_14cython_helpers_sub_vectors(__pyx_t_5, __pyx_t_4, __pyx_t_7);
-    __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
+    __PYX_XDEC_MEMVIEW(&__pyx_t_5, 1);
     __pyx_t_5.memview = NULL;
     __pyx_t_5.data = NULL;
-    __PYX_XDEC_MEMVIEW(&__pyx_t_4, 0);
+    __PYX_XDEC_MEMVIEW(&__pyx_t_4, 1);
     __pyx_t_4.memview = NULL;
     __pyx_t_4.data = NULL;
-    __PYX_XDEC_MEMVIEW(&__pyx_t_7, 0);
+    __PYX_XDEC_MEMVIEW(&__pyx_t_7, 1);
     __pyx_t_7.memview = NULL;
     __pyx_t_7.data = NULL;
   }
@@ -8801,7 +9071,7 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_sub_vectors(__pyx_t_5, __pyx_t_4, __pyx
  */
   if (unlikely(!__pyx_v_self->length.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 290, __pyx_L1_error)}
   if (unlikely(!__pyx_v_self->best_dir_approx.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 290, __pyx_L1_error)}
-  if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_tens.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("tens"); __PYX_ERR(0, 290, __pyx_L1_error) }
+  if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_tens.memview)) { __Pyx_RaiseUnboundLocalError("tens"); __PYX_ERR(0, 290, __pyx_L1_error) }
   if (unlikely(!__pyx_v_self->fodf.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 290, __pyx_L1_error)}
   __pyx_t_7.data = __pyx_v_self->fodf.data;
   __pyx_t_7.memview = __pyx_v_self->fodf.memview;
@@ -8824,14 +9094,14 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_sub_vectors(__pyx_t_5, __pyx_t_4, __pyx
     __PYX_ERR(0, 290, __pyx_L1_error)
 }
 
-if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_valsec.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("valsec"); __PYX_ERR(0, 290, __pyx_L1_error) }
-  if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_val.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("val"); __PYX_ERR(0, 290, __pyx_L1_error) }
-  if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_der.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("der"); __PYX_ERR(0, 290, __pyx_L1_error) }
-  if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_testv.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("testv"); __PYX_ERR(0, 290, __pyx_L1_error) }
-  if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_anisoten.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("anisoten"); __PYX_ERR(0, 290, __pyx_L1_error) }
-  if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_isoten.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("isoten"); __PYX_ERR(0, 290, __pyx_L1_error) }
+if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_valsec.memview)) { __Pyx_RaiseUnboundLocalError("valsec"); __PYX_ERR(0, 290, __pyx_L1_error) }
+  if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_val.memview)) { __Pyx_RaiseUnboundLocalError("val"); __PYX_ERR(0, 290, __pyx_L1_error) }
+  if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_der.memview)) { __Pyx_RaiseUnboundLocalError("der"); __PYX_ERR(0, 290, __pyx_L1_error) }
+  if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_testv.memview)) { __Pyx_RaiseUnboundLocalError("testv"); __PYX_ERR(0, 290, __pyx_L1_error) }
+  if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_anisoten.memview)) { __Pyx_RaiseUnboundLocalError("anisoten"); __PYX_ERR(0, 290, __pyx_L1_error) }
+  if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_isoten.memview)) { __Pyx_RaiseUnboundLocalError("isoten"); __PYX_ERR(0, 290, __pyx_L1_error) }
   (void)(__pyx_f_7bonndit_5utilc_7lowrank_approx_initial(__pyx_v_self->length, __pyx_v_self->best_dir_approx, __pyx_v_7bonndit_8tracking_13interpolation_tens, __pyx_t_7, __pyx_v_self->rank, __pyx_v_7bonndit_8tracking_13interpolation_valsec, __pyx_v_7bonndit_8tracking_13interpolation_val, __pyx_v_7bonndit_8tracking_13interpolation_der, __pyx_v_7bonndit_8tracking_13interpolation_testv, __pyx_v_7bonndit_8tracking_13interpolation_anisoten, __pyx_v_7bonndit_8tracking_13interpolation_isoten));
-  __PYX_XDEC_MEMVIEW(&__pyx_t_7, 0);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_7, 1);
   __pyx_t_7.memview = NULL;
   __pyx_t_7.data = NULL;
 
@@ -8883,10 +9153,10 @@ __pyx_t_4.strides[0] = __pyx_v_self->best_dir_approx.strides[0];
 }
 
 __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_t_7, pow((*((double *) ( /* dim=0 */ (__pyx_v_self->length.data + __pyx_t_2 * __pyx_v_self->length.strides[0]) ))), (1.0 / 4.0)), __pyx_t_4);
-    __PYX_XDEC_MEMVIEW(&__pyx_t_7, 0);
+    __PYX_XDEC_MEMVIEW(&__pyx_t_7, 1);
     __pyx_t_7.memview = NULL;
     __pyx_t_7.data = NULL;
-    __PYX_XDEC_MEMVIEW(&__pyx_t_4, 0);
+    __PYX_XDEC_MEMVIEW(&__pyx_t_4, 1);
     __pyx_t_4.memview = NULL;
     __pyx_t_4.data = NULL;
   }
@@ -8899,7 +9169,7 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_t_7, pow((*((dou
  * 		return 0
  */
   if (unlikely(!__pyx_v_self->__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 294, __pyx_L1_error)}
-  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self->__pyx_base.prob->__pyx_vtab)->calculate_probabilities(__pyx_v_self->__pyx_base.prob, __pyx_v_self->__pyx_base.best_dir, __pyx_v_old_dir); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 294, __pyx_L1_error)
+  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self->__pyx_base.prob->__pyx_vtab)->calculate_probabilities(__pyx_v_self->__pyx_base.prob, __pyx_v_self->__pyx_base.best_dir, __pyx_v_old_dir);
 
   /* "bonndit/tracking/interpolation.pyx":295
  * 			mult_with_scalar(self.best_dir[i], pow(self.length[i], 1/4), self.best_dir_approx[:,i])
@@ -8910,7 +9180,7 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_t_7, pow((*((dou
  */
   if (unlikely(!__pyx_v_self->__pyx_base.prob->best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 295, __pyx_L1_error)}
   __pyx_t_4 = __pyx_v_self->__pyx_base.prob->best_fit;
-  __PYX_INC_MEMVIEW(&__pyx_t_4, 0);
+  __PYX_INC_MEMVIEW(&__pyx_t_4, 1);
   __PYX_XDEC_MEMVIEW(&__pyx_v_self->__pyx_base.next_dir, 0);
   __pyx_v_self->__pyx_base.next_dir = __pyx_t_4;
   __pyx_t_4.memview = NULL;
@@ -8929,27 +9199,21 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_t_7, pow((*((dou
   /* "bonndit/tracking/interpolation.pyx":271
  * 			mult_with_scalar(self.fodf, 1/scale, self.fodf1)
  * 
- * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) nogil except *:             # <<<<<<<<<<<<<<
+ * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) : # : # : # nogil except *:             # <<<<<<<<<<<<<<
  * 	#	with gil: print(np.array(old_dir))
  * 		# Initialize with last step. Except we are starting again.
  */
 
   /* function exit code */
   __pyx_L1_error:;
-  __PYX_XDEC_MEMVIEW(&__pyx_t_4, 0);
-  __PYX_XDEC_MEMVIEW(&__pyx_t_5, 0);
-  __PYX_XDEC_MEMVIEW(&__pyx_t_7, 0);
-  {
-    #ifdef WITH_THREAD
-    PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-    #endif
-    __Pyx_AddTraceback("bonndit.tracking.interpolation.TrilinearFODF.interpolate", __pyx_clineno, __pyx_lineno, __pyx_filename);
-    #ifdef WITH_THREAD
-    __Pyx_PyGILState_Release(__pyx_gilstate_save);
-    #endif
-  }
+  __PYX_XDEC_MEMVIEW(&__pyx_t_4, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_5, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_7, 1);
+  __Pyx_WriteUnraisable("bonndit.tracking.interpolation.TrilinearFODF.interpolate", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
   __pyx_r = 0;
   __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 0);
+  __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
@@ -8974,12 +9238,14 @@ static PyObject *__pyx_pw_7bonndit_8tracking_13interpolation_13TrilinearFODF_3__
 
 static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_13TrilinearFODF_2__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_7bonndit_8tracking_13interpolation_TrilinearFODF *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__reduce_cython__", 0);
+  __Pyx_TraceCall("__reduce_cython__", __pyx_f[1], 1, 0, __PYX_ERR(1, 1, __pyx_L1_error));
 
   /* "(tree fragment)":2
  * def __reduce_cython__(self):
@@ -9005,6 +9271,7 @@ static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_13TrilinearFODF_2__
   __Pyx_AddTraceback("bonndit.tracking.interpolation.TrilinearFODF.__reduce_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -9031,12 +9298,14 @@ static PyObject *__pyx_pw_7bonndit_8tracking_13interpolation_13TrilinearFODF_5__
 
 static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_13TrilinearFODF_4__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_7bonndit_8tracking_13interpolation_TrilinearFODF *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__setstate_cython__", 0);
+  __Pyx_TraceCall("__setstate_cython__", __pyx_f[1], 3, 0, __PYX_ERR(1, 3, __pyx_L1_error));
 
   /* "(tree fragment)":4
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
@@ -9062,6 +9331,7 @@ static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_13TrilinearFODF_4__
   __Pyx_AddTraceback("bonndit.tracking.interpolation.TrilinearFODF.__setstate_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -9161,6 +9431,7 @@ static int __pyx_pw_7bonndit_8tracking_13interpolation_9Trilinear_1__cinit__(PyO
 
 static int __pyx_pf_7bonndit_8tracking_13interpolation_9Trilinear___cinit__(struct __pyx_obj_7bonndit_8tracking_13interpolation_Trilinear *__pyx_v_self, __Pyx_memviewslice __pyx_v_vector_field, __Pyx_memviewslice __pyx_v_grid, struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *__pyx_v_prob, PyObject *__pyx_v_kwargs) {
   int __pyx_r;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
@@ -9175,6 +9446,7 @@ static int __pyx_pf_7bonndit_8tracking_13interpolation_9Trilinear___cinit__(stru
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__cinit__", 0);
+  __Pyx_TraceCall("__cinit__", __pyx_f[0], 302, 0, __PYX_ERR(0, 302, __pyx_L1_error));
 
   /* "bonndit/tracking/interpolation.pyx":303
  * cdef class Trilinear(Interpolation):
@@ -9488,6 +9760,7 @@ static int __pyx_pf_7bonndit_8tracking_13interpolation_9Trilinear___cinit__(stru
   __pyx_L0:;
   __PYX_XDEC_MEMVIEW(&__pyx_v_vector_field, 1);
   __PYX_XDEC_MEMVIEW(&__pyx_v_grid, 1);
+  __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -9495,12 +9768,14 @@ static int __pyx_pf_7bonndit_8tracking_13interpolation_9Trilinear___cinit__(stru
 /* "bonndit/tracking/interpolation.pyx":316
  * 
  * 
- * 	cdef void set_array(self, int array, int index, int i) nogil:             # <<<<<<<<<<<<<<
+ * 	cdef void set_array(self, int array, int index, int i) : # : # : # nogil:             # <<<<<<<<<<<<<<
  * 		self.set_vector(index, i)
  * 		if self.vector_field[0, i, int(self.floor_point[index, 0]),int(self.floor_point[index, 1]),
  */
 
 static void __pyx_f_7bonndit_8tracking_13interpolation_9Trilinear_set_array(struct __pyx_obj_7bonndit_8tracking_13interpolation_Trilinear *__pyx_v_self, int __pyx_v_array, int __pyx_v_index, int __pyx_v_i) {
+  __Pyx_TraceDeclarations
+  __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   Py_ssize_t __pyx_t_2;
   Py_ssize_t __pyx_t_3;
@@ -9529,10 +9804,12 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_9Trilinear_set_array(stru
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("set_array", 0);
+  __Pyx_TraceCall("set_array", __pyx_f[0], 316, 0, __PYX_ERR(0, 316, __pyx_L1_error));
 
   /* "bonndit/tracking/interpolation.pyx":317
  * 
- * 	cdef void set_array(self, int array, int index, int i) nogil:
+ * 	cdef void set_array(self, int array, int index, int i) : # : # : # nogil:
  * 		self.set_vector(index, i)             # <<<<<<<<<<<<<<
  * 		if self.vector_field[0, i, int(self.floor_point[index, 0]),int(self.floor_point[index, 1]),
  * 		                     int(self.floor_point[index, 2])] != 0 and self.vector_field[0, i, int(self.floor_point[index, 0]),int(self.floor_point[index, 1]),
@@ -9540,7 +9817,7 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_9Trilinear_set_array(stru
   ((struct __pyx_vtabstruct_7bonndit_8tracking_13interpolation_Trilinear *)__pyx_v_self->__pyx_base.__pyx_vtab)->__pyx_base.set_vector(((struct __pyx_obj_7bonndit_8tracking_13interpolation_Interpolation *)__pyx_v_self), __pyx_v_index, __pyx_v_i);
 
   /* "bonndit/tracking/interpolation.pyx":318
- * 	cdef void set_array(self, int array, int index, int i) nogil:
+ * 	cdef void set_array(self, int array, int index, int i) : # : # : # nogil:
  * 		self.set_vector(index, i)
  * 		if self.vector_field[0, i, int(self.floor_point[index, 0]),int(self.floor_point[index, 1]),             # <<<<<<<<<<<<<<
  * 		                     int(self.floor_point[index, 2])] != 0 and self.vector_field[0, i, int(self.floor_point[index, 0]),int(self.floor_point[index, 1]),
@@ -9566,7 +9843,7 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_9Trilinear_set_array(stru
   __pyx_t_7 = 2;
 
   /* "bonndit/tracking/interpolation.pyx":318
- * 	cdef void set_array(self, int array, int index, int i) nogil:
+ * 	cdef void set_array(self, int array, int index, int i) : # : # : # nogil:
  * 		self.set_vector(index, i)
  * 		if self.vector_field[0, i, int(self.floor_point[index, 0]),int(self.floor_point[index, 1]),             # <<<<<<<<<<<<<<
  * 		                     int(self.floor_point[index, 2])] != 0 and self.vector_field[0, i, int(self.floor_point[index, 0]),int(self.floor_point[index, 1]),
@@ -9682,7 +9959,7 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_9Trilinear_set_array(stru
   __pyx_L4_bool_binop_done:;
 
   /* "bonndit/tracking/interpolation.pyx":318
- * 	cdef void set_array(self, int array, int index, int i) nogil:
+ * 	cdef void set_array(self, int array, int index, int i) : # : # : # nogil:
  * 		self.set_vector(index, i)
  * 		if self.vector_field[0, i, int(self.floor_point[index, 0]),int(self.floor_point[index, 1]),             # <<<<<<<<<<<<<<
  * 		                     int(self.floor_point[index, 2])] != 0 and self.vector_field[0, i, int(self.floor_point[index, 0]),int(self.floor_point[index, 1]),
@@ -9768,12 +10045,12 @@ if (unlikely(!__pyx_v_self->__pyx_base.vector_field.memview)) {PyErr_SetString(P
  * 		                                                          int(self.floor_point[index, 2])], 1 / 4),
  */
     __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_t_25, pow((*((double *) ( /* dim=4 */ (( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->__pyx_base.vector_field.data + __pyx_t_24 * __pyx_v_self->__pyx_base.vector_field.strides[0]) ) + __pyx_t_23 * __pyx_v_self->__pyx_base.vector_field.strides[1]) ) + __pyx_t_22 * __pyx_v_self->__pyx_base.vector_field.strides[2]) ) + __pyx_t_21 * __pyx_v_self->__pyx_base.vector_field.strides[3]) ) + __pyx_t_20 * __pyx_v_self->__pyx_base.vector_field.strides[4]) ))), (1.0 / 4.0)), __pyx_v_self->__pyx_base.vector);
-    __PYX_XDEC_MEMVIEW(&__pyx_t_25, 0);
+    __PYX_XDEC_MEMVIEW(&__pyx_t_25, 1);
     __pyx_t_25.memview = NULL;
     __pyx_t_25.data = NULL;
 
     /* "bonndit/tracking/interpolation.pyx":318
- * 	cdef void set_array(self, int array, int index, int i) nogil:
+ * 	cdef void set_array(self, int array, int index, int i) : # : # : # nogil:
  * 		self.set_vector(index, i)
  * 		if self.vector_field[0, i, int(self.floor_point[index, 0]),int(self.floor_point[index, 1]),             # <<<<<<<<<<<<<<
  * 		                     int(self.floor_point[index, 2])] != 0 and self.vector_field[0, i, int(self.floor_point[index, 0]),int(self.floor_point[index, 1]),
@@ -9806,7 +10083,7 @@ __pyx_t_25.strides[0] = __pyx_v_self->array.strides[1];
 
 if (unlikely(!__pyx_v_self->__pyx_base.vector.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 327, __pyx_L1_error)}
     __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_t_25, 0.0, __pyx_v_self->__pyx_base.vector);
-    __PYX_XDEC_MEMVIEW(&__pyx_t_25, 0);
+    __PYX_XDEC_MEMVIEW(&__pyx_t_25, 1);
     __pyx_t_25.memview = NULL;
     __pyx_t_25.data = NULL;
   }
@@ -9815,7 +10092,7 @@ if (unlikely(!__pyx_v_self->__pyx_base.vector.memview)) {PyErr_SetString(PyExc_A
   /* "bonndit/tracking/interpolation.pyx":316
  * 
  * 
- * 	cdef void set_array(self, int array, int index, int i) nogil:             # <<<<<<<<<<<<<<
+ * 	cdef void set_array(self, int array, int index, int i) : # : # : # nogil:             # <<<<<<<<<<<<<<
  * 		self.set_vector(index, i)
  * 		if self.vector_field[0, i, int(self.floor_point[index, 0]),int(self.floor_point[index, 1]),
  */
@@ -9823,15 +10100,17 @@ if (unlikely(!__pyx_v_self->__pyx_base.vector.memview)) {PyErr_SetString(PyExc_A
   /* function exit code */
   goto __pyx_L0;
   __pyx_L1_error:;
-  __PYX_XDEC_MEMVIEW(&__pyx_t_25, 0);
-  __Pyx_WriteUnraisable("bonndit.tracking.interpolation.Trilinear.set_array", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_25, 1);
+  __Pyx_WriteUnraisable("bonndit.tracking.interpolation.Trilinear.set_array", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
   __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 0);
+  __Pyx_RefNannyFinishContext();
 }
 
 /* "bonndit/tracking/interpolation.pyx":331
  * 
  * 
- * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) nogil except *:             # <<<<<<<<<<<<<<
+ * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) : # : # : # nogil except *:             # <<<<<<<<<<<<<<
  * 		""" This function calculates the interpolation based on https://en.wikipedia.org/wiki/Trilinear_interpolation
  * 		for each vectorfield. Afterwards the we chose randomly from the 3 vectors.
  */
@@ -9843,6 +10122,8 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_9Trilinear_interpolate(str
   double __pyx_v_test;
   double __pyx_v_l;
   int __pyx_r;
+  __Pyx_TraceDeclarations
+  __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   Py_ssize_t __pyx_t_2;
   Py_ssize_t __pyx_t_3;
@@ -9864,6 +10145,8 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_9Trilinear_interpolate(str
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("interpolate", 0);
+  __Pyx_TraceCall("interpolate", __pyx_f[0], 331, 0, __PYX_ERR(0, 331, __pyx_L1_error));
 
   /* "bonndit/tracking/interpolation.pyx":345
  * 		"""
@@ -9947,7 +10230,7 @@ __pyx_t_4.strides[0] = __pyx_v_self->__pyx_base.best_dir.strides[1];
     __pyx_t_4.suboffsets[0] = -1;
 
 __pyx_v_test = (__pyx_v_test + __pyx_f_7bonndit_5utilc_14cython_helpers_norm(__pyx_t_4));
-    __PYX_XDEC_MEMVIEW(&__pyx_t_4, 0);
+    __PYX_XDEC_MEMVIEW(&__pyx_t_4, 1);
     __pyx_t_4.memview = NULL;
     __pyx_t_4.data = NULL;
   }
@@ -10084,7 +10367,7 @@ __pyx_t_4.strides[0] = __pyx_v_self->__pyx_base.best_dir.strides[1];
 
 if (unlikely(!__pyx_v_self->__pyx_base.vector.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 361, __pyx_L1_error)}
       __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_t_4, __pyx_v_l, __pyx_v_self->__pyx_base.vector);
-      __PYX_XDEC_MEMVIEW(&__pyx_t_4, 0);
+      __PYX_XDEC_MEMVIEW(&__pyx_t_4, 1);
       __pyx_t_4.memview = NULL;
       __pyx_t_4.data = NULL;
     }
@@ -10138,7 +10421,7 @@ __pyx_t_15.strides[0] = __pyx_v_self->__pyx_base.cache.strides[3];
     __pyx_t_15.suboffsets[0] = -1;
 
 __pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c_int(__pyx_t_15) != 0) != 0);
-  __PYX_XDEC_MEMVIEW(&__pyx_t_15, 0);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_15, 1);
   __pyx_t_15.memview = NULL;
   __pyx_t_15.data = NULL;
   if (__pyx_t_5) {
@@ -10150,7 +10433,7 @@ __pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c_int(__pyx_t_15) != 
  * 		else:
  * 			con = self.kmeans(point)
  */
-    ((struct __pyx_vtabstruct_7bonndit_8tracking_13interpolation_Trilinear *)__pyx_v_self->__pyx_base.__pyx_vtab)->permute(__pyx_v_self, __pyx_v_point); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 364, __pyx_L1_error)
+    ((struct __pyx_vtabstruct_7bonndit_8tracking_13interpolation_Trilinear *)__pyx_v_self->__pyx_base.__pyx_vtab)->permute(__pyx_v_self, __pyx_v_point);
 
     /* "bonndit/tracking/interpolation.pyx":363
  * 				mult_with_scalar(self.best_dir[i], l, self.vector)
@@ -10170,8 +10453,7 @@ __pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c_int(__pyx_t_15) != 
  * 		#	self.permute(point)
  */
   /*else*/ {
-    __pyx_t_1 = ((struct __pyx_vtabstruct_7bonndit_8tracking_13interpolation_Trilinear *)__pyx_v_self->__pyx_base.__pyx_vtab)->kmeans(__pyx_v_self, __pyx_v_point); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 366, __pyx_L1_error)
-    __pyx_v_con = __pyx_t_1;
+    __pyx_v_con = ((struct __pyx_vtabstruct_7bonndit_8tracking_13interpolation_Trilinear *)__pyx_v_self->__pyx_base.__pyx_vtab)->kmeans(__pyx_v_self, __pyx_v_point);
   }
   __pyx_L11:;
 
@@ -10272,10 +10554,10 @@ __pyx_t_17.strides[0] = __pyx_v_self->__pyx_base.cuboid.strides[2];
     __pyx_t_17.suboffsets[0] = -1;
 
 __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_t_4, (*((double *) ( /* dim=0 */ (__pyx_v_self->point.data + __pyx_t_6 * __pyx_v_self->point.strides[0]) ))), __pyx_t_17);
-        __PYX_XDEC_MEMVIEW(&__pyx_t_4, 0);
+        __PYX_XDEC_MEMVIEW(&__pyx_t_4, 1);
         __pyx_t_4.memview = NULL;
         __pyx_t_4.data = NULL;
-        __PYX_XDEC_MEMVIEW(&__pyx_t_17, 0);
+        __PYX_XDEC_MEMVIEW(&__pyx_t_17, 1);
         __pyx_t_17.memview = NULL;
         __pyx_t_17.data = NULL;
 
@@ -10323,10 +10605,10 @@ __pyx_t_4.strides[0] = __pyx_v_self->__pyx_base.cuboid.strides[2];
     __pyx_t_4.suboffsets[0] = -1;
 
 __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_t_17, (1.0 - (*((double *) ( /* dim=0 */ (__pyx_v_self->point.data + __pyx_t_6 * __pyx_v_self->point.strides[0]) )))), __pyx_t_4);
-        __PYX_XDEC_MEMVIEW(&__pyx_t_17, 0);
+        __PYX_XDEC_MEMVIEW(&__pyx_t_17, 1);
         __pyx_t_17.memview = NULL;
         __pyx_t_17.data = NULL;
-        __PYX_XDEC_MEMVIEW(&__pyx_t_4, 0);
+        __PYX_XDEC_MEMVIEW(&__pyx_t_4, 1);
         __pyx_t_4.memview = NULL;
         __pyx_t_4.data = NULL;
 
@@ -10380,13 +10662,13 @@ __pyx_t_18.strides[0] = __pyx_v_self->array.strides[1];
     __pyx_t_18.suboffsets[0] = -1;
 
 __pyx_f_7bonndit_5utilc_14cython_helpers_add_vectors(__pyx_t_4, __pyx_t_17, __pyx_t_18);
-        __PYX_XDEC_MEMVIEW(&__pyx_t_4, 0);
+        __PYX_XDEC_MEMVIEW(&__pyx_t_4, 1);
         __pyx_t_4.memview = NULL;
         __pyx_t_4.data = NULL;
-        __PYX_XDEC_MEMVIEW(&__pyx_t_17, 0);
+        __PYX_XDEC_MEMVIEW(&__pyx_t_17, 1);
         __pyx_t_17.memview = NULL;
         __pyx_t_17.data = NULL;
-        __PYX_XDEC_MEMVIEW(&__pyx_t_18, 0);
+        __PYX_XDEC_MEMVIEW(&__pyx_t_18, 1);
         __pyx_t_18.memview = NULL;
         __pyx_t_18.data = NULL;
       }
@@ -10429,10 +10711,10 @@ __pyx_t_17.strides[0] = __pyx_v_self->x_array.strides[1];
     __pyx_t_17.suboffsets[0] = -1;
 
 __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_t_18, (1.0 - (*((double *) ( /* dim=0 */ (__pyx_v_self->point.data + __pyx_t_6 * __pyx_v_self->point.strides[0]) )))), __pyx_t_17);
-      __PYX_XDEC_MEMVIEW(&__pyx_t_18, 0);
+      __PYX_XDEC_MEMVIEW(&__pyx_t_18, 1);
       __pyx_t_18.memview = NULL;
       __pyx_t_18.data = NULL;
-      __PYX_XDEC_MEMVIEW(&__pyx_t_17, 0);
+      __PYX_XDEC_MEMVIEW(&__pyx_t_17, 1);
       __pyx_t_17.memview = NULL;
       __pyx_t_17.data = NULL;
 
@@ -10474,10 +10756,10 @@ __pyx_t_18.strides[0] = __pyx_v_self->x_array.strides[1];
     __pyx_t_18.suboffsets[0] = -1;
 
 __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_t_17, (*((double *) ( /* dim=0 */ (__pyx_v_self->point.data + __pyx_t_6 * __pyx_v_self->point.strides[0]) ))), __pyx_t_18);
-      __PYX_XDEC_MEMVIEW(&__pyx_t_17, 0);
+      __PYX_XDEC_MEMVIEW(&__pyx_t_17, 1);
       __pyx_t_17.memview = NULL;
       __pyx_t_17.data = NULL;
-      __PYX_XDEC_MEMVIEW(&__pyx_t_18, 0);
+      __PYX_XDEC_MEMVIEW(&__pyx_t_18, 1);
       __pyx_t_18.memview = NULL;
       __pyx_t_18.data = NULL;
 
@@ -10531,13 +10813,13 @@ __pyx_t_4.strides[0] = __pyx_v_self->x_array.strides[1];
     __pyx_t_4.suboffsets[0] = -1;
 
 __pyx_f_7bonndit_5utilc_14cython_helpers_add_vectors(__pyx_t_18, __pyx_t_17, __pyx_t_4);
-      __PYX_XDEC_MEMVIEW(&__pyx_t_18, 0);
+      __PYX_XDEC_MEMVIEW(&__pyx_t_18, 1);
       __pyx_t_18.memview = NULL;
       __pyx_t_18.data = NULL;
-      __PYX_XDEC_MEMVIEW(&__pyx_t_17, 0);
+      __PYX_XDEC_MEMVIEW(&__pyx_t_17, 1);
       __pyx_t_17.memview = NULL;
       __pyx_t_17.data = NULL;
-      __PYX_XDEC_MEMVIEW(&__pyx_t_4, 0);
+      __PYX_XDEC_MEMVIEW(&__pyx_t_4, 1);
       __pyx_t_4.memview = NULL;
       __pyx_t_4.data = NULL;
 
@@ -10579,10 +10861,10 @@ __pyx_t_17.strides[0] = __pyx_v_self->x_array.strides[1];
     __pyx_t_17.suboffsets[0] = -1;
 
 __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_t_4, (1.0 - (*((double *) ( /* dim=0 */ (__pyx_v_self->point.data + __pyx_t_6 * __pyx_v_self->point.strides[0]) )))), __pyx_t_17);
-      __PYX_XDEC_MEMVIEW(&__pyx_t_4, 0);
+      __PYX_XDEC_MEMVIEW(&__pyx_t_4, 1);
       __pyx_t_4.memview = NULL;
       __pyx_t_4.data = NULL;
-      __PYX_XDEC_MEMVIEW(&__pyx_t_17, 0);
+      __PYX_XDEC_MEMVIEW(&__pyx_t_17, 1);
       __pyx_t_17.memview = NULL;
       __pyx_t_17.data = NULL;
 
@@ -10624,10 +10906,10 @@ __pyx_t_4.strides[0] = __pyx_v_self->x_array.strides[1];
     __pyx_t_4.suboffsets[0] = -1;
 
 __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_t_17, (*((double *) ( /* dim=0 */ (__pyx_v_self->point.data + __pyx_t_6 * __pyx_v_self->point.strides[0]) ))), __pyx_t_4);
-      __PYX_XDEC_MEMVIEW(&__pyx_t_17, 0);
+      __PYX_XDEC_MEMVIEW(&__pyx_t_17, 1);
       __pyx_t_17.memview = NULL;
       __pyx_t_17.data = NULL;
-      __PYX_XDEC_MEMVIEW(&__pyx_t_4, 0);
+      __PYX_XDEC_MEMVIEW(&__pyx_t_4, 1);
       __pyx_t_4.memview = NULL;
       __pyx_t_4.data = NULL;
 
@@ -10681,13 +10963,13 @@ __pyx_t_18.strides[0] = __pyx_v_self->x_array.strides[1];
     __pyx_t_18.suboffsets[0] = -1;
 
 __pyx_f_7bonndit_5utilc_14cython_helpers_add_vectors(__pyx_t_4, __pyx_t_17, __pyx_t_18);
-      __PYX_XDEC_MEMVIEW(&__pyx_t_4, 0);
+      __PYX_XDEC_MEMVIEW(&__pyx_t_4, 1);
       __pyx_t_4.memview = NULL;
       __pyx_t_4.data = NULL;
-      __PYX_XDEC_MEMVIEW(&__pyx_t_17, 0);
+      __PYX_XDEC_MEMVIEW(&__pyx_t_17, 1);
       __pyx_t_17.memview = NULL;
       __pyx_t_17.data = NULL;
-      __PYX_XDEC_MEMVIEW(&__pyx_t_18, 0);
+      __PYX_XDEC_MEMVIEW(&__pyx_t_18, 1);
       __pyx_t_18.memview = NULL;
       __pyx_t_18.data = NULL;
 
@@ -10729,10 +11011,10 @@ __pyx_t_17.strides[0] = __pyx_v_self->array.strides[1];
     __pyx_t_17.suboffsets[0] = -1;
 
 __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_t_18, (1.0 - (*((double *) ( /* dim=0 */ (__pyx_v_self->point.data + __pyx_t_6 * __pyx_v_self->point.strides[0]) )))), __pyx_t_17);
-      __PYX_XDEC_MEMVIEW(&__pyx_t_18, 0);
+      __PYX_XDEC_MEMVIEW(&__pyx_t_18, 1);
       __pyx_t_18.memview = NULL;
       __pyx_t_18.data = NULL;
-      __PYX_XDEC_MEMVIEW(&__pyx_t_17, 0);
+      __PYX_XDEC_MEMVIEW(&__pyx_t_17, 1);
       __pyx_t_17.memview = NULL;
       __pyx_t_17.data = NULL;
 
@@ -10774,10 +11056,10 @@ __pyx_t_18.strides[0] = __pyx_v_self->array.strides[1];
     __pyx_t_18.suboffsets[0] = -1;
 
 __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_t_17, (*((double *) ( /* dim=0 */ (__pyx_v_self->point.data + __pyx_t_6 * __pyx_v_self->point.strides[0]) ))), __pyx_t_18);
-      __PYX_XDEC_MEMVIEW(&__pyx_t_17, 0);
+      __PYX_XDEC_MEMVIEW(&__pyx_t_17, 1);
       __pyx_t_17.memview = NULL;
       __pyx_t_17.data = NULL;
-      __PYX_XDEC_MEMVIEW(&__pyx_t_18, 0);
+      __PYX_XDEC_MEMVIEW(&__pyx_t_18, 1);
       __pyx_t_18.memview = NULL;
       __pyx_t_18.data = NULL;
 
@@ -10831,13 +11113,13 @@ __pyx_t_4.strides[0] = __pyx_v_self->array.strides[1];
     __pyx_t_4.suboffsets[0] = -1;
 
 __pyx_f_7bonndit_5utilc_14cython_helpers_add_vectors(__pyx_t_18, __pyx_t_17, __pyx_t_4);
-      __PYX_XDEC_MEMVIEW(&__pyx_t_18, 0);
+      __PYX_XDEC_MEMVIEW(&__pyx_t_18, 1);
       __pyx_t_18.memview = NULL;
       __pyx_t_18.data = NULL;
-      __PYX_XDEC_MEMVIEW(&__pyx_t_17, 0);
+      __PYX_XDEC_MEMVIEW(&__pyx_t_17, 1);
       __pyx_t_17.memview = NULL;
       __pyx_t_17.data = NULL;
-      __PYX_XDEC_MEMVIEW(&__pyx_t_4, 0);
+      __PYX_XDEC_MEMVIEW(&__pyx_t_4, 1);
       __pyx_t_4.memview = NULL;
       __pyx_t_4.data = NULL;
     }
@@ -10850,7 +11132,7 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_add_vectors(__pyx_t_18, __pyx_t_17, __p
  * 
  */
     if (unlikely(!__pyx_v_self->__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 395, __pyx_L1_error)}
-    ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self->__pyx_base.prob->__pyx_vtab)->calculate_probabilities(__pyx_v_self->__pyx_base.prob, __pyx_v_self->__pyx_base.best_dir, __pyx_v_old_dir); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 395, __pyx_L1_error)
+    ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self->__pyx_base.prob->__pyx_vtab)->calculate_probabilities(__pyx_v_self->__pyx_base.prob, __pyx_v_self->__pyx_base.best_dir, __pyx_v_old_dir);
 
     /* "bonndit/tracking/interpolation.pyx":396
  * 
@@ -10861,7 +11143,7 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_add_vectors(__pyx_t_18, __pyx_t_17, __p
  */
     if (unlikely(!__pyx_v_self->__pyx_base.prob->best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 396, __pyx_L1_error)}
     __pyx_t_4 = __pyx_v_self->__pyx_base.prob->best_fit;
-    __PYX_INC_MEMVIEW(&__pyx_t_4, 0);
+    __PYX_INC_MEMVIEW(&__pyx_t_4, 1);
     __PYX_XDEC_MEMVIEW(&__pyx_v_self->__pyx_base.next_dir, 0);
     __pyx_v_self->__pyx_base.next_dir = __pyx_t_4;
     __pyx_t_4.memview = NULL;
@@ -10904,35 +11186,29 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_add_vectors(__pyx_t_18, __pyx_t_17, __p
   /* "bonndit/tracking/interpolation.pyx":331
  * 
  * 
- * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) nogil except *:             # <<<<<<<<<<<<<<
+ * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) : # : # : # nogil except *:             # <<<<<<<<<<<<<<
  * 		""" This function calculates the interpolation based on https://en.wikipedia.org/wiki/Trilinear_interpolation
  * 		for each vectorfield. Afterwards the we chose randomly from the 3 vectors.
  */
 
   /* function exit code */
   __pyx_L1_error:;
-  __PYX_XDEC_MEMVIEW(&__pyx_t_4, 0);
-  __PYX_XDEC_MEMVIEW(&__pyx_t_15, 0);
-  __PYX_XDEC_MEMVIEW(&__pyx_t_17, 0);
-  __PYX_XDEC_MEMVIEW(&__pyx_t_18, 0);
-  {
-    #ifdef WITH_THREAD
-    PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-    #endif
-    __Pyx_AddTraceback("bonndit.tracking.interpolation.Trilinear.interpolate", __pyx_clineno, __pyx_lineno, __pyx_filename);
-    #ifdef WITH_THREAD
-    __Pyx_PyGILState_Release(__pyx_gilstate_save);
-    #endif
-  }
+  __PYX_XDEC_MEMVIEW(&__pyx_t_4, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_15, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_17, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_18, 1);
+  __Pyx_WriteUnraisable("bonndit.tracking.interpolation.Trilinear.interpolate", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
   __pyx_r = 0;
   __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 0);
+  __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
 /* "bonndit/tracking/interpolation.pyx":403
  * 
  * #	### TODO is here a better way?
- * 	cdef void permute(self, double[:] point) nogil except *:             # <<<<<<<<<<<<<<
+ * 	cdef void permute(self, double[:] point) : # : # : # nogil except *:             # <<<<<<<<<<<<<<
  * 		""" Little anoying... If a cube was already cached, this function uses the cache to set the dir parameter
  * 		accordingly. We loop through all indices and for each index through the 2 saved vectors. The two saved
  */
@@ -10944,6 +11220,8 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_9Trilinear_permute(struct
   int __pyx_v_z;
   double __pyx_v_exponent;
   double __pyx_v_ang;
+  __Pyx_TraceDeclarations
+  __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   int __pyx_t_2;
   Py_ssize_t __pyx_t_3;
@@ -10975,6 +11253,8 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_9Trilinear_permute(struct
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("permute", 0);
+  __Pyx_TraceCall("permute", __pyx_f[0], 403, 0, __PYX_ERR(0, 403, __pyx_L1_error));
 
   /* "bonndit/tracking/interpolation.pyx":419
  * 
@@ -11022,7 +11302,7 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_9Trilinear_permute(struct
  * 				else:
  */
       if (unlikely(!__pyx_v_self->__pyx_base.vector_field.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 423, __pyx_L1_error)}
-      if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_permute_poss.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("permute_poss"); __PYX_ERR(0, 423, __pyx_L1_error) }
+      if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_permute_poss.memview)) { __Pyx_RaiseUnboundLocalError("permute_poss"); __PYX_ERR(0, 423, __pyx_L1_error) }
       if (unlikely(!__pyx_v_self->__pyx_base.cache.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 423, __pyx_L1_error)}
       __pyx_t_3 = 0;
       __pyx_t_4 = 1;
@@ -11058,7 +11338,7 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_9Trilinear_permute(struct
  * 					exponent = 0
  */
         if (unlikely(!__pyx_v_self->__pyx_base.vector_field.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 424, __pyx_L1_error)}
-        if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_permute_poss.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("permute_poss"); __PYX_ERR(0, 424, __pyx_L1_error) }
+        if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_permute_poss.memview)) { __Pyx_RaiseUnboundLocalError("permute_poss"); __PYX_ERR(0, 424, __pyx_L1_error) }
         if (unlikely(!__pyx_v_self->__pyx_base.cache.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 424, __pyx_L1_error)}
         __pyx_t_17 = 0;
         __pyx_t_16 = 1;
@@ -11125,7 +11405,7 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_9Trilinear_permute(struct
  * 					ang = angle_deg(self.cuboid[0,i] , placeholder)
  */
         if (unlikely(!__pyx_v_self->__pyx_base.vector_field.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 428, __pyx_L1_error)}
-        if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_permute_poss.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("permute_poss"); __PYX_ERR(0, 428, __pyx_L1_error) }
+        if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_permute_poss.memview)) { __Pyx_RaiseUnboundLocalError("permute_poss"); __PYX_ERR(0, 428, __pyx_L1_error) }
         if (unlikely(!__pyx_v_self->__pyx_base.cache.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 428, __pyx_L1_error)}
         __pyx_t_10 = 0;
         __pyx_t_11 = 1;
@@ -11150,7 +11430,7 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_9Trilinear_permute(struct
         __pyx_t_20 = ((Py_ssize_t)(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->__pyx_base.floor_point.data + __pyx_t_5 * __pyx_v_self->__pyx_base.floor_point.strides[0]) ) + __pyx_t_12 * __pyx_v_self->__pyx_base.floor_point.strides[1]) ))));
         __pyx_t_21 = ((Py_ssize_t)(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->__pyx_base.floor_point.data + __pyx_t_13 * __pyx_v_self->__pyx_base.floor_point.strides[0]) ) + __pyx_t_14 * __pyx_v_self->__pyx_base.floor_point.strides[1]) ))));
         __pyx_t_22 = ((Py_ssize_t)(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->__pyx_base.floor_point.data + __pyx_t_3 * __pyx_v_self->__pyx_base.floor_point.strides[0]) ) + __pyx_t_4 * __pyx_v_self->__pyx_base.floor_point.strides[1]) ))));
-        if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_placeholder.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("placeholder"); __PYX_ERR(0, 428, __pyx_L1_error) }
+        if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_placeholder.memview)) { __Pyx_RaiseUnboundLocalError("placeholder"); __PYX_ERR(0, 428, __pyx_L1_error) }
         __pyx_t_25 = __pyx_v_k;
         *((double *) ( /* dim=0 */ (__pyx_v_7bonndit_8tracking_13interpolation_placeholder.data + __pyx_t_25 * __pyx_v_7bonndit_8tracking_13interpolation_placeholder.strides[0]) )) = (*((double *) ( /* dim=4 */ (( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->__pyx_base.vector_field.data + __pyx_t_18 * __pyx_v_self->__pyx_base.vector_field.strides[0]) ) + __pyx_t_19 * __pyx_v_self->__pyx_base.vector_field.strides[1]) ) + __pyx_t_20 * __pyx_v_self->__pyx_base.vector_field.strides[2]) ) + __pyx_t_21 * __pyx_v_self->__pyx_base.vector_field.strides[3]) ) + __pyx_t_22 * __pyx_v_self->__pyx_base.vector_field.strides[4]) )));
       }
@@ -11192,9 +11472,9 @@ __pyx_t_26.shape[0] = __pyx_v_self->__pyx_base.cuboid.shape[2];
 __pyx_t_26.strides[0] = __pyx_v_self->__pyx_base.cuboid.strides[2];
     __pyx_t_26.suboffsets[0] = -1;
 
-if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_placeholder.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("placeholder"); __PYX_ERR(0, 430, __pyx_L1_error) }
+if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_placeholder.memview)) { __Pyx_RaiseUnboundLocalError("placeholder"); __PYX_ERR(0, 430, __pyx_L1_error) }
         __pyx_v_ang = __pyx_f_7bonndit_5utilc_14cython_helpers_angle_deg(__pyx_t_26, __pyx_v_7bonndit_8tracking_13interpolation_placeholder);
-        __PYX_XDEC_MEMVIEW(&__pyx_t_26, 0);
+        __PYX_XDEC_MEMVIEW(&__pyx_t_26, 1);
         __pyx_t_26.memview = NULL;
         __pyx_t_26.data = NULL;
 
@@ -11266,7 +11546,7 @@ if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_placeholder.memview)) {
  * 
  */
         if (unlikely(!__pyx_v_self->__pyx_base.vector_field.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 436, __pyx_L1_error)}
-        if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_permute_poss.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("permute_poss"); __PYX_ERR(0, 436, __pyx_L1_error) }
+        if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_permute_poss.memview)) { __Pyx_RaiseUnboundLocalError("permute_poss"); __PYX_ERR(0, 436, __pyx_L1_error) }
         if (unlikely(!__pyx_v_self->__pyx_base.cache.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 436, __pyx_L1_error)}
         __pyx_t_4 = 0;
         __pyx_t_3 = 1;
@@ -11303,7 +11583,7 @@ if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_placeholder.memview)) {
   /* "bonndit/tracking/interpolation.pyx":403
  * 
  * #	### TODO is here a better way?
- * 	cdef void permute(self, double[:] point) nogil except *:             # <<<<<<<<<<<<<<
+ * 	cdef void permute(self, double[:] point) : # : # : # nogil except *:             # <<<<<<<<<<<<<<
  * 		""" Little anoying... If a cube was already cached, this function uses the cache to set the dir parameter
  * 		accordingly. We loop through all indices and for each index through the 2 saved vectors. The two saved
  */
@@ -11311,23 +11591,17 @@ if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_placeholder.memview)) {
   /* function exit code */
   goto __pyx_L0;
   __pyx_L1_error:;
-  __PYX_XDEC_MEMVIEW(&__pyx_t_26, 0);
-  {
-    #ifdef WITH_THREAD
-    PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-    #endif
-    __Pyx_AddTraceback("bonndit.tracking.interpolation.Trilinear.permute", __pyx_clineno, __pyx_lineno, __pyx_filename);
-    #ifdef WITH_THREAD
-    __Pyx_PyGILState_Release(__pyx_gilstate_save);
-    #endif
-  }
+  __PYX_XDEC_MEMVIEW(&__pyx_t_26, 1);
+  __Pyx_WriteUnraisable("bonndit.tracking.interpolation.Trilinear.permute", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
   __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 0);
+  __Pyx_RefNannyFinishContext();
 }
 
 /* "bonndit/tracking/interpolation.pyx":439
  * 
  * 
- * 	cdef void set_new_poss(self) nogil except *:             # <<<<<<<<<<<<<<
+ * 	cdef void set_new_poss(self) : # : # : # nogil except *:             # <<<<<<<<<<<<<<
  * 		cdef int i,j,k
  * 		for i in range(8):
  */
@@ -11336,6 +11610,8 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_9Trilinear_set_new_poss(s
   int __pyx_v_i;
   int __pyx_v_j;
   int __pyx_v_k;
+  __Pyx_TraceDeclarations
+  __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   __Pyx_memviewslice __pyx_t_2 = { 0, 0, { 0 }, { 0 }, { 0 } };
   int __pyx_t_3;
@@ -11353,9 +11629,11 @@ static void __pyx_f_7bonndit_8tracking_13interpolation_9Trilinear_set_new_poss(s
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("set_new_poss", 0);
+  __Pyx_TraceCall("set_new_poss", __pyx_f[0], 439, 0, __PYX_ERR(0, 439, __pyx_L1_error));
 
   /* "bonndit/tracking/interpolation.pyx":441
- * 	cdef void set_new_poss(self) nogil except *:
+ * 	cdef void set_new_poss(self) : # : # : # nogil except *:
  * 		cdef int i,j,k
  * 		for i in range(8):             # <<<<<<<<<<<<<<
  * 			set_zero_matrix(self.cuboid[i])
@@ -11390,7 +11668,7 @@ __pyx_t_2.strides[1] = __pyx_v_self->__pyx_base.cuboid.strides[2];
     __pyx_t_2.suboffsets[1] = -1;
 
 __pyx_f_7bonndit_5utilc_14cython_helpers_set_zero_matrix(__pyx_t_2);
-    __PYX_XDEC_MEMVIEW(&__pyx_t_2, 0);
+    __PYX_XDEC_MEMVIEW(&__pyx_t_2, 1);
     __pyx_t_2.memview = NULL;
     __pyx_t_2.data = NULL;
   }
@@ -11430,13 +11708,13 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_set_zero_matrix(__pyx_t_2);
  * 				for k in range(3):
  * 					self.cuboid[i, j, k] = best[4*i + j + 1] * test_cuboid[i, permute_poss[best[4*i], j], k]             # <<<<<<<<<<<<<<
  * 
- * 	cdef int kmeans(self, double[:] point) nogil except *:
+ * 	cdef int kmeans(self, double[:] point) : # : # : # nogil except *:
  */
-        if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_best.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("best"); __PYX_ERR(0, 446, __pyx_L1_error) }
+        if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_best.memview)) { __Pyx_RaiseUnboundLocalError("best"); __PYX_ERR(0, 446, __pyx_L1_error) }
         __pyx_t_5 = (((4 * __pyx_v_i) + __pyx_v_j) + 1);
-        if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("test_cuboid"); __PYX_ERR(0, 446, __pyx_L1_error) }
-        if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_permute_poss.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("permute_poss"); __PYX_ERR(0, 446, __pyx_L1_error) }
-        if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_best.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("best"); __PYX_ERR(0, 446, __pyx_L1_error) }
+        if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.memview)) { __Pyx_RaiseUnboundLocalError("test_cuboid"); __PYX_ERR(0, 446, __pyx_L1_error) }
+        if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_permute_poss.memview)) { __Pyx_RaiseUnboundLocalError("permute_poss"); __PYX_ERR(0, 446, __pyx_L1_error) }
+        if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_best.memview)) { __Pyx_RaiseUnboundLocalError("best"); __PYX_ERR(0, 446, __pyx_L1_error) }
         __pyx_t_6 = (4 * __pyx_v_i);
         __pyx_t_7 = (*((int *) ( /* dim=0 */ (__pyx_v_7bonndit_8tracking_13interpolation_best.data + __pyx_t_6 * __pyx_v_7bonndit_8tracking_13interpolation_best.strides[0]) )));
         __pyx_t_8 = __pyx_v_j;
@@ -11455,7 +11733,7 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_set_zero_matrix(__pyx_t_2);
   /* "bonndit/tracking/interpolation.pyx":439
  * 
  * 
- * 	cdef void set_new_poss(self) nogil except *:             # <<<<<<<<<<<<<<
+ * 	cdef void set_new_poss(self) : # : # : # nogil except *:             # <<<<<<<<<<<<<<
  * 		cdef int i,j,k
  * 		for i in range(8):
  */
@@ -11463,23 +11741,17 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_set_zero_matrix(__pyx_t_2);
   /* function exit code */
   goto __pyx_L0;
   __pyx_L1_error:;
-  __PYX_XDEC_MEMVIEW(&__pyx_t_2, 0);
-  {
-    #ifdef WITH_THREAD
-    PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-    #endif
-    __Pyx_AddTraceback("bonndit.tracking.interpolation.Trilinear.set_new_poss", __pyx_clineno, __pyx_lineno, __pyx_filename);
-    #ifdef WITH_THREAD
-    __Pyx_PyGILState_Release(__pyx_gilstate_save);
-    #endif
-  }
+  __PYX_XDEC_MEMVIEW(&__pyx_t_2, 1);
+  __Pyx_WriteUnraisable("bonndit.tracking.interpolation.Trilinear.set_new_poss", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
   __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 0);
+  __Pyx_RefNannyFinishContext();
 }
 
 /* "bonndit/tracking/interpolation.pyx":448
  * 					self.cuboid[i, j, k] = best[4*i + j + 1] * test_cuboid[i, permute_poss[best[4*i], j], k]
  * 
- * 	cdef int kmeans(self, double[:] point) nogil except *:             # <<<<<<<<<<<<<<
+ * 	cdef int kmeans(self, double[:] point) : # : # : # nogil except *:             # <<<<<<<<<<<<<<
  * 		cdef int i, j, k, l, max_try=0, best_min=0
  * 		cdef double exponent = 0, best_angle=0, min_angle=0, con=0, test_angle=0
  */
@@ -11497,6 +11769,7 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_9Trilinear_kmeans(struct _
   double __pyx_v_test_angle;
   double __pyx_v_ang;
   int __pyx_r;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   __Pyx_memviewslice __pyx_t_2 = { 0, 0, { 0 }, { 0 }, { 0 } };
@@ -11520,64 +11793,57 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_9Trilinear_kmeans(struct _
   __Pyx_memviewslice __pyx_t_20 = { 0, 0, { 0 }, { 0 }, { 0 } };
   __Pyx_memviewslice __pyx_t_21 = { 0, 0, { 0 }, { 0 }, { 0 } };
   int __pyx_t_22;
-  PyObject *__pyx_t_23 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
-  #ifdef WITH_THREAD
-  PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-  #endif
   __Pyx_RefNannySetupContext("kmeans", 0);
-  #ifdef WITH_THREAD
-  __Pyx_PyGILState_Release(__pyx_gilstate_save);
-  #endif
+  __Pyx_TraceCall("kmeans", __pyx_f[0], 448, 0, __PYX_ERR(0, 448, __pyx_L1_error));
 
   /* "bonndit/tracking/interpolation.pyx":449
  * 
- * 	cdef int kmeans(self, double[:] point) nogil except *:
+ * 	cdef int kmeans(self, double[:] point) : # : # : # nogil except *:
  * 		cdef int i, j, k, l, max_try=0, best_min=0             # <<<<<<<<<<<<<<
  * 		cdef double exponent = 0, best_angle=0, min_angle=0, con=0, test_angle=0
  * 		for i in range(8):
  */
-  /*try:*/ {
-    __pyx_v_max_try = 0;
-    __pyx_v_best_min = 0;
+  __pyx_v_max_try = 0;
+  __pyx_v_best_min = 0;
 
-    /* "bonndit/tracking/interpolation.pyx":450
- * 	cdef int kmeans(self, double[:] point) nogil except *:
+  /* "bonndit/tracking/interpolation.pyx":450
+ * 	cdef int kmeans(self, double[:] point) : # : # : # nogil except *:
  * 		cdef int i, j, k, l, max_try=0, best_min=0
  * 		cdef double exponent = 0, best_angle=0, min_angle=0, con=0, test_angle=0             # <<<<<<<<<<<<<<
  * 		for i in range(8):
  * 			set_zero_matrix(test_cuboid[i])
  */
-    __pyx_v_exponent = 0.0;
-    __pyx_v_best_angle = 0.0;
-    __pyx_v_min_angle = 0.0;
-    __pyx_v_con = 0.0;
-    __pyx_v_test_angle = 0.0;
+  __pyx_v_exponent = 0.0;
+  __pyx_v_best_angle = 0.0;
+  __pyx_v_min_angle = 0.0;
+  __pyx_v_con = 0.0;
+  __pyx_v_test_angle = 0.0;
 
-    /* "bonndit/tracking/interpolation.pyx":451
+  /* "bonndit/tracking/interpolation.pyx":451
  * 		cdef int i, j, k, l, max_try=0, best_min=0
  * 		cdef double exponent = 0, best_angle=0, min_angle=0, con=0, test_angle=0
  * 		for i in range(8):             # <<<<<<<<<<<<<<
  * 			set_zero_matrix(test_cuboid[i])
  * 
  */
-    for (__pyx_t_1 = 0; __pyx_t_1 < 8; __pyx_t_1+=1) {
-      __pyx_v_i = __pyx_t_1;
+  for (__pyx_t_1 = 0; __pyx_t_1 < 8; __pyx_t_1+=1) {
+    __pyx_v_i = __pyx_t_1;
 
-      /* "bonndit/tracking/interpolation.pyx":452
+    /* "bonndit/tracking/interpolation.pyx":452
  * 		cdef double exponent = 0, best_angle=0, min_angle=0, con=0, test_angle=0
  * 		for i in range(8):
  * 			set_zero_matrix(test_cuboid[i])             # <<<<<<<<<<<<<<
  * 
  * 		for i in range(8):
  */
-      if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("test_cuboid"); __PYX_ERR(0, 452, __pyx_L4_error) }
-      __pyx_t_2.data = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.data;
-      __pyx_t_2.memview = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.memview;
-      __PYX_INC_MEMVIEW(&__pyx_t_2, 0);
-      {
+    if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.memview)) { __Pyx_RaiseUnboundLocalError("test_cuboid"); __PYX_ERR(0, 452, __pyx_L1_error) }
+    __pyx_t_2.data = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.data;
+    __pyx_t_2.memview = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_2, 0);
+    {
     Py_ssize_t __pyx_tmp_idx = __pyx_v_i;
     Py_ssize_t __pyx_tmp_stride = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.strides[0];
         __pyx_t_2.data += __pyx_tmp_idx * __pyx_tmp_stride;
@@ -11592,30 +11858,111 @@ __pyx_t_2.strides[1] = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.st
     __pyx_t_2.suboffsets[1] = -1;
 
 __pyx_f_7bonndit_5utilc_14cython_helpers_set_zero_matrix(__pyx_t_2);
-      __PYX_XDEC_MEMVIEW(&__pyx_t_2, 0);
-      __pyx_t_2.memview = NULL;
-      __pyx_t_2.data = NULL;
-    }
+    __PYX_XDEC_MEMVIEW(&__pyx_t_2, 1);
+    __pyx_t_2.memview = NULL;
+    __pyx_t_2.data = NULL;
+  }
 
-    /* "bonndit/tracking/interpolation.pyx":454
+  /* "bonndit/tracking/interpolation.pyx":454
  * 			set_zero_matrix(test_cuboid[i])
  * 
  * 		for i in range(8):             # <<<<<<<<<<<<<<
  * 			for j in range(3):
  * 				if point_validator(self.vector_field[0, j, int(self.floor_point[i, 0]), int(self.floor_point[i, 1]), int(self.floor_point[i, 2])], 1):
  */
-    for (__pyx_t_1 = 0; __pyx_t_1 < 8; __pyx_t_1+=1) {
-      __pyx_v_i = __pyx_t_1;
+  for (__pyx_t_1 = 0; __pyx_t_1 < 8; __pyx_t_1+=1) {
+    __pyx_v_i = __pyx_t_1;
 
-      /* "bonndit/tracking/interpolation.pyx":455
+    /* "bonndit/tracking/interpolation.pyx":455
  * 
  * 		for i in range(8):
  * 			for j in range(3):             # <<<<<<<<<<<<<<
  * 				if point_validator(self.vector_field[0, j, int(self.floor_point[i, 0]), int(self.floor_point[i, 1]), int(self.floor_point[i, 2])], 1):
  * 					exponent = pow(fabs(self.vector_field[0, j, int(self.floor_point[i, 0]),
  */
-      for (__pyx_t_3 = 0; __pyx_t_3 < 3; __pyx_t_3+=1) {
-        __pyx_v_j = __pyx_t_3;
+    for (__pyx_t_3 = 0; __pyx_t_3 < 3; __pyx_t_3+=1) {
+      __pyx_v_j = __pyx_t_3;
+
+      /* "bonndit/tracking/interpolation.pyx":456
+ * 		for i in range(8):
+ * 			for j in range(3):
+ * 				if point_validator(self.vector_field[0, j, int(self.floor_point[i, 0]), int(self.floor_point[i, 1]), int(self.floor_point[i, 2])], 1):             # <<<<<<<<<<<<<<
+ * 					exponent = pow(fabs(self.vector_field[0, j, int(self.floor_point[i, 0]),
+ * 				                                       int(self.floor_point[i, 1]),
+ */
+      if (unlikely(!__pyx_v_self->__pyx_base.vector_field.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 456, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->__pyx_base.floor_point.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 456, __pyx_L1_error)}
+      __pyx_t_4 = __pyx_v_i;
+      __pyx_t_5 = 0;
+      if (unlikely(!__pyx_v_self->__pyx_base.floor_point.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 456, __pyx_L1_error)}
+      __pyx_t_6 = __pyx_v_i;
+      __pyx_t_7 = 1;
+      if (unlikely(!__pyx_v_self->__pyx_base.floor_point.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 456, __pyx_L1_error)}
+      __pyx_t_8 = __pyx_v_i;
+      __pyx_t_9 = 2;
+      __pyx_t_10 = 0;
+      __pyx_t_11 = __pyx_v_j;
+      __pyx_t_12 = ((Py_ssize_t)(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->__pyx_base.floor_point.data + __pyx_t_4 * __pyx_v_self->__pyx_base.floor_point.strides[0]) ) + __pyx_t_5 * __pyx_v_self->__pyx_base.floor_point.strides[1]) ))));
+      __pyx_t_13 = ((Py_ssize_t)(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->__pyx_base.floor_point.data + __pyx_t_6 * __pyx_v_self->__pyx_base.floor_point.strides[0]) ) + __pyx_t_7 * __pyx_v_self->__pyx_base.floor_point.strides[1]) ))));
+      __pyx_t_14 = ((Py_ssize_t)(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->__pyx_base.floor_point.data + __pyx_t_8 * __pyx_v_self->__pyx_base.floor_point.strides[0]) ) + __pyx_t_9 * __pyx_v_self->__pyx_base.floor_point.strides[1]) ))));
+      __pyx_t_15 = (__pyx_f_7bonndit_5utilc_14cython_helpers_point_validator((*((double *) ( /* dim=4 */ (( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->__pyx_base.vector_field.data + __pyx_t_10 * __pyx_v_self->__pyx_base.vector_field.strides[0]) ) + __pyx_t_11 * __pyx_v_self->__pyx_base.vector_field.strides[1]) ) + __pyx_t_12 * __pyx_v_self->__pyx_base.vector_field.strides[2]) ) + __pyx_t_13 * __pyx_v_self->__pyx_base.vector_field.strides[3]) ) + __pyx_t_14 * __pyx_v_self->__pyx_base.vector_field.strides[4]) ))), 1) != 0);
+      if (__pyx_t_15) {
+
+        /* "bonndit/tracking/interpolation.pyx":457
+ * 			for j in range(3):
+ * 				if point_validator(self.vector_field[0, j, int(self.floor_point[i, 0]), int(self.floor_point[i, 1]), int(self.floor_point[i, 2])], 1):
+ * 					exponent = pow(fabs(self.vector_field[0, j, int(self.floor_point[i, 0]),             # <<<<<<<<<<<<<<
+ * 				                                       int(self.floor_point[i, 1]),
+ * 				                                       int(self.floor_point[i, 2])]), 1/4)
+ */
+        if (unlikely(!__pyx_v_self->__pyx_base.vector_field.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 457, __pyx_L1_error)}
+        if (unlikely(!__pyx_v_self->__pyx_base.floor_point.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 457, __pyx_L1_error)}
+        __pyx_t_9 = __pyx_v_i;
+        __pyx_t_8 = 0;
+
+        /* "bonndit/tracking/interpolation.pyx":458
+ * 				if point_validator(self.vector_field[0, j, int(self.floor_point[i, 0]), int(self.floor_point[i, 1]), int(self.floor_point[i, 2])], 1):
+ * 					exponent = pow(fabs(self.vector_field[0, j, int(self.floor_point[i, 0]),
+ * 				                                       int(self.floor_point[i, 1]),             # <<<<<<<<<<<<<<
+ * 				                                       int(self.floor_point[i, 2])]), 1/4)
+ * 				else:
+ */
+        if (unlikely(!__pyx_v_self->__pyx_base.floor_point.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 458, __pyx_L1_error)}
+        __pyx_t_7 = __pyx_v_i;
+        __pyx_t_6 = 1;
+
+        /* "bonndit/tracking/interpolation.pyx":459
+ * 					exponent = pow(fabs(self.vector_field[0, j, int(self.floor_point[i, 0]),
+ * 				                                       int(self.floor_point[i, 1]),
+ * 				                                       int(self.floor_point[i, 2])]), 1/4)             # <<<<<<<<<<<<<<
+ * 				else:
+ * 					exponent = 0
+ */
+        if (unlikely(!__pyx_v_self->__pyx_base.floor_point.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 459, __pyx_L1_error)}
+        __pyx_t_5 = __pyx_v_i;
+        __pyx_t_4 = 2;
+
+        /* "bonndit/tracking/interpolation.pyx":457
+ * 			for j in range(3):
+ * 				if point_validator(self.vector_field[0, j, int(self.floor_point[i, 0]), int(self.floor_point[i, 1]), int(self.floor_point[i, 2])], 1):
+ * 					exponent = pow(fabs(self.vector_field[0, j, int(self.floor_point[i, 0]),             # <<<<<<<<<<<<<<
+ * 				                                       int(self.floor_point[i, 1]),
+ * 				                                       int(self.floor_point[i, 2])]), 1/4)
+ */
+        __pyx_t_14 = 0;
+        __pyx_t_13 = __pyx_v_j;
+        __pyx_t_12 = ((Py_ssize_t)(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->__pyx_base.floor_point.data + __pyx_t_9 * __pyx_v_self->__pyx_base.floor_point.strides[0]) ) + __pyx_t_8 * __pyx_v_self->__pyx_base.floor_point.strides[1]) ))));
+        __pyx_t_11 = ((Py_ssize_t)(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->__pyx_base.floor_point.data + __pyx_t_7 * __pyx_v_self->__pyx_base.floor_point.strides[0]) ) + __pyx_t_6 * __pyx_v_self->__pyx_base.floor_point.strides[1]) ))));
+        __pyx_t_10 = ((Py_ssize_t)(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->__pyx_base.floor_point.data + __pyx_t_5 * __pyx_v_self->__pyx_base.floor_point.strides[0]) ) + __pyx_t_4 * __pyx_v_self->__pyx_base.floor_point.strides[1]) ))));
+
+        /* "bonndit/tracking/interpolation.pyx":459
+ * 					exponent = pow(fabs(self.vector_field[0, j, int(self.floor_point[i, 0]),
+ * 				                                       int(self.floor_point[i, 1]),
+ * 				                                       int(self.floor_point[i, 2])]), 1/4)             # <<<<<<<<<<<<<<
+ * 				else:
+ * 					exponent = 0
+ */
+        __pyx_v_exponent = pow(fabs((*((double *) ( /* dim=4 */ (( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->__pyx_base.vector_field.data + __pyx_t_14 * __pyx_v_self->__pyx_base.vector_field.strides[0]) ) + __pyx_t_13 * __pyx_v_self->__pyx_base.vector_field.strides[1]) ) + __pyx_t_12 * __pyx_v_self->__pyx_base.vector_field.strides[2]) ) + __pyx_t_11 * __pyx_v_self->__pyx_base.vector_field.strides[3]) ) + __pyx_t_10 * __pyx_v_self->__pyx_base.vector_field.strides[4]) )))), (1.0 / 4.0));
 
         /* "bonndit/tracking/interpolation.pyx":456
  * 		for i in range(8):
@@ -11624,240 +11971,159 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_set_zero_matrix(__pyx_t_2);
  * 					exponent = pow(fabs(self.vector_field[0, j, int(self.floor_point[i, 0]),
  * 				                                       int(self.floor_point[i, 1]),
  */
-        if (unlikely(!__pyx_v_self->__pyx_base.vector_field.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 456, __pyx_L4_error)}
-        if (unlikely(!__pyx_v_self->__pyx_base.floor_point.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 456, __pyx_L4_error)}
-        __pyx_t_4 = __pyx_v_i;
-        __pyx_t_5 = 0;
-        if (unlikely(!__pyx_v_self->__pyx_base.floor_point.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 456, __pyx_L4_error)}
-        __pyx_t_6 = __pyx_v_i;
-        __pyx_t_7 = 1;
-        if (unlikely(!__pyx_v_self->__pyx_base.floor_point.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 456, __pyx_L4_error)}
-        __pyx_t_8 = __pyx_v_i;
-        __pyx_t_9 = 2;
-        __pyx_t_10 = 0;
-        __pyx_t_11 = __pyx_v_j;
-        __pyx_t_12 = ((Py_ssize_t)(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->__pyx_base.floor_point.data + __pyx_t_4 * __pyx_v_self->__pyx_base.floor_point.strides[0]) ) + __pyx_t_5 * __pyx_v_self->__pyx_base.floor_point.strides[1]) ))));
-        __pyx_t_13 = ((Py_ssize_t)(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->__pyx_base.floor_point.data + __pyx_t_6 * __pyx_v_self->__pyx_base.floor_point.strides[0]) ) + __pyx_t_7 * __pyx_v_self->__pyx_base.floor_point.strides[1]) ))));
-        __pyx_t_14 = ((Py_ssize_t)(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->__pyx_base.floor_point.data + __pyx_t_8 * __pyx_v_self->__pyx_base.floor_point.strides[0]) ) + __pyx_t_9 * __pyx_v_self->__pyx_base.floor_point.strides[1]) ))));
-        __pyx_t_15 = (__pyx_f_7bonndit_5utilc_14cython_helpers_point_validator((*((double *) ( /* dim=4 */ (( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->__pyx_base.vector_field.data + __pyx_t_10 * __pyx_v_self->__pyx_base.vector_field.strides[0]) ) + __pyx_t_11 * __pyx_v_self->__pyx_base.vector_field.strides[1]) ) + __pyx_t_12 * __pyx_v_self->__pyx_base.vector_field.strides[2]) ) + __pyx_t_13 * __pyx_v_self->__pyx_base.vector_field.strides[3]) ) + __pyx_t_14 * __pyx_v_self->__pyx_base.vector_field.strides[4]) ))), 1) != 0);
-        if (__pyx_t_15) {
+        goto __pyx_L9;
+      }
 
-          /* "bonndit/tracking/interpolation.pyx":457
- * 			for j in range(3):
- * 				if point_validator(self.vector_field[0, j, int(self.floor_point[i, 0]), int(self.floor_point[i, 1]), int(self.floor_point[i, 2])], 1):
- * 					exponent = pow(fabs(self.vector_field[0, j, int(self.floor_point[i, 0]),             # <<<<<<<<<<<<<<
- * 				                                       int(self.floor_point[i, 1]),
- * 				                                       int(self.floor_point[i, 2])]), 1/4)
- */
-          if (unlikely(!__pyx_v_self->__pyx_base.vector_field.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 457, __pyx_L4_error)}
-          if (unlikely(!__pyx_v_self->__pyx_base.floor_point.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 457, __pyx_L4_error)}
-          __pyx_t_9 = __pyx_v_i;
-          __pyx_t_8 = 0;
-
-          /* "bonndit/tracking/interpolation.pyx":458
- * 				if point_validator(self.vector_field[0, j, int(self.floor_point[i, 0]), int(self.floor_point[i, 1]), int(self.floor_point[i, 2])], 1):
- * 					exponent = pow(fabs(self.vector_field[0, j, int(self.floor_point[i, 0]),
- * 				                                       int(self.floor_point[i, 1]),             # <<<<<<<<<<<<<<
- * 				                                       int(self.floor_point[i, 2])]), 1/4)
- * 				else:
- */
-          if (unlikely(!__pyx_v_self->__pyx_base.floor_point.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 458, __pyx_L4_error)}
-          __pyx_t_7 = __pyx_v_i;
-          __pyx_t_6 = 1;
-
-          /* "bonndit/tracking/interpolation.pyx":459
- * 					exponent = pow(fabs(self.vector_field[0, j, int(self.floor_point[i, 0]),
- * 				                                       int(self.floor_point[i, 1]),
- * 				                                       int(self.floor_point[i, 2])]), 1/4)             # <<<<<<<<<<<<<<
- * 				else:
- * 					exponent = 0
- */
-          if (unlikely(!__pyx_v_self->__pyx_base.floor_point.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 459, __pyx_L4_error)}
-          __pyx_t_5 = __pyx_v_i;
-          __pyx_t_4 = 2;
-
-          /* "bonndit/tracking/interpolation.pyx":457
- * 			for j in range(3):
- * 				if point_validator(self.vector_field[0, j, int(self.floor_point[i, 0]), int(self.floor_point[i, 1]), int(self.floor_point[i, 2])], 1):
- * 					exponent = pow(fabs(self.vector_field[0, j, int(self.floor_point[i, 0]),             # <<<<<<<<<<<<<<
- * 				                                       int(self.floor_point[i, 1]),
- * 				                                       int(self.floor_point[i, 2])]), 1/4)
- */
-          __pyx_t_14 = 0;
-          __pyx_t_13 = __pyx_v_j;
-          __pyx_t_12 = ((Py_ssize_t)(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->__pyx_base.floor_point.data + __pyx_t_9 * __pyx_v_self->__pyx_base.floor_point.strides[0]) ) + __pyx_t_8 * __pyx_v_self->__pyx_base.floor_point.strides[1]) ))));
-          __pyx_t_11 = ((Py_ssize_t)(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->__pyx_base.floor_point.data + __pyx_t_7 * __pyx_v_self->__pyx_base.floor_point.strides[0]) ) + __pyx_t_6 * __pyx_v_self->__pyx_base.floor_point.strides[1]) ))));
-          __pyx_t_10 = ((Py_ssize_t)(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->__pyx_base.floor_point.data + __pyx_t_5 * __pyx_v_self->__pyx_base.floor_point.strides[0]) ) + __pyx_t_4 * __pyx_v_self->__pyx_base.floor_point.strides[1]) ))));
-
-          /* "bonndit/tracking/interpolation.pyx":459
- * 					exponent = pow(fabs(self.vector_field[0, j, int(self.floor_point[i, 0]),
- * 				                                       int(self.floor_point[i, 1]),
- * 				                                       int(self.floor_point[i, 2])]), 1/4)             # <<<<<<<<<<<<<<
- * 				else:
- * 					exponent = 0
- */
-          __pyx_v_exponent = pow(fabs((*((double *) ( /* dim=4 */ (( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->__pyx_base.vector_field.data + __pyx_t_14 * __pyx_v_self->__pyx_base.vector_field.strides[0]) ) + __pyx_t_13 * __pyx_v_self->__pyx_base.vector_field.strides[1]) ) + __pyx_t_12 * __pyx_v_self->__pyx_base.vector_field.strides[2]) ) + __pyx_t_11 * __pyx_v_self->__pyx_base.vector_field.strides[3]) ) + __pyx_t_10 * __pyx_v_self->__pyx_base.vector_field.strides[4]) )))), (1.0 / 4.0));
-
-          /* "bonndit/tracking/interpolation.pyx":456
- * 		for i in range(8):
- * 			for j in range(3):
- * 				if point_validator(self.vector_field[0, j, int(self.floor_point[i, 0]), int(self.floor_point[i, 1]), int(self.floor_point[i, 2])], 1):             # <<<<<<<<<<<<<<
- * 					exponent = pow(fabs(self.vector_field[0, j, int(self.floor_point[i, 0]),
- * 				                                       int(self.floor_point[i, 1]),
- */
-          goto __pyx_L12;
-        }
-
-        /* "bonndit/tracking/interpolation.pyx":461
+      /* "bonndit/tracking/interpolation.pyx":461
  * 				                                       int(self.floor_point[i, 2])]), 1/4)
  * 				else:
  * 					exponent = 0             # <<<<<<<<<<<<<<
  * 
  * 				for k in range(3):
  */
-        /*else*/ {
-          __pyx_v_exponent = 0.0;
-        }
-        __pyx_L12:;
+      /*else*/ {
+        __pyx_v_exponent = 0.0;
+      }
+      __pyx_L9:;
 
-        /* "bonndit/tracking/interpolation.pyx":463
+      /* "bonndit/tracking/interpolation.pyx":463
  * 					exponent = 0
  * 
  * 				for k in range(3):             # <<<<<<<<<<<<<<
  * 					test_cuboid[i,j,k] = exponent *  self.vector_field[1 + k, j, int(self.floor_point[i, 0]),int(self.floor_point[i, 1]),int(self.floor_point[i, 2])]
  * 
  */
-        for (__pyx_t_16 = 0; __pyx_t_16 < 3; __pyx_t_16+=1) {
-          __pyx_v_k = __pyx_t_16;
+      for (__pyx_t_16 = 0; __pyx_t_16 < 3; __pyx_t_16+=1) {
+        __pyx_v_k = __pyx_t_16;
 
-          /* "bonndit/tracking/interpolation.pyx":464
+        /* "bonndit/tracking/interpolation.pyx":464
  * 
  * 				for k in range(3):
  * 					test_cuboid[i,j,k] = exponent *  self.vector_field[1 + k, j, int(self.floor_point[i, 0]),int(self.floor_point[i, 1]),int(self.floor_point[i, 2])]             # <<<<<<<<<<<<<<
  * 
  * 		while True:
  */
-          if (unlikely(!__pyx_v_self->__pyx_base.vector_field.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 464, __pyx_L4_error)}
-          if (unlikely(!__pyx_v_self->__pyx_base.floor_point.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 464, __pyx_L4_error)}
-          __pyx_t_4 = __pyx_v_i;
-          __pyx_t_5 = 0;
-          if (unlikely(!__pyx_v_self->__pyx_base.floor_point.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 464, __pyx_L4_error)}
-          __pyx_t_6 = __pyx_v_i;
-          __pyx_t_7 = 1;
-          if (unlikely(!__pyx_v_self->__pyx_base.floor_point.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 464, __pyx_L4_error)}
-          __pyx_t_8 = __pyx_v_i;
-          __pyx_t_9 = 2;
-          __pyx_t_10 = (1 + __pyx_v_k);
-          __pyx_t_11 = __pyx_v_j;
-          __pyx_t_12 = ((Py_ssize_t)(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->__pyx_base.floor_point.data + __pyx_t_4 * __pyx_v_self->__pyx_base.floor_point.strides[0]) ) + __pyx_t_5 * __pyx_v_self->__pyx_base.floor_point.strides[1]) ))));
-          __pyx_t_13 = ((Py_ssize_t)(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->__pyx_base.floor_point.data + __pyx_t_6 * __pyx_v_self->__pyx_base.floor_point.strides[0]) ) + __pyx_t_7 * __pyx_v_self->__pyx_base.floor_point.strides[1]) ))));
-          __pyx_t_14 = ((Py_ssize_t)(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->__pyx_base.floor_point.data + __pyx_t_8 * __pyx_v_self->__pyx_base.floor_point.strides[0]) ) + __pyx_t_9 * __pyx_v_self->__pyx_base.floor_point.strides[1]) ))));
-          if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("test_cuboid"); __PYX_ERR(0, 464, __pyx_L4_error) }
-          __pyx_t_17 = __pyx_v_i;
-          __pyx_t_18 = __pyx_v_j;
-          __pyx_t_19 = __pyx_v_k;
-          *((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.data + __pyx_t_17 * __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.strides[0]) ) + __pyx_t_18 * __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.strides[1]) ) + __pyx_t_19 * __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.strides[2]) )) = (__pyx_v_exponent * (*((double *) ( /* dim=4 */ (( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->__pyx_base.vector_field.data + __pyx_t_10 * __pyx_v_self->__pyx_base.vector_field.strides[0]) ) + __pyx_t_11 * __pyx_v_self->__pyx_base.vector_field.strides[1]) ) + __pyx_t_12 * __pyx_v_self->__pyx_base.vector_field.strides[2]) ) + __pyx_t_13 * __pyx_v_self->__pyx_base.vector_field.strides[3]) ) + __pyx_t_14 * __pyx_v_self->__pyx_base.vector_field.strides[4]) ))));
-        }
+        if (unlikely(!__pyx_v_self->__pyx_base.vector_field.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 464, __pyx_L1_error)}
+        if (unlikely(!__pyx_v_self->__pyx_base.floor_point.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 464, __pyx_L1_error)}
+        __pyx_t_4 = __pyx_v_i;
+        __pyx_t_5 = 0;
+        if (unlikely(!__pyx_v_self->__pyx_base.floor_point.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 464, __pyx_L1_error)}
+        __pyx_t_6 = __pyx_v_i;
+        __pyx_t_7 = 1;
+        if (unlikely(!__pyx_v_self->__pyx_base.floor_point.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 464, __pyx_L1_error)}
+        __pyx_t_8 = __pyx_v_i;
+        __pyx_t_9 = 2;
+        __pyx_t_10 = (1 + __pyx_v_k);
+        __pyx_t_11 = __pyx_v_j;
+        __pyx_t_12 = ((Py_ssize_t)(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->__pyx_base.floor_point.data + __pyx_t_4 * __pyx_v_self->__pyx_base.floor_point.strides[0]) ) + __pyx_t_5 * __pyx_v_self->__pyx_base.floor_point.strides[1]) ))));
+        __pyx_t_13 = ((Py_ssize_t)(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->__pyx_base.floor_point.data + __pyx_t_6 * __pyx_v_self->__pyx_base.floor_point.strides[0]) ) + __pyx_t_7 * __pyx_v_self->__pyx_base.floor_point.strides[1]) ))));
+        __pyx_t_14 = ((Py_ssize_t)(*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->__pyx_base.floor_point.data + __pyx_t_8 * __pyx_v_self->__pyx_base.floor_point.strides[0]) ) + __pyx_t_9 * __pyx_v_self->__pyx_base.floor_point.strides[1]) ))));
+        if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.memview)) { __Pyx_RaiseUnboundLocalError("test_cuboid"); __PYX_ERR(0, 464, __pyx_L1_error) }
+        __pyx_t_17 = __pyx_v_i;
+        __pyx_t_18 = __pyx_v_j;
+        __pyx_t_19 = __pyx_v_k;
+        *((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.data + __pyx_t_17 * __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.strides[0]) ) + __pyx_t_18 * __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.strides[1]) ) + __pyx_t_19 * __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.strides[2]) )) = (__pyx_v_exponent * (*((double *) ( /* dim=4 */ (( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->__pyx_base.vector_field.data + __pyx_t_10 * __pyx_v_self->__pyx_base.vector_field.strides[0]) ) + __pyx_t_11 * __pyx_v_self->__pyx_base.vector_field.strides[1]) ) + __pyx_t_12 * __pyx_v_self->__pyx_base.vector_field.strides[2]) ) + __pyx_t_13 * __pyx_v_self->__pyx_base.vector_field.strides[3]) ) + __pyx_t_14 * __pyx_v_self->__pyx_base.vector_field.strides[4]) ))));
       }
     }
+  }
 
-    /* "bonndit/tracking/interpolation.pyx":466
+  /* "bonndit/tracking/interpolation.pyx":466
  * 					test_cuboid[i,j,k] = exponent *  self.vector_field[1 + k, j, int(self.floor_point[i, 0]),int(self.floor_point[i, 1]),int(self.floor_point[i, 2])]
  * 
  * 		while True:             # <<<<<<<<<<<<<<
  * 			con = 0
  * 			max_try += 1
  */
-    while (1) {
+  while (1) {
 
-      /* "bonndit/tracking/interpolation.pyx":467
+    /* "bonndit/tracking/interpolation.pyx":467
  * 
  * 		while True:
  * 			con = 0             # <<<<<<<<<<<<<<
  * 			max_try += 1
  * 			# each corner
  */
-      __pyx_v_con = 0.0;
+    __pyx_v_con = 0.0;
 
-      /* "bonndit/tracking/interpolation.pyx":468
+    /* "bonndit/tracking/interpolation.pyx":468
  * 		while True:
  * 			con = 0
  * 			max_try += 1             # <<<<<<<<<<<<<<
  * 			# each corner
  * 			for i in range(8):
  */
-      __pyx_v_max_try = (__pyx_v_max_try + 1);
+    __pyx_v_max_try = (__pyx_v_max_try + 1);
 
-      /* "bonndit/tracking/interpolation.pyx":470
+    /* "bonndit/tracking/interpolation.pyx":470
  * 			max_try += 1
  * 			# each corner
  * 			for i in range(8):             # <<<<<<<<<<<<<<
  * 				min_angle = 0
  * 				for j in range(6):
  */
-      for (__pyx_t_1 = 0; __pyx_t_1 < 8; __pyx_t_1+=1) {
-        __pyx_v_i = __pyx_t_1;
+    for (__pyx_t_1 = 0; __pyx_t_1 < 8; __pyx_t_1+=1) {
+      __pyx_v_i = __pyx_t_1;
 
-        /* "bonndit/tracking/interpolation.pyx":471
+      /* "bonndit/tracking/interpolation.pyx":471
  * 			# each corner
  * 			for i in range(8):
  * 				min_angle = 0             # <<<<<<<<<<<<<<
  * 				for j in range(6):
  * 					test_angle=0
  */
-        __pyx_v_min_angle = 0.0;
+      __pyx_v_min_angle = 0.0;
 
-        /* "bonndit/tracking/interpolation.pyx":472
+      /* "bonndit/tracking/interpolation.pyx":472
  * 			for i in range(8):
  * 				min_angle = 0
  * 				for j in range(6):             # <<<<<<<<<<<<<<
  * 					test_angle=0
  * 					set_zero_vector_int(minus)
  */
-        for (__pyx_t_3 = 0; __pyx_t_3 < 6; __pyx_t_3+=1) {
-          __pyx_v_j = __pyx_t_3;
+      for (__pyx_t_3 = 0; __pyx_t_3 < 6; __pyx_t_3+=1) {
+        __pyx_v_j = __pyx_t_3;
 
-          /* "bonndit/tracking/interpolation.pyx":473
+        /* "bonndit/tracking/interpolation.pyx":473
  * 				min_angle = 0
  * 				for j in range(6):
  * 					test_angle=0             # <<<<<<<<<<<<<<
  * 					set_zero_vector_int(minus)
  * 					for k in range(3):
  */
-          __pyx_v_test_angle = 0.0;
+        __pyx_v_test_angle = 0.0;
 
-          /* "bonndit/tracking/interpolation.pyx":474
+        /* "bonndit/tracking/interpolation.pyx":474
  * 				for j in range(6):
  * 					test_angle=0
  * 					set_zero_vector_int(minus)             # <<<<<<<<<<<<<<
  * 					for k in range(3):
  * 						ang = angle_deg(self.best_dir[k], test_cuboid[i, permute_poss[j,k]])
  */
-          if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_minus.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("minus"); __PYX_ERR(0, 474, __pyx_L4_error) }
-          __pyx_f_7bonndit_5utilc_14cython_helpers_set_zero_vector_int(__pyx_v_7bonndit_8tracking_13interpolation_minus);
+        if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_minus.memview)) { __Pyx_RaiseUnboundLocalError("minus"); __PYX_ERR(0, 474, __pyx_L1_error) }
+        __pyx_f_7bonndit_5utilc_14cython_helpers_set_zero_vector_int(__pyx_v_7bonndit_8tracking_13interpolation_minus);
 
-          /* "bonndit/tracking/interpolation.pyx":475
+        /* "bonndit/tracking/interpolation.pyx":475
  * 					test_angle=0
  * 					set_zero_vector_int(minus)
  * 					for k in range(3):             # <<<<<<<<<<<<<<
  * 						ang = angle_deg(self.best_dir[k], test_cuboid[i, permute_poss[j,k]])
  * 						if ang > 90:
  */
-          for (__pyx_t_16 = 0; __pyx_t_16 < 3; __pyx_t_16+=1) {
-            __pyx_v_k = __pyx_t_16;
+        for (__pyx_t_16 = 0; __pyx_t_16 < 3; __pyx_t_16+=1) {
+          __pyx_v_k = __pyx_t_16;
 
-            /* "bonndit/tracking/interpolation.pyx":476
+          /* "bonndit/tracking/interpolation.pyx":476
  * 					set_zero_vector_int(minus)
  * 					for k in range(3):
  * 						ang = angle_deg(self.best_dir[k], test_cuboid[i, permute_poss[j,k]])             # <<<<<<<<<<<<<<
  * 						if ang > 90:
  * 							mult_with_scalar(placeholder, -1, test_cuboid[i, permute_poss[j, k]])
  */
-            if (unlikely(!__pyx_v_self->__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 476, __pyx_L4_error)}
-            __pyx_t_20.data = __pyx_v_self->__pyx_base.best_dir.data;
-            __pyx_t_20.memview = __pyx_v_self->__pyx_base.best_dir.memview;
-            __PYX_INC_MEMVIEW(&__pyx_t_20, 0);
-            {
+          if (unlikely(!__pyx_v_self->__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 476, __pyx_L1_error)}
+          __pyx_t_20.data = __pyx_v_self->__pyx_base.best_dir.data;
+          __pyx_t_20.memview = __pyx_v_self->__pyx_base.best_dir.memview;
+          __PYX_INC_MEMVIEW(&__pyx_t_20, 0);
+          {
     Py_ssize_t __pyx_tmp_idx = __pyx_v_k;
     Py_ssize_t __pyx_tmp_stride = __pyx_v_self->__pyx_base.best_dir.strides[0];
         __pyx_t_20.data += __pyx_tmp_idx * __pyx_tmp_stride;
@@ -11867,8 +12133,115 @@ __pyx_t_20.shape[0] = __pyx_v_self->__pyx_base.best_dir.shape[1];
 __pyx_t_20.strides[0] = __pyx_v_self->__pyx_base.best_dir.strides[1];
     __pyx_t_20.suboffsets[0] = -1;
 
-if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("test_cuboid"); __PYX_ERR(0, 476, __pyx_L4_error) }
-            if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_permute_poss.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("permute_poss"); __PYX_ERR(0, 476, __pyx_L4_error) }
+if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.memview)) { __Pyx_RaiseUnboundLocalError("test_cuboid"); __PYX_ERR(0, 476, __pyx_L1_error) }
+          if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_permute_poss.memview)) { __Pyx_RaiseUnboundLocalError("permute_poss"); __PYX_ERR(0, 476, __pyx_L1_error) }
+          __pyx_t_9 = __pyx_v_j;
+          __pyx_t_8 = __pyx_v_k;
+          __pyx_t_21.data = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.data;
+          __pyx_t_21.memview = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.memview;
+          __PYX_INC_MEMVIEW(&__pyx_t_21, 0);
+          {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_i;
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.strides[0];
+        __pyx_t_21.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+{
+    Py_ssize_t __pyx_tmp_idx = (*((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_7bonndit_8tracking_13interpolation_permute_poss.data + __pyx_t_9 * __pyx_v_7bonndit_8tracking_13interpolation_permute_poss.strides[0]) ) + __pyx_t_8 * __pyx_v_7bonndit_8tracking_13interpolation_permute_poss.strides[1]) )));
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.strides[1];
+        __pyx_t_21.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_21.shape[0] = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.shape[2];
+__pyx_t_21.strides[0] = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.strides[2];
+    __pyx_t_21.suboffsets[0] = -1;
+
+__pyx_v_ang = __pyx_f_7bonndit_5utilc_14cython_helpers_angle_deg(__pyx_t_20, __pyx_t_21);
+          __PYX_XDEC_MEMVIEW(&__pyx_t_20, 1);
+          __pyx_t_20.memview = NULL;
+          __pyx_t_20.data = NULL;
+          __PYX_XDEC_MEMVIEW(&__pyx_t_21, 1);
+          __pyx_t_21.memview = NULL;
+          __pyx_t_21.data = NULL;
+
+          /* "bonndit/tracking/interpolation.pyx":477
+ * 					for k in range(3):
+ * 						ang = angle_deg(self.best_dir[k], test_cuboid[i, permute_poss[j,k]])
+ * 						if ang > 90:             # <<<<<<<<<<<<<<
+ * 							mult_with_scalar(placeholder, -1, test_cuboid[i, permute_poss[j, k]])
+ * 							minus[k] = -1
+ */
+          __pyx_t_15 = ((__pyx_v_ang > 90.0) != 0);
+          if (__pyx_t_15) {
+
+            /* "bonndit/tracking/interpolation.pyx":478
+ * 						ang = angle_deg(self.best_dir[k], test_cuboid[i, permute_poss[j,k]])
+ * 						if ang > 90:
+ * 							mult_with_scalar(placeholder, -1, test_cuboid[i, permute_poss[j, k]])             # <<<<<<<<<<<<<<
+ * 							minus[k] = -1
+ * 						else:
+ */
+            if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_placeholder.memview)) { __Pyx_RaiseUnboundLocalError("placeholder"); __PYX_ERR(0, 478, __pyx_L1_error) }
+            if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.memview)) { __Pyx_RaiseUnboundLocalError("test_cuboid"); __PYX_ERR(0, 478, __pyx_L1_error) }
+            if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_permute_poss.memview)) { __Pyx_RaiseUnboundLocalError("permute_poss"); __PYX_ERR(0, 478, __pyx_L1_error) }
+            __pyx_t_8 = __pyx_v_j;
+            __pyx_t_9 = __pyx_v_k;
+            __pyx_t_21.data = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.data;
+            __pyx_t_21.memview = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.memview;
+            __PYX_INC_MEMVIEW(&__pyx_t_21, 0);
+            {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_i;
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.strides[0];
+        __pyx_t_21.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+{
+    Py_ssize_t __pyx_tmp_idx = (*((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_7bonndit_8tracking_13interpolation_permute_poss.data + __pyx_t_8 * __pyx_v_7bonndit_8tracking_13interpolation_permute_poss.strides[0]) ) + __pyx_t_9 * __pyx_v_7bonndit_8tracking_13interpolation_permute_poss.strides[1]) )));
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.strides[1];
+        __pyx_t_21.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_21.shape[0] = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.shape[2];
+__pyx_t_21.strides[0] = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.strides[2];
+    __pyx_t_21.suboffsets[0] = -1;
+
+__pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_7bonndit_8tracking_13interpolation_placeholder, -1.0, __pyx_t_21);
+            __PYX_XDEC_MEMVIEW(&__pyx_t_21, 1);
+            __pyx_t_21.memview = NULL;
+            __pyx_t_21.data = NULL;
+
+            /* "bonndit/tracking/interpolation.pyx":479
+ * 						if ang > 90:
+ * 							mult_with_scalar(placeholder, -1, test_cuboid[i, permute_poss[j, k]])
+ * 							minus[k] = -1             # <<<<<<<<<<<<<<
+ * 						else:
+ * 							mult_with_scalar(placeholder, 1, test_cuboid[i, permute_poss[j, k]])
+ */
+            if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_minus.memview)) { __Pyx_RaiseUnboundLocalError("minus"); __PYX_ERR(0, 479, __pyx_L1_error) }
+            __pyx_t_9 = __pyx_v_k;
+            *((int *) ( /* dim=0 */ (__pyx_v_7bonndit_8tracking_13interpolation_minus.data + __pyx_t_9 * __pyx_v_7bonndit_8tracking_13interpolation_minus.strides[0]) )) = -1;
+
+            /* "bonndit/tracking/interpolation.pyx":477
+ * 					for k in range(3):
+ * 						ang = angle_deg(self.best_dir[k], test_cuboid[i, permute_poss[j,k]])
+ * 						if ang > 90:             # <<<<<<<<<<<<<<
+ * 							mult_with_scalar(placeholder, -1, test_cuboid[i, permute_poss[j, k]])
+ * 							minus[k] = -1
+ */
+            goto __pyx_L20;
+          }
+
+          /* "bonndit/tracking/interpolation.pyx":481
+ * 							minus[k] = -1
+ * 						else:
+ * 							mult_with_scalar(placeholder, 1, test_cuboid[i, permute_poss[j, k]])             # <<<<<<<<<<<<<<
+ * 							minus[k] = 1
+ * 						sub_vectors(placeholder, placeholder, self.best_dir[k])
+ */
+          /*else*/ {
+            if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_placeholder.memview)) { __Pyx_RaiseUnboundLocalError("placeholder"); __PYX_ERR(0, 481, __pyx_L1_error) }
+            if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.memview)) { __Pyx_RaiseUnboundLocalError("test_cuboid"); __PYX_ERR(0, 481, __pyx_L1_error) }
+            if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_permute_poss.memview)) { __Pyx_RaiseUnboundLocalError("permute_poss"); __PYX_ERR(0, 481, __pyx_L1_error) }
             __pyx_t_9 = __pyx_v_j;
             __pyx_t_8 = __pyx_v_k;
             __pyx_t_21.data = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.data;
@@ -11890,145 +12263,38 @@ __pyx_t_21.shape[0] = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.sha
 __pyx_t_21.strides[0] = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.strides[2];
     __pyx_t_21.suboffsets[0] = -1;
 
-__pyx_v_ang = __pyx_f_7bonndit_5utilc_14cython_helpers_angle_deg(__pyx_t_20, __pyx_t_21);
-            __PYX_XDEC_MEMVIEW(&__pyx_t_20, 0);
-            __pyx_t_20.memview = NULL;
-            __pyx_t_20.data = NULL;
-            __PYX_XDEC_MEMVIEW(&__pyx_t_21, 0);
+__pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_7bonndit_8tracking_13interpolation_placeholder, 1.0, __pyx_t_21);
+            __PYX_XDEC_MEMVIEW(&__pyx_t_21, 1);
             __pyx_t_21.memview = NULL;
             __pyx_t_21.data = NULL;
 
-            /* "bonndit/tracking/interpolation.pyx":477
- * 					for k in range(3):
- * 						ang = angle_deg(self.best_dir[k], test_cuboid[i, permute_poss[j,k]])
- * 						if ang > 90:             # <<<<<<<<<<<<<<
- * 							mult_with_scalar(placeholder, -1, test_cuboid[i, permute_poss[j, k]])
- * 							minus[k] = -1
- */
-            __pyx_t_15 = ((__pyx_v_ang > 90.0) != 0);
-            if (__pyx_t_15) {
-
-              /* "bonndit/tracking/interpolation.pyx":478
- * 						ang = angle_deg(self.best_dir[k], test_cuboid[i, permute_poss[j,k]])
- * 						if ang > 90:
- * 							mult_with_scalar(placeholder, -1, test_cuboid[i, permute_poss[j, k]])             # <<<<<<<<<<<<<<
- * 							minus[k] = -1
- * 						else:
- */
-              if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_placeholder.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("placeholder"); __PYX_ERR(0, 478, __pyx_L4_error) }
-              if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("test_cuboid"); __PYX_ERR(0, 478, __pyx_L4_error) }
-              if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_permute_poss.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("permute_poss"); __PYX_ERR(0, 478, __pyx_L4_error) }
-              __pyx_t_8 = __pyx_v_j;
-              __pyx_t_9 = __pyx_v_k;
-              __pyx_t_21.data = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.data;
-              __pyx_t_21.memview = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.memview;
-              __PYX_INC_MEMVIEW(&__pyx_t_21, 0);
-              {
-    Py_ssize_t __pyx_tmp_idx = __pyx_v_i;
-    Py_ssize_t __pyx_tmp_stride = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.strides[0];
-        __pyx_t_21.data += __pyx_tmp_idx * __pyx_tmp_stride;
-}
-
-{
-    Py_ssize_t __pyx_tmp_idx = (*((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_7bonndit_8tracking_13interpolation_permute_poss.data + __pyx_t_8 * __pyx_v_7bonndit_8tracking_13interpolation_permute_poss.strides[0]) ) + __pyx_t_9 * __pyx_v_7bonndit_8tracking_13interpolation_permute_poss.strides[1]) )));
-    Py_ssize_t __pyx_tmp_stride = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.strides[1];
-        __pyx_t_21.data += __pyx_tmp_idx * __pyx_tmp_stride;
-}
-
-__pyx_t_21.shape[0] = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.shape[2];
-__pyx_t_21.strides[0] = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.strides[2];
-    __pyx_t_21.suboffsets[0] = -1;
-
-__pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_7bonndit_8tracking_13interpolation_placeholder, -1.0, __pyx_t_21);
-              __PYX_XDEC_MEMVIEW(&__pyx_t_21, 0);
-              __pyx_t_21.memview = NULL;
-              __pyx_t_21.data = NULL;
-
-              /* "bonndit/tracking/interpolation.pyx":479
- * 						if ang > 90:
- * 							mult_with_scalar(placeholder, -1, test_cuboid[i, permute_poss[j, k]])
- * 							minus[k] = -1             # <<<<<<<<<<<<<<
- * 						else:
- * 							mult_with_scalar(placeholder, 1, test_cuboid[i, permute_poss[j, k]])
- */
-              if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_minus.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("minus"); __PYX_ERR(0, 479, __pyx_L4_error) }
-              __pyx_t_9 = __pyx_v_k;
-              *((int *) ( /* dim=0 */ (__pyx_v_7bonndit_8tracking_13interpolation_minus.data + __pyx_t_9 * __pyx_v_7bonndit_8tracking_13interpolation_minus.strides[0]) )) = -1;
-
-              /* "bonndit/tracking/interpolation.pyx":477
- * 					for k in range(3):
- * 						ang = angle_deg(self.best_dir[k], test_cuboid[i, permute_poss[j,k]])
- * 						if ang > 90:             # <<<<<<<<<<<<<<
- * 							mult_with_scalar(placeholder, -1, test_cuboid[i, permute_poss[j, k]])
- * 							minus[k] = -1
- */
-              goto __pyx_L23;
-            }
-
-            /* "bonndit/tracking/interpolation.pyx":481
- * 							minus[k] = -1
- * 						else:
- * 							mult_with_scalar(placeholder, 1, test_cuboid[i, permute_poss[j, k]])             # <<<<<<<<<<<<<<
- * 							minus[k] = 1
- * 						sub_vectors(placeholder, placeholder, self.best_dir[k])
- */
-            /*else*/ {
-              if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_placeholder.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("placeholder"); __PYX_ERR(0, 481, __pyx_L4_error) }
-              if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("test_cuboid"); __PYX_ERR(0, 481, __pyx_L4_error) }
-              if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_permute_poss.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("permute_poss"); __PYX_ERR(0, 481, __pyx_L4_error) }
-              __pyx_t_9 = __pyx_v_j;
-              __pyx_t_8 = __pyx_v_k;
-              __pyx_t_21.data = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.data;
-              __pyx_t_21.memview = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.memview;
-              __PYX_INC_MEMVIEW(&__pyx_t_21, 0);
-              {
-    Py_ssize_t __pyx_tmp_idx = __pyx_v_i;
-    Py_ssize_t __pyx_tmp_stride = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.strides[0];
-        __pyx_t_21.data += __pyx_tmp_idx * __pyx_tmp_stride;
-}
-
-{
-    Py_ssize_t __pyx_tmp_idx = (*((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_7bonndit_8tracking_13interpolation_permute_poss.data + __pyx_t_9 * __pyx_v_7bonndit_8tracking_13interpolation_permute_poss.strides[0]) ) + __pyx_t_8 * __pyx_v_7bonndit_8tracking_13interpolation_permute_poss.strides[1]) )));
-    Py_ssize_t __pyx_tmp_stride = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.strides[1];
-        __pyx_t_21.data += __pyx_tmp_idx * __pyx_tmp_stride;
-}
-
-__pyx_t_21.shape[0] = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.shape[2];
-__pyx_t_21.strides[0] = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.strides[2];
-    __pyx_t_21.suboffsets[0] = -1;
-
-__pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_7bonndit_8tracking_13interpolation_placeholder, 1.0, __pyx_t_21);
-              __PYX_XDEC_MEMVIEW(&__pyx_t_21, 0);
-              __pyx_t_21.memview = NULL;
-              __pyx_t_21.data = NULL;
-
-              /* "bonndit/tracking/interpolation.pyx":482
+            /* "bonndit/tracking/interpolation.pyx":482
  * 						else:
  * 							mult_with_scalar(placeholder, 1, test_cuboid[i, permute_poss[j, k]])
  * 							minus[k] = 1             # <<<<<<<<<<<<<<
  * 						sub_vectors(placeholder, placeholder, self.best_dir[k])
  * 						test_angle += pow(norm(placeholder),4)
  */
-              if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_minus.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("minus"); __PYX_ERR(0, 482, __pyx_L4_error) }
-              __pyx_t_8 = __pyx_v_k;
-              *((int *) ( /* dim=0 */ (__pyx_v_7bonndit_8tracking_13interpolation_minus.data + __pyx_t_8 * __pyx_v_7bonndit_8tracking_13interpolation_minus.strides[0]) )) = 1;
-            }
-            __pyx_L23:;
+            if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_minus.memview)) { __Pyx_RaiseUnboundLocalError("minus"); __PYX_ERR(0, 482, __pyx_L1_error) }
+            __pyx_t_8 = __pyx_v_k;
+            *((int *) ( /* dim=0 */ (__pyx_v_7bonndit_8tracking_13interpolation_minus.data + __pyx_t_8 * __pyx_v_7bonndit_8tracking_13interpolation_minus.strides[0]) )) = 1;
+          }
+          __pyx_L20:;
 
-            /* "bonndit/tracking/interpolation.pyx":483
+          /* "bonndit/tracking/interpolation.pyx":483
  * 							mult_with_scalar(placeholder, 1, test_cuboid[i, permute_poss[j, k]])
  * 							minus[k] = 1
  * 						sub_vectors(placeholder, placeholder, self.best_dir[k])             # <<<<<<<<<<<<<<
  * 						test_angle += pow(norm(placeholder),4)
  * 					if min_angle == 0 or test_angle < min_angle:
  */
-            if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_placeholder.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("placeholder"); __PYX_ERR(0, 483, __pyx_L4_error) }
-            if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_placeholder.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("placeholder"); __PYX_ERR(0, 483, __pyx_L4_error) }
-            if (unlikely(!__pyx_v_self->__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 483, __pyx_L4_error)}
-            __pyx_t_21.data = __pyx_v_self->__pyx_base.best_dir.data;
-            __pyx_t_21.memview = __pyx_v_self->__pyx_base.best_dir.memview;
-            __PYX_INC_MEMVIEW(&__pyx_t_21, 0);
-            {
+          if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_placeholder.memview)) { __Pyx_RaiseUnboundLocalError("placeholder"); __PYX_ERR(0, 483, __pyx_L1_error) }
+          if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_placeholder.memview)) { __Pyx_RaiseUnboundLocalError("placeholder"); __PYX_ERR(0, 483, __pyx_L1_error) }
+          if (unlikely(!__pyx_v_self->__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 483, __pyx_L1_error)}
+          __pyx_t_21.data = __pyx_v_self->__pyx_base.best_dir.data;
+          __pyx_t_21.memview = __pyx_v_self->__pyx_base.best_dir.memview;
+          __PYX_INC_MEMVIEW(&__pyx_t_21, 0);
+          {
     Py_ssize_t __pyx_tmp_idx = __pyx_v_k;
     Py_ssize_t __pyx_tmp_stride = __pyx_v_self->__pyx_base.best_dir.strides[0];
         __pyx_t_21.data += __pyx_tmp_idx * __pyx_tmp_stride;
@@ -12039,19 +12305,81 @@ __pyx_t_21.strides[0] = __pyx_v_self->__pyx_base.best_dir.strides[1];
     __pyx_t_21.suboffsets[0] = -1;
 
 __pyx_f_7bonndit_5utilc_14cython_helpers_sub_vectors(__pyx_v_7bonndit_8tracking_13interpolation_placeholder, __pyx_v_7bonndit_8tracking_13interpolation_placeholder, __pyx_t_21);
-            __PYX_XDEC_MEMVIEW(&__pyx_t_21, 0);
-            __pyx_t_21.memview = NULL;
-            __pyx_t_21.data = NULL;
+          __PYX_XDEC_MEMVIEW(&__pyx_t_21, 1);
+          __pyx_t_21.memview = NULL;
+          __pyx_t_21.data = NULL;
 
-            /* "bonndit/tracking/interpolation.pyx":484
+          /* "bonndit/tracking/interpolation.pyx":484
  * 							minus[k] = 1
  * 						sub_vectors(placeholder, placeholder, self.best_dir[k])
  * 						test_angle += pow(norm(placeholder),4)             # <<<<<<<<<<<<<<
  * 					if min_angle == 0 or test_angle < min_angle:
  * 						min_angle = test_angle
  */
-            if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_placeholder.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("placeholder"); __PYX_ERR(0, 484, __pyx_L4_error) }
-            __pyx_v_test_angle = (__pyx_v_test_angle + pow(__pyx_f_7bonndit_5utilc_14cython_helpers_norm(__pyx_v_7bonndit_8tracking_13interpolation_placeholder), 4.0));
+          if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_placeholder.memview)) { __Pyx_RaiseUnboundLocalError("placeholder"); __PYX_ERR(0, 484, __pyx_L1_error) }
+          __pyx_v_test_angle = (__pyx_v_test_angle + pow(__pyx_f_7bonndit_5utilc_14cython_helpers_norm(__pyx_v_7bonndit_8tracking_13interpolation_placeholder), 4.0));
+        }
+
+        /* "bonndit/tracking/interpolation.pyx":485
+ * 						sub_vectors(placeholder, placeholder, self.best_dir[k])
+ * 						test_angle += pow(norm(placeholder),4)
+ * 					if min_angle == 0 or test_angle < min_angle:             # <<<<<<<<<<<<<<
+ * 						min_angle = test_angle
+ * 					#	with gil: print(test_angle, min_angle)
+ */
+        __pyx_t_22 = ((__pyx_v_min_angle == 0.0) != 0);
+        if (!__pyx_t_22) {
+        } else {
+          __pyx_t_15 = __pyx_t_22;
+          goto __pyx_L22_bool_binop_done;
+        }
+        __pyx_t_22 = ((__pyx_v_test_angle < __pyx_v_min_angle) != 0);
+        __pyx_t_15 = __pyx_t_22;
+        __pyx_L22_bool_binop_done:;
+        if (__pyx_t_15) {
+
+          /* "bonndit/tracking/interpolation.pyx":486
+ * 						test_angle += pow(norm(placeholder),4)
+ * 					if min_angle == 0 or test_angle < min_angle:
+ * 						min_angle = test_angle             # <<<<<<<<<<<<<<
+ * 					#	with gil: print(test_angle, min_angle)
+ * 						best[4*i] = j
+ */
+          __pyx_v_min_angle = __pyx_v_test_angle;
+
+          /* "bonndit/tracking/interpolation.pyx":488
+ * 						min_angle = test_angle
+ * 					#	with gil: print(test_angle, min_angle)
+ * 						best[4*i] = j             # <<<<<<<<<<<<<<
+ * 						for k in range(3):
+ * 							best[4*i + k + 1] = minus[k]
+ */
+          if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_best.memview)) { __Pyx_RaiseUnboundLocalError("best"); __PYX_ERR(0, 488, __pyx_L1_error) }
+          __pyx_t_8 = (4 * __pyx_v_i);
+          *((int *) ( /* dim=0 */ (__pyx_v_7bonndit_8tracking_13interpolation_best.data + __pyx_t_8 * __pyx_v_7bonndit_8tracking_13interpolation_best.strides[0]) )) = __pyx_v_j;
+
+          /* "bonndit/tracking/interpolation.pyx":489
+ * 					#	with gil: print(test_angle, min_angle)
+ * 						best[4*i] = j
+ * 						for k in range(3):             # <<<<<<<<<<<<<<
+ * 							best[4*i + k + 1] = minus[k]
+ * 
+ */
+          for (__pyx_t_16 = 0; __pyx_t_16 < 3; __pyx_t_16+=1) {
+            __pyx_v_k = __pyx_t_16;
+
+            /* "bonndit/tracking/interpolation.pyx":490
+ * 						best[4*i] = j
+ * 						for k in range(3):
+ * 							best[4*i + k + 1] = minus[k]             # <<<<<<<<<<<<<<
+ * 
+ * 		#	set_zero_matrix(self.best_dir)
+ */
+            if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_minus.memview)) { __Pyx_RaiseUnboundLocalError("minus"); __PYX_ERR(0, 490, __pyx_L1_error) }
+            __pyx_t_8 = __pyx_v_k;
+            if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_best.memview)) { __Pyx_RaiseUnboundLocalError("best"); __PYX_ERR(0, 490, __pyx_L1_error) }
+            __pyx_t_9 = (((4 * __pyx_v_i) + __pyx_v_k) + 1);
+            *((int *) ( /* dim=0 */ (__pyx_v_7bonndit_8tracking_13interpolation_best.data + __pyx_t_9 * __pyx_v_7bonndit_8tracking_13interpolation_best.strides[0]) )) = (*((int *) ( /* dim=0 */ (__pyx_v_7bonndit_8tracking_13interpolation_minus.data + __pyx_t_8 * __pyx_v_7bonndit_8tracking_13interpolation_minus.strides[0]) )));
           }
 
           /* "bonndit/tracking/interpolation.pyx":485
@@ -12061,92 +12389,30 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_sub_vectors(__pyx_v_7bonndit_8tracking_
  * 						min_angle = test_angle
  * 					#	with gil: print(test_angle, min_angle)
  */
-          __pyx_t_22 = ((__pyx_v_min_angle == 0.0) != 0);
-          if (!__pyx_t_22) {
-          } else {
-            __pyx_t_15 = __pyx_t_22;
-            goto __pyx_L25_bool_binop_done;
-          }
-          __pyx_t_22 = ((__pyx_v_test_angle < __pyx_v_min_angle) != 0);
-          __pyx_t_15 = __pyx_t_22;
-          __pyx_L25_bool_binop_done:;
-          if (__pyx_t_15) {
+        }
 
-            /* "bonndit/tracking/interpolation.pyx":486
- * 						test_angle += pow(norm(placeholder),4)
- * 					if min_angle == 0 or test_angle < min_angle:
- * 						min_angle = test_angle             # <<<<<<<<<<<<<<
- * 					#	with gil: print(test_angle, min_angle)
- * 						best[4*i] = j
- */
-            __pyx_v_min_angle = __pyx_v_test_angle;
-
-            /* "bonndit/tracking/interpolation.pyx":488
- * 						min_angle = test_angle
- * 					#	with gil: print(test_angle, min_angle)
- * 						best[4*i] = j             # <<<<<<<<<<<<<<
- * 						for k in range(3):
- * 							best[4*i + k + 1] = minus[k]
- */
-            if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_best.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("best"); __PYX_ERR(0, 488, __pyx_L4_error) }
-            __pyx_t_8 = (4 * __pyx_v_i);
-            *((int *) ( /* dim=0 */ (__pyx_v_7bonndit_8tracking_13interpolation_best.data + __pyx_t_8 * __pyx_v_7bonndit_8tracking_13interpolation_best.strides[0]) )) = __pyx_v_j;
-
-            /* "bonndit/tracking/interpolation.pyx":489
- * 					#	with gil: print(test_angle, min_angle)
- * 						best[4*i] = j
- * 						for k in range(3):             # <<<<<<<<<<<<<<
- * 							best[4*i + k + 1] = minus[k]
- * 
- */
-            for (__pyx_t_16 = 0; __pyx_t_16 < 3; __pyx_t_16+=1) {
-              __pyx_v_k = __pyx_t_16;
-
-              /* "bonndit/tracking/interpolation.pyx":490
- * 						best[4*i] = j
- * 						for k in range(3):
- * 							best[4*i + k + 1] = minus[k]             # <<<<<<<<<<<<<<
- * 
- * 		#	set_zero_matrix(self.best_dir)
- */
-              if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_minus.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("minus"); __PYX_ERR(0, 490, __pyx_L4_error) }
-              __pyx_t_8 = __pyx_v_k;
-              if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_best.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("best"); __PYX_ERR(0, 490, __pyx_L4_error) }
-              __pyx_t_9 = (((4 * __pyx_v_i) + __pyx_v_k) + 1);
-              *((int *) ( /* dim=0 */ (__pyx_v_7bonndit_8tracking_13interpolation_best.data + __pyx_t_9 * __pyx_v_7bonndit_8tracking_13interpolation_best.strides[0]) )) = (*((int *) ( /* dim=0 */ (__pyx_v_7bonndit_8tracking_13interpolation_minus.data + __pyx_t_8 * __pyx_v_7bonndit_8tracking_13interpolation_minus.strides[0]) )));
-            }
-
-            /* "bonndit/tracking/interpolation.pyx":485
- * 						sub_vectors(placeholder, placeholder, self.best_dir[k])
- * 						test_angle += pow(norm(placeholder),4)
- * 					if min_angle == 0 or test_angle < min_angle:             # <<<<<<<<<<<<<<
- * 						min_angle = test_angle
- * 					#	with gil: print(test_angle, min_angle)
- */
-          }
-
-          /* "bonndit/tracking/interpolation.pyx":494
+        /* "bonndit/tracking/interpolation.pyx":494
  * 		#	set_zero_matrix(self.best_dir)
  * 		#	for i in range(8):
  * 					for j in range(3):             # <<<<<<<<<<<<<<
  * 						if norm(self.best_dir[j]) == 0:
  * 							mult_with_scalar(placeholder, best[4*i+ 1 +j]/8, test_cuboid[i, permute_poss[best[4*i], j]])
  */
-          for (__pyx_t_16 = 0; __pyx_t_16 < 3; __pyx_t_16+=1) {
-            __pyx_v_j = __pyx_t_16;
+        for (__pyx_t_16 = 0; __pyx_t_16 < 3; __pyx_t_16+=1) {
+          __pyx_v_j = __pyx_t_16;
 
-            /* "bonndit/tracking/interpolation.pyx":495
+          /* "bonndit/tracking/interpolation.pyx":495
  * 		#	for i in range(8):
  * 					for j in range(3):
  * 						if norm(self.best_dir[j]) == 0:             # <<<<<<<<<<<<<<
  * 							mult_with_scalar(placeholder, best[4*i+ 1 +j]/8, test_cuboid[i, permute_poss[best[4*i], j]])
  * 							add_vectors(self.best_dir[j], self.best_dir[j], placeholder)
  */
-            if (unlikely(!__pyx_v_self->__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 495, __pyx_L4_error)}
-            __pyx_t_21.data = __pyx_v_self->__pyx_base.best_dir.data;
-            __pyx_t_21.memview = __pyx_v_self->__pyx_base.best_dir.memview;
-            __PYX_INC_MEMVIEW(&__pyx_t_21, 0);
-            {
+          if (unlikely(!__pyx_v_self->__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 495, __pyx_L1_error)}
+          __pyx_t_21.data = __pyx_v_self->__pyx_base.best_dir.data;
+          __pyx_t_21.memview = __pyx_v_self->__pyx_base.best_dir.memview;
+          __PYX_INC_MEMVIEW(&__pyx_t_21, 0);
+          {
     Py_ssize_t __pyx_tmp_idx = __pyx_v_j;
     Py_ssize_t __pyx_tmp_stride = __pyx_v_self->__pyx_base.best_dir.strides[0];
         __pyx_t_21.data += __pyx_tmp_idx * __pyx_tmp_stride;
@@ -12157,31 +12423,31 @@ __pyx_t_21.strides[0] = __pyx_v_self->__pyx_base.best_dir.strides[1];
     __pyx_t_21.suboffsets[0] = -1;
 
 __pyx_t_15 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_norm(__pyx_t_21) == 0.0) != 0);
-            __PYX_XDEC_MEMVIEW(&__pyx_t_21, 0);
-            __pyx_t_21.memview = NULL;
-            __pyx_t_21.data = NULL;
-            if (__pyx_t_15) {
+          __PYX_XDEC_MEMVIEW(&__pyx_t_21, 1);
+          __pyx_t_21.memview = NULL;
+          __pyx_t_21.data = NULL;
+          if (__pyx_t_15) {
 
-              /* "bonndit/tracking/interpolation.pyx":496
+            /* "bonndit/tracking/interpolation.pyx":496
  * 					for j in range(3):
  * 						if norm(self.best_dir[j]) == 0:
  * 							mult_with_scalar(placeholder, best[4*i+ 1 +j]/8, test_cuboid[i, permute_poss[best[4*i], j]])             # <<<<<<<<<<<<<<
  * 							add_vectors(self.best_dir[j], self.best_dir[j], placeholder)
  * 			for i in range(8):
  */
-              if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_placeholder.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("placeholder"); __PYX_ERR(0, 496, __pyx_L4_error) }
-              if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_best.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("best"); __PYX_ERR(0, 496, __pyx_L4_error) }
-              __pyx_t_8 = (((4 * __pyx_v_i) + 1) + __pyx_v_j);
-              if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("test_cuboid"); __PYX_ERR(0, 496, __pyx_L4_error) }
-              if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_permute_poss.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("permute_poss"); __PYX_ERR(0, 496, __pyx_L4_error) }
-              if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_best.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("best"); __PYX_ERR(0, 496, __pyx_L4_error) }
-              __pyx_t_9 = (4 * __pyx_v_i);
-              __pyx_t_7 = (*((int *) ( /* dim=0 */ (__pyx_v_7bonndit_8tracking_13interpolation_best.data + __pyx_t_9 * __pyx_v_7bonndit_8tracking_13interpolation_best.strides[0]) )));
-              __pyx_t_6 = __pyx_v_j;
-              __pyx_t_21.data = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.data;
-              __pyx_t_21.memview = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.memview;
-              __PYX_INC_MEMVIEW(&__pyx_t_21, 0);
-              {
+            if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_placeholder.memview)) { __Pyx_RaiseUnboundLocalError("placeholder"); __PYX_ERR(0, 496, __pyx_L1_error) }
+            if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_best.memview)) { __Pyx_RaiseUnboundLocalError("best"); __PYX_ERR(0, 496, __pyx_L1_error) }
+            __pyx_t_8 = (((4 * __pyx_v_i) + 1) + __pyx_v_j);
+            if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.memview)) { __Pyx_RaiseUnboundLocalError("test_cuboid"); __PYX_ERR(0, 496, __pyx_L1_error) }
+            if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_permute_poss.memview)) { __Pyx_RaiseUnboundLocalError("permute_poss"); __PYX_ERR(0, 496, __pyx_L1_error) }
+            if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_best.memview)) { __Pyx_RaiseUnboundLocalError("best"); __PYX_ERR(0, 496, __pyx_L1_error) }
+            __pyx_t_9 = (4 * __pyx_v_i);
+            __pyx_t_7 = (*((int *) ( /* dim=0 */ (__pyx_v_7bonndit_8tracking_13interpolation_best.data + __pyx_t_9 * __pyx_v_7bonndit_8tracking_13interpolation_best.strides[0]) )));
+            __pyx_t_6 = __pyx_v_j;
+            __pyx_t_21.data = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.data;
+            __pyx_t_21.memview = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.memview;
+            __PYX_INC_MEMVIEW(&__pyx_t_21, 0);
+            {
     Py_ssize_t __pyx_tmp_idx = __pyx_v_i;
     Py_ssize_t __pyx_tmp_stride = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.strides[0];
         __pyx_t_21.data += __pyx_tmp_idx * __pyx_tmp_stride;
@@ -12198,22 +12464,22 @@ __pyx_t_21.strides[0] = __pyx_v_7bonndit_8tracking_13interpolation_test_cuboid.s
     __pyx_t_21.suboffsets[0] = -1;
 
 __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_7bonndit_8tracking_13interpolation_placeholder, (((double)(*((int *) ( /* dim=0 */ (__pyx_v_7bonndit_8tracking_13interpolation_best.data + __pyx_t_8 * __pyx_v_7bonndit_8tracking_13interpolation_best.strides[0]) )))) / 8.0), __pyx_t_21);
-              __PYX_XDEC_MEMVIEW(&__pyx_t_21, 0);
-              __pyx_t_21.memview = NULL;
-              __pyx_t_21.data = NULL;
+            __PYX_XDEC_MEMVIEW(&__pyx_t_21, 1);
+            __pyx_t_21.memview = NULL;
+            __pyx_t_21.data = NULL;
 
-              /* "bonndit/tracking/interpolation.pyx":497
+            /* "bonndit/tracking/interpolation.pyx":497
  * 						if norm(self.best_dir[j]) == 0:
  * 							mult_with_scalar(placeholder, best[4*i+ 1 +j]/8, test_cuboid[i, permute_poss[best[4*i], j]])
  * 							add_vectors(self.best_dir[j], self.best_dir[j], placeholder)             # <<<<<<<<<<<<<<
  * 			for i in range(8):
  * 				con += fabs(best[4*i] - old_best[i])
  */
-              if (unlikely(!__pyx_v_self->__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 497, __pyx_L4_error)}
-              __pyx_t_21.data = __pyx_v_self->__pyx_base.best_dir.data;
-              __pyx_t_21.memview = __pyx_v_self->__pyx_base.best_dir.memview;
-              __PYX_INC_MEMVIEW(&__pyx_t_21, 0);
-              {
+            if (unlikely(!__pyx_v_self->__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 497, __pyx_L1_error)}
+            __pyx_t_21.data = __pyx_v_self->__pyx_base.best_dir.data;
+            __pyx_t_21.memview = __pyx_v_self->__pyx_base.best_dir.memview;
+            __PYX_INC_MEMVIEW(&__pyx_t_21, 0);
+            {
     Py_ssize_t __pyx_tmp_idx = __pyx_v_j;
     Py_ssize_t __pyx_tmp_stride = __pyx_v_self->__pyx_base.best_dir.strides[0];
         __pyx_t_21.data += __pyx_tmp_idx * __pyx_tmp_stride;
@@ -12223,11 +12489,11 @@ __pyx_t_21.shape[0] = __pyx_v_self->__pyx_base.best_dir.shape[1];
 __pyx_t_21.strides[0] = __pyx_v_self->__pyx_base.best_dir.strides[1];
     __pyx_t_21.suboffsets[0] = -1;
 
-if (unlikely(!__pyx_v_self->__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 497, __pyx_L4_error)}
-              __pyx_t_20.data = __pyx_v_self->__pyx_base.best_dir.data;
-              __pyx_t_20.memview = __pyx_v_self->__pyx_base.best_dir.memview;
-              __PYX_INC_MEMVIEW(&__pyx_t_20, 0);
-              {
+if (unlikely(!__pyx_v_self->__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 497, __pyx_L1_error)}
+            __pyx_t_20.data = __pyx_v_self->__pyx_base.best_dir.data;
+            __pyx_t_20.memview = __pyx_v_self->__pyx_base.best_dir.memview;
+            __PYX_INC_MEMVIEW(&__pyx_t_20, 0);
+            {
     Py_ssize_t __pyx_tmp_idx = __pyx_v_j;
     Py_ssize_t __pyx_tmp_stride = __pyx_v_self->__pyx_base.best_dir.strides[0];
         __pyx_t_20.data += __pyx_tmp_idx * __pyx_tmp_stride;
@@ -12237,63 +12503,133 @@ __pyx_t_20.shape[0] = __pyx_v_self->__pyx_base.best_dir.shape[1];
 __pyx_t_20.strides[0] = __pyx_v_self->__pyx_base.best_dir.strides[1];
     __pyx_t_20.suboffsets[0] = -1;
 
-if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_placeholder.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("placeholder"); __PYX_ERR(0, 497, __pyx_L4_error) }
-              __pyx_f_7bonndit_5utilc_14cython_helpers_add_vectors(__pyx_t_21, __pyx_t_20, __pyx_v_7bonndit_8tracking_13interpolation_placeholder);
-              __PYX_XDEC_MEMVIEW(&__pyx_t_21, 0);
-              __pyx_t_21.memview = NULL;
-              __pyx_t_21.data = NULL;
-              __PYX_XDEC_MEMVIEW(&__pyx_t_20, 0);
-              __pyx_t_20.memview = NULL;
-              __pyx_t_20.data = NULL;
+if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_placeholder.memview)) { __Pyx_RaiseUnboundLocalError("placeholder"); __PYX_ERR(0, 497, __pyx_L1_error) }
+            __pyx_f_7bonndit_5utilc_14cython_helpers_add_vectors(__pyx_t_21, __pyx_t_20, __pyx_v_7bonndit_8tracking_13interpolation_placeholder);
+            __PYX_XDEC_MEMVIEW(&__pyx_t_21, 1);
+            __pyx_t_21.memview = NULL;
+            __pyx_t_21.data = NULL;
+            __PYX_XDEC_MEMVIEW(&__pyx_t_20, 1);
+            __pyx_t_20.memview = NULL;
+            __pyx_t_20.data = NULL;
 
-              /* "bonndit/tracking/interpolation.pyx":495
+            /* "bonndit/tracking/interpolation.pyx":495
  * 		#	for i in range(8):
  * 					for j in range(3):
  * 						if norm(self.best_dir[j]) == 0:             # <<<<<<<<<<<<<<
  * 							mult_with_scalar(placeholder, best[4*i+ 1 +j]/8, test_cuboid[i, permute_poss[best[4*i], j]])
  * 							add_vectors(self.best_dir[j], self.best_dir[j], placeholder)
  */
-            }
           }
         }
       }
+    }
 
-      /* "bonndit/tracking/interpolation.pyx":498
+    /* "bonndit/tracking/interpolation.pyx":498
  * 							mult_with_scalar(placeholder, best[4*i+ 1 +j]/8, test_cuboid[i, permute_poss[best[4*i], j]])
  * 							add_vectors(self.best_dir[j], self.best_dir[j], placeholder)
  * 			for i in range(8):             # <<<<<<<<<<<<<<
  * 				con += fabs(best[4*i] - old_best[i])
  * 				old_best[i] = best[4*i]
  */
-      for (__pyx_t_1 = 0; __pyx_t_1 < 8; __pyx_t_1+=1) {
-        __pyx_v_i = __pyx_t_1;
+    for (__pyx_t_1 = 0; __pyx_t_1 < 8; __pyx_t_1+=1) {
+      __pyx_v_i = __pyx_t_1;
 
-        /* "bonndit/tracking/interpolation.pyx":499
+      /* "bonndit/tracking/interpolation.pyx":499
  * 							add_vectors(self.best_dir[j], self.best_dir[j], placeholder)
  * 			for i in range(8):
  * 				con += fabs(best[4*i] - old_best[i])             # <<<<<<<<<<<<<<
  * 				old_best[i] = best[4*i]
  * 			if con == 0:
  */
-        if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_best.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("best"); __PYX_ERR(0, 499, __pyx_L4_error) }
-        __pyx_t_8 = (4 * __pyx_v_i);
-        if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_old_best.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("old_best"); __PYX_ERR(0, 499, __pyx_L4_error) }
-        __pyx_t_9 = __pyx_v_i;
-        __pyx_v_con = (__pyx_v_con + fabs(((*((int *) ( /* dim=0 */ (__pyx_v_7bonndit_8tracking_13interpolation_best.data + __pyx_t_8 * __pyx_v_7bonndit_8tracking_13interpolation_best.strides[0]) ))) - (*((int *) ( /* dim=0 */ (__pyx_v_7bonndit_8tracking_13interpolation_old_best.data + __pyx_t_9 * __pyx_v_7bonndit_8tracking_13interpolation_old_best.strides[0]) ))))));
+      if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_best.memview)) { __Pyx_RaiseUnboundLocalError("best"); __PYX_ERR(0, 499, __pyx_L1_error) }
+      __pyx_t_8 = (4 * __pyx_v_i);
+      if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_old_best.memview)) { __Pyx_RaiseUnboundLocalError("old_best"); __PYX_ERR(0, 499, __pyx_L1_error) }
+      __pyx_t_9 = __pyx_v_i;
+      __pyx_v_con = (__pyx_v_con + fabs(((*((int *) ( /* dim=0 */ (__pyx_v_7bonndit_8tracking_13interpolation_best.data + __pyx_t_8 * __pyx_v_7bonndit_8tracking_13interpolation_best.strides[0]) ))) - (*((int *) ( /* dim=0 */ (__pyx_v_7bonndit_8tracking_13interpolation_old_best.data + __pyx_t_9 * __pyx_v_7bonndit_8tracking_13interpolation_old_best.strides[0]) ))))));
 
-        /* "bonndit/tracking/interpolation.pyx":500
+      /* "bonndit/tracking/interpolation.pyx":500
  * 			for i in range(8):
  * 				con += fabs(best[4*i] - old_best[i])
  * 				old_best[i] = best[4*i]             # <<<<<<<<<<<<<<
  * 			if con == 0:
  * 				con = 1
  */
-        if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_best.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("best"); __PYX_ERR(0, 500, __pyx_L4_error) }
-        __pyx_t_9 = (4 * __pyx_v_i);
-        if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_old_best.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("old_best"); __PYX_ERR(0, 500, __pyx_L4_error) }
-        __pyx_t_8 = __pyx_v_i;
-        *((int *) ( /* dim=0 */ (__pyx_v_7bonndit_8tracking_13interpolation_old_best.data + __pyx_t_8 * __pyx_v_7bonndit_8tracking_13interpolation_old_best.strides[0]) )) = (*((int *) ( /* dim=0 */ (__pyx_v_7bonndit_8tracking_13interpolation_best.data + __pyx_t_9 * __pyx_v_7bonndit_8tracking_13interpolation_best.strides[0]) )));
+      if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_best.memview)) { __Pyx_RaiseUnboundLocalError("best"); __PYX_ERR(0, 500, __pyx_L1_error) }
+      __pyx_t_9 = (4 * __pyx_v_i);
+      if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_old_best.memview)) { __Pyx_RaiseUnboundLocalError("old_best"); __PYX_ERR(0, 500, __pyx_L1_error) }
+      __pyx_t_8 = __pyx_v_i;
+      *((int *) ( /* dim=0 */ (__pyx_v_7bonndit_8tracking_13interpolation_old_best.data + __pyx_t_8 * __pyx_v_7bonndit_8tracking_13interpolation_old_best.strides[0]) )) = (*((int *) ( /* dim=0 */ (__pyx_v_7bonndit_8tracking_13interpolation_best.data + __pyx_t_9 * __pyx_v_7bonndit_8tracking_13interpolation_best.strides[0]) )));
+    }
+
+    /* "bonndit/tracking/interpolation.pyx":501
+ * 				con += fabs(best[4*i] - old_best[i])
+ * 				old_best[i] = best[4*i]
+ * 			if con == 0:             # <<<<<<<<<<<<<<
+ * 				con = 1
+ * 				for i in range(32):
+ */
+    __pyx_t_15 = ((__pyx_v_con == 0.0) != 0);
+    if (__pyx_t_15) {
+
+      /* "bonndit/tracking/interpolation.pyx":502
+ * 				old_best[i] = best[4*i]
+ * 			if con == 0:
+ * 				con = 1             # <<<<<<<<<<<<<<
+ * 				for i in range(32):
+ * 					self.cache[self.floor[0], self.floor[1], self.floor[2], i] = int(best[i])
+ */
+      __pyx_v_con = 1.0;
+
+      /* "bonndit/tracking/interpolation.pyx":503
+ * 			if con == 0:
+ * 				con = 1
+ * 				for i in range(32):             # <<<<<<<<<<<<<<
+ * 					self.cache[self.floor[0], self.floor[1], self.floor[2], i] = int(best[i])
+ * 				self.set_new_poss()
+ */
+      for (__pyx_t_1 = 0; __pyx_t_1 < 32; __pyx_t_1+=1) {
+        __pyx_v_i = __pyx_t_1;
+
+        /* "bonndit/tracking/interpolation.pyx":504
+ * 				con = 1
+ * 				for i in range(32):
+ * 					self.cache[self.floor[0], self.floor[1], self.floor[2], i] = int(best[i])             # <<<<<<<<<<<<<<
+ * 				self.set_new_poss()
+ * 				break
+ */
+        if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_best.memview)) { __Pyx_RaiseUnboundLocalError("best"); __PYX_ERR(0, 504, __pyx_L1_error) }
+        __pyx_t_9 = __pyx_v_i;
+        if (unlikely(!__pyx_v_self->__pyx_base.cache.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 504, __pyx_L1_error)}
+        if (unlikely(!__pyx_v_self->floor.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 504, __pyx_L1_error)}
+        __pyx_t_8 = 0;
+        if (unlikely(!__pyx_v_self->floor.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 504, __pyx_L1_error)}
+        __pyx_t_6 = 1;
+        if (unlikely(!__pyx_v_self->floor.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 504, __pyx_L1_error)}
+        __pyx_t_7 = 2;
+        __pyx_t_5 = (*((int *) ( /* dim=0 */ (__pyx_v_self->floor.data + __pyx_t_8 * __pyx_v_self->floor.strides[0]) )));
+        __pyx_t_4 = (*((int *) ( /* dim=0 */ (__pyx_v_self->floor.data + __pyx_t_6 * __pyx_v_self->floor.strides[0]) )));
+        __pyx_t_14 = (*((int *) ( /* dim=0 */ (__pyx_v_self->floor.data + __pyx_t_7 * __pyx_v_self->floor.strides[0]) )));
+        __pyx_t_13 = __pyx_v_i;
+        *((int *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->__pyx_base.cache.data + __pyx_t_5 * __pyx_v_self->__pyx_base.cache.strides[0]) ) + __pyx_t_4 * __pyx_v_self->__pyx_base.cache.strides[1]) ) + __pyx_t_14 * __pyx_v_self->__pyx_base.cache.strides[2]) ) + __pyx_t_13 * __pyx_v_self->__pyx_base.cache.strides[3]) )) = (*((int *) ( /* dim=0 */ (__pyx_v_7bonndit_8tracking_13interpolation_best.data + __pyx_t_9 * __pyx_v_7bonndit_8tracking_13interpolation_best.strides[0]) )));
       }
+
+      /* "bonndit/tracking/interpolation.pyx":505
+ * 				for i in range(32):
+ * 					self.cache[self.floor[0], self.floor[1], self.floor[2], i] = int(best[i])
+ * 				self.set_new_poss()             # <<<<<<<<<<<<<<
+ * 				break
+ * 
+ */
+      ((struct __pyx_vtabstruct_7bonndit_8tracking_13interpolation_Trilinear *)__pyx_v_self->__pyx_base.__pyx_vtab)->set_new_poss(__pyx_v_self);
+
+      /* "bonndit/tracking/interpolation.pyx":506
+ * 					self.cache[self.floor[0], self.floor[1], self.floor[2], i] = int(best[i])
+ * 				self.set_new_poss()
+ * 				break             # <<<<<<<<<<<<<<
+ * 
+ * 			if max_try == 1000:
+ */
+      goto __pyx_L13_break;
 
       /* "bonndit/tracking/interpolation.pyx":501
  * 				con += fabs(best[4*i] - old_best[i])
@@ -12302,215 +12638,85 @@ if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_placeholder.memview)) {
  * 				con = 1
  * 				for i in range(32):
  */
-      __pyx_t_15 = ((__pyx_v_con == 0.0) != 0);
-      if (__pyx_t_15) {
+    }
 
-        /* "bonndit/tracking/interpolation.pyx":502
- * 				old_best[i] = best[4*i]
- * 			if con == 0:
- * 				con = 1             # <<<<<<<<<<<<<<
- * 				for i in range(32):
- * 					self.cache[self.floor[0], self.floor[1], self.floor[2], i] = int(best[i])
- */
-        __pyx_v_con = 1.0;
-
-        /* "bonndit/tracking/interpolation.pyx":503
- * 			if con == 0:
- * 				con = 1
- * 				for i in range(32):             # <<<<<<<<<<<<<<
- * 					self.cache[self.floor[0], self.floor[1], self.floor[2], i] = int(best[i])
- * 				self.set_new_poss()
- */
-        for (__pyx_t_1 = 0; __pyx_t_1 < 32; __pyx_t_1+=1) {
-          __pyx_v_i = __pyx_t_1;
-
-          /* "bonndit/tracking/interpolation.pyx":504
- * 				con = 1
- * 				for i in range(32):
- * 					self.cache[self.floor[0], self.floor[1], self.floor[2], i] = int(best[i])             # <<<<<<<<<<<<<<
- * 				self.set_new_poss()
- * 				break
- */
-          if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_best.memview)) { __Pyx_RaiseUnboundMemoryviewSliceNogil("best"); __PYX_ERR(0, 504, __pyx_L4_error) }
-          __pyx_t_9 = __pyx_v_i;
-          if (unlikely(!__pyx_v_self->__pyx_base.cache.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 504, __pyx_L4_error)}
-          if (unlikely(!__pyx_v_self->floor.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 504, __pyx_L4_error)}
-          __pyx_t_8 = 0;
-          if (unlikely(!__pyx_v_self->floor.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 504, __pyx_L4_error)}
-          __pyx_t_6 = 1;
-          if (unlikely(!__pyx_v_self->floor.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 504, __pyx_L4_error)}
-          __pyx_t_7 = 2;
-          __pyx_t_5 = (*((int *) ( /* dim=0 */ (__pyx_v_self->floor.data + __pyx_t_8 * __pyx_v_self->floor.strides[0]) )));
-          __pyx_t_4 = (*((int *) ( /* dim=0 */ (__pyx_v_self->floor.data + __pyx_t_6 * __pyx_v_self->floor.strides[0]) )));
-          __pyx_t_14 = (*((int *) ( /* dim=0 */ (__pyx_v_self->floor.data + __pyx_t_7 * __pyx_v_self->floor.strides[0]) )));
-          __pyx_t_13 = __pyx_v_i;
-          *((int *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->__pyx_base.cache.data + __pyx_t_5 * __pyx_v_self->__pyx_base.cache.strides[0]) ) + __pyx_t_4 * __pyx_v_self->__pyx_base.cache.strides[1]) ) + __pyx_t_14 * __pyx_v_self->__pyx_base.cache.strides[2]) ) + __pyx_t_13 * __pyx_v_self->__pyx_base.cache.strides[3]) )) = (*((int *) ( /* dim=0 */ (__pyx_v_7bonndit_8tracking_13interpolation_best.data + __pyx_t_9 * __pyx_v_7bonndit_8tracking_13interpolation_best.strides[0]) )));
-        }
-
-        /* "bonndit/tracking/interpolation.pyx":505
- * 				for i in range(32):
- * 					self.cache[self.floor[0], self.floor[1], self.floor[2], i] = int(best[i])
- * 				self.set_new_poss()             # <<<<<<<<<<<<<<
+    /* "bonndit/tracking/interpolation.pyx":508
  * 				break
  * 
+ * 			if max_try == 1000:             # <<<<<<<<<<<<<<
+ * 				con = 0
+ * 				#with gil: print('I do not converge')
  */
-        ((struct __pyx_vtabstruct_7bonndit_8tracking_13interpolation_Trilinear *)__pyx_v_self->__pyx_base.__pyx_vtab)->set_new_poss(__pyx_v_self); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 505, __pyx_L4_error)
+    __pyx_t_15 = ((__pyx_v_max_try == 0x3E8) != 0);
+    if (__pyx_t_15) {
 
-        /* "bonndit/tracking/interpolation.pyx":506
- * 					self.cache[self.floor[0], self.floor[1], self.floor[2], i] = int(best[i])
- * 				self.set_new_poss()
- * 				break             # <<<<<<<<<<<<<<
+      /* "bonndit/tracking/interpolation.pyx":509
  * 
  * 			if max_try == 1000:
+ * 				con = 0             # <<<<<<<<<<<<<<
+ * 				#with gil: print('I do not converge')
+ * 				break
  */
-        goto __pyx_L16_break;
+      __pyx_v_con = 0.0;
 
-        /* "bonndit/tracking/interpolation.pyx":501
- * 				con += fabs(best[4*i] - old_best[i])
- * 				old_best[i] = best[4*i]
- * 			if con == 0:             # <<<<<<<<<<<<<<
- * 				con = 1
- * 				for i in range(32):
+      /* "bonndit/tracking/interpolation.pyx":511
+ * 				con = 0
+ * 				#with gil: print('I do not converge')
+ * 				break             # <<<<<<<<<<<<<<
+ * 		set_zero_matrix(self.best_dir)
+ * 		return int(con)
  */
-      }
+      goto __pyx_L13_break;
 
       /* "bonndit/tracking/interpolation.pyx":508
  * 				break
  * 
  * 			if max_try == 1000:             # <<<<<<<<<<<<<<
  * 				con = 0
- * 				with gil: print('I do not converge')
+ * 				#with gil: print('I do not converge')
  */
-      __pyx_t_15 = ((__pyx_v_max_try == 0x3E8) != 0);
-      if (__pyx_t_15) {
-
-        /* "bonndit/tracking/interpolation.pyx":509
- * 
- * 			if max_try == 1000:
- * 				con = 0             # <<<<<<<<<<<<<<
- * 				with gil: print('I do not converge')
- * 				break
- */
-        __pyx_v_con = 0.0;
-
-        /* "bonndit/tracking/interpolation.pyx":510
- * 			if max_try == 1000:
- * 				con = 0
- * 				with gil: print('I do not converge')             # <<<<<<<<<<<<<<
- * 				break
- * 		set_zero_matrix(self.best_dir)
- */
-        {
-            #ifdef WITH_THREAD
-            PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-            #endif
-            /*try:*/ {
-              __pyx_t_23 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_tuple__29, NULL); if (unlikely(!__pyx_t_23)) __PYX_ERR(0, 510, __pyx_L41_error)
-              __Pyx_GOTREF(__pyx_t_23);
-              __Pyx_DECREF(__pyx_t_23); __pyx_t_23 = 0;
-            }
-            /*finally:*/ {
-              /*normal exit:*/{
-                #ifdef WITH_THREAD
-                __Pyx_PyGILState_Release(__pyx_gilstate_save);
-                #endif
-                goto __pyx_L42;
-              }
-              __pyx_L41_error: {
-                #ifdef WITH_THREAD
-                __Pyx_PyGILState_Release(__pyx_gilstate_save);
-                #endif
-                goto __pyx_L4_error;
-              }
-              __pyx_L42:;
-            }
-        }
-
-        /* "bonndit/tracking/interpolation.pyx":511
- * 				con = 0
- * 				with gil: print('I do not converge')
- * 				break             # <<<<<<<<<<<<<<
- * 		set_zero_matrix(self.best_dir)
- * 		return int(con)
- */
-        goto __pyx_L16_break;
-
-        /* "bonndit/tracking/interpolation.pyx":508
- * 				break
- * 
- * 			if max_try == 1000:             # <<<<<<<<<<<<<<
- * 				con = 0
- * 				with gil: print('I do not converge')
- */
-      }
     }
-    __pyx_L16_break:;
+  }
+  __pyx_L13_break:;
 
-    /* "bonndit/tracking/interpolation.pyx":512
- * 				with gil: print('I do not converge')
+  /* "bonndit/tracking/interpolation.pyx":512
+ * 				#with gil: print('I do not converge')
  * 				break
  * 		set_zero_matrix(self.best_dir)             # <<<<<<<<<<<<<<
  * 		return int(con)
  * 
  */
-    if (unlikely(!__pyx_v_self->__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 512, __pyx_L4_error)}
-    __pyx_f_7bonndit_5utilc_14cython_helpers_set_zero_matrix(__pyx_v_self->__pyx_base.best_dir);
+  if (unlikely(!__pyx_v_self->__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 512, __pyx_L1_error)}
+  __pyx_f_7bonndit_5utilc_14cython_helpers_set_zero_matrix(__pyx_v_self->__pyx_base.best_dir);
 
-    /* "bonndit/tracking/interpolation.pyx":513
+  /* "bonndit/tracking/interpolation.pyx":513
  * 				break
  * 		set_zero_matrix(self.best_dir)
  * 		return int(con)             # <<<<<<<<<<<<<<
  * 
  * cdef class UKF(Interpolation):
  */
-    __pyx_r = ((int)__pyx_v_con);
-    goto __pyx_L3_return;
-  }
-
-  /* "bonndit/tracking/interpolation.pyx":449
- * 
- * 	cdef int kmeans(self, double[:] point) nogil except *:
- * 		cdef int i, j, k, l, max_try=0, best_min=0             # <<<<<<<<<<<<<<
- * 		cdef double exponent = 0, best_angle=0, min_angle=0, con=0, test_angle=0
- * 		for i in range(8):
- */
-  /*finally:*/ {
-    __pyx_L3_return: {
-      #ifdef WITH_THREAD
-      __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-      #endif
-      goto __pyx_L0;
-    }
-    __pyx_L4_error: {
-      #ifdef WITH_THREAD
-      __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-      #endif
-      goto __pyx_L1_error;
-    }
-  }
+  __pyx_r = ((int)__pyx_v_con);
+  goto __pyx_L0;
 
   /* "bonndit/tracking/interpolation.pyx":448
  * 					self.cuboid[i, j, k] = best[4*i + j + 1] * test_cuboid[i, permute_poss[best[4*i], j], k]
  * 
- * 	cdef int kmeans(self, double[:] point) nogil except *:             # <<<<<<<<<<<<<<
+ * 	cdef int kmeans(self, double[:] point) : # : # : # nogil except *:             # <<<<<<<<<<<<<<
  * 		cdef int i, j, k, l, max_try=0, best_min=0
  * 		cdef double exponent = 0, best_angle=0, min_angle=0, con=0, test_angle=0
  */
 
   /* function exit code */
-  __pyx_r = 0;
-  goto __pyx_L0;
   __pyx_L1_error:;
-  __PYX_XDEC_MEMVIEW(&__pyx_t_2, 0);
-  __PYX_XDEC_MEMVIEW(&__pyx_t_20, 0);
-  __PYX_XDEC_MEMVIEW(&__pyx_t_21, 0);
-  __Pyx_XDECREF(__pyx_t_23);
-  __Pyx_AddTraceback("bonndit.tracking.interpolation.Trilinear.kmeans", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_2, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_20, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_21, 1);
+  __Pyx_WriteUnraisable("bonndit.tracking.interpolation.Trilinear.kmeans", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
   __pyx_r = 0;
   __pyx_L0:;
-  #ifdef WITH_THREAD
-  __Pyx_PyGILState_Release(__pyx_gilstate_save);
-  #endif
+  __Pyx_TraceReturn(Py_None, 0);
+  __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
@@ -12535,12 +12741,14 @@ static PyObject *__pyx_pw_7bonndit_8tracking_13interpolation_9Trilinear_3__reduc
 
 static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_9Trilinear_2__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_7bonndit_8tracking_13interpolation_Trilinear *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__reduce_cython__", 0);
+  __Pyx_TraceCall("__reduce_cython__", __pyx_f[1], 1, 0, __PYX_ERR(1, 1, __pyx_L1_error));
 
   /* "(tree fragment)":2
  * def __reduce_cython__(self):
@@ -12548,7 +12756,7 @@ static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_9Trilinear_2__reduc
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__30, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__29, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -12566,6 +12774,7 @@ static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_9Trilinear_2__reduc
   __Pyx_AddTraceback("bonndit.tracking.interpolation.Trilinear.__reduce_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -12592,19 +12801,21 @@ static PyObject *__pyx_pw_7bonndit_8tracking_13interpolation_9Trilinear_5__setst
 
 static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_9Trilinear_4__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_7bonndit_8tracking_13interpolation_Trilinear *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__setstate_cython__", 0);
+  __Pyx_TraceCall("__setstate_cython__", __pyx_f[1], 3, 0, __PYX_ERR(1, 3, __pyx_L1_error));
 
   /* "(tree fragment)":4
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__31, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__30, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -12623,6 +12834,7 @@ static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_9Trilinear_4__setst
   __Pyx_AddTraceback("bonndit.tracking.interpolation.Trilinear.__setstate_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -12722,6 +12934,7 @@ static int __pyx_pw_7bonndit_8tracking_13interpolation_3UKF_1__cinit__(PyObject 
 
 static int __pyx_pf_7bonndit_8tracking_13interpolation_3UKF___cinit__(struct __pyx_obj_7bonndit_8tracking_13interpolation_UKF *__pyx_v_self, __Pyx_memviewslice __pyx_v_vector_field, __Pyx_memviewslice __pyx_v_grid, struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *__pyx_v_prob, PyObject *__pyx_v_kwargs) {
   int __pyx_r;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
@@ -12737,6 +12950,7 @@ static int __pyx_pf_7bonndit_8tracking_13interpolation_3UKF___cinit__(struct __p
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__cinit__", 0);
+  __Pyx_TraceCall("__cinit__", __pyx_f[0], 516, 0, __PYX_ERR(0, 516, __pyx_L1_error));
 
   /* "bonndit/tracking/interpolation.pyx":517
  * cdef class UKF(Interpolation):
@@ -12992,7 +13206,7 @@ static int __pyx_pf_7bonndit_8tracking_13interpolation_3UKF___cinit__(struct __p
  */
   __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_kwargs, __pyx_n_u_baseline); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 522, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_9 = (__Pyx_PyUnicode_Equals(__pyx_t_1, __pyx_kp_u__32, Py_NE)); if (unlikely(__pyx_t_9 < 0)) __PYX_ERR(0, 522, __pyx_L1_error)
+  __pyx_t_9 = (__Pyx_PyUnicode_Equals(__pyx_t_1, __pyx_kp_u__31, Py_NE)); if (unlikely(__pyx_t_9 < 0)) __PYX_ERR(0, 522, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_t_9) {
   } else {
@@ -13212,6 +13426,7 @@ static int __pyx_pf_7bonndit_8tracking_13interpolation_3UKF___cinit__(struct __p
   __pyx_L0:;
   __PYX_XDEC_MEMVIEW(&__pyx_v_vector_field, 1);
   __PYX_XDEC_MEMVIEW(&__pyx_v_grid, 1);
+  __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -13237,12 +13452,14 @@ static PyObject *__pyx_pw_7bonndit_8tracking_13interpolation_3UKF_3__reduce_cyth
 
 static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_3UKF_2__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_7bonndit_8tracking_13interpolation_UKF *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__reduce_cython__", 0);
+  __Pyx_TraceCall("__reduce_cython__", __pyx_f[1], 1, 0, __PYX_ERR(1, 1, __pyx_L1_error));
 
   /* "(tree fragment)":2
  * def __reduce_cython__(self):
@@ -13250,7 +13467,7 @@ static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_3UKF_2__reduce_cyth
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__33, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__32, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -13268,6 +13485,7 @@ static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_3UKF_2__reduce_cyth
   __Pyx_AddTraceback("bonndit.tracking.interpolation.UKF.__reduce_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -13294,19 +13512,21 @@ static PyObject *__pyx_pw_7bonndit_8tracking_13interpolation_3UKF_5__setstate_cy
 
 static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_3UKF_4__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_7bonndit_8tracking_13interpolation_UKF *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__setstate_cython__", 0);
+  __Pyx_TraceCall("__setstate_cython__", __pyx_f[1], 3, 0, __PYX_ERR(1, 3, __pyx_L1_error));
 
   /* "(tree fragment)":4
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__34, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__33, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -13325,6 +13545,7 @@ static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_3UKF_4__setstate_cy
   __Pyx_AddTraceback("bonndit.tracking.interpolation.UKF.__setstate_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -13424,6 +13645,7 @@ static int __pyx_pw_7bonndit_8tracking_13interpolation_7UKFFodf_1__cinit__(PyObj
 
 static int __pyx_pf_7bonndit_8tracking_13interpolation_7UKFFodf___cinit__(struct __pyx_obj_7bonndit_8tracking_13interpolation_UKFFodf *__pyx_v_self, __Pyx_memviewslice __pyx_v_vector_field, __Pyx_memviewslice __pyx_v_grid, struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *__pyx_v_prob, PyObject *__pyx_v_kwargs) {
   int __pyx_r;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
@@ -13433,13 +13655,14 @@ static int __pyx_pf_7bonndit_8tracking_13interpolation_7UKFFodf___cinit__(struct
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__cinit__", 0);
+  __Pyx_TraceCall("__cinit__", __pyx_f[0], 533, 0, __PYX_ERR(0, 533, __pyx_L1_error));
 
   /* "bonndit/tracking/interpolation.pyx":534
  * cdef class UKFFodf(UKF):
  * 	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities prob, **kwargs):
  * 		super(UKFFodf, self).__init__(vector_field, grid, prob, **kwargs)             # <<<<<<<<<<<<<<
  * 
- * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) nogil except *:
+ * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) : # : # : # nogil except *:
  */
   __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 534, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -13500,6 +13723,7 @@ static int __pyx_pf_7bonndit_8tracking_13interpolation_7UKFFodf___cinit__(struct
   __pyx_L0:;
   __PYX_XDEC_MEMVIEW(&__pyx_v_vector_field, 1);
   __PYX_XDEC_MEMVIEW(&__pyx_v_grid, 1);
+  __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -13507,7 +13731,7 @@ static int __pyx_pf_7bonndit_8tracking_13interpolation_7UKFFodf___cinit__(struct
 /* "bonndit/tracking/interpolation.pyx":536
  * 		super(UKFFodf, self).__init__(vector_field, grid, prob, **kwargs)
  * 
- * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) nogil except *:             # <<<<<<<<<<<<<<
+ * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) : # : # : # nogil except *:             # <<<<<<<<<<<<<<
  * 		cdef int i, info = 0
  * 		# Interpolate current point
  */
@@ -13516,6 +13740,7 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_7UKFFodf_interpolate(struc
   int __pyx_v_i;
   int __pyx_v_info;
   int __pyx_r;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   int __pyx_t_2;
@@ -13530,117 +13755,93 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_7UKFFodf_interpolate(struc
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
-  #ifdef WITH_THREAD
-  PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-  #endif
   __Pyx_RefNannySetupContext("interpolate", 0);
-  #ifdef WITH_THREAD
-  __Pyx_PyGILState_Release(__pyx_gilstate_save);
-  #endif
+  __Pyx_TraceCall("interpolate", __pyx_f[0], 536, 0, __PYX_ERR(0, 536, __pyx_L1_error));
 
   /* "bonndit/tracking/interpolation.pyx":537
  * 
- * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) nogil except *:
+ * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) : # : # : # nogil except *:
  * 		cdef int i, info = 0             # <<<<<<<<<<<<<<
  * 		# Interpolate current point
  * 		self._kalman.linear(point, self.y, self.mlinear, self.data)
  */
-  /*try:*/ {
-    __pyx_v_info = 0;
+  __pyx_v_info = 0;
 
-    /* "bonndit/tracking/interpolation.pyx":539
+  /* "bonndit/tracking/interpolation.pyx":539
  * 		cdef int i, info = 0
  * 		# Interpolate current point
  * 		self._kalman.linear(point, self.y, self.mlinear, self.data)             # <<<<<<<<<<<<<<
  * 		# If we are at the seed. Initialize the Kalmanfilter
  * 		if restart == 0:
  */
-    if (unlikely(!__pyx_v_self->__pyx_base.y.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 539, __pyx_L4_error)}
-    if (unlikely(!__pyx_v_self->__pyx_base.mlinear.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 539, __pyx_L4_error)}
-    if (unlikely(!__pyx_v_self->__pyx_base.data.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 539, __pyx_L4_error)}
-    ((struct __pyx_vtabstruct_7bonndit_8tracking_6kalman_6kalman_Kalman *)__pyx_v_self->__pyx_base._kalman->__pyx_vtab)->linear(__pyx_v_self->__pyx_base._kalman, __pyx_v_point, __pyx_v_self->__pyx_base.y, __pyx_v_self->__pyx_base.mlinear, __pyx_v_self->__pyx_base.data); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 539, __pyx_L4_error)
+  if (unlikely(!__pyx_v_self->__pyx_base.y.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 539, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->__pyx_base.mlinear.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 539, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->__pyx_base.data.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 539, __pyx_L1_error)}
+  ((struct __pyx_vtabstruct_7bonndit_8tracking_6kalman_6kalman_Kalman *)__pyx_v_self->__pyx_base._kalman->__pyx_vtab)->linear(__pyx_v_self->__pyx_base._kalman, __pyx_v_point, __pyx_v_self->__pyx_base.y, __pyx_v_self->__pyx_base.mlinear, __pyx_v_self->__pyx_base.data); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 539, __pyx_L1_error)
+
+  /* "bonndit/tracking/interpolation.pyx":541
+ * 		self._kalman.linear(point, self.y, self.mlinear, self.data)
+ * 		# If we are at the seed. Initialize the Kalmanfilter
+ * 		if restart == 0:             # <<<<<<<<<<<<<<
+ * 			#with gil:
+ * 			self._model.kinit(self.mean, point, old_dir, self.P, self.y)
+ */
+  __pyx_t_1 = ((__pyx_v_restart == 0) != 0);
+  if (__pyx_t_1) {
+
+    /* "bonndit/tracking/interpolation.pyx":543
+ * 		if restart == 0:
+ * 			#with gil:
+ * 			self._model.kinit(self.mean, point, old_dir, self.P, self.y)             # <<<<<<<<<<<<<<
+ * 		# Run Kalmannfilter
+ * 
+ */
+    if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 543, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->__pyx_base.P.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 543, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->__pyx_base.y.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 543, __pyx_L1_error)}
+    (void)(((struct __pyx_vtabstruct_7bonndit_8tracking_6kalman_5model_AbstractModel *)__pyx_v_self->__pyx_base._model->__pyx_vtab)->kinit(__pyx_v_self->__pyx_base._model, __pyx_v_self->__pyx_base.mean, __pyx_v_point, __pyx_v_old_dir, __pyx_v_self->__pyx_base.P, __pyx_v_self->__pyx_base.y));
 
     /* "bonndit/tracking/interpolation.pyx":541
  * 		self._kalman.linear(point, self.y, self.mlinear, self.data)
  * 		# If we are at the seed. Initialize the Kalmanfilter
  * 		if restart == 0:             # <<<<<<<<<<<<<<
- * 			with gil:
- * 				self._model.kinit(self.mean, point, old_dir, self.P, self.y)
+ * 			#with gil:
+ * 			self._model.kinit(self.mean, point, old_dir, self.P, self.y)
  */
-    __pyx_t_1 = ((__pyx_v_restart == 0) != 0);
-    if (__pyx_t_1) {
+  }
 
-      /* "bonndit/tracking/interpolation.pyx":542
- * 		# If we are at the seed. Initialize the Kalmanfilter
- * 		if restart == 0:
- * 			with gil:             # <<<<<<<<<<<<<<
- * 				self._model.kinit(self.mean, point, old_dir, self.P, self.y)
- * 		# Run Kalmannfilter
- */
-      {
-          #ifdef WITH_THREAD
-          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-          #endif
-          /*try:*/ {
-
-            /* "bonndit/tracking/interpolation.pyx":543
- * 		if restart == 0:
- * 			with gil:
- * 				self._model.kinit(self.mean, point, old_dir, self.P, self.y)             # <<<<<<<<<<<<<<
- * 		# Run Kalmannfilter
- * 
- */
-            if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 543, __pyx_L8_error)}
-            if (unlikely(!__pyx_v_self->__pyx_base.P.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 543, __pyx_L8_error)}
-            if (unlikely(!__pyx_v_self->__pyx_base.y.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 543, __pyx_L8_error)}
-            (void)(((struct __pyx_vtabstruct_7bonndit_8tracking_6kalman_5model_AbstractModel *)__pyx_v_self->__pyx_base._model->__pyx_vtab)->kinit(__pyx_v_self->__pyx_base._model, __pyx_v_self->__pyx_base.mean, __pyx_v_point, __pyx_v_old_dir, __pyx_v_self->__pyx_base.P, __pyx_v_self->__pyx_base.y));
-          }
-
-          /* "bonndit/tracking/interpolation.pyx":542
- * 		# If we are at the seed. Initialize the Kalmanfilter
- * 		if restart == 0:
- * 			with gil:             # <<<<<<<<<<<<<<
- * 				self._model.kinit(self.mean, point, old_dir, self.P, self.y)
- * 		# Run Kalmannfilter
- */
-          /*finally:*/ {
-            /*normal exit:*/{
-              #ifdef WITH_THREAD
-              __Pyx_PyGILState_Release(__pyx_gilstate_save);
-              #endif
-              goto __pyx_L9;
-            }
-            __pyx_L8_error: {
-              #ifdef WITH_THREAD
-              __Pyx_PyGILState_Release(__pyx_gilstate_save);
-              #endif
-              goto __pyx_L4_error;
-            }
-            __pyx_L9:;
-          }
-      }
-
-      /* "bonndit/tracking/interpolation.pyx":541
- * 		self._kalman.linear(point, self.y, self.mlinear, self.data)
- * 		# If we are at the seed. Initialize the Kalmanfilter
- * 		if restart == 0:             # <<<<<<<<<<<<<<
- * 			with gil:
- * 				self._model.kinit(self.mean, point, old_dir, self.P, self.y)
- */
-    }
-
-    /* "bonndit/tracking/interpolation.pyx":546
+  /* "bonndit/tracking/interpolation.pyx":546
  * 		# Run Kalmannfilter
  * 
  * 		info = self._kalman.update_kalman_parameters(self.mean, self.P, self.y)             # <<<<<<<<<<<<<<
  * 		# Order directions by length an
  * 		if info != 0:
  */
-    if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 546, __pyx_L4_error)}
-    if (unlikely(!__pyx_v_self->__pyx_base.P.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 546, __pyx_L4_error)}
-    if (unlikely(!__pyx_v_self->__pyx_base.y.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 546, __pyx_L4_error)}
-    __pyx_t_2 = ((struct __pyx_vtabstruct_7bonndit_8tracking_6kalman_6kalman_Kalman *)__pyx_v_self->__pyx_base._kalman->__pyx_vtab)->update_kalman_parameters(__pyx_v_self->__pyx_base._kalman, __pyx_v_self->__pyx_base.mean, __pyx_v_self->__pyx_base.P, __pyx_v_self->__pyx_base.y); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 546, __pyx_L4_error)
-    __pyx_v_info = __pyx_t_2;
+  if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 546, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->__pyx_base.P.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 546, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->__pyx_base.y.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 546, __pyx_L1_error)}
+  __pyx_t_2 = ((struct __pyx_vtabstruct_7bonndit_8tracking_6kalman_6kalman_Kalman *)__pyx_v_self->__pyx_base._kalman->__pyx_vtab)->update_kalman_parameters(__pyx_v_self->__pyx_base._kalman, __pyx_v_self->__pyx_base.mean, __pyx_v_self->__pyx_base.P, __pyx_v_self->__pyx_base.y); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 546, __pyx_L1_error)
+  __pyx_v_info = __pyx_t_2;
+
+  /* "bonndit/tracking/interpolation.pyx":548
+ * 		info = self._kalman.update_kalman_parameters(self.mean, self.P, self.y)
+ * 		# Order directions by length an
+ * 		if info != 0:             # <<<<<<<<<<<<<<
+ * 			return info
+ * 		for i in range(self._model.num_tensors):
+ */
+  __pyx_t_1 = ((__pyx_v_info != 0) != 0);
+  if (__pyx_t_1) {
+
+    /* "bonndit/tracking/interpolation.pyx":549
+ * 		# Order directions by length an
+ * 		if info != 0:
+ * 			return info             # <<<<<<<<<<<<<<
+ * 		for i in range(self._model.num_tensors):
+ * 			cblas_dscal(3, 1 / cblas_dnrm2(3, &self.mean[4*i], 1), &self.mean[4*i], 1)
+ */
+    __pyx_r = __pyx_v_info;
+    goto __pyx_L0;
 
     /* "bonndit/tracking/interpolation.pyx":548
  * 		info = self._kalman.update_kalman_parameters(self.mean, self.P, self.y)
@@ -13649,63 +13850,62 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_7UKFFodf_interpolate(struc
  * 			return info
  * 		for i in range(self._model.num_tensors):
  */
-    __pyx_t_1 = ((__pyx_v_info != 0) != 0);
-    if (__pyx_t_1) {
+  }
 
-      /* "bonndit/tracking/interpolation.pyx":549
- * 		# Order directions by length an
- * 		if info != 0:
- * 			return info             # <<<<<<<<<<<<<<
- * 		for i in range(self._model.num_tensors):
- * 			cblas_dscal(3, 1 / cblas_dnrm2(3, &self.mean[4*i], 1), &self.mean[4*i], 1)
- */
-      __pyx_r = __pyx_v_info;
-      goto __pyx_L3_return;
-
-      /* "bonndit/tracking/interpolation.pyx":548
- * 		info = self._kalman.update_kalman_parameters(self.mean, self.P, self.y)
- * 		# Order directions by length an
- * 		if info != 0:             # <<<<<<<<<<<<<<
- * 			return info
- * 		for i in range(self._model.num_tensors):
- */
-    }
-
-    /* "bonndit/tracking/interpolation.pyx":550
+  /* "bonndit/tracking/interpolation.pyx":550
  * 		if info != 0:
  * 			return info
  * 		for i in range(self._model.num_tensors):             # <<<<<<<<<<<<<<
  * 			cblas_dscal(3, 1 / cblas_dnrm2(3, &self.mean[4*i], 1), &self.mean[4*i], 1)
  * 			if cblas_ddot(3, &self.mean[4*i], 1, &old_dir[0],1) < 0:
  */
-    __pyx_t_2 = __pyx_v_self->__pyx_base._model->num_tensors;
-    __pyx_t_3 = __pyx_t_2;
-    for (__pyx_t_4 = 0; __pyx_t_4 < __pyx_t_3; __pyx_t_4+=1) {
-      __pyx_v_i = __pyx_t_4;
+  __pyx_t_2 = __pyx_v_self->__pyx_base._model->num_tensors;
+  __pyx_t_3 = __pyx_t_2;
+  for (__pyx_t_4 = 0; __pyx_t_4 < __pyx_t_3; __pyx_t_4+=1) {
+    __pyx_v_i = __pyx_t_4;
 
-      /* "bonndit/tracking/interpolation.pyx":551
+    /* "bonndit/tracking/interpolation.pyx":551
  * 			return info
  * 		for i in range(self._model.num_tensors):
  * 			cblas_dscal(3, 1 / cblas_dnrm2(3, &self.mean[4*i], 1), &self.mean[4*i], 1)             # <<<<<<<<<<<<<<
  * 			if cblas_ddot(3, &self.mean[4*i], 1, &old_dir[0],1) < 0:
  * 				cblas_dscal(3, -1, &self.mean[4*i], 1)
  */
-      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 551, __pyx_L4_error)}
-      __pyx_t_5 = (4 * __pyx_v_i);
-      __pyx_t_6 = cblas_dnrm2(3, (&(*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_5 * __pyx_v_self->__pyx_base.mean.strides[0]) )))), 1); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 551, __pyx_L4_error)
-      if (unlikely(__pyx_t_6 == 0)) {
-        #ifdef WITH_THREAD
-        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-        #endif
-        PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-        #ifdef WITH_THREAD
-        __Pyx_PyGILState_Release(__pyx_gilstate_save);
-        #endif
-        __PYX_ERR(0, 551, __pyx_L4_error)
-      }
-      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 551, __pyx_L4_error)}
-      __pyx_t_5 = (4 * __pyx_v_i);
-      cblas_dscal(3, (1.0 / __pyx_t_6), (&(*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_5 * __pyx_v_self->__pyx_base.mean.strides[0]) )))), 1); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 551, __pyx_L4_error)
+    if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 551, __pyx_L1_error)}
+    __pyx_t_5 = (4 * __pyx_v_i);
+    __pyx_t_6 = cblas_dnrm2(3, (&(*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_5 * __pyx_v_self->__pyx_base.mean.strides[0]) )))), 1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 551, __pyx_L1_error)
+    if (unlikely(__pyx_t_6 == 0)) {
+      PyErr_SetString(PyExc_ZeroDivisionError, "float division");
+      __PYX_ERR(0, 551, __pyx_L1_error)
+    }
+    if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 551, __pyx_L1_error)}
+    __pyx_t_5 = (4 * __pyx_v_i);
+    cblas_dscal(3, (1.0 / __pyx_t_6), (&(*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_5 * __pyx_v_self->__pyx_base.mean.strides[0]) )))), 1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 551, __pyx_L1_error)
+
+    /* "bonndit/tracking/interpolation.pyx":552
+ * 		for i in range(self._model.num_tensors):
+ * 			cblas_dscal(3, 1 / cblas_dnrm2(3, &self.mean[4*i], 1), &self.mean[4*i], 1)
+ * 			if cblas_ddot(3, &self.mean[4*i], 1, &old_dir[0],1) < 0:             # <<<<<<<<<<<<<<
+ * 				cblas_dscal(3, -1, &self.mean[4*i], 1)
+ * 			self.mean[4*i+3] = max(self.mean[4*i+3],_lambda_min)
+ */
+    if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 552, __pyx_L1_error)}
+    __pyx_t_5 = (4 * __pyx_v_i);
+    __pyx_t_7 = 0;
+    __pyx_t_6 = cblas_ddot(3, (&(*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_5 * __pyx_v_self->__pyx_base.mean.strides[0]) )))), 1, (&(*((double *) ( /* dim=0 */ (__pyx_v_old_dir.data + __pyx_t_7 * __pyx_v_old_dir.strides[0]) )))), 1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 552, __pyx_L1_error)
+    __pyx_t_1 = ((__pyx_t_6 < 0.0) != 0);
+    if (__pyx_t_1) {
+
+      /* "bonndit/tracking/interpolation.pyx":553
+ * 			cblas_dscal(3, 1 / cblas_dnrm2(3, &self.mean[4*i], 1), &self.mean[4*i], 1)
+ * 			if cblas_ddot(3, &self.mean[4*i], 1, &old_dir[0],1) < 0:
+ * 				cblas_dscal(3, -1, &self.mean[4*i], 1)             # <<<<<<<<<<<<<<
+ * 			self.mean[4*i+3] = max(self.mean[4*i+3],_lambda_min)
+ * 
+ */
+      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 553, __pyx_L1_error)}
+      __pyx_t_7 = (4 * __pyx_v_i);
+      cblas_dscal(3, -1.0, (&(*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_7 * __pyx_v_self->__pyx_base.mean.strides[0]) )))), 1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 553, __pyx_L1_error)
 
       /* "bonndit/tracking/interpolation.pyx":552
  * 		for i in range(self._model.num_tensors):
@@ -13714,80 +13914,55 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_7UKFFodf_interpolate(struc
  * 				cblas_dscal(3, -1, &self.mean[4*i], 1)
  * 			self.mean[4*i+3] = max(self.mean[4*i+3],_lambda_min)
  */
-      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 552, __pyx_L4_error)}
-      __pyx_t_5 = (4 * __pyx_v_i);
-      __pyx_t_7 = 0;
-      __pyx_t_6 = cblas_ddot(3, (&(*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_5 * __pyx_v_self->__pyx_base.mean.strides[0]) )))), 1, (&(*((double *) ( /* dim=0 */ (__pyx_v_old_dir.data + __pyx_t_7 * __pyx_v_old_dir.strides[0]) )))), 1); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 552, __pyx_L4_error)
-      __pyx_t_1 = ((__pyx_t_6 < 0.0) != 0);
-      if (__pyx_t_1) {
+    }
 
-        /* "bonndit/tracking/interpolation.pyx":553
- * 			cblas_dscal(3, 1 / cblas_dnrm2(3, &self.mean[4*i], 1), &self.mean[4*i], 1)
- * 			if cblas_ddot(3, &self.mean[4*i], 1, &old_dir[0],1) < 0:
- * 				cblas_dscal(3, -1, &self.mean[4*i], 1)             # <<<<<<<<<<<<<<
- * 			self.mean[4*i+3] = max(self.mean[4*i+3],_lambda_min)
- * 
- */
-        if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 553, __pyx_L4_error)}
-        __pyx_t_7 = (4 * __pyx_v_i);
-        cblas_dscal(3, -1.0, (&(*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_7 * __pyx_v_self->__pyx_base.mean.strides[0]) )))), 1); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 553, __pyx_L4_error)
-
-        /* "bonndit/tracking/interpolation.pyx":552
- * 		for i in range(self._model.num_tensors):
- * 			cblas_dscal(3, 1 / cblas_dnrm2(3, &self.mean[4*i], 1), &self.mean[4*i], 1)
- * 			if cblas_ddot(3, &self.mean[4*i], 1, &old_dir[0],1) < 0:             # <<<<<<<<<<<<<<
- * 				cblas_dscal(3, -1, &self.mean[4*i], 1)
- * 			self.mean[4*i+3] = max(self.mean[4*i+3],_lambda_min)
- */
-      }
-
-      /* "bonndit/tracking/interpolation.pyx":554
+    /* "bonndit/tracking/interpolation.pyx":554
  * 			if cblas_ddot(3, &self.mean[4*i], 1, &old_dir[0],1) < 0:
  * 				cblas_dscal(3, -1, &self.mean[4*i], 1)
  * 			self.mean[4*i+3] = max(self.mean[4*i+3],_lambda_min)             # <<<<<<<<<<<<<<
  * 
  * 
  */
-      __pyx_t_6 = __pyx_v_7bonndit_8tracking_13interpolation__lambda_min;
-      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 554, __pyx_L4_error)}
-      __pyx_t_7 = ((4 * __pyx_v_i) + 3);
-      __pyx_t_8 = (*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_7 * __pyx_v_self->__pyx_base.mean.strides[0]) )));
-      if (((__pyx_t_6 > __pyx_t_8) != 0)) {
-        __pyx_t_9 = __pyx_t_6;
-      } else {
-        __pyx_t_9 = __pyx_t_8;
-      }
-      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 554, __pyx_L4_error)}
-      __pyx_t_7 = ((4 * __pyx_v_i) + 3);
-      *((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_7 * __pyx_v_self->__pyx_base.mean.strides[0]) )) = __pyx_t_9;
+    __pyx_t_6 = __pyx_v_7bonndit_8tracking_13interpolation__lambda_min;
+    if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 554, __pyx_L1_error)}
+    __pyx_t_7 = ((4 * __pyx_v_i) + 3);
+    __pyx_t_8 = (*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_7 * __pyx_v_self->__pyx_base.mean.strides[0]) )));
+    if (((__pyx_t_6 > __pyx_t_8) != 0)) {
+      __pyx_t_9 = __pyx_t_6;
+    } else {
+      __pyx_t_9 = __pyx_t_8;
     }
+    if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 554, __pyx_L1_error)}
+    __pyx_t_7 = ((4 * __pyx_v_i) + 3);
+    *((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_7 * __pyx_v_self->__pyx_base.mean.strides[0]) )) = __pyx_t_9;
+  }
 
-    /* "bonndit/tracking/interpolation.pyx":558
+  /* "bonndit/tracking/interpolation.pyx":558
  * 
  * 
  * 		for i in range(self._model.num_tensors):             # <<<<<<<<<<<<<<
  * 			dctov(&self.mean[4*i], self.best_dir[i])
  * 
  */
-    __pyx_t_2 = __pyx_v_self->__pyx_base._model->num_tensors;
-    __pyx_t_3 = __pyx_t_2;
-    for (__pyx_t_4 = 0; __pyx_t_4 < __pyx_t_3; __pyx_t_4+=1) {
-      __pyx_v_i = __pyx_t_4;
+  __pyx_t_2 = __pyx_v_self->__pyx_base._model->num_tensors;
+  __pyx_t_3 = __pyx_t_2;
+  for (__pyx_t_4 = 0; __pyx_t_4 < __pyx_t_3; __pyx_t_4+=1) {
+    __pyx_v_i = __pyx_t_4;
 
-      /* "bonndit/tracking/interpolation.pyx":559
+    /* "bonndit/tracking/interpolation.pyx":559
  * 
  * 		for i in range(self._model.num_tensors):
  * 			dctov(&self.mean[4*i], self.best_dir[i])             # <<<<<<<<<<<<<<
  * 
  * 
  */
-      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 559, __pyx_L4_error)}
-      __pyx_t_7 = (4 * __pyx_v_i);
-      if (unlikely(!__pyx_v_self->__pyx_base.__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 559, __pyx_L4_error)}
-      __pyx_t_10.data = __pyx_v_self->__pyx_base.__pyx_base.best_dir.data;
-      __pyx_t_10.memview = __pyx_v_self->__pyx_base.__pyx_base.best_dir.memview;
-      __PYX_INC_MEMVIEW(&__pyx_t_10, 0);
-      {
+    if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 559, __pyx_L1_error)}
+    __pyx_t_7 = (4 * __pyx_v_i);
+    if (unlikely(!__pyx_v_self->__pyx_base.__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 559, __pyx_L1_error)}
+    __pyx_t_10.data = __pyx_v_self->__pyx_base.__pyx_base.best_dir.data;
+    __pyx_t_10.memview = __pyx_v_self->__pyx_base.__pyx_base.best_dir.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_10, 0);
+    {
     Py_ssize_t __pyx_tmp_idx = __pyx_v_i;
     Py_ssize_t __pyx_tmp_stride = __pyx_v_self->__pyx_base.__pyx_base.best_dir.strides[0];
         __pyx_t_10.data += __pyx_tmp_idx * __pyx_tmp_stride;
@@ -13797,89 +13972,63 @@ __pyx_t_10.shape[0] = __pyx_v_self->__pyx_base.__pyx_base.best_dir.shape[1];
 __pyx_t_10.strides[0] = __pyx_v_self->__pyx_base.__pyx_base.best_dir.strides[1];
     __pyx_t_10.suboffsets[0] = -1;
 
-__pyx_f_7bonndit_5utilc_14cython_helpers_dctov((&(*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_7 * __pyx_v_self->__pyx_base.mean.strides[0]) )))), __pyx_t_10); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 559, __pyx_L4_error)
-      __PYX_XDEC_MEMVIEW(&__pyx_t_10, 0);
-      __pyx_t_10.memview = NULL;
-      __pyx_t_10.data = NULL;
-    }
+__pyx_f_7bonndit_5utilc_14cython_helpers_dctov((&(*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_7 * __pyx_v_self->__pyx_base.mean.strides[0]) )))), __pyx_t_10); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 559, __pyx_L1_error)
+    __PYX_XDEC_MEMVIEW(&__pyx_t_10, 1);
+    __pyx_t_10.memview = NULL;
+    __pyx_t_10.data = NULL;
+  }
 
-    /* "bonndit/tracking/interpolation.pyx":562
+  /* "bonndit/tracking/interpolation.pyx":562
  * 
  * 
  * 		self.prob.calculate_probabilities(self.best_dir, old_dir)             # <<<<<<<<<<<<<<
  * 
  * 		#if self.prob.best_fit[0] != self.mean[0] or self.prob.best_fit[1] != self.mean[1] or self.prob.best_fit[2] != self.mean[2]:
  */
-    if (unlikely(!__pyx_v_self->__pyx_base.__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 562, __pyx_L4_error)}
-    ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self->__pyx_base.__pyx_base.prob->__pyx_vtab)->calculate_probabilities(__pyx_v_self->__pyx_base.__pyx_base.prob, __pyx_v_self->__pyx_base.__pyx_base.best_dir, __pyx_v_old_dir); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 562, __pyx_L4_error)
+  if (unlikely(!__pyx_v_self->__pyx_base.__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 562, __pyx_L1_error)}
+  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self->__pyx_base.__pyx_base.prob->__pyx_vtab)->calculate_probabilities(__pyx_v_self->__pyx_base.__pyx_base.prob, __pyx_v_self->__pyx_base.__pyx_base.best_dir, __pyx_v_old_dir);
 
-    /* "bonndit/tracking/interpolation.pyx":570
+  /* "bonndit/tracking/interpolation.pyx":570
  * 		#		cblas_dswap(4, &self.P[i,4], 1, &self.P[i+4,0], 1)		#:th gil:
  * 		#print('dir', np.array(self.prob.best_fit), np.array(self.best_dir[0]), np.array(self.best_dir[1]))
  * 		self.next_dir = self.prob.best_fit             # <<<<<<<<<<<<<<
  * 
  * 		#if cblas_ddot(3, &self.mean[0], 1, &old_dir[0],1) < cblas_ddot(3, &self.mean[4], 1, &old_dir[0],1):
  */
-    if (unlikely(!__pyx_v_self->__pyx_base.__pyx_base.prob->best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 570, __pyx_L4_error)}
-    __pyx_t_10 = __pyx_v_self->__pyx_base.__pyx_base.prob->best_fit;
-    __PYX_INC_MEMVIEW(&__pyx_t_10, 0);
-    __PYX_XDEC_MEMVIEW(&__pyx_v_self->__pyx_base.__pyx_base.next_dir, 0);
-    __pyx_v_self->__pyx_base.__pyx_base.next_dir = __pyx_t_10;
-    __pyx_t_10.memview = NULL;
-    __pyx_t_10.data = NULL;
+  if (unlikely(!__pyx_v_self->__pyx_base.__pyx_base.prob->best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 570, __pyx_L1_error)}
+  __pyx_t_10 = __pyx_v_self->__pyx_base.__pyx_base.prob->best_fit;
+  __PYX_INC_MEMVIEW(&__pyx_t_10, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_v_self->__pyx_base.__pyx_base.next_dir, 0);
+  __pyx_v_self->__pyx_base.__pyx_base.next_dir = __pyx_t_10;
+  __pyx_t_10.memview = NULL;
+  __pyx_t_10.data = NULL;
 
-    /* "bonndit/tracking/interpolation.pyx":579
+  /* "bonndit/tracking/interpolation.pyx":579
  * 		#dctov(&self.mean[0], self.next_dir)
  * 	#	with gil: print('dir', np.array(self.next_dir))
  * 		return info             # <<<<<<<<<<<<<<
  * 
  * 
  */
-    __pyx_r = __pyx_v_info;
-    goto __pyx_L3_return;
-  }
-
-  /* "bonndit/tracking/interpolation.pyx":537
- * 
- * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) nogil except *:
- * 		cdef int i, info = 0             # <<<<<<<<<<<<<<
- * 		# Interpolate current point
- * 		self._kalman.linear(point, self.y, self.mlinear, self.data)
- */
-  /*finally:*/ {
-    __pyx_L3_return: {
-      #ifdef WITH_THREAD
-      __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-      #endif
-      goto __pyx_L0;
-    }
-    __pyx_L4_error: {
-      #ifdef WITH_THREAD
-      __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-      #endif
-      goto __pyx_L1_error;
-    }
-  }
+  __pyx_r = __pyx_v_info;
+  goto __pyx_L0;
 
   /* "bonndit/tracking/interpolation.pyx":536
  * 		super(UKFFodf, self).__init__(vector_field, grid, prob, **kwargs)
  * 
- * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) nogil except *:             # <<<<<<<<<<<<<<
+ * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) : # : # : # nogil except *:             # <<<<<<<<<<<<<<
  * 		cdef int i, info = 0
  * 		# Interpolate current point
  */
 
   /* function exit code */
-  __pyx_r = 0;
-  goto __pyx_L0;
   __pyx_L1_error:;
-  __PYX_XDEC_MEMVIEW(&__pyx_t_10, 0);
-  __Pyx_AddTraceback("bonndit.tracking.interpolation.UKFFodf.interpolate", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_10, 1);
+  __Pyx_WriteUnraisable("bonndit.tracking.interpolation.UKFFodf.interpolate", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
   __pyx_r = 0;
   __pyx_L0:;
-  #ifdef WITH_THREAD
-  __Pyx_PyGILState_Release(__pyx_gilstate_save);
-  #endif
+  __Pyx_TraceReturn(Py_None, 0);
+  __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
@@ -13904,12 +14053,14 @@ static PyObject *__pyx_pw_7bonndit_8tracking_13interpolation_7UKFFodf_3__reduce_
 
 static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_7UKFFodf_2__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_7bonndit_8tracking_13interpolation_UKFFodf *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__reduce_cython__", 0);
+  __Pyx_TraceCall("__reduce_cython__", __pyx_f[1], 1, 0, __PYX_ERR(1, 1, __pyx_L1_error));
 
   /* "(tree fragment)":2
  * def __reduce_cython__(self):
@@ -13917,7 +14068,7 @@ static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_7UKFFodf_2__reduce_
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__35, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__34, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -13935,6 +14086,7 @@ static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_7UKFFodf_2__reduce_
   __Pyx_AddTraceback("bonndit.tracking.interpolation.UKFFodf.__reduce_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -13961,19 +14113,21 @@ static PyObject *__pyx_pw_7bonndit_8tracking_13interpolation_7UKFFodf_5__setstat
 
 static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_7UKFFodf_4__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_7bonndit_8tracking_13interpolation_UKFFodf *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__setstate_cython__", 0);
+  __Pyx_TraceCall("__setstate_cython__", __pyx_f[1], 3, 0, __PYX_ERR(1, 3, __pyx_L1_error));
 
   /* "(tree fragment)":4
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__36, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__35, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -13992,6 +14146,7 @@ static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_7UKFFodf_4__setstat
   __Pyx_AddTraceback("bonndit.tracking.interpolation.UKFFodf.__setstate_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -14091,6 +14246,7 @@ static int __pyx_pw_7bonndit_8tracking_13interpolation_14UKFMultiTensor_1__cinit
 
 static int __pyx_pf_7bonndit_8tracking_13interpolation_14UKFMultiTensor___cinit__(struct __pyx_obj_7bonndit_8tracking_13interpolation_UKFMultiTensor *__pyx_v_self, __Pyx_memviewslice __pyx_v_vector_field, __Pyx_memviewslice __pyx_v_grid, struct __pyx_obj_7bonndit_8tracking_16alignedDirection_Probabilities *__pyx_v_prob, PyObject *__pyx_v_kwargs) {
   int __pyx_r;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
@@ -14100,13 +14256,14 @@ static int __pyx_pf_7bonndit_8tracking_13interpolation_14UKFMultiTensor___cinit_
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__cinit__", 0);
+  __Pyx_TraceCall("__cinit__", __pyx_f[0], 585, 0, __PYX_ERR(0, 585, __pyx_L1_error));
 
   /* "bonndit/tracking/interpolation.pyx":586
  * cdef class UKFMultiTensor(UKF):
  * 	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities prob, **kwargs):
  * 		super(UKFMultiTensor, self).__init__(vector_field, grid, prob, **kwargs)             # <<<<<<<<<<<<<<
  * 
- * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) nogil except *:
+ * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) : # : # : # nogil except *:
  */
   __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 586, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -14167,6 +14324,7 @@ static int __pyx_pf_7bonndit_8tracking_13interpolation_14UKFMultiTensor___cinit_
   __pyx_L0:;
   __PYX_XDEC_MEMVIEW(&__pyx_v_vector_field, 1);
   __PYX_XDEC_MEMVIEW(&__pyx_v_grid, 1);
+  __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -14174,16 +14332,16 @@ static int __pyx_pf_7bonndit_8tracking_13interpolation_14UKFMultiTensor___cinit_
 /* "bonndit/tracking/interpolation.pyx":588
  * 		super(UKFMultiTensor, self).__init__(vector_field, grid, prob, **kwargs)
  * 
- * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) nogil except *:             # <<<<<<<<<<<<<<
+ * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) : # : # : # nogil except *:             # <<<<<<<<<<<<<<
  * 		cdef int z, i, info = 0
  * 		# Interpolate current point
  */
 
 static int __pyx_f_7bonndit_8tracking_13interpolation_14UKFMultiTensor_interpolate(struct __pyx_obj_7bonndit_8tracking_13interpolation_UKFMultiTensor *__pyx_v_self, __Pyx_memviewslice __pyx_v_point, __Pyx_memviewslice __pyx_v_old_dir, int __pyx_v_restart) {
-  int __pyx_v_z;
   int __pyx_v_i;
   int __pyx_v_info;
   int __pyx_r;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   int __pyx_t_2;
@@ -14194,160 +14352,135 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_14UKFMultiTensor_interpola
   Py_ssize_t __pyx_t_7;
   double __pyx_t_8;
   double __pyx_t_9;
-  __Pyx_memviewslice __pyx_t_10 = { 0, 0, { 0 }, { 0 }, { 0 } };
-  int __pyx_t_11;
-  __Pyx_memviewslice __pyx_t_12 = { 0, 0, { 0 }, { 0 }, { 0 } };
-  Py_ssize_t __pyx_t_13;
+  Py_ssize_t __pyx_t_10;
+  __Pyx_memviewslice __pyx_t_11 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  int __pyx_t_12;
+  __Pyx_memviewslice __pyx_t_13 = { 0, 0, { 0 }, { 0 }, { 0 } };
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
-  #ifdef WITH_THREAD
-  PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-  #endif
   __Pyx_RefNannySetupContext("interpolate", 0);
-  #ifdef WITH_THREAD
-  __Pyx_PyGILState_Release(__pyx_gilstate_save);
-  #endif
+  __Pyx_TraceCall("interpolate", __pyx_f[0], 588, 0, __PYX_ERR(0, 588, __pyx_L1_error));
 
   /* "bonndit/tracking/interpolation.pyx":589
  * 
- * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) nogil except *:
+ * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) : # : # : # nogil except *:
  * 		cdef int z, i, info = 0             # <<<<<<<<<<<<<<
  * 		# Interpolate current point
  * 		self._kalman.linear(point, self.y, self.mlinear, self.data)
  */
-  /*try:*/ {
-    __pyx_v_info = 0;
+  __pyx_v_info = 0;
 
-    /* "bonndit/tracking/interpolation.pyx":591
+  /* "bonndit/tracking/interpolation.pyx":591
  * 		cdef int z, i, info = 0
  * 		# Interpolate current point
  * 		self._kalman.linear(point, self.y, self.mlinear, self.data)             # <<<<<<<<<<<<<<
  * 		# If we are at the seed. Initialize the Kalmanfilter
  * 		if restart == 0:
  */
-    if (unlikely(!__pyx_v_self->__pyx_base.y.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 591, __pyx_L4_error)}
-    if (unlikely(!__pyx_v_self->__pyx_base.mlinear.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 591, __pyx_L4_error)}
-    if (unlikely(!__pyx_v_self->__pyx_base.data.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 591, __pyx_L4_error)}
-    ((struct __pyx_vtabstruct_7bonndit_8tracking_6kalman_6kalman_Kalman *)__pyx_v_self->__pyx_base._kalman->__pyx_vtab)->linear(__pyx_v_self->__pyx_base._kalman, __pyx_v_point, __pyx_v_self->__pyx_base.y, __pyx_v_self->__pyx_base.mlinear, __pyx_v_self->__pyx_base.data); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 591, __pyx_L4_error)
+  if (unlikely(!__pyx_v_self->__pyx_base.y.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 591, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->__pyx_base.mlinear.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 591, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->__pyx_base.data.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 591, __pyx_L1_error)}
+  ((struct __pyx_vtabstruct_7bonndit_8tracking_6kalman_6kalman_Kalman *)__pyx_v_self->__pyx_base._kalman->__pyx_vtab)->linear(__pyx_v_self->__pyx_base._kalman, __pyx_v_point, __pyx_v_self->__pyx_base.y, __pyx_v_self->__pyx_base.mlinear, __pyx_v_self->__pyx_base.data); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 591, __pyx_L1_error)
+
+  /* "bonndit/tracking/interpolation.pyx":593
+ * 		self._kalman.linear(point, self.y, self.mlinear, self.data)
+ * 		# If we are at the seed. Initialize the Kalmanfilter
+ * 		if restart == 0:             # <<<<<<<<<<<<<<
+ * #			with gil:
+ * 				##print(np.array(self.y))
+ */
+  __pyx_t_1 = ((__pyx_v_restart == 0) != 0);
+  if (__pyx_t_1) {
+
+    /* "bonndit/tracking/interpolation.pyx":596
+ * #			with gil:
+ * 				##print(np.array(self.y))
+ * 			self._model.kinit(self.mean, point, old_dir, self.P, self.y)             # <<<<<<<<<<<<<<
+ * 		# Run Kalmannfilter
+ * 		info = self._kalman.update_kalman_parameters(self.mean, self.P, self.y)
+ */
+    if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 596, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->__pyx_base.P.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 596, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->__pyx_base.y.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 596, __pyx_L1_error)}
+    (void)(((struct __pyx_vtabstruct_7bonndit_8tracking_6kalman_5model_AbstractModel *)__pyx_v_self->__pyx_base._model->__pyx_vtab)->kinit(__pyx_v_self->__pyx_base._model, __pyx_v_self->__pyx_base.mean, __pyx_v_point, __pyx_v_old_dir, __pyx_v_self->__pyx_base.P, __pyx_v_self->__pyx_base.y));
 
     /* "bonndit/tracking/interpolation.pyx":593
  * 		self._kalman.linear(point, self.y, self.mlinear, self.data)
  * 		# If we are at the seed. Initialize the Kalmanfilter
  * 		if restart == 0:             # <<<<<<<<<<<<<<
- * 			with gil:
+ * #			with gil:
  * 				##print(np.array(self.y))
  */
-    __pyx_t_1 = ((__pyx_v_restart == 0) != 0);
-    if (__pyx_t_1) {
+  }
 
-      /* "bonndit/tracking/interpolation.pyx":594
- * 		# If we are at the seed. Initialize the Kalmanfilter
- * 		if restart == 0:
- * 			with gil:             # <<<<<<<<<<<<<<
- * 				##print(np.array(self.y))
- * 				self._model.kinit(self.mean, point, old_dir, self.P, self.y)
- */
-      {
-          #ifdef WITH_THREAD
-          PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-          #endif
-          /*try:*/ {
-
-            /* "bonndit/tracking/interpolation.pyx":596
- * 			with gil:
- * 				##print(np.array(self.y))
- * 				self._model.kinit(self.mean, point, old_dir, self.P, self.y)             # <<<<<<<<<<<<<<
- * 		# Run Kalmannfilter
- * 		info = self._kalman.update_kalman_parameters(self.mean, self.P, self.y)
- */
-            if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 596, __pyx_L8_error)}
-            if (unlikely(!__pyx_v_self->__pyx_base.P.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 596, __pyx_L8_error)}
-            if (unlikely(!__pyx_v_self->__pyx_base.y.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 596, __pyx_L8_error)}
-            (void)(((struct __pyx_vtabstruct_7bonndit_8tracking_6kalman_5model_AbstractModel *)__pyx_v_self->__pyx_base._model->__pyx_vtab)->kinit(__pyx_v_self->__pyx_base._model, __pyx_v_self->__pyx_base.mean, __pyx_v_point, __pyx_v_old_dir, __pyx_v_self->__pyx_base.P, __pyx_v_self->__pyx_base.y));
-          }
-
-          /* "bonndit/tracking/interpolation.pyx":594
- * 		# If we are at the seed. Initialize the Kalmanfilter
- * 		if restart == 0:
- * 			with gil:             # <<<<<<<<<<<<<<
- * 				##print(np.array(self.y))
- * 				self._model.kinit(self.mean, point, old_dir, self.P, self.y)
- */
-          /*finally:*/ {
-            /*normal exit:*/{
-              #ifdef WITH_THREAD
-              __Pyx_PyGILState_Release(__pyx_gilstate_save);
-              #endif
-              goto __pyx_L9;
-            }
-            __pyx_L8_error: {
-              #ifdef WITH_THREAD
-              __Pyx_PyGILState_Release(__pyx_gilstate_save);
-              #endif
-              goto __pyx_L4_error;
-            }
-            __pyx_L9:;
-          }
-      }
-
-      /* "bonndit/tracking/interpolation.pyx":593
- * 		self._kalman.linear(point, self.y, self.mlinear, self.data)
- * 		# If we are at the seed. Initialize the Kalmanfilter
- * 		if restart == 0:             # <<<<<<<<<<<<<<
- * 			with gil:
- * 				##print(np.array(self.y))
- */
-    }
-
-    /* "bonndit/tracking/interpolation.pyx":598
- * 				self._model.kinit(self.mean, point, old_dir, self.P, self.y)
+  /* "bonndit/tracking/interpolation.pyx":598
+ * 			self._model.kinit(self.mean, point, old_dir, self.P, self.y)
  * 		# Run Kalmannfilter
  * 		info = self._kalman.update_kalman_parameters(self.mean, self.P, self.y)             # <<<<<<<<<<<<<<
  * 		#cblas_dcopy(self.mean.shape[0], &self.mean[0], 1, &self.tmpmean[0], 1)
  * 		for i in range(self._model.num_tensors):
  */
-    if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 598, __pyx_L4_error)}
-    if (unlikely(!__pyx_v_self->__pyx_base.P.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 598, __pyx_L4_error)}
-    if (unlikely(!__pyx_v_self->__pyx_base.y.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 598, __pyx_L4_error)}
-    __pyx_t_2 = ((struct __pyx_vtabstruct_7bonndit_8tracking_6kalman_6kalman_Kalman *)__pyx_v_self->__pyx_base._kalman->__pyx_vtab)->update_kalman_parameters(__pyx_v_self->__pyx_base._kalman, __pyx_v_self->__pyx_base.mean, __pyx_v_self->__pyx_base.P, __pyx_v_self->__pyx_base.y); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 598, __pyx_L4_error)
-    __pyx_v_info = __pyx_t_2;
+  if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 598, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->__pyx_base.P.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 598, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->__pyx_base.y.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 598, __pyx_L1_error)}
+  __pyx_t_2 = ((struct __pyx_vtabstruct_7bonndit_8tracking_6kalman_6kalman_Kalman *)__pyx_v_self->__pyx_base._kalman->__pyx_vtab)->update_kalman_parameters(__pyx_v_self->__pyx_base._kalman, __pyx_v_self->__pyx_base.mean, __pyx_v_self->__pyx_base.P, __pyx_v_self->__pyx_base.y); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 598, __pyx_L1_error)
+  __pyx_v_info = __pyx_t_2;
 
-    /* "bonndit/tracking/interpolation.pyx":600
+  /* "bonndit/tracking/interpolation.pyx":600
  * 		info = self._kalman.update_kalman_parameters(self.mean, self.P, self.y)
  * 		#cblas_dcopy(self.mean.shape[0], &self.mean[0], 1, &self.tmpmean[0], 1)
  * 		for i in range(self._model.num_tensors):             # <<<<<<<<<<<<<<
  * 			cblas_dscal(3, 1 / cblas_dnrm2(3, &self.mean[5*i], 1), &self.mean[5*i], 1)
  * 			if cblas_ddot(3, &self.mean[5*i], 1, &old_dir[0],1) < 0:
  */
-    __pyx_t_2 = __pyx_v_self->__pyx_base._model->num_tensors;
-    __pyx_t_3 = __pyx_t_2;
-    for (__pyx_t_4 = 0; __pyx_t_4 < __pyx_t_3; __pyx_t_4+=1) {
-      __pyx_v_i = __pyx_t_4;
+  __pyx_t_2 = __pyx_v_self->__pyx_base._model->num_tensors;
+  __pyx_t_3 = __pyx_t_2;
+  for (__pyx_t_4 = 0; __pyx_t_4 < __pyx_t_3; __pyx_t_4+=1) {
+    __pyx_v_i = __pyx_t_4;
 
-      /* "bonndit/tracking/interpolation.pyx":601
+    /* "bonndit/tracking/interpolation.pyx":601
  * 		#cblas_dcopy(self.mean.shape[0], &self.mean[0], 1, &self.tmpmean[0], 1)
  * 		for i in range(self._model.num_tensors):
  * 			cblas_dscal(3, 1 / cblas_dnrm2(3, &self.mean[5*i], 1), &self.mean[5*i], 1)             # <<<<<<<<<<<<<<
  * 			if cblas_ddot(3, &self.mean[5*i], 1, &old_dir[0],1) < 0:
  * 				cblas_dscal(3, -1, &self.mean[5*i], 1)
  */
-      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 601, __pyx_L4_error)}
-      __pyx_t_5 = (5 * __pyx_v_i);
-      __pyx_t_6 = cblas_dnrm2(3, (&(*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_5 * __pyx_v_self->__pyx_base.mean.strides[0]) )))), 1); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 601, __pyx_L4_error)
-      if (unlikely(__pyx_t_6 == 0)) {
-        #ifdef WITH_THREAD
-        PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-        #endif
-        PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-        #ifdef WITH_THREAD
-        __Pyx_PyGILState_Release(__pyx_gilstate_save);
-        #endif
-        __PYX_ERR(0, 601, __pyx_L4_error)
-      }
-      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 601, __pyx_L4_error)}
-      __pyx_t_5 = (5 * __pyx_v_i);
-      cblas_dscal(3, (1.0 / __pyx_t_6), (&(*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_5 * __pyx_v_self->__pyx_base.mean.strides[0]) )))), 1); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 601, __pyx_L4_error)
+    if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 601, __pyx_L1_error)}
+    __pyx_t_5 = (5 * __pyx_v_i);
+    __pyx_t_6 = cblas_dnrm2(3, (&(*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_5 * __pyx_v_self->__pyx_base.mean.strides[0]) )))), 1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 601, __pyx_L1_error)
+    if (unlikely(__pyx_t_6 == 0)) {
+      PyErr_SetString(PyExc_ZeroDivisionError, "float division");
+      __PYX_ERR(0, 601, __pyx_L1_error)
+    }
+    if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 601, __pyx_L1_error)}
+    __pyx_t_5 = (5 * __pyx_v_i);
+    cblas_dscal(3, (1.0 / __pyx_t_6), (&(*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_5 * __pyx_v_self->__pyx_base.mean.strides[0]) )))), 1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 601, __pyx_L1_error)
+
+    /* "bonndit/tracking/interpolation.pyx":602
+ * 		for i in range(self._model.num_tensors):
+ * 			cblas_dscal(3, 1 / cblas_dnrm2(3, &self.mean[5*i], 1), &self.mean[5*i], 1)
+ * 			if cblas_ddot(3, &self.mean[5*i], 1, &old_dir[0],1) < 0:             # <<<<<<<<<<<<<<
+ * 				cblas_dscal(3, -1, &self.mean[5*i], 1)
+ * 			self.mean[5*i+3] = max(self.mean[5*i+3],_lambda_min)
+ */
+    if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 602, __pyx_L1_error)}
+    __pyx_t_5 = (5 * __pyx_v_i);
+    __pyx_t_7 = 0;
+    __pyx_t_6 = cblas_ddot(3, (&(*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_5 * __pyx_v_self->__pyx_base.mean.strides[0]) )))), 1, (&(*((double *) ( /* dim=0 */ (__pyx_v_old_dir.data + __pyx_t_7 * __pyx_v_old_dir.strides[0]) )))), 1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 602, __pyx_L1_error)
+    __pyx_t_1 = ((__pyx_t_6 < 0.0) != 0);
+    if (__pyx_t_1) {
+
+      /* "bonndit/tracking/interpolation.pyx":603
+ * 			cblas_dscal(3, 1 / cblas_dnrm2(3, &self.mean[5*i], 1), &self.mean[5*i], 1)
+ * 			if cblas_ddot(3, &self.mean[5*i], 1, &old_dir[0],1) < 0:
+ * 				cblas_dscal(3, -1, &self.mean[5*i], 1)             # <<<<<<<<<<<<<<
+ * 			self.mean[5*i+3] = max(self.mean[5*i+3],_lambda_min)
+ * 			self.mean[5*i+4] = max(self.mean[5*i+4],_lambda_min)
+ */
+      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 603, __pyx_L1_error)}
+      __pyx_t_7 = (5 * __pyx_v_i);
+      cblas_dscal(3, -1.0, (&(*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_7 * __pyx_v_self->__pyx_base.mean.strides[0]) )))), 1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 603, __pyx_L1_error)
 
       /* "bonndit/tracking/interpolation.pyx":602
  * 		for i in range(self._model.num_tensors):
@@ -14356,104 +14489,96 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_14UKFMultiTensor_interpola
  * 				cblas_dscal(3, -1, &self.mean[5*i], 1)
  * 			self.mean[5*i+3] = max(self.mean[5*i+3],_lambda_min)
  */
-      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 602, __pyx_L4_error)}
-      __pyx_t_5 = (5 * __pyx_v_i);
-      __pyx_t_7 = 0;
-      __pyx_t_6 = cblas_ddot(3, (&(*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_5 * __pyx_v_self->__pyx_base.mean.strides[0]) )))), 1, (&(*((double *) ( /* dim=0 */ (__pyx_v_old_dir.data + __pyx_t_7 * __pyx_v_old_dir.strides[0]) )))), 1); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 602, __pyx_L4_error)
-      __pyx_t_1 = ((__pyx_t_6 < 0.0) != 0);
-      if (__pyx_t_1) {
+    }
 
-        /* "bonndit/tracking/interpolation.pyx":603
- * 			cblas_dscal(3, 1 / cblas_dnrm2(3, &self.mean[5*i], 1), &self.mean[5*i], 1)
- * 			if cblas_ddot(3, &self.mean[5*i], 1, &old_dir[0],1) < 0:
- * 				cblas_dscal(3, -1, &self.mean[5*i], 1)             # <<<<<<<<<<<<<<
- * 			self.mean[5*i+3] = max(self.mean[5*i+3],_lambda_min)
- * 			self.mean[5*i+4] = max(self.mean[5*i+4],_lambda_min)
- */
-        if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 603, __pyx_L4_error)}
-        __pyx_t_7 = (5 * __pyx_v_i);
-        cblas_dscal(3, -1.0, (&(*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_7 * __pyx_v_self->__pyx_base.mean.strides[0]) )))), 1); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 603, __pyx_L4_error)
-
-        /* "bonndit/tracking/interpolation.pyx":602
- * 		for i in range(self._model.num_tensors):
- * 			cblas_dscal(3, 1 / cblas_dnrm2(3, &self.mean[5*i], 1), &self.mean[5*i], 1)
- * 			if cblas_ddot(3, &self.mean[5*i], 1, &old_dir[0],1) < 0:             # <<<<<<<<<<<<<<
- * 				cblas_dscal(3, -1, &self.mean[5*i], 1)
- * 			self.mean[5*i+3] = max(self.mean[5*i+3],_lambda_min)
- */
-      }
-
-      /* "bonndit/tracking/interpolation.pyx":604
+    /* "bonndit/tracking/interpolation.pyx":604
  * 			if cblas_ddot(3, &self.mean[5*i], 1, &old_dir[0],1) < 0:
  * 				cblas_dscal(3, -1, &self.mean[5*i], 1)
  * 			self.mean[5*i+3] = max(self.mean[5*i+3],_lambda_min)             # <<<<<<<<<<<<<<
  * 			self.mean[5*i+4] = max(self.mean[5*i+4],_lambda_min)
  * 
  */
-      __pyx_t_6 = __pyx_v_7bonndit_8tracking_13interpolation__lambda_min;
-      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 604, __pyx_L4_error)}
-      __pyx_t_7 = ((5 * __pyx_v_i) + 3);
-      __pyx_t_8 = (*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_7 * __pyx_v_self->__pyx_base.mean.strides[0]) )));
-      if (((__pyx_t_6 > __pyx_t_8) != 0)) {
-        __pyx_t_9 = __pyx_t_6;
-      } else {
-        __pyx_t_9 = __pyx_t_8;
-      }
-      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 604, __pyx_L4_error)}
-      __pyx_t_7 = ((5 * __pyx_v_i) + 3);
-      *((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_7 * __pyx_v_self->__pyx_base.mean.strides[0]) )) = __pyx_t_9;
+    __pyx_t_6 = __pyx_v_7bonndit_8tracking_13interpolation__lambda_min;
+    if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 604, __pyx_L1_error)}
+    __pyx_t_7 = ((5 * __pyx_v_i) + 3);
+    __pyx_t_8 = (*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_7 * __pyx_v_self->__pyx_base.mean.strides[0]) )));
+    if (((__pyx_t_6 > __pyx_t_8) != 0)) {
+      __pyx_t_9 = __pyx_t_6;
+    } else {
+      __pyx_t_9 = __pyx_t_8;
+    }
+    if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 604, __pyx_L1_error)}
+    __pyx_t_7 = ((5 * __pyx_v_i) + 3);
+    *((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_7 * __pyx_v_self->__pyx_base.mean.strides[0]) )) = __pyx_t_9;
 
-      /* "bonndit/tracking/interpolation.pyx":605
+    /* "bonndit/tracking/interpolation.pyx":605
  * 				cblas_dscal(3, -1, &self.mean[5*i], 1)
  * 			self.mean[5*i+3] = max(self.mean[5*i+3],_lambda_min)
  * 			self.mean[5*i+4] = max(self.mean[5*i+4],_lambda_min)             # <<<<<<<<<<<<<<
  * 
  * 		# Use alw
  */
-      __pyx_t_9 = __pyx_v_7bonndit_8tracking_13interpolation__lambda_min;
-      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 605, __pyx_L4_error)}
-      __pyx_t_7 = ((5 * __pyx_v_i) + 4);
-      __pyx_t_6 = (*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_7 * __pyx_v_self->__pyx_base.mean.strides[0]) )));
-      if (((__pyx_t_9 > __pyx_t_6) != 0)) {
-        __pyx_t_8 = __pyx_t_9;
-      } else {
-        __pyx_t_8 = __pyx_t_6;
-      }
-      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 605, __pyx_L4_error)}
-      __pyx_t_7 = ((5 * __pyx_v_i) + 4);
-      *((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_7 * __pyx_v_self->__pyx_base.mean.strides[0]) )) = __pyx_t_8;
+    __pyx_t_9 = __pyx_v_7bonndit_8tracking_13interpolation__lambda_min;
+    if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 605, __pyx_L1_error)}
+    __pyx_t_7 = ((5 * __pyx_v_i) + 4);
+    __pyx_t_6 = (*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_7 * __pyx_v_self->__pyx_base.mean.strides[0]) )));
+    if (((__pyx_t_9 > __pyx_t_6) != 0)) {
+      __pyx_t_8 = __pyx_t_9;
+    } else {
+      __pyx_t_8 = __pyx_t_6;
     }
+    if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 605, __pyx_L1_error)}
+    __pyx_t_7 = ((5 * __pyx_v_i) + 4);
+    *((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_7 * __pyx_v_self->__pyx_base.mean.strides[0]) )) = __pyx_t_8;
+  }
 
-    /* "bonndit/tracking/interpolation.pyx":608
+  /* "bonndit/tracking/interpolation.pyx":608
  * 
  * 		# Use alw
  * 		for i in range(self._model.num_tensors):             # <<<<<<<<<<<<<<
- * 			self.best_dir[3*i: 3*(i+1)] = self.mean[5*i: 5*i + 3]
- * 		self.prob.calculate_probabilities(self.best_dir, old_dir)
+ * 			if fa(self.mean[5*i + 3],self.mean[5*i + 4],self.mean[5*i + 4]) > 0.15:
+ * 				self.best_dir[i] = self.mean[5*i: 5*i + 3]
  */
-    __pyx_t_2 = __pyx_v_self->__pyx_base._model->num_tensors;
-    __pyx_t_3 = __pyx_t_2;
-    for (__pyx_t_4 = 0; __pyx_t_4 < __pyx_t_3; __pyx_t_4+=1) {
-      __pyx_v_i = __pyx_t_4;
+  __pyx_t_2 = __pyx_v_self->__pyx_base._model->num_tensors;
+  __pyx_t_3 = __pyx_t_2;
+  for (__pyx_t_4 = 0; __pyx_t_4 < __pyx_t_3; __pyx_t_4+=1) {
+    __pyx_v_i = __pyx_t_4;
 
-      /* "bonndit/tracking/interpolation.pyx":609
+    /* "bonndit/tracking/interpolation.pyx":609
  * 		# Use alw
  * 		for i in range(self._model.num_tensors):
- * 			self.best_dir[3*i: 3*(i+1)] = self.mean[5*i: 5*i + 3]             # <<<<<<<<<<<<<<
- * 		self.prob.calculate_probabilities(self.best_dir, old_dir)
- * 		self.next_dir = self.prob.best_fit
+ * 			if fa(self.mean[5*i + 3],self.mean[5*i + 4],self.mean[5*i + 4]) > 0.15:             # <<<<<<<<<<<<<<
+ * 				self.best_dir[i] = self.mean[5*i: 5*i + 3]
+ * 			else:
  */
-      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 609, __pyx_L4_error)}
-      __pyx_t_10.data = __pyx_v_self->__pyx_base.mean.data;
-      __pyx_t_10.memview = __pyx_v_self->__pyx_base.mean.memview;
-      __PYX_INC_MEMVIEW(&__pyx_t_10, 0);
-      __pyx_t_11 = -1;
+    if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 609, __pyx_L1_error)}
+    __pyx_t_7 = ((5 * __pyx_v_i) + 3);
+    if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 609, __pyx_L1_error)}
+    __pyx_t_5 = ((5 * __pyx_v_i) + 4);
+    if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 609, __pyx_L1_error)}
+    __pyx_t_10 = ((5 * __pyx_v_i) + 4);
+    __pyx_t_8 = __pyx_f_7bonndit_5utilc_14cython_helpers_fa((*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_7 * __pyx_v_self->__pyx_base.mean.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_5 * __pyx_v_self->__pyx_base.mean.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_10 * __pyx_v_self->__pyx_base.mean.strides[0]) )))); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 609, __pyx_L1_error)
+    __pyx_t_1 = ((__pyx_t_8 > 0.15) != 0);
+    if (__pyx_t_1) {
+
+      /* "bonndit/tracking/interpolation.pyx":610
+ * 		for i in range(self._model.num_tensors):
+ * 			if fa(self.mean[5*i + 3],self.mean[5*i + 4],self.mean[5*i + 4]) > 0.15:
+ * 				self.best_dir[i] = self.mean[5*i: 5*i + 3]             # <<<<<<<<<<<<<<
+ * 			else:
+ * 				self.mean[5 * i + 4] = min(self.mean[5*i + 3], self.mean[5*i + 4])
+ */
+      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 610, __pyx_L1_error)}
+      __pyx_t_11.data = __pyx_v_self->__pyx_base.mean.data;
+      __pyx_t_11.memview = __pyx_v_self->__pyx_base.mean.memview;
+      __PYX_INC_MEMVIEW(&__pyx_t_11, 0);
+      __pyx_t_12 = -1;
       if (unlikely(__pyx_memoryview_slice_memviewslice(
-    &__pyx_t_10,
+    &__pyx_t_11,
     __pyx_v_self->__pyx_base.mean.shape[0], __pyx_v_self->__pyx_base.mean.strides[0], __pyx_v_self->__pyx_base.mean.suboffsets[0],
     0,
     0,
-    &__pyx_t_11,
+    &__pyx_t_12,
     (5 * __pyx_v_i),
     ((5 * __pyx_v_i) + 3),
     0,
@@ -14462,166 +14587,145 @@ static int __pyx_f_7bonndit_8tracking_13interpolation_14UKFMultiTensor_interpola
     0,
     1) < 0))
 {
-    __PYX_ERR(0, 609, __pyx_L4_error)
+    __PYX_ERR(0, 610, __pyx_L1_error)
 }
 
-if (unlikely(!__pyx_v_self->__pyx_base.__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 609, __pyx_L4_error)}
-      __pyx_t_12.data = __pyx_v_self->__pyx_base.__pyx_base.best_dir.data;
-      __pyx_t_12.memview = __pyx_v_self->__pyx_base.__pyx_base.best_dir.memview;
-      __PYX_INC_MEMVIEW(&__pyx_t_12, 0);
-      __pyx_t_11 = -1;
-      if (unlikely(__pyx_memoryview_slice_memviewslice(
-    &__pyx_t_12,
-    __pyx_v_self->__pyx_base.__pyx_base.best_dir.shape[0], __pyx_v_self->__pyx_base.__pyx_base.best_dir.strides[0], __pyx_v_self->__pyx_base.__pyx_base.best_dir.suboffsets[0],
-    0,
-    0,
-    &__pyx_t_11,
-    (3 * __pyx_v_i),
-    (3 * (__pyx_v_i + 1)),
-    0,
-    1,
-    1,
-    0,
-    1) < 0))
-{
-    __PYX_ERR(0, 609, __pyx_L4_error)
+if (unlikely(!__pyx_v_self->__pyx_base.__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 610, __pyx_L1_error)}
+      __pyx_t_13.data = __pyx_v_self->__pyx_base.__pyx_base.best_dir.data;
+      __pyx_t_13.memview = __pyx_v_self->__pyx_base.__pyx_base.best_dir.memview;
+      __PYX_INC_MEMVIEW(&__pyx_t_13, 0);
+      {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_i;
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_self->__pyx_base.__pyx_base.best_dir.strides[0];
+        __pyx_t_13.data += __pyx_tmp_idx * __pyx_tmp_stride;
 }
 
-__pyx_t_12.shape[1] = __pyx_v_self->__pyx_base.__pyx_base.best_dir.shape[1];
-__pyx_t_12.strides[1] = __pyx_v_self->__pyx_base.__pyx_base.best_dir.strides[1];
-    __pyx_t_12.suboffsets[1] = -1;
+__pyx_t_13.shape[0] = __pyx_v_self->__pyx_base.__pyx_base.best_dir.shape[1];
+__pyx_t_13.strides[0] = __pyx_v_self->__pyx_base.__pyx_base.best_dir.strides[1];
+    __pyx_t_13.suboffsets[0] = -1;
 
-if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_10, __pyx_t_12, 1, 2, 0) < 0)) __PYX_ERR(0, 609, __pyx_L4_error)
-      __PYX_XDEC_MEMVIEW(&__pyx_t_12, 0);
-      __pyx_t_12.memview = NULL;
-      __pyx_t_12.data = NULL;
-      __PYX_XDEC_MEMVIEW(&__pyx_t_10, 0);
-      __pyx_t_10.memview = NULL;
-      __pyx_t_10.data = NULL;
+if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_11, __pyx_t_13, 1, 1, 0) < 0)) __PYX_ERR(0, 610, __pyx_L1_error)
+      __PYX_XDEC_MEMVIEW(&__pyx_t_13, 1);
+      __pyx_t_13.memview = NULL;
+      __pyx_t_13.data = NULL;
+      __PYX_XDEC_MEMVIEW(&__pyx_t_11, 1);
+      __pyx_t_11.memview = NULL;
+      __pyx_t_11.data = NULL;
+
+      /* "bonndit/tracking/interpolation.pyx":609
+ * 		# Use alw
+ * 		for i in range(self._model.num_tensors):
+ * 			if fa(self.mean[5*i + 3],self.mean[5*i + 4],self.mean[5*i + 4]) > 0.15:             # <<<<<<<<<<<<<<
+ * 				self.best_dir[i] = self.mean[5*i: 5*i + 3]
+ * 			else:
+ */
+      goto __pyx_L9;
     }
 
-    /* "bonndit/tracking/interpolation.pyx":610
- * 		for i in range(self._model.num_tensors):
- * 			self.best_dir[3*i: 3*(i+1)] = self.mean[5*i: 5*i + 3]
+    /* "bonndit/tracking/interpolation.pyx":612
+ * 				self.best_dir[i] = self.mean[5*i: 5*i + 3]
+ * 			else:
+ * 				self.mean[5 * i + 4] = min(self.mean[5*i + 3], self.mean[5*i + 4])             # <<<<<<<<<<<<<<
+ * 				set_zero_vector(self.best_dir[i])
+ * 		self.prob.calculate_probabilities(self.best_dir, old_dir)
+ */
+    /*else*/ {
+      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 612, __pyx_L1_error)}
+      __pyx_t_10 = ((5 * __pyx_v_i) + 4);
+      __pyx_t_8 = (*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_10 * __pyx_v_self->__pyx_base.mean.strides[0]) )));
+      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 612, __pyx_L1_error)}
+      __pyx_t_10 = ((5 * __pyx_v_i) + 3);
+      __pyx_t_9 = (*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_10 * __pyx_v_self->__pyx_base.mean.strides[0]) )));
+      if (((__pyx_t_8 < __pyx_t_9) != 0)) {
+        __pyx_t_6 = __pyx_t_8;
+      } else {
+        __pyx_t_6 = __pyx_t_9;
+      }
+      if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 612, __pyx_L1_error)}
+      __pyx_t_10 = ((5 * __pyx_v_i) + 4);
+      *((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_10 * __pyx_v_self->__pyx_base.mean.strides[0]) )) = __pyx_t_6;
+
+      /* "bonndit/tracking/interpolation.pyx":613
+ * 			else:
+ * 				self.mean[5 * i + 4] = min(self.mean[5*i + 3], self.mean[5*i + 4])
+ * 				set_zero_vector(self.best_dir[i])             # <<<<<<<<<<<<<<
+ * 		self.prob.calculate_probabilities(self.best_dir, old_dir)
+ * 		self.next_dir = self.prob.best_fit
+ */
+      if (unlikely(!__pyx_v_self->__pyx_base.__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 613, __pyx_L1_error)}
+      __pyx_t_11.data = __pyx_v_self->__pyx_base.__pyx_base.best_dir.data;
+      __pyx_t_11.memview = __pyx_v_self->__pyx_base.__pyx_base.best_dir.memview;
+      __PYX_INC_MEMVIEW(&__pyx_t_11, 0);
+      {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_i;
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_self->__pyx_base.__pyx_base.best_dir.strides[0];
+        __pyx_t_11.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_11.shape[0] = __pyx_v_self->__pyx_base.__pyx_base.best_dir.shape[1];
+__pyx_t_11.strides[0] = __pyx_v_self->__pyx_base.__pyx_base.best_dir.strides[1];
+    __pyx_t_11.suboffsets[0] = -1;
+
+__pyx_f_7bonndit_5utilc_14cython_helpers_set_zero_vector(__pyx_t_11);
+      __PYX_XDEC_MEMVIEW(&__pyx_t_11, 1);
+      __pyx_t_11.memview = NULL;
+      __pyx_t_11.data = NULL;
+    }
+    __pyx_L9:;
+  }
+
+  /* "bonndit/tracking/interpolation.pyx":614
+ * 				self.mean[5 * i + 4] = min(self.mean[5*i + 3], self.mean[5*i + 4])
+ * 				set_zero_vector(self.best_dir[i])
  * 		self.prob.calculate_probabilities(self.best_dir, old_dir)             # <<<<<<<<<<<<<<
  * 		self.next_dir = self.prob.best_fit
  * #		if self._model.num_tensors == 1:
  */
-    if (unlikely(!__pyx_v_self->__pyx_base.__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 610, __pyx_L4_error)}
-    ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self->__pyx_base.__pyx_base.prob->__pyx_vtab)->calculate_probabilities(__pyx_v_self->__pyx_base.__pyx_base.prob, __pyx_v_self->__pyx_base.__pyx_base.best_dir, __pyx_v_old_dir); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 610, __pyx_L4_error)
+  if (unlikely(!__pyx_v_self->__pyx_base.__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 614, __pyx_L1_error)}
+  ((struct __pyx_vtabstruct_7bonndit_8tracking_16alignedDirection_Probabilities *)__pyx_v_self->__pyx_base.__pyx_base.prob->__pyx_vtab)->calculate_probabilities(__pyx_v_self->__pyx_base.__pyx_base.prob, __pyx_v_self->__pyx_base.__pyx_base.best_dir, __pyx_v_old_dir);
 
-    /* "bonndit/tracking/interpolation.pyx":611
- * 			self.best_dir[3*i: 3*(i+1)] = self.mean[5*i: 5*i + 3]
+  /* "bonndit/tracking/interpolation.pyx":615
+ * 				set_zero_vector(self.best_dir[i])
  * 		self.prob.calculate_probabilities(self.best_dir, old_dir)
  * 		self.next_dir = self.prob.best_fit             # <<<<<<<<<<<<<<
  * #		if self._model.num_tensors == 1:
  * #			dctov(&self.mean[0], self.next_dir)
  */
-    if (unlikely(!__pyx_v_self->__pyx_base.__pyx_base.prob->best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 611, __pyx_L4_error)}
-    __pyx_t_10 = __pyx_v_self->__pyx_base.__pyx_base.prob->best_fit;
-    __PYX_INC_MEMVIEW(&__pyx_t_10, 0);
-    __PYX_XDEC_MEMVIEW(&__pyx_v_self->__pyx_base.__pyx_base.next_dir, 0);
-    __pyx_v_self->__pyx_base.__pyx_base.next_dir = __pyx_t_10;
-    __pyx_t_10.memview = NULL;
-    __pyx_t_10.data = NULL;
+  if (unlikely(!__pyx_v_self->__pyx_base.__pyx_base.prob->best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 615, __pyx_L1_error)}
+  __pyx_t_11 = __pyx_v_self->__pyx_base.__pyx_base.prob->best_fit;
+  __PYX_INC_MEMVIEW(&__pyx_t_11, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_v_self->__pyx_base.__pyx_base.next_dir, 0);
+  __pyx_v_self->__pyx_base.__pyx_base.next_dir = __pyx_t_11;
+  __pyx_t_11.memview = NULL;
+  __pyx_t_11.data = NULL;
 
-    /* "bonndit/tracking/interpolation.pyx":648
- * 
- * 		#		#with gil: print('dir', np.array(self.next_dir))
- * 		z = 0             # <<<<<<<<<<<<<<
- * 
- * 		if fa(self.mean[5 + 3],self.mean[5 + 4],self.mean[5 + 4]) < 0.15:
- */
-    __pyx_v_z = 0;
-
-    /* "bonndit/tracking/interpolation.pyx":650
- * 		z = 0
- * 
- * 		if fa(self.mean[5 + 3],self.mean[5 + 4],self.mean[5 + 4]) < 0.15:             # <<<<<<<<<<<<<<
- * 			z += 1
- * 
- */
-    if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 650, __pyx_L4_error)}
-    __pyx_t_7 = 8;
-    if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 650, __pyx_L4_error)}
-    __pyx_t_5 = 9;
-    if (unlikely(!__pyx_v_self->__pyx_base.mean.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 650, __pyx_L4_error)}
-    __pyx_t_13 = 9;
-    __pyx_t_8 = __pyx_f_7bonndit_5utilc_14cython_helpers_fa((*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_7 * __pyx_v_self->__pyx_base.mean.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_5 * __pyx_v_self->__pyx_base.mean.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.mean.data + __pyx_t_13 * __pyx_v_self->__pyx_base.mean.strides[0]) )))); if (unlikely(__Pyx_ErrOccurredWithGIL())) __PYX_ERR(0, 650, __pyx_L4_error)
-    __pyx_t_1 = ((__pyx_t_8 < 0.15) != 0);
-    if (__pyx_t_1) {
-
-      /* "bonndit/tracking/interpolation.pyx":651
- * 
- * 		if fa(self.mean[5 + 3],self.mean[5 + 4],self.mean[5 + 4]) < 0.15:
- * 			z += 1             # <<<<<<<<<<<<<<
- * 
- * 		return info
- */
-      __pyx_v_z = (__pyx_v_z + 1);
-
-      /* "bonndit/tracking/interpolation.pyx":650
- * 		z = 0
- * 
- * 		if fa(self.mean[5 + 3],self.mean[5 + 4],self.mean[5 + 4]) < 0.15:             # <<<<<<<<<<<<<<
- * 			z += 1
- * 
- */
-    }
-
-    /* "bonndit/tracking/interpolation.pyx":653
- * 			z += 1
+  /* "bonndit/tracking/interpolation.pyx":657
+ * #			z += 1
  * 
  * 		return info             # <<<<<<<<<<<<<<
  * 
  * 
  */
-    __pyx_r = __pyx_v_info;
-    goto __pyx_L3_return;
-  }
-
-  /* "bonndit/tracking/interpolation.pyx":589
- * 
- * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) nogil except *:
- * 		cdef int z, i, info = 0             # <<<<<<<<<<<<<<
- * 		# Interpolate current point
- * 		self._kalman.linear(point, self.y, self.mlinear, self.data)
- */
-  /*finally:*/ {
-    __pyx_L3_return: {
-      #ifdef WITH_THREAD
-      __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-      #endif
-      goto __pyx_L0;
-    }
-    __pyx_L4_error: {
-      #ifdef WITH_THREAD
-      __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
-      #endif
-      goto __pyx_L1_error;
-    }
-  }
+  __pyx_r = __pyx_v_info;
+  goto __pyx_L0;
 
   /* "bonndit/tracking/interpolation.pyx":588
  * 		super(UKFMultiTensor, self).__init__(vector_field, grid, prob, **kwargs)
  * 
- * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) nogil except *:             # <<<<<<<<<<<<<<
+ * 	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) : # : # : # nogil except *:             # <<<<<<<<<<<<<<
  * 		cdef int z, i, info = 0
  * 		# Interpolate current point
  */
 
   /* function exit code */
-  __pyx_r = 0;
-  goto __pyx_L0;
   __pyx_L1_error:;
-  __PYX_XDEC_MEMVIEW(&__pyx_t_10, 0);
-  __PYX_XDEC_MEMVIEW(&__pyx_t_12, 0);
-  __Pyx_AddTraceback("bonndit.tracking.interpolation.UKFMultiTensor.interpolate", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_11, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_13, 1);
+  __Pyx_WriteUnraisable("bonndit.tracking.interpolation.UKFMultiTensor.interpolate", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
   __pyx_r = 0;
   __pyx_L0:;
-  #ifdef WITH_THREAD
-  __Pyx_PyGILState_Release(__pyx_gilstate_save);
-  #endif
+  __Pyx_TraceReturn(Py_None, 0);
+  __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
@@ -14646,12 +14750,14 @@ static PyObject *__pyx_pw_7bonndit_8tracking_13interpolation_14UKFMultiTensor_3_
 
 static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_14UKFMultiTensor_2__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_7bonndit_8tracking_13interpolation_UKFMultiTensor *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__reduce_cython__", 0);
+  __Pyx_TraceCall("__reduce_cython__", __pyx_f[1], 1, 0, __PYX_ERR(1, 1, __pyx_L1_error));
 
   /* "(tree fragment)":2
  * def __reduce_cython__(self):
@@ -14659,7 +14765,7 @@ static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_14UKFMultiTensor_2_
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__37, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__36, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -14677,6 +14783,7 @@ static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_14UKFMultiTensor_2_
   __Pyx_AddTraceback("bonndit.tracking.interpolation.UKFMultiTensor.__reduce_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -14703,19 +14810,21 @@ static PyObject *__pyx_pw_7bonndit_8tracking_13interpolation_14UKFMultiTensor_5_
 
 static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_14UKFMultiTensor_4__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_7bonndit_8tracking_13interpolation_UKFMultiTensor *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__setstate_cython__", 0);
+  __Pyx_TraceCall("__setstate_cython__", __pyx_f[1], 3, 0, __PYX_ERR(1, 3, __pyx_L1_error));
 
   /* "(tree fragment)":4
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__38, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__37, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -14734,6 +14843,7 @@ static PyObject *__pyx_pf_7bonndit_8tracking_13interpolation_14UKFMultiTensor_4_
   __Pyx_AddTraceback("bonndit.tracking.interpolation.UKFMultiTensor.__setstate_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -14883,6 +14993,7 @@ static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __
   PyObject **__pyx_v_p;
   char __pyx_v_order;
   int __pyx_r;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   Py_ssize_t __pyx_t_1;
   int __pyx_t_2;
@@ -14899,6 +15010,7 @@ static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__cinit__", 0);
+  __Pyx_TraceCall("__cinit__", __pyx_f[1], 122, 0, __PYX_ERR(1, 122, __pyx_L1_error));
   __Pyx_INCREF(__pyx_v_format);
 
   /* "View.MemoryView":129
@@ -14941,7 +15053,7 @@ static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __
  * 
  *         if itemsize <= 0:
  */
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__39, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 133, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__38, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 133, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -14973,7 +15085,7 @@ static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __
  * 
  *         if not isinstance(format, bytes):
  */
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__40, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 136, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__39, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 136, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -15100,7 +15212,7 @@ static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __
  * 
  * 
  */
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_MemoryError, __pyx_tuple__41, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 148, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_MemoryError, __pyx_tuple__40, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 148, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -15374,7 +15486,7 @@ static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __
  * 
  *             if self.dtype_is_object:
  */
-      __pyx_t_10 = __Pyx_PyObject_Call(__pyx_builtin_MemoryError, __pyx_tuple__42, NULL); if (unlikely(!__pyx_t_10)) __PYX_ERR(1, 176, __pyx_L1_error)
+      __pyx_t_10 = __Pyx_PyObject_Call(__pyx_builtin_MemoryError, __pyx_tuple__41, NULL); if (unlikely(!__pyx_t_10)) __PYX_ERR(1, 176, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_10);
       __Pyx_Raise(__pyx_t_10, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
@@ -15485,6 +15597,7 @@ static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __
   __pyx_r = -1;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_format);
+  __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -15513,6 +15626,7 @@ static CYTHON_UNUSED int __pyx_array_getbuffer(PyObject *__pyx_v_self, Py_buffer
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array_2__getbuffer__(struct __pyx_array_obj *__pyx_v_self, Py_buffer *__pyx_v_info, int __pyx_v_flags) {
   int __pyx_v_bufmode;
   int __pyx_r;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   int __pyx_t_2;
@@ -15531,6 +15645,7 @@ static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array_2__getbuffer__(stru
   __Pyx_RefNannySetupContext("__getbuffer__", 0);
   __pyx_v_info->obj = Py_None; __Pyx_INCREF(Py_None);
   __Pyx_GIVEREF(__pyx_v_info->obj);
+  __Pyx_TraceCall("__getbuffer__", __pyx_f[1], 185, 0, __PYX_ERR(1, 185, __pyx_L1_error));
 
   /* "View.MemoryView":186
  *     @cname('getbuffer')
@@ -15618,7 +15733,7 @@ static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array_2__getbuffer__(stru
  *         info.buf = self.data
  *         info.len = self.len
  */
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__43, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 192, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__42, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 192, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -15792,6 +15907,7 @@ static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array_2__getbuffer__(stru
     __Pyx_DECREF(__pyx_v_info->obj); __pyx_v_info->obj = 0;
   }
   __pyx_L2:;
+  __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -15816,9 +15932,14 @@ static void __pyx_array___dealloc__(PyObject *__pyx_v_self) {
 }
 
 static void __pyx_array___pyx_pf_15View_dot_MemoryView_5array_4__dealloc__(struct __pyx_array_obj *__pyx_v_self) {
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__dealloc__", 0);
+  __Pyx_TraceCall("__dealloc__", __pyx_f[1], 211, 0, __PYX_ERR(1, 211, __pyx_L1_error));
 
   /* "View.MemoryView":212
  * 
@@ -15924,6 +16045,11 @@ static void __pyx_array___pyx_pf_15View_dot_MemoryView_5array_4__dealloc__(struc
  */
 
   /* function exit code */
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_WriteUnraisable("View.MemoryView.array.__dealloc__", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
+  __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
 }
 
@@ -15950,12 +16076,14 @@ static PyObject *__pyx_pw_15View_dot_MemoryView_5array_7memview_1__get__(PyObjec
 
 static PyObject *__pyx_pf_15View_dot_MemoryView_5array_7memview___get__(struct __pyx_array_obj *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
+  __Pyx_TraceCall("__get__", __pyx_f[1], 222, 0, __PYX_ERR(1, 222, __pyx_L1_error));
 
   /* "View.MemoryView":223
  *     @property
@@ -15986,6 +16114,7 @@ static PyObject *__pyx_pf_15View_dot_MemoryView_5array_7memview___get__(struct _
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -16001,6 +16130,7 @@ static PyObject *__pyx_pf_15View_dot_MemoryView_5array_7memview___get__(struct _
 static PyObject *__pyx_array_get_memview(struct __pyx_array_obj *__pyx_v_self) {
   int __pyx_v_flags;
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
@@ -16009,6 +16139,7 @@ static PyObject *__pyx_array_get_memview(struct __pyx_array_obj *__pyx_v_self) {
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("get_memview", 0);
+  __Pyx_TraceCall("get_memview", __pyx_f[1], 226, 0, __PYX_ERR(1, 226, __pyx_L1_error));
 
   /* "View.MemoryView":227
  *     @cname('get_memview')
@@ -16066,6 +16197,7 @@ static PyObject *__pyx_array_get_memview(struct __pyx_array_obj *__pyx_v_self) {
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -16093,8 +16225,13 @@ static Py_ssize_t __pyx_array___len__(PyObject *__pyx_v_self) {
 
 static Py_ssize_t __pyx_array___pyx_pf_15View_dot_MemoryView_5array_6__len__(struct __pyx_array_obj *__pyx_v_self) {
   Py_ssize_t __pyx_r;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__len__", 0);
+  __Pyx_TraceCall("__len__", __pyx_f[1], 230, 0, __PYX_ERR(1, 230, __pyx_L1_error));
 
   /* "View.MemoryView":231
  * 
@@ -16115,7 +16252,11 @@ static Py_ssize_t __pyx_array___pyx_pf_15View_dot_MemoryView_5array_6__len__(str
  */
 
   /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_AddTraceback("View.MemoryView.array.__len__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = -1;
   __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -16143,6 +16284,7 @@ static PyObject *__pyx_array___getattr__(PyObject *__pyx_v_self, PyObject *__pyx
 
 static PyObject *__pyx_array___pyx_pf_15View_dot_MemoryView_5array_8__getattr__(struct __pyx_array_obj *__pyx_v_self, PyObject *__pyx_v_attr) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
@@ -16150,6 +16292,7 @@ static PyObject *__pyx_array___pyx_pf_15View_dot_MemoryView_5array_8__getattr__(
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__getattr__", 0);
+  __Pyx_TraceCall("__getattr__", __pyx_f[1], 233, 0, __PYX_ERR(1, 233, __pyx_L1_error));
 
   /* "View.MemoryView":234
  * 
@@ -16184,6 +16327,7 @@ static PyObject *__pyx_array___pyx_pf_15View_dot_MemoryView_5array_8__getattr__(
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -16211,6 +16355,7 @@ static PyObject *__pyx_array___getitem__(PyObject *__pyx_v_self, PyObject *__pyx
 
 static PyObject *__pyx_array___pyx_pf_15View_dot_MemoryView_5array_10__getitem__(struct __pyx_array_obj *__pyx_v_self, PyObject *__pyx_v_item) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
@@ -16218,6 +16363,7 @@ static PyObject *__pyx_array___pyx_pf_15View_dot_MemoryView_5array_10__getitem__
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__getitem__", 0);
+  __Pyx_TraceCall("__getitem__", __pyx_f[1], 236, 0, __PYX_ERR(1, 236, __pyx_L1_error));
 
   /* "View.MemoryView":237
  * 
@@ -16252,6 +16398,7 @@ static PyObject *__pyx_array___pyx_pf_15View_dot_MemoryView_5array_10__getitem__
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -16279,12 +16426,14 @@ static int __pyx_array___setitem__(PyObject *__pyx_v_self, PyObject *__pyx_v_ite
 
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array_12__setitem__(struct __pyx_array_obj *__pyx_v_self, PyObject *__pyx_v_item, PyObject *__pyx_v_value) {
   int __pyx_r;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__setitem__", 0);
+  __Pyx_TraceCall("__setitem__", __pyx_f[1], 239, 0, __PYX_ERR(1, 239, __pyx_L1_error));
 
   /* "View.MemoryView":240
  * 
@@ -16314,6 +16463,7 @@ static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array_12__setitem__(struc
   __Pyx_AddTraceback("View.MemoryView.array.__setitem__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = -1;
   __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -16339,12 +16489,14 @@ static PyObject *__pyx_pw___pyx_array_1__reduce_cython__(PyObject *__pyx_v_self,
 
 static PyObject *__pyx_pf___pyx_array___reduce_cython__(CYTHON_UNUSED struct __pyx_array_obj *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__reduce_cython__", 0);
+  __Pyx_TraceCall("__reduce_cython__", __pyx_f[1], 1, 0, __PYX_ERR(1, 1, __pyx_L1_error));
 
   /* "(tree fragment)":2
  * def __reduce_cython__(self):
@@ -16352,7 +16504,7 @@ static PyObject *__pyx_pf___pyx_array___reduce_cython__(CYTHON_UNUSED struct __p
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__44, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__43, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -16370,6 +16522,7 @@ static PyObject *__pyx_pf___pyx_array___reduce_cython__(CYTHON_UNUSED struct __p
   __Pyx_AddTraceback("View.MemoryView.array.__reduce_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -16396,19 +16549,21 @@ static PyObject *__pyx_pw___pyx_array_3__setstate_cython__(PyObject *__pyx_v_sel
 
 static PyObject *__pyx_pf___pyx_array_2__setstate_cython__(CYTHON_UNUSED struct __pyx_array_obj *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__setstate_cython__", 0);
+  __Pyx_TraceCall("__setstate_cython__", __pyx_f[1], 3, 0, __PYX_ERR(1, 3, __pyx_L1_error));
 
   /* "(tree fragment)":4
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__45, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__44, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -16427,6 +16582,7 @@ static PyObject *__pyx_pf___pyx_array_2__setstate_cython__(CYTHON_UNUSED struct 
   __Pyx_AddTraceback("View.MemoryView.array.__setstate_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -16442,6 +16598,7 @@ static PyObject *__pyx_pf___pyx_array_2__setstate_cython__(CYTHON_UNUSED struct 
 static struct __pyx_array_obj *__pyx_array_new(PyObject *__pyx_v_shape, Py_ssize_t __pyx_v_itemsize, char *__pyx_v_format, char *__pyx_v_mode, char *__pyx_v_buf) {
   struct __pyx_array_obj *__pyx_v_result = 0;
   struct __pyx_array_obj *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   PyObject *__pyx_t_2 = NULL;
@@ -16452,6 +16609,7 @@ static struct __pyx_array_obj *__pyx_array_new(PyObject *__pyx_v_shape, Py_ssize
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("array_cwrapper", 0);
+  __Pyx_TraceCall("array_cwrapper", __pyx_f[1], 244, 0, __PYX_ERR(1, 244, __pyx_L1_error));
 
   /* "View.MemoryView":248
  *     cdef array result
@@ -16602,6 +16760,7 @@ static struct __pyx_array_obj *__pyx_array_new(PyObject *__pyx_v_shape, Py_ssize
   __pyx_L0:;
   __Pyx_XDECREF((PyObject *)__pyx_v_result);
   __Pyx_XGIVEREF((PyObject *)__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -16669,8 +16828,13 @@ static int __pyx_MemviewEnum___init__(PyObject *__pyx_v_self, PyObject *__pyx_ar
 
 static int __pyx_MemviewEnum___pyx_pf_15View_dot_MemoryView_4Enum___init__(struct __pyx_MemviewEnum_obj *__pyx_v_self, PyObject *__pyx_v_name) {
   int __pyx_r;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__init__", 0);
+  __Pyx_TraceCall("__init__", __pyx_f[1], 281, 0, __PYX_ERR(1, 281, __pyx_L1_error));
 
   /* "View.MemoryView":282
  *     cdef object name
@@ -16695,6 +16859,12 @@ static int __pyx_MemviewEnum___pyx_pf_15View_dot_MemoryView_4Enum___init__(struc
 
   /* function exit code */
   __pyx_r = 0;
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_AddTraceback("View.MemoryView.Enum.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = -1;
+  __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -16722,8 +16892,13 @@ static PyObject *__pyx_MemviewEnum___repr__(PyObject *__pyx_v_self) {
 
 static PyObject *__pyx_MemviewEnum___pyx_pf_15View_dot_MemoryView_4Enum_2__repr__(struct __pyx_MemviewEnum_obj *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__repr__", 0);
+  __Pyx_TraceCall("__repr__", __pyx_f[1], 283, 0, __PYX_ERR(1, 283, __pyx_L1_error));
 
   /* "View.MemoryView":284
  *         self.name = name
@@ -16746,8 +16921,12 @@ static PyObject *__pyx_MemviewEnum___pyx_pf_15View_dot_MemoryView_4Enum_2__repr_
  */
 
   /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_AddTraceback("View.MemoryView.Enum.__repr__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -16776,6 +16955,7 @@ static PyObject *__pyx_pf___pyx_MemviewEnum___reduce_cython__(struct __pyx_Memvi
   PyObject *__pyx_v__dict = 0;
   int __pyx_v_use_setstate;
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_t_2;
@@ -16786,6 +16966,7 @@ static PyObject *__pyx_pf___pyx_MemviewEnum___reduce_cython__(struct __pyx_Memvi
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__reduce_cython__", 0);
+  __Pyx_TraceCall("__reduce_cython__", __pyx_f[1], 1, 0, __PYX_ERR(1, 1, __pyx_L1_error));
 
   /* "(tree fragment)":5
  *     cdef object _dict
@@ -16982,6 +17163,7 @@ static PyObject *__pyx_pf___pyx_MemviewEnum___reduce_cython__(struct __pyx_Memvi
   __Pyx_XDECREF(__pyx_v_state);
   __Pyx_XDECREF(__pyx_v__dict);
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -17008,12 +17190,14 @@ static PyObject *__pyx_pw___pyx_MemviewEnum_3__setstate_cython__(PyObject *__pyx
 
 static PyObject *__pyx_pf___pyx_MemviewEnum_2__setstate_cython__(struct __pyx_MemviewEnum_obj *__pyx_v_self, PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__setstate_cython__", 0);
+  __Pyx_TraceCall("__setstate_cython__", __pyx_f[1], 16, 0, __PYX_ERR(1, 16, __pyx_L1_error));
 
   /* "(tree fragment)":17
  *         return __pyx_unpickle_Enum, (type(self), 0xb068931, state)
@@ -17041,6 +17225,7 @@ static PyObject *__pyx_pf___pyx_MemviewEnum_2__setstate_cython__(struct __pyx_Me
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -17057,7 +17242,12 @@ static void *__pyx_align_pointer(void *__pyx_v_memory, size_t __pyx_v_alignment)
   Py_intptr_t __pyx_v_aligned_p;
   size_t __pyx_v_offset;
   void *__pyx_r;
+  __Pyx_TraceDeclarations
   int __pyx_t_1;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_TraceCall("align_pointer", __pyx_f[1], 298, 1, __PYX_ERR(1, 298, __pyx_L1_error));
 
   /* "View.MemoryView":300
  * cdef void *align_pointer(void *memory, size_t alignment) nogil:
@@ -17124,7 +17314,11 @@ static void *__pyx_align_pointer(void *__pyx_v_memory, size_t __pyx_v_alignment)
  */
 
   /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_WriteUnraisable("View.MemoryView.align_pointer", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 1);
+  __pyx_r = 0;
   __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 1);
   return __pyx_r;
 }
 
@@ -17220,6 +17414,7 @@ static int __pyx_memoryview___cinit__(PyObject *__pyx_v_self, PyObject *__pyx_ar
 
 static int __pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview___cinit__(struct __pyx_memoryview_obj *__pyx_v_self, PyObject *__pyx_v_obj, int __pyx_v_flags, int __pyx_v_dtype_is_object) {
   int __pyx_r;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   int __pyx_t_2;
@@ -17229,6 +17424,7 @@ static int __pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview___cinit_
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__cinit__", 0);
+  __Pyx_TraceCall("__cinit__", __pyx_f[1], 345, 0, __PYX_ERR(1, 345, __pyx_L1_error));
 
   /* "View.MemoryView":346
  * 
@@ -17503,6 +17699,7 @@ static int __pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview___cinit_
   __Pyx_AddTraceback("View.MemoryView.memoryview.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = -1;
   __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -17528,6 +17725,7 @@ static void __pyx_memoryview___dealloc__(PyObject *__pyx_v_self) {
 
 static void __pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_2__dealloc__(struct __pyx_memoryview_obj *__pyx_v_self) {
   int __pyx_v_i;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   int __pyx_t_2;
@@ -17536,7 +17734,11 @@ static void __pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_2__deal
   int __pyx_t_5;
   PyThread_type_lock __pyx_t_6;
   PyThread_type_lock __pyx_t_7;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__dealloc__", 0);
+  __Pyx_TraceCall("__dealloc__", __pyx_f[1], 372, 0, __PYX_ERR(1, 372, __pyx_L1_error));
 
   /* "View.MemoryView":373
  * 
@@ -17735,6 +17937,11 @@ static void __pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_2__deal
  */
 
   /* function exit code */
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_WriteUnraisable("View.MemoryView.memoryview.__dealloc__", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
+  __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
 }
 
@@ -17751,6 +17958,7 @@ static char *__pyx_memoryview_get_item_pointer(struct __pyx_memoryview_obj *__py
   char *__pyx_v_itemp;
   PyObject *__pyx_v_idx = NULL;
   char *__pyx_r;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   Py_ssize_t __pyx_t_1;
   PyObject *__pyx_t_2 = NULL;
@@ -17763,6 +17971,7 @@ static char *__pyx_memoryview_get_item_pointer(struct __pyx_memoryview_obj *__py
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("get_item_pointer", 0);
+  __Pyx_TraceCall("get_item_pointer", __pyx_f[1], 393, 0, __PYX_ERR(1, 393, __pyx_L1_error));
 
   /* "View.MemoryView":395
  *     cdef char *get_item_pointer(memoryview self, object index) except NULL:
@@ -17872,6 +18081,7 @@ static char *__pyx_memoryview_get_item_pointer(struct __pyx_memoryview_obj *__py
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_idx);
+  __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -17902,6 +18112,7 @@ static PyObject *__pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_4_
   PyObject *__pyx_v_indices = NULL;
   char *__pyx_v_itemp;
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   int __pyx_t_2;
@@ -17913,6 +18124,7 @@ static PyObject *__pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_4_
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__getitem__", 0);
+  __Pyx_TraceCall("__getitem__", __pyx_f[1], 403, 0, __PYX_ERR(1, 403, __pyx_L1_error));
 
   /* "View.MemoryView":404
  * 
@@ -18061,6 +18273,7 @@ static PyObject *__pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_4_
   __Pyx_XDECREF(__pyx_v_have_slices);
   __Pyx_XDECREF(__pyx_v_indices);
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -18090,6 +18303,7 @@ static int __pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_6__setit
   PyObject *__pyx_v_have_slices = NULL;
   PyObject *__pyx_v_obj = NULL;
   int __pyx_r;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   PyObject *__pyx_t_2 = NULL;
@@ -18099,6 +18313,7 @@ static int __pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_6__setit
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__setitem__", 0);
+  __Pyx_TraceCall("__setitem__", __pyx_f[1], 416, 0, __PYX_ERR(1, 416, __pyx_L1_error));
   __Pyx_INCREF(__pyx_v_index);
 
   /* "View.MemoryView":417
@@ -18118,7 +18333,7 @@ static int __pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_6__setit
  * 
  *         have_slices, index = _unellipsify(index, self.view.ndim)
  */
-    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__46, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 418, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__45, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 418, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_Raise(__pyx_t_2, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -18289,6 +18504,7 @@ static int __pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_6__setit
   __Pyx_XDECREF(__pyx_v_have_slices);
   __Pyx_XDECREF(__pyx_v_obj);
   __Pyx_XDECREF(__pyx_v_index);
+  __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -18303,6 +18519,7 @@ static int __pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_6__setit
 
 static PyObject *__pyx_memoryview_is_slice(struct __pyx_memoryview_obj *__pyx_v_self, PyObject *__pyx_v_obj) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   int __pyx_t_2;
@@ -18317,6 +18534,7 @@ static PyObject *__pyx_memoryview_is_slice(struct __pyx_memoryview_obj *__pyx_v_
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("is_slice", 0);
+  __Pyx_TraceCall("is_slice", __pyx_f[1], 431, 0, __PYX_ERR(1, 431, __pyx_L1_error));
   __Pyx_INCREF(__pyx_v_obj);
 
   /* "View.MemoryView":432
@@ -18499,6 +18717,7 @@ static PyObject *__pyx_memoryview_is_slice(struct __pyx_memoryview_obj *__pyx_v_
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_obj);
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -18515,6 +18734,7 @@ static PyObject *__pyx_memoryview_setitem_slice_assignment(struct __pyx_memoryvi
   __Pyx_memviewslice __pyx_v_dst_slice;
   __Pyx_memviewslice __pyx_v_src_slice;
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   __Pyx_memviewslice *__pyx_t_1;
   __Pyx_memviewslice *__pyx_t_2;
@@ -18526,6 +18746,7 @@ static PyObject *__pyx_memoryview_setitem_slice_assignment(struct __pyx_memoryvi
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("setitem_slice_assignment", 0);
+  __Pyx_TraceCall("setitem_slice_assignment", __pyx_f[1], 441, 0, __PYX_ERR(1, 441, __pyx_L1_error));
 
   /* "View.MemoryView":445
  *         cdef __Pyx_memviewslice src_slice
@@ -18589,6 +18810,7 @@ static PyObject *__pyx_memoryview_setitem_slice_assignment(struct __pyx_memoryvi
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -18608,6 +18830,7 @@ static PyObject *__pyx_memoryview_setitem_slice_assign_scalar(struct __pyx_memor
   __Pyx_memviewslice *__pyx_v_dst_slice;
   __Pyx_memviewslice __pyx_v_tmp_slice;
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   __Pyx_memviewslice *__pyx_t_1;
   int __pyx_t_2;
@@ -18625,6 +18848,7 @@ static PyObject *__pyx_memoryview_setitem_slice_assign_scalar(struct __pyx_memor
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("setitem_slice_assign_scalar", 0);
+  __Pyx_TraceCall("setitem_slice_assign_scalar", __pyx_f[1], 449, 0, __PYX_ERR(1, 449, __pyx_L1_error));
 
   /* "View.MemoryView":451
  *     cdef setitem_slice_assign_scalar(self, memoryview dst, value):
@@ -18879,6 +19103,7 @@ static PyObject *__pyx_memoryview_setitem_slice_assign_scalar(struct __pyx_memor
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -18894,6 +19119,7 @@ static PyObject *__pyx_memoryview_setitem_slice_assign_scalar(struct __pyx_memor
 static PyObject *__pyx_memoryview_setitem_indexed(struct __pyx_memoryview_obj *__pyx_v_self, PyObject *__pyx_v_index, PyObject *__pyx_v_value) {
   char *__pyx_v_itemp;
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   char *__pyx_t_1;
   PyObject *__pyx_t_2 = NULL;
@@ -18901,6 +19127,7 @@ static PyObject *__pyx_memoryview_setitem_indexed(struct __pyx_memoryview_obj *_
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("setitem_indexed", 0);
+  __Pyx_TraceCall("setitem_indexed", __pyx_f[1], 481, 0, __PYX_ERR(1, 481, __pyx_L1_error));
 
   /* "View.MemoryView":482
  * 
@@ -18940,6 +19167,7 @@ static PyObject *__pyx_memoryview_setitem_indexed(struct __pyx_memoryview_obj *_
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -18957,6 +19185,7 @@ static PyObject *__pyx_memoryview_convert_item_to_object(struct __pyx_memoryview
   PyObject *__pyx_v_bytesitem = 0;
   PyObject *__pyx_v_result = NULL;
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
@@ -18973,6 +19202,7 @@ static PyObject *__pyx_memoryview_convert_item_to_object(struct __pyx_memoryview
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("convert_item_to_object", 0);
+  __Pyx_TraceCall("convert_item_to_object", __pyx_f[1], 485, 0, __PYX_ERR(1, 485, __pyx_L1_error));
 
   /* "View.MemoryView":488
  *         """Only used if instantiated manually by the user, or if Cython doesn't
@@ -19166,7 +19396,7 @@ static PyObject *__pyx_memoryview_convert_item_to_object(struct __pyx_memoryview
  *         else:
  *             if len(self.view.format) == 1:
  */
-      __pyx_t_6 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__47, NULL); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 495, __pyx_L5_except_error)
+      __pyx_t_6 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__46, NULL); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 495, __pyx_L5_except_error)
       __Pyx_GOTREF(__pyx_t_6);
       __Pyx_Raise(__pyx_t_6, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
@@ -19217,6 +19447,7 @@ static PyObject *__pyx_memoryview_convert_item_to_object(struct __pyx_memoryview
   __Pyx_XDECREF(__pyx_v_bytesitem);
   __Pyx_XDECREF(__pyx_v_result);
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -19235,6 +19466,7 @@ static PyObject *__pyx_memoryview_assign_item_from_object(struct __pyx_memoryvie
   PyObject *__pyx_v_bytesvalue = 0;
   Py_ssize_t __pyx_v_i;
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_t_2;
@@ -19254,6 +19486,7 @@ static PyObject *__pyx_memoryview_assign_item_from_object(struct __pyx_memoryvie
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("assign_item_from_object", 0);
+  __Pyx_TraceCall("assign_item_from_object", __pyx_f[1], 501, 0, __PYX_ERR(1, 501, __pyx_L1_error));
 
   /* "View.MemoryView":504
  *         """Only used if instantiated manually by the user, or if Cython doesn't
@@ -19456,6 +19689,7 @@ static PyObject *__pyx_memoryview_assign_item_from_object(struct __pyx_memoryvie
   __Pyx_XDECREF(__pyx_v_struct);
   __Pyx_XDECREF(__pyx_v_bytesvalue);
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -19483,6 +19717,7 @@ static CYTHON_UNUSED int __pyx_memoryview_getbuffer(PyObject *__pyx_v_self, Py_b
 
 static int __pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_8__getbuffer__(struct __pyx_memoryview_obj *__pyx_v_self, Py_buffer *__pyx_v_info, int __pyx_v_flags) {
   int __pyx_r;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   int __pyx_t_2;
@@ -19502,6 +19737,7 @@ static int __pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_8__getbu
   __Pyx_RefNannySetupContext("__getbuffer__", 0);
   __pyx_v_info->obj = Py_None; __Pyx_INCREF(Py_None);
   __Pyx_GIVEREF(__pyx_v_info->obj);
+  __Pyx_TraceCall("__getbuffer__", __pyx_f[1], 518, 0, __PYX_ERR(1, 518, __pyx_L1_error));
 
   /* "View.MemoryView":519
  *     @cname('getbuffer')
@@ -19528,7 +19764,7 @@ static int __pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_8__getbu
  * 
  *         if flags & PyBUF_ND:
  */
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__48, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 520, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__47, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 520, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -19800,6 +20036,7 @@ static int __pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_8__getbu
     __Pyx_DECREF(__pyx_v_info->obj); __pyx_v_info->obj = 0;
   }
   __pyx_L2:;
+  __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -19828,6 +20065,7 @@ static PyObject *__pyx_pw_15View_dot_MemoryView_10memoryview_1T_1__get__(PyObjec
 static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_1T___get__(struct __pyx_memoryview_obj *__pyx_v_self) {
   struct __pyx_memoryviewslice_obj *__pyx_v_result = 0;
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_t_2;
@@ -19835,6 +20073,7 @@ static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_1T___get__(struct _
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
+  __Pyx_TraceCall("__get__", __pyx_f[1], 553, 0, __PYX_ERR(1, 553, __pyx_L1_error));
 
   /* "View.MemoryView":554
  *     @property
@@ -19886,6 +20125,7 @@ static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_1T___get__(struct _
   __pyx_L0:;
   __Pyx_XDECREF((PyObject *)__pyx_v_result);
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -19913,8 +20153,13 @@ static PyObject *__pyx_pw_15View_dot_MemoryView_10memoryview_4base_1__get__(PyOb
 
 static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_4base___get__(struct __pyx_memoryview_obj *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
+  __Pyx_TraceCall("__get__", __pyx_f[1], 559, 0, __PYX_ERR(1, 559, __pyx_L1_error));
 
   /* "View.MemoryView":560
  *     @property
@@ -19937,8 +20182,12 @@ static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_4base___get__(struc
  */
 
   /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_AddTraceback("View.MemoryView.memoryview.base.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -19967,6 +20216,7 @@ static PyObject *__pyx_pw_15View_dot_MemoryView_10memoryview_5shape_1__get__(PyO
 static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_5shape___get__(struct __pyx_memoryview_obj *__pyx_v_self) {
   Py_ssize_t __pyx_v_length;
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   Py_ssize_t *__pyx_t_2;
@@ -19977,6 +20227,7 @@ static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_5shape___get__(stru
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
+  __Pyx_TraceCall("__get__", __pyx_f[1], 563, 0, __PYX_ERR(1, 563, __pyx_L1_error));
 
   /* "View.MemoryView":564
  *     @property
@@ -20020,6 +20271,7 @@ static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_5shape___get__(stru
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -20048,6 +20300,7 @@ static PyObject *__pyx_pw_15View_dot_MemoryView_10memoryview_7strides_1__get__(P
 static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_7strides___get__(struct __pyx_memoryview_obj *__pyx_v_self) {
   Py_ssize_t __pyx_v_stride;
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   PyObject *__pyx_t_2 = NULL;
@@ -20059,6 +20312,7 @@ static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_7strides___get__(st
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
+  __Pyx_TraceCall("__get__", __pyx_f[1], 567, 0, __PYX_ERR(1, 567, __pyx_L1_error));
 
   /* "View.MemoryView":568
  *     @property
@@ -20077,7 +20331,7 @@ static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_7strides___get__(st
  * 
  *         return tuple([stride for stride in self.view.strides[:self.view.ndim]])
  */
-    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__49, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 570, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__48, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 570, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_Raise(__pyx_t_2, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -20134,6 +20388,7 @@ static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_7strides___get__(st
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -20162,6 +20417,7 @@ static PyObject *__pyx_pw_15View_dot_MemoryView_10memoryview_10suboffsets_1__get
 static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_10suboffsets___get__(struct __pyx_memoryview_obj *__pyx_v_self) {
   Py_ssize_t __pyx_v_suboffset;
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   PyObject *__pyx_t_2 = NULL;
@@ -20173,6 +20429,7 @@ static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_10suboffsets___get_
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
+  __Pyx_TraceCall("__get__", __pyx_f[1], 575, 0, __PYX_ERR(1, 575, __pyx_L1_error));
 
   /* "View.MemoryView":576
  *     @property
@@ -20194,7 +20451,7 @@ static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_10suboffsets___get_
     __Pyx_XDECREF(__pyx_r);
     __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_self->view.ndim); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 577, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_3 = PyNumber_Multiply(__pyx_tuple__50, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 577, __pyx_L1_error)
+    __pyx_t_3 = PyNumber_Multiply(__pyx_tuple__49, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 577, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_r = __pyx_t_3;
@@ -20252,6 +20509,7 @@ static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_10suboffsets___get_
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -20279,12 +20537,14 @@ static PyObject *__pyx_pw_15View_dot_MemoryView_10memoryview_4ndim_1__get__(PyOb
 
 static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_4ndim___get__(struct __pyx_memoryview_obj *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
+  __Pyx_TraceCall("__get__", __pyx_f[1], 582, 0, __PYX_ERR(1, 582, __pyx_L1_error));
 
   /* "View.MemoryView":583
  *     @property
@@ -20315,6 +20575,7 @@ static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_4ndim___get__(struc
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -20342,12 +20603,14 @@ static PyObject *__pyx_pw_15View_dot_MemoryView_10memoryview_8itemsize_1__get__(
 
 static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_8itemsize___get__(struct __pyx_memoryview_obj *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
+  __Pyx_TraceCall("__get__", __pyx_f[1], 586, 0, __PYX_ERR(1, 586, __pyx_L1_error));
 
   /* "View.MemoryView":587
  *     @property
@@ -20378,6 +20641,7 @@ static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_8itemsize___get__(s
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -20405,6 +20669,7 @@ static PyObject *__pyx_pw_15View_dot_MemoryView_10memoryview_6nbytes_1__get__(Py
 
 static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_6nbytes___get__(struct __pyx_memoryview_obj *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
@@ -20413,6 +20678,7 @@ static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_6nbytes___get__(str
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
+  __Pyx_TraceCall("__get__", __pyx_f[1], 590, 0, __PYX_ERR(1, 590, __pyx_L1_error));
 
   /* "View.MemoryView":591
  *     @property
@@ -20451,6 +20717,7 @@ static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_6nbytes___get__(str
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -20480,6 +20747,7 @@ static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_4size___get__(struc
   PyObject *__pyx_v_result = NULL;
   PyObject *__pyx_v_length = NULL;
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   int __pyx_t_2;
@@ -20491,6 +20759,7 @@ static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_4size___get__(struc
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
+  __Pyx_TraceCall("__get__", __pyx_f[1], 594, 0, __PYX_ERR(1, 594, __pyx_L1_error));
 
   /* "View.MemoryView":595
  *     @property
@@ -20592,6 +20861,7 @@ static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_4size___get__(struc
   __Pyx_XDECREF(__pyx_v_result);
   __Pyx_XDECREF(__pyx_v_length);
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -20619,9 +20889,14 @@ static Py_ssize_t __pyx_memoryview___len__(PyObject *__pyx_v_self) {
 
 static Py_ssize_t __pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_10__len__(struct __pyx_memoryview_obj *__pyx_v_self) {
   Py_ssize_t __pyx_r;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__len__", 0);
+  __Pyx_TraceCall("__len__", __pyx_f[1], 605, 0, __PYX_ERR(1, 605, __pyx_L1_error));
 
   /* "View.MemoryView":606
  * 
@@ -20671,7 +20946,11 @@ static Py_ssize_t __pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_1
  */
 
   /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_AddTraceback("View.MemoryView.memoryview.__len__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = -1;
   __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -20699,6 +20978,7 @@ static PyObject *__pyx_memoryview___repr__(PyObject *__pyx_v_self) {
 
 static PyObject *__pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_12__repr__(struct __pyx_memoryview_obj *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
@@ -20707,6 +20987,7 @@ static PyObject *__pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_12
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__repr__", 0);
+  __Pyx_TraceCall("__repr__", __pyx_f[1], 611, 0, __PYX_ERR(1, 611, __pyx_L1_error));
 
   /* "View.MemoryView":612
  * 
@@ -20774,6 +21055,7 @@ static PyObject *__pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_12
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -20801,6 +21083,7 @@ static PyObject *__pyx_memoryview___str__(PyObject *__pyx_v_self) {
 
 static PyObject *__pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_14__str__(struct __pyx_memoryview_obj *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
@@ -20808,6 +21091,7 @@ static PyObject *__pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_14
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__str__", 0);
+  __Pyx_TraceCall("__str__", __pyx_f[1], 615, 0, __PYX_ERR(1, 615, __pyx_L1_error));
 
   /* "View.MemoryView":616
  * 
@@ -20853,6 +21137,7 @@ static PyObject *__pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_14
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -20882,6 +21167,7 @@ static PyObject *__pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_16
   __Pyx_memviewslice *__pyx_v_mslice;
   __Pyx_memviewslice __pyx_v_tmp;
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   __Pyx_memviewslice *__pyx_t_1;
   PyObject *__pyx_t_2 = NULL;
@@ -20889,6 +21175,7 @@ static PyObject *__pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_16
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("is_c_contig", 0);
+  __Pyx_TraceCall("is_c_contig", __pyx_f[1], 619, 0, __PYX_ERR(1, 619, __pyx_L1_error));
 
   /* "View.MemoryView":622
  *         cdef __Pyx_memviewslice *mslice
@@ -20929,6 +21216,7 @@ static PyObject *__pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_16
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -20958,6 +21246,7 @@ static PyObject *__pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_18
   __Pyx_memviewslice *__pyx_v_mslice;
   __Pyx_memviewslice __pyx_v_tmp;
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   __Pyx_memviewslice *__pyx_t_1;
   PyObject *__pyx_t_2 = NULL;
@@ -20965,6 +21254,7 @@ static PyObject *__pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_18
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("is_f_contig", 0);
+  __Pyx_TraceCall("is_f_contig", __pyx_f[1], 625, 0, __PYX_ERR(1, 625, __pyx_L1_error));
 
   /* "View.MemoryView":628
  *         cdef __Pyx_memviewslice *mslice
@@ -21005,6 +21295,7 @@ static PyObject *__pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_18
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -21034,6 +21325,7 @@ static PyObject *__pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_20
   __Pyx_memviewslice __pyx_v_mslice;
   int __pyx_v_flags;
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   __Pyx_memviewslice __pyx_t_1;
   PyObject *__pyx_t_2 = NULL;
@@ -21041,6 +21333,7 @@ static PyObject *__pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_20
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("copy", 0);
+  __Pyx_TraceCall("copy", __pyx_f[1], 631, 0, __PYX_ERR(1, 631, __pyx_L1_error));
 
   /* "View.MemoryView":633
  *     def copy(self):
@@ -21099,6 +21392,7 @@ static PyObject *__pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_20
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -21129,6 +21423,7 @@ static PyObject *__pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_22
   __Pyx_memviewslice __pyx_v_dst;
   int __pyx_v_flags;
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   __Pyx_memviewslice __pyx_t_1;
   PyObject *__pyx_t_2 = NULL;
@@ -21136,6 +21431,7 @@ static PyObject *__pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_22
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("copy_fortran", 0);
+  __Pyx_TraceCall("copy_fortran", __pyx_f[1], 643, 0, __PYX_ERR(1, 643, __pyx_L1_error));
 
   /* "View.MemoryView":645
  *     def copy_fortran(self):
@@ -21194,6 +21490,7 @@ static PyObject *__pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_22
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -21219,12 +21516,14 @@ static PyObject *__pyx_pw___pyx_memoryview_1__reduce_cython__(PyObject *__pyx_v_
 
 static PyObject *__pyx_pf___pyx_memoryview___reduce_cython__(CYTHON_UNUSED struct __pyx_memoryview_obj *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__reduce_cython__", 0);
+  __Pyx_TraceCall("__reduce_cython__", __pyx_f[1], 1, 0, __PYX_ERR(1, 1, __pyx_L1_error));
 
   /* "(tree fragment)":2
  * def __reduce_cython__(self):
@@ -21232,7 +21531,7 @@ static PyObject *__pyx_pf___pyx_memoryview___reduce_cython__(CYTHON_UNUSED struc
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__51, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__50, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -21250,6 +21549,7 @@ static PyObject *__pyx_pf___pyx_memoryview___reduce_cython__(CYTHON_UNUSED struc
   __Pyx_AddTraceback("View.MemoryView.memoryview.__reduce_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -21276,19 +21576,21 @@ static PyObject *__pyx_pw___pyx_memoryview_3__setstate_cython__(PyObject *__pyx_
 
 static PyObject *__pyx_pf___pyx_memoryview_2__setstate_cython__(CYTHON_UNUSED struct __pyx_memoryview_obj *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__setstate_cython__", 0);
+  __Pyx_TraceCall("__setstate_cython__", __pyx_f[1], 3, 0, __PYX_ERR(1, 3, __pyx_L1_error));
 
   /* "(tree fragment)":4
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__52, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__51, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -21307,6 +21609,7 @@ static PyObject *__pyx_pf___pyx_memoryview_2__setstate_cython__(CYTHON_UNUSED st
   __Pyx_AddTraceback("View.MemoryView.memoryview.__setstate_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -21322,6 +21625,7 @@ static PyObject *__pyx_pf___pyx_memoryview_2__setstate_cython__(CYTHON_UNUSED st
 static PyObject *__pyx_memoryview_new(PyObject *__pyx_v_o, int __pyx_v_flags, int __pyx_v_dtype_is_object, __Pyx_TypeInfo *__pyx_v_typeinfo) {
   struct __pyx_memoryview_obj *__pyx_v_result = 0;
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
@@ -21330,6 +21634,7 @@ static PyObject *__pyx_memoryview_new(PyObject *__pyx_v_o, int __pyx_v_flags, in
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("memoryview_cwrapper", 0);
+  __Pyx_TraceCall("memoryview_cwrapper", __pyx_f[1], 657, 0, __PYX_ERR(1, 657, __pyx_L1_error));
 
   /* "View.MemoryView":658
  * @cname('__pyx_memoryview_new')
@@ -21398,6 +21703,7 @@ static PyObject *__pyx_memoryview_new(PyObject *__pyx_v_o, int __pyx_v_flags, in
   __pyx_L0:;
   __Pyx_XDECREF((PyObject *)__pyx_v_result);
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -21412,9 +21718,14 @@ static PyObject *__pyx_memoryview_new(PyObject *__pyx_v_o, int __pyx_v_flags, in
 
 static CYTHON_INLINE int __pyx_memoryview_check(PyObject *__pyx_v_o) {
   int __pyx_r;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("memoryview_check", 0);
+  __Pyx_TraceCall("memoryview_check", __pyx_f[1], 663, 0, __PYX_ERR(1, 663, __pyx_L1_error));
 
   /* "View.MemoryView":664
  * @cname('__pyx_memoryview_check')
@@ -21436,7 +21747,11 @@ static CYTHON_INLINE int __pyx_memoryview_check(PyObject *__pyx_v_o) {
  */
 
   /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_WriteUnraisable("View.MemoryView.memoryview_check", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
+  __pyx_r = 0;
   __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -21458,6 +21773,7 @@ static PyObject *_unellipsify(PyObject *__pyx_v_index, int __pyx_v_ndim) {
   PyObject *__pyx_v_item = NULL;
   Py_ssize_t __pyx_v_nslices;
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   int __pyx_t_2;
@@ -21474,6 +21790,7 @@ static PyObject *_unellipsify(PyObject *__pyx_v_index, int __pyx_v_ndim) {
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_unellipsify", 0);
+  __Pyx_TraceCall("_unellipsify", __pyx_f[1], 666, 0, __PYX_ERR(1, 666, __pyx_L1_error));
 
   /* "View.MemoryView":671
  *     full slices.
@@ -21894,6 +22211,7 @@ static PyObject *_unellipsify(PyObject *__pyx_v_index, int __pyx_v_ndim) {
   __Pyx_XDECREF(__pyx_v_idx);
   __Pyx_XDECREF(__pyx_v_item);
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -21909,6 +22227,7 @@ static PyObject *_unellipsify(PyObject *__pyx_v_index, int __pyx_v_ndim) {
 static PyObject *assert_direct_dimensions(Py_ssize_t *__pyx_v_suboffsets, int __pyx_v_ndim) {
   Py_ssize_t __pyx_v_suboffset;
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   Py_ssize_t *__pyx_t_1;
   Py_ssize_t *__pyx_t_2;
@@ -21919,6 +22238,7 @@ static PyObject *assert_direct_dimensions(Py_ssize_t *__pyx_v_suboffsets, int __
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("assert_direct_dimensions", 0);
+  __Pyx_TraceCall("assert_direct_dimensions", __pyx_f[1], 700, 0, __PYX_ERR(1, 700, __pyx_L1_error));
 
   /* "View.MemoryView":701
  * 
@@ -21949,7 +22269,7 @@ static PyObject *assert_direct_dimensions(Py_ssize_t *__pyx_v_suboffsets, int __
  * 
  * 
  */
-      __pyx_t_5 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__53, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 703, __pyx_L1_error)
+      __pyx_t_5 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__52, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 703, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
       __Pyx_Raise(__pyx_t_5, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
@@ -21982,6 +22302,7 @@ static PyObject *assert_direct_dimensions(Py_ssize_t *__pyx_v_suboffsets, int __
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -22012,6 +22333,7 @@ static struct __pyx_memoryview_obj *__pyx_memview_slice(struct __pyx_memoryview_
   int __pyx_v_have_step;
   PyObject *__pyx_v_index = NULL;
   struct __pyx_memoryview_obj *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   int __pyx_t_2;
@@ -22029,6 +22351,7 @@ static struct __pyx_memoryview_obj *__pyx_memview_slice(struct __pyx_memoryview_
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("memview_slice", 0);
+  __Pyx_TraceCall("memview_slice", __pyx_f[1], 710, 0, __PYX_ERR(1, 710, __pyx_L1_error));
 
   /* "View.MemoryView":711
  * @cname('__pyx_memview_slice')
@@ -22562,6 +22885,7 @@ static struct __pyx_memoryview_obj *__pyx_memview_slice(struct __pyx_memoryview_
   __Pyx_XDECREF((PyObject *)__pyx_v_memviewsliceobj);
   __Pyx_XDECREF(__pyx_v_index);
   __Pyx_XGIVEREF((PyObject *)__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -22578,12 +22902,14 @@ static int __pyx_memoryview_slice_memviewslice(__Pyx_memviewslice *__pyx_v_dst, 
   Py_ssize_t __pyx_v_new_shape;
   int __pyx_v_negative_step;
   int __pyx_r;
+  __Pyx_TraceDeclarations
   int __pyx_t_1;
   int __pyx_t_2;
   int __pyx_t_3;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
+  __Pyx_TraceCall("slice_memviewslice", __pyx_f[1], 807, 1, __PYX_ERR(1, 807, __pyx_L1_error));
 
   /* "View.MemoryView":827
  *     cdef bint negative_step
@@ -23347,6 +23673,7 @@ static int __pyx_memoryview_slice_memviewslice(__Pyx_memviewslice *__pyx_v_dst, 
   }
   __pyx_r = -1;
   __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 1);
   return __pyx_r;
 }
 
@@ -23365,6 +23692,7 @@ static char *__pyx_pybuffer_index(Py_buffer *__pyx_v_view, char *__pyx_v_bufp, P
   Py_ssize_t __pyx_v_itemsize;
   char *__pyx_v_resultp;
   char *__pyx_r;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   Py_ssize_t __pyx_t_1;
   int __pyx_t_2;
@@ -23374,6 +23702,7 @@ static char *__pyx_pybuffer_index(Py_buffer *__pyx_v_view, char *__pyx_v_bufp, P
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("pybuffer_index", 0);
+  __Pyx_TraceCall("pybuffer_index", __pyx_f[1], 910, 0, __PYX_ERR(1, 910, __pyx_L1_error));
 
   /* "View.MemoryView":912
  * cdef char *pybuffer_index(Py_buffer *view, char *bufp, Py_ssize_t index,
@@ -23655,6 +23984,7 @@ static char *__pyx_pybuffer_index(Py_buffer *__pyx_v_view, char *__pyx_v_bufp, P
   __Pyx_AddTraceback("View.MemoryView.pybuffer_index", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -23674,6 +24004,7 @@ static int __pyx_memslice_transpose(__Pyx_memviewslice *__pyx_v_memslice) {
   int __pyx_v_i;
   int __pyx_v_j;
   int __pyx_r;
+  __Pyx_TraceDeclarations
   int __pyx_t_1;
   Py_ssize_t *__pyx_t_2;
   long __pyx_t_3;
@@ -23686,6 +24017,7 @@ static int __pyx_memslice_transpose(__Pyx_memviewslice *__pyx_v_memslice) {
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
+  __Pyx_TraceCall("transpose_memslice", __pyx_f[1], 943, 1, __PYX_ERR(1, 943, __pyx_L1_error));
 
   /* "View.MemoryView":944
  * @cname('__pyx_memslice_transpose')
@@ -23830,6 +24162,7 @@ static int __pyx_memslice_transpose(__Pyx_memviewslice *__pyx_v_memslice) {
   }
   __pyx_r = 0;
   __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 1);
   return __pyx_r;
 }
 
@@ -23853,8 +24186,13 @@ static void __pyx_memoryviewslice___dealloc__(PyObject *__pyx_v_self) {
 }
 
 static void __pyx_memoryviewslice___pyx_pf_15View_dot_MemoryView_16_memoryviewslice___dealloc__(struct __pyx_memoryviewslice_obj *__pyx_v_self) {
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__dealloc__", 0);
+  __Pyx_TraceCall("__dealloc__", __pyx_f[1], 976, 0, __PYX_ERR(1, 976, __pyx_L1_error));
 
   /* "View.MemoryView":977
  * 
@@ -23874,6 +24212,11 @@ static void __pyx_memoryviewslice___pyx_pf_15View_dot_MemoryView_16_memoryviewsl
  */
 
   /* function exit code */
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_WriteUnraisable("View.MemoryView._memoryviewslice.__dealloc__", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
+  __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
 }
 
@@ -23887,6 +24230,7 @@ static void __pyx_memoryviewslice___pyx_pf_15View_dot_MemoryView_16_memoryviewsl
 
 static PyObject *__pyx_memoryviewslice_convert_item_to_object(struct __pyx_memoryviewslice_obj *__pyx_v_self, char *__pyx_v_itemp) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   PyObject *__pyx_t_2 = NULL;
@@ -23894,6 +24238,7 @@ static PyObject *__pyx_memoryviewslice_convert_item_to_object(struct __pyx_memor
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("convert_item_to_object", 0);
+  __Pyx_TraceCall("convert_item_to_object", __pyx_f[1], 979, 0, __PYX_ERR(1, 979, __pyx_L1_error));
 
   /* "View.MemoryView":980
  * 
@@ -23959,6 +24304,7 @@ static PyObject *__pyx_memoryviewslice_convert_item_to_object(struct __pyx_memor
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -23973,6 +24319,7 @@ static PyObject *__pyx_memoryviewslice_convert_item_to_object(struct __pyx_memor
 
 static PyObject *__pyx_memoryviewslice_assign_item_from_object(struct __pyx_memoryviewslice_obj *__pyx_v_self, char *__pyx_v_itemp, PyObject *__pyx_v_value) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   int __pyx_t_2;
@@ -23981,6 +24328,7 @@ static PyObject *__pyx_memoryviewslice_assign_item_from_object(struct __pyx_memo
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("assign_item_from_object", 0);
+  __Pyx_TraceCall("assign_item_from_object", __pyx_f[1], 985, 0, __PYX_ERR(1, 985, __pyx_L1_error));
 
   /* "View.MemoryView":986
  * 
@@ -24042,6 +24390,7 @@ static PyObject *__pyx_memoryviewslice_assign_item_from_object(struct __pyx_memo
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -24069,8 +24418,13 @@ static PyObject *__pyx_pw_15View_dot_MemoryView_16_memoryviewslice_4base_1__get_
 
 static PyObject *__pyx_pf_15View_dot_MemoryView_16_memoryviewslice_4base___get__(struct __pyx_memoryviewslice_obj *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
+  __Pyx_TraceCall("__get__", __pyx_f[1], 992, 0, __PYX_ERR(1, 992, __pyx_L1_error));
 
   /* "View.MemoryView":993
  *     @property
@@ -24093,8 +24447,12 @@ static PyObject *__pyx_pf_15View_dot_MemoryView_16_memoryviewslice_4base___get__
  */
 
   /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_AddTraceback("View.MemoryView._memoryviewslice.base.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -24120,12 +24478,14 @@ static PyObject *__pyx_pw___pyx_memoryviewslice_1__reduce_cython__(PyObject *__p
 
 static PyObject *__pyx_pf___pyx_memoryviewslice___reduce_cython__(CYTHON_UNUSED struct __pyx_memoryviewslice_obj *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__reduce_cython__", 0);
+  __Pyx_TraceCall("__reduce_cython__", __pyx_f[1], 1, 0, __PYX_ERR(1, 1, __pyx_L1_error));
 
   /* "(tree fragment)":2
  * def __reduce_cython__(self):
@@ -24133,7 +24493,7 @@ static PyObject *__pyx_pf___pyx_memoryviewslice___reduce_cython__(CYTHON_UNUSED 
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__54, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__53, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -24151,6 +24511,7 @@ static PyObject *__pyx_pf___pyx_memoryviewslice___reduce_cython__(CYTHON_UNUSED 
   __Pyx_AddTraceback("View.MemoryView._memoryviewslice.__reduce_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -24177,19 +24538,21 @@ static PyObject *__pyx_pw___pyx_memoryviewslice_3__setstate_cython__(PyObject *_
 
 static PyObject *__pyx_pf___pyx_memoryviewslice_2__setstate_cython__(CYTHON_UNUSED struct __pyx_memoryviewslice_obj *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__setstate_cython__", 0);
+  __Pyx_TraceCall("__setstate_cython__", __pyx_f[1], 3, 0, __PYX_ERR(1, 3, __pyx_L1_error));
 
   /* "(tree fragment)":4
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__55, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__54, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -24208,6 +24571,7 @@ static PyObject *__pyx_pf___pyx_memoryviewslice_2__setstate_cython__(CYTHON_UNUS
   __Pyx_AddTraceback("View.MemoryView._memoryviewslice.__setstate_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -24225,6 +24589,7 @@ static PyObject *__pyx_memoryview_fromslice(__Pyx_memviewslice __pyx_v_memviewsl
   Py_ssize_t __pyx_v_suboffset;
   PyObject *__pyx_v_length = NULL;
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   PyObject *__pyx_t_2 = NULL;
@@ -24239,6 +24604,7 @@ static PyObject *__pyx_memoryview_fromslice(__Pyx_memviewslice __pyx_v_memviewsl
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("memoryview_fromslice", 0);
+  __Pyx_TraceCall("memoryview_fromslice", __pyx_f[1], 999, 0, __PYX_ERR(1, 999, __pyx_L1_error));
 
   /* "View.MemoryView":1007
  *     cdef _memoryviewslice result
@@ -24594,6 +24960,7 @@ static PyObject *__pyx_memoryview_fromslice(__Pyx_memviewslice __pyx_v_memviewsl
   __Pyx_XDECREF((PyObject *)__pyx_v_result);
   __Pyx_XDECREF(__pyx_v_length);
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -24609,6 +24976,7 @@ static PyObject *__pyx_memoryview_fromslice(__Pyx_memviewslice __pyx_v_memviewsl
 static __Pyx_memviewslice *__pyx_memoryview_get_slice_from_memoryview(struct __pyx_memoryview_obj *__pyx_v_memview, __Pyx_memviewslice *__pyx_v_mslice) {
   struct __pyx_memoryviewslice_obj *__pyx_v_obj = 0;
   __Pyx_memviewslice *__pyx_r;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   int __pyx_t_2;
@@ -24617,6 +24985,7 @@ static __Pyx_memviewslice *__pyx_memoryview_get_slice_from_memoryview(struct __p
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("get_slice_from_memview", 0);
+  __Pyx_TraceCall("get_slice_from_memview", __pyx_f[1], 1052, 0, __PYX_ERR(1, 1052, __pyx_L1_error));
 
   /* "View.MemoryView":1055
  *                                                    __Pyx_memviewslice *mslice) except NULL:
@@ -24697,6 +25066,7 @@ static __Pyx_memviewslice *__pyx_memoryview_get_slice_from_memoryview(struct __p
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF((PyObject *)__pyx_v_obj);
+  __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -24714,13 +25084,18 @@ static void __pyx_memoryview_slice_copy(struct __pyx_memoryview_obj *__pyx_v_mem
   Py_ssize_t *__pyx_v_shape;
   Py_ssize_t *__pyx_v_strides;
   Py_ssize_t *__pyx_v_suboffsets;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   Py_ssize_t *__pyx_t_1;
   int __pyx_t_2;
   int __pyx_t_3;
   int __pyx_t_4;
   Py_ssize_t __pyx_t_5;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("slice_copy", 0);
+  __Pyx_TraceCall("slice_copy", __pyx_f[1], 1063, 0, __PYX_ERR(1, 1063, __pyx_L1_error));
 
   /* "View.MemoryView":1067
  *     cdef (Py_ssize_t*) shape, strides, suboffsets
@@ -24824,6 +25199,11 @@ static void __pyx_memoryview_slice_copy(struct __pyx_memoryview_obj *__pyx_v_mem
  */
 
   /* function exit code */
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_WriteUnraisable("View.MemoryView.slice_copy", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
+  __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
 }
 
@@ -24838,12 +25218,14 @@ static void __pyx_memoryview_slice_copy(struct __pyx_memoryview_obj *__pyx_v_mem
 static PyObject *__pyx_memoryview_copy_object(struct __pyx_memoryview_obj *__pyx_v_memview) {
   __Pyx_memviewslice __pyx_v_memviewslice;
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("memoryview_copy", 0);
+  __Pyx_TraceCall("memoryview_copy", __pyx_f[1], 1080, 0, __PYX_ERR(1, 1080, __pyx_L1_error));
 
   /* "View.MemoryView":1083
  *     "Create a new memoryview object"
@@ -24883,6 +25265,7 @@ static PyObject *__pyx_memoryview_copy_object(struct __pyx_memoryview_obj *__pyx
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -24899,6 +25282,7 @@ static PyObject *__pyx_memoryview_copy_object_from_slice(struct __pyx_memoryview
   PyObject *(*__pyx_v_to_object_func)(char *);
   int (*__pyx_v_to_dtype_func)(char *, PyObject *);
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   int __pyx_t_2;
@@ -24909,6 +25293,7 @@ static PyObject *__pyx_memoryview_copy_object_from_slice(struct __pyx_memoryview
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("memoryview_copy_from_slice", 0);
+  __Pyx_TraceCall("memoryview_copy_from_slice", __pyx_f[1], 1087, 0, __PYX_ERR(1, 1087, __pyx_L1_error));
 
   /* "View.MemoryView":1094
  *     cdef int (*to_dtype_func)(char *, object) except 0
@@ -25009,6 +25394,7 @@ static PyObject *__pyx_memoryview_copy_object_from_slice(struct __pyx_memoryview
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -25023,7 +25409,12 @@ static PyObject *__pyx_memoryview_copy_object_from_slice(struct __pyx_memoryview
 
 static Py_ssize_t abs_py_ssize_t(Py_ssize_t __pyx_v_arg) {
   Py_ssize_t __pyx_r;
+  __Pyx_TraceDeclarations
   int __pyx_t_1;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_TraceCall("abs_py_ssize_t", __pyx_f[1], 1109, 1, __PYX_ERR(1, 1109, __pyx_L1_error));
 
   /* "View.MemoryView":1110
  * 
@@ -25075,7 +25466,11 @@ static Py_ssize_t abs_py_ssize_t(Py_ssize_t __pyx_v_arg) {
  */
 
   /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_WriteUnraisable("View.MemoryView.abs_py_ssize_t", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 1);
+  __pyx_r = 0;
   __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 1);
   return __pyx_r;
 }
 
@@ -25092,10 +25487,15 @@ static char __pyx_get_best_slice_order(__Pyx_memviewslice *__pyx_v_mslice, int _
   Py_ssize_t __pyx_v_c_stride;
   Py_ssize_t __pyx_v_f_stride;
   char __pyx_r;
+  __Pyx_TraceDeclarations
   int __pyx_t_1;
   int __pyx_t_2;
   int __pyx_t_3;
   int __pyx_t_4;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_TraceCall("get_best_order", __pyx_f[1], 1116, 1, __PYX_ERR(1, 1116, __pyx_L1_error));
 
   /* "View.MemoryView":1121
  *     """
@@ -25265,7 +25665,11 @@ static char __pyx_get_best_slice_order(__Pyx_memviewslice *__pyx_v_mslice, int _
  */
 
   /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_WriteUnraisable("View.MemoryView.get_best_order", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 1);
+  __pyx_r = 0;
   __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 1);
   return __pyx_r;
 }
 
@@ -25515,6 +25919,11 @@ static void _copy_strided_to_strided(char *__pyx_v_src_data, Py_ssize_t *__pyx_v
  */
 
 static void copy_strided_to_strided(__Pyx_memviewslice *__pyx_v_src, __Pyx_memviewslice *__pyx_v_dst, int __pyx_v_ndim, size_t __pyx_v_itemsize) {
+  __Pyx_TraceDeclarations
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_TraceCall("copy_strided_to_strided", __pyx_f[1], 1170, 1, __PYX_ERR(1, 1170, __pyx_L1_error));
 
   /* "View.MemoryView":1173
  *                                   __Pyx_memviewslice *dst,
@@ -25534,6 +25943,11 @@ static void copy_strided_to_strided(__Pyx_memviewslice *__pyx_v_src, __Pyx_memvi
  */
 
   /* function exit code */
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_WriteUnraisable("View.MemoryView.copy_strided_to_strided", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 1);
+  __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 1);
 }
 
 /* "View.MemoryView":1177
@@ -25548,10 +25962,15 @@ static Py_ssize_t __pyx_memoryview_slice_get_size(__Pyx_memviewslice *__pyx_v_sr
   Py_ssize_t __pyx_v_shape;
   Py_ssize_t __pyx_v_size;
   Py_ssize_t __pyx_r;
+  __Pyx_TraceDeclarations
   Py_ssize_t __pyx_t_1;
   Py_ssize_t *__pyx_t_2;
   Py_ssize_t *__pyx_t_3;
   Py_ssize_t *__pyx_t_4;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_TraceCall("slice_get_size", __pyx_f[1], 1177, 1, __PYX_ERR(1, 1177, __pyx_L1_error));
 
   /* "View.MemoryView":1179
  * cdef Py_ssize_t slice_get_size(__Pyx_memviewslice *src, int ndim) nogil:
@@ -25604,7 +26023,11 @@ static Py_ssize_t __pyx_memoryview_slice_get_size(__Pyx_memviewslice *__pyx_v_sr
  */
 
   /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_WriteUnraisable("View.MemoryView.slice_get_size", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 1);
+  __pyx_r = 0;
   __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 1);
   return __pyx_r;
 }
 
@@ -25619,10 +26042,15 @@ static Py_ssize_t __pyx_memoryview_slice_get_size(__Pyx_memviewslice *__pyx_v_sr
 static Py_ssize_t __pyx_fill_contig_strides_array(Py_ssize_t *__pyx_v_shape, Py_ssize_t *__pyx_v_strides, Py_ssize_t __pyx_v_stride, int __pyx_v_ndim, char __pyx_v_order) {
   int __pyx_v_idx;
   Py_ssize_t __pyx_r;
+  __Pyx_TraceDeclarations
   int __pyx_t_1;
   int __pyx_t_2;
   int __pyx_t_3;
   int __pyx_t_4;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_TraceCall("fill_contig_strides_array", __pyx_f[1], 1187, 1, __PYX_ERR(1, 1187, __pyx_L1_error));
 
   /* "View.MemoryView":1196
  *     cdef int idx
@@ -25726,7 +26154,11 @@ static Py_ssize_t __pyx_fill_contig_strides_array(Py_ssize_t *__pyx_v_shape, Py_
  */
 
   /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_WriteUnraisable("View.MemoryView.fill_contig_strides_array", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 1);
+  __pyx_r = 0;
   __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 1);
   return __pyx_r;
 }
 
@@ -25744,6 +26176,7 @@ static void *__pyx_memoryview_copy_data_to_temp(__Pyx_memviewslice *__pyx_v_src,
   size_t __pyx_v_itemsize;
   size_t __pyx_v_size;
   void *__pyx_r;
+  __Pyx_TraceDeclarations
   Py_ssize_t __pyx_t_1;
   int __pyx_t_2;
   int __pyx_t_3;
@@ -25753,6 +26186,7 @@ static void *__pyx_memoryview_copy_data_to_temp(__Pyx_memviewslice *__pyx_v_src,
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
+  __Pyx_TraceCall("copy_data_to_temp", __pyx_f[1], 1208, 1, __PYX_ERR(1, 1208, __pyx_L1_error));
 
   /* "View.MemoryView":1219
  *     cdef void *result
@@ -25982,6 +26416,7 @@ static void *__pyx_memoryview_copy_data_to_temp(__Pyx_memviewslice *__pyx_v_src,
   }
   __pyx_r = NULL;
   __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 1);
   return __pyx_r;
 }
 
@@ -25995,6 +26430,7 @@ static void *__pyx_memoryview_copy_data_to_temp(__Pyx_memviewslice *__pyx_v_src,
 
 static int __pyx_memoryview_err_extents(int __pyx_v_i, Py_ssize_t __pyx_v_extent1, Py_ssize_t __pyx_v_extent2) {
   int __pyx_r;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
@@ -26007,6 +26443,7 @@ static int __pyx_memoryview_err_extents(int __pyx_v_i, Py_ssize_t __pyx_v_extent
   PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
   #endif
   __Pyx_RefNannySetupContext("_err_extents", 0);
+  __Pyx_TraceCall("_err_extents", __pyx_f[1], 1251, 0, __PYX_ERR(1, 1251, __pyx_L1_error));
 
   /* "View.MemoryView":1254
  *                              Py_ssize_t extent2) except -1 with gil:
@@ -26066,6 +26503,7 @@ static int __pyx_memoryview_err_extents(int __pyx_v_i, Py_ssize_t __pyx_v_extent
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_AddTraceback("View.MemoryView._err_extents", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = -1;
+  __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
   #ifdef WITH_THREAD
   __Pyx_PyGILState_Release(__pyx_gilstate_save);
@@ -26083,6 +26521,7 @@ static int __pyx_memoryview_err_extents(int __pyx_v_i, Py_ssize_t __pyx_v_extent
 
 static int __pyx_memoryview_err_dim(PyObject *__pyx_v_error, char *__pyx_v_msg, int __pyx_v_dim) {
   int __pyx_r;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
@@ -26095,6 +26534,7 @@ static int __pyx_memoryview_err_dim(PyObject *__pyx_v_error, char *__pyx_v_msg, 
   PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
   #endif
   __Pyx_RefNannySetupContext("_err_dim", 0);
+  __Pyx_TraceCall("_err_dim", __pyx_f[1], 1257, 0, __PYX_ERR(1, 1257, __pyx_L1_error));
   __Pyx_INCREF(__pyx_v_error);
 
   /* "View.MemoryView":1258
@@ -26150,6 +26590,7 @@ static int __pyx_memoryview_err_dim(PyObject *__pyx_v_error, char *__pyx_v_msg, 
   __Pyx_AddTraceback("View.MemoryView._err_dim", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = -1;
   __Pyx_XDECREF(__pyx_v_error);
+  __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
   #ifdef WITH_THREAD
   __Pyx_PyGILState_Release(__pyx_gilstate_save);
@@ -26167,6 +26608,7 @@ static int __pyx_memoryview_err_dim(PyObject *__pyx_v_error, char *__pyx_v_msg, 
 
 static int __pyx_memoryview_err(PyObject *__pyx_v_error, char *__pyx_v_msg) {
   int __pyx_r;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   PyObject *__pyx_t_2 = NULL;
@@ -26180,6 +26622,7 @@ static int __pyx_memoryview_err(PyObject *__pyx_v_error, char *__pyx_v_msg) {
   PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
   #endif
   __Pyx_RefNannySetupContext("_err", 0);
+  __Pyx_TraceCall("_err", __pyx_f[1], 1261, 0, __PYX_ERR(1, 1261, __pyx_L1_error));
   __Pyx_INCREF(__pyx_v_error);
 
   /* "View.MemoryView":1262
@@ -26260,6 +26703,7 @@ static int __pyx_memoryview_err(PyObject *__pyx_v_error, char *__pyx_v_msg) {
   __Pyx_AddTraceback("View.MemoryView._err", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = -1;
   __Pyx_XDECREF(__pyx_v_error);
+  __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
   #ifdef WITH_THREAD
   __Pyx_PyGILState_Release(__pyx_gilstate_save);
@@ -26285,6 +26729,7 @@ static int __pyx_memoryview_copy_contents(__Pyx_memviewslice __pyx_v_src, __Pyx_
   __Pyx_memviewslice __pyx_v_tmp;
   int __pyx_v_ndim;
   int __pyx_r;
+  __Pyx_TraceDeclarations
   Py_ssize_t __pyx_t_1;
   int __pyx_t_2;
   int __pyx_t_3;
@@ -26296,6 +26741,7 @@ static int __pyx_memoryview_copy_contents(__Pyx_memviewslice __pyx_v_src, __Pyx_
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
+  __Pyx_TraceCall("memoryview_copy_contents", __pyx_f[1], 1268, 1, __PYX_ERR(1, 1268, __pyx_L1_error));
 
   /* "View.MemoryView":1276
  *     Check for overlapping memory and verify the shapes.
@@ -26843,6 +27289,7 @@ static int __pyx_memoryview_copy_contents(__Pyx_memviewslice __pyx_v_src, __Pyx_
   }
   __pyx_r = -1;
   __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 1);
   return __pyx_r;
 }
 
@@ -26857,9 +27304,14 @@ static int __pyx_memoryview_copy_contents(__Pyx_memviewslice __pyx_v_src, __Pyx_
 static void __pyx_memoryview_broadcast_leading(__Pyx_memviewslice *__pyx_v_mslice, int __pyx_v_ndim, int __pyx_v_ndim_other) {
   int __pyx_v_i;
   int __pyx_v_offset;
+  __Pyx_TraceDeclarations
   int __pyx_t_1;
   int __pyx_t_2;
   int __pyx_t_3;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_TraceCall("broadcast_leading", __pyx_f[1], 1340, 1, __PYX_ERR(1, 1340, __pyx_L1_error));
 
   /* "View.MemoryView":1344
  *                             int ndim_other) nogil:
@@ -26957,6 +27409,11 @@ static void __pyx_memoryview_broadcast_leading(__Pyx_memviewslice *__pyx_v_mslic
  */
 
   /* function exit code */
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_WriteUnraisable("View.MemoryView.broadcast_leading", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 1);
+  __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 1);
 }
 
 /* "View.MemoryView":1362
@@ -26968,7 +27425,12 @@ static void __pyx_memoryview_broadcast_leading(__Pyx_memviewslice *__pyx_v_mslic
  */
 
 static void __pyx_memoryview_refcount_copying(__Pyx_memviewslice *__pyx_v_dst, int __pyx_v_dtype_is_object, int __pyx_v_ndim, int __pyx_v_inc) {
+  __Pyx_TraceDeclarations
   int __pyx_t_1;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_TraceCall("refcount_copying", __pyx_f[1], 1362, 1, __PYX_ERR(1, 1362, __pyx_L1_error));
 
   /* "View.MemoryView":1366
  * 
@@ -27007,6 +27469,11 @@ static void __pyx_memoryview_refcount_copying(__Pyx_memviewslice *__pyx_v_dst, i
  */
 
   /* function exit code */
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_WriteUnraisable("View.MemoryView.refcount_copying", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 1);
+  __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 1);
 }
 
 /* "View.MemoryView":1371
@@ -27018,11 +27485,16 @@ static void __pyx_memoryview_refcount_copying(__Pyx_memviewslice *__pyx_v_dst, i
  */
 
 static void __pyx_memoryview_refcount_objects_in_slice_with_gil(char *__pyx_v_data, Py_ssize_t *__pyx_v_shape, Py_ssize_t *__pyx_v_strides, int __pyx_v_ndim, int __pyx_v_inc) {
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
   #ifdef WITH_THREAD
   PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
   #endif
   __Pyx_RefNannySetupContext("refcount_objects_in_slice_with_gil", 0);
+  __Pyx_TraceCall("refcount_objects_in_slice_with_gil", __pyx_f[1], 1371, 0, __PYX_ERR(1, 1371, __pyx_L1_error));
 
   /* "View.MemoryView":1374
  *                                              Py_ssize_t *strides, int ndim,
@@ -27042,6 +27514,11 @@ static void __pyx_memoryview_refcount_objects_in_slice_with_gil(char *__pyx_v_da
  */
 
   /* function exit code */
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_WriteUnraisable("View.MemoryView.refcount_objects_in_slice_with_gil", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
+  __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
   #ifdef WITH_THREAD
   __Pyx_PyGILState_Release(__pyx_gilstate_save);
@@ -27058,12 +27535,17 @@ static void __pyx_memoryview_refcount_objects_in_slice_with_gil(char *__pyx_v_da
 
 static void __pyx_memoryview_refcount_objects_in_slice(char *__pyx_v_data, Py_ssize_t *__pyx_v_shape, Py_ssize_t *__pyx_v_strides, int __pyx_v_ndim, int __pyx_v_inc) {
   CYTHON_UNUSED Py_ssize_t __pyx_v_i;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   Py_ssize_t __pyx_t_1;
   Py_ssize_t __pyx_t_2;
   Py_ssize_t __pyx_t_3;
   int __pyx_t_4;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("refcount_objects_in_slice", 0);
+  __Pyx_TraceCall("refcount_objects_in_slice", __pyx_f[1], 1377, 0, __PYX_ERR(1, 1377, __pyx_L1_error));
 
   /* "View.MemoryView":1381
  *     cdef Py_ssize_t i
@@ -27177,6 +27659,11 @@ static void __pyx_memoryview_refcount_objects_in_slice(char *__pyx_v_data, Py_ss
  */
 
   /* function exit code */
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_WriteUnraisable("View.MemoryView.refcount_objects_in_slice", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
+  __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
 }
 
@@ -27189,6 +27676,11 @@ static void __pyx_memoryview_refcount_objects_in_slice(char *__pyx_v_data, Py_ss
  */
 
 static void __pyx_memoryview_slice_assign_scalar(__Pyx_memviewslice *__pyx_v_dst, int __pyx_v_ndim, size_t __pyx_v_itemsize, void *__pyx_v_item, int __pyx_v_dtype_is_object) {
+  __Pyx_TraceDeclarations
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_TraceCall("slice_assign_scalar", __pyx_f[1], 1397, 1, __PYX_ERR(1, 1397, __pyx_L1_error));
 
   /* "View.MemoryView":1400
  *                               size_t itemsize, void *item,
@@ -27226,6 +27718,11 @@ static void __pyx_memoryview_slice_assign_scalar(__Pyx_memviewslice *__pyx_v_dst
  */
 
   /* function exit code */
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_WriteUnraisable("View.MemoryView.slice_assign_scalar", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 1);
+  __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 1);
 }
 
 /* "View.MemoryView":1407
@@ -27240,10 +27737,15 @@ static void __pyx_memoryview__slice_assign_scalar(char *__pyx_v_data, Py_ssize_t
   CYTHON_UNUSED Py_ssize_t __pyx_v_i;
   Py_ssize_t __pyx_v_stride;
   Py_ssize_t __pyx_v_extent;
+  __Pyx_TraceDeclarations
   int __pyx_t_1;
   Py_ssize_t __pyx_t_2;
   Py_ssize_t __pyx_t_3;
   Py_ssize_t __pyx_t_4;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_TraceCall("_slice_assign_scalar", __pyx_f[1], 1407, 1, __PYX_ERR(1, 1407, __pyx_L1_error));
 
   /* "View.MemoryView":1411
  *                               size_t itemsize, void *item) nogil:
@@ -27357,6 +27859,11 @@ static void __pyx_memoryview__slice_assign_scalar(char *__pyx_v_data, Py_ssize_t
  */
 
   /* function exit code */
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_WriteUnraisable("View.MemoryView._slice_assign_scalar", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 1);
+  __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 1);
 }
 
 /* "(tree fragment)":1
@@ -27445,6 +27952,7 @@ static PyObject *__pyx_pf_15View_dot_MemoryView___pyx_unpickle_Enum(CYTHON_UNUSE
   PyObject *__pyx_v___pyx_PickleError = 0;
   PyObject *__pyx_v___pyx_result = 0;
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_t_2;
@@ -27455,7 +27963,9 @@ static PyObject *__pyx_pf_15View_dot_MemoryView___pyx_unpickle_Enum(CYTHON_UNUSE
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
+  __Pyx_TraceFrameInit(__pyx_codeobj__55)
   __Pyx_RefNannySetupContext("__pyx_unpickle_Enum", 0);
+  __Pyx_TraceCall("__pyx_unpickle_Enum", __pyx_f[1], 1, 0, __PYX_ERR(1, 1, __pyx_L1_error));
 
   /* "(tree fragment)":4
  *     cdef object __pyx_PickleError
@@ -27624,6 +28134,7 @@ static PyObject *__pyx_pf_15View_dot_MemoryView___pyx_unpickle_Enum(CYTHON_UNUSE
   __Pyx_XDECREF(__pyx_v___pyx_PickleError);
   __Pyx_XDECREF(__pyx_v___pyx_result);
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -27638,6 +28149,7 @@ static PyObject *__pyx_pf_15View_dot_MemoryView___pyx_unpickle_Enum(CYTHON_UNUSE
 
 static PyObject *__pyx_unpickle_Enum__set_state(struct __pyx_MemviewEnum_obj *__pyx_v___pyx_result, PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_t_2;
@@ -27651,6 +28163,7 @@ static PyObject *__pyx_unpickle_Enum__set_state(struct __pyx_MemviewEnum_obj *__
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__pyx_unpickle_Enum__set_state", 0);
+  __Pyx_TraceCall("__pyx_unpickle_Enum__set_state", __pyx_f[1], 11, 0, __PYX_ERR(1, 11, __pyx_L1_error));
 
   /* "(tree fragment)":12
  *     return __pyx_result
@@ -27756,6 +28269,7 @@ static PyObject *__pyx_unpickle_Enum__set_state(struct __pyx_MemviewEnum_obj *__
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -29497,7 +30011,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_Ellipsis, __pyx_k_Ellipsis, sizeof(__pyx_k_Ellipsis), 0, 0, 1, 1},
   {&__pyx_kp_s_Empty_shape_tuple_for_cython_arr, __pyx_k_Empty_shape_tuple_for_cython_arr, sizeof(__pyx_k_Empty_shape_tuple_for_cython_arr), 0, 0, 1, 0},
   {&__pyx_n_s_FACT, __pyx_k_FACT, sizeof(__pyx_k_FACT), 0, 0, 1, 1},
-  {&__pyx_kp_u_I_do_not_converge, __pyx_k_I_do_not_converge, sizeof(__pyx_k_I_do_not_converge), 0, 1, 0, 0},
   {&__pyx_kp_s_Incompatible_checksums_0x_x_vs_0, __pyx_k_Incompatible_checksums_0x_x_vs_0, sizeof(__pyx_k_Incompatible_checksums_0x_x_vs_0), 0, 0, 1, 0},
   {&__pyx_n_s_IndexError, __pyx_k_IndexError, sizeof(__pyx_k_IndexError), 0, 0, 1, 1},
   {&__pyx_kp_s_Indirect_dimensions_not_supporte, __pyx_k_Indirect_dimensions_not_supporte, sizeof(__pyx_k_Indirect_dimensions_not_supporte), 0, 0, 1, 0},
@@ -29519,7 +30032,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_s_Unable_to_convert_item_to_object, __pyx_k_Unable_to_convert_item_to_object, sizeof(__pyx_k_Unable_to_convert_item_to_object), 0, 0, 1, 0},
   {&__pyx_n_s_ValueError, __pyx_k_ValueError, sizeof(__pyx_k_ValueError), 0, 0, 1, 1},
   {&__pyx_n_s_View_MemoryView, __pyx_k_View_MemoryView, sizeof(__pyx_k_View_MemoryView), 0, 0, 1, 1},
-  {&__pyx_kp_u__32, __pyx_k__32, sizeof(__pyx_k__32), 0, 1, 0, 0},
+  {&__pyx_kp_u__31, __pyx_k__31, sizeof(__pyx_k__31), 0, 1, 0, 0},
   {&__pyx_n_s_allocate_buffer, __pyx_k_allocate_buffer, sizeof(__pyx_k_allocate_buffer), 0, 0, 1, 1},
   {&__pyx_n_s_array, __pyx_k_array, sizeof(__pyx_k_array), 0, 0, 1, 1},
   {&__pyx_n_s_base, __pyx_k_base, sizeof(__pyx_k_base), 0, 0, 1, 1},
@@ -29876,92 +30389,81 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__28);
   __Pyx_GIVEREF(__pyx_tuple__28);
 
-  /* "bonndit/tracking/interpolation.pyx":510
- * 			if max_try == 1000:
- * 				con = 0
- * 				with gil: print('I do not converge')             # <<<<<<<<<<<<<<
- * 				break
- * 		set_zero_matrix(self.best_dir)
+  /* "(tree fragment)":2
+ * def __reduce_cython__(self):
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
+ * def __setstate_cython__(self, __pyx_state):
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  */
-  __pyx_tuple__29 = PyTuple_Pack(1, __pyx_kp_u_I_do_not_converge); if (unlikely(!__pyx_tuple__29)) __PYX_ERR(0, 510, __pyx_L1_error)
+  __pyx_tuple__29 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__29)) __PYX_ERR(1, 2, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__29);
   __Pyx_GIVEREF(__pyx_tuple__29);
 
-  /* "(tree fragment)":2
- * def __reduce_cython__(self):
- *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
- * def __setstate_cython__(self, __pyx_state):
+  /* "(tree fragment)":4
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ * def __setstate_cython__(self, __pyx_state):
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
  */
-  __pyx_tuple__30 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__30)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __pyx_tuple__30 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__30)) __PYX_ERR(1, 4, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__30);
   __Pyx_GIVEREF(__pyx_tuple__30);
 
-  /* "(tree fragment)":4
- *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
- * def __setstate_cython__(self, __pyx_state):
- *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
- */
-  __pyx_tuple__31 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__31)) __PYX_ERR(1, 4, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__31);
-  __Pyx_GIVEREF(__pyx_tuple__31);
-
   /* "(tree fragment)":2
  * def __reduce_cython__(self):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  */
-  __pyx_tuple__33 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__33)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __pyx_tuple__32 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__32)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__32);
+  __Pyx_GIVEREF(__pyx_tuple__32);
+
+  /* "(tree fragment)":4
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ * def __setstate_cython__(self, __pyx_state):
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
+ */
+  __pyx_tuple__33 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__33)) __PYX_ERR(1, 4, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__33);
   __Pyx_GIVEREF(__pyx_tuple__33);
 
-  /* "(tree fragment)":4
- *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
- * def __setstate_cython__(self, __pyx_state):
+  /* "(tree fragment)":2
+ * def __reduce_cython__(self):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
+ * def __setstate_cython__(self, __pyx_state):
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  */
-  __pyx_tuple__34 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__34)) __PYX_ERR(1, 4, __pyx_L1_error)
+  __pyx_tuple__34 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__34)) __PYX_ERR(1, 2, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__34);
   __Pyx_GIVEREF(__pyx_tuple__34);
 
-  /* "(tree fragment)":2
- * def __reduce_cython__(self):
- *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
- * def __setstate_cython__(self, __pyx_state):
+  /* "(tree fragment)":4
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ * def __setstate_cython__(self, __pyx_state):
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
  */
-  __pyx_tuple__35 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__35)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __pyx_tuple__35 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__35)) __PYX_ERR(1, 4, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__35);
   __Pyx_GIVEREF(__pyx_tuple__35);
 
-  /* "(tree fragment)":4
- *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
- * def __setstate_cython__(self, __pyx_state):
- *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
- */
-  __pyx_tuple__36 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__36)) __PYX_ERR(1, 4, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__36);
-  __Pyx_GIVEREF(__pyx_tuple__36);
-
   /* "(tree fragment)":2
  * def __reduce_cython__(self):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  */
-  __pyx_tuple__37 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__37)) __PYX_ERR(1, 2, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__37);
-  __Pyx_GIVEREF(__pyx_tuple__37);
+  __pyx_tuple__36 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__36)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__36);
+  __Pyx_GIVEREF(__pyx_tuple__36);
 
   /* "(tree fragment)":4
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
  */
-  __pyx_tuple__38 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__38)) __PYX_ERR(1, 4, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__38);
-  __Pyx_GIVEREF(__pyx_tuple__38);
+  __pyx_tuple__37 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__37)) __PYX_ERR(1, 4, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__37);
+  __Pyx_GIVEREF(__pyx_tuple__37);
 
   /* "View.MemoryView":133
  * 
@@ -29970,9 +30472,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  *         if itemsize <= 0:
  */
-  __pyx_tuple__39 = PyTuple_Pack(1, __pyx_kp_s_Empty_shape_tuple_for_cython_arr); if (unlikely(!__pyx_tuple__39)) __PYX_ERR(1, 133, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__39);
-  __Pyx_GIVEREF(__pyx_tuple__39);
+  __pyx_tuple__38 = PyTuple_Pack(1, __pyx_kp_s_Empty_shape_tuple_for_cython_arr); if (unlikely(!__pyx_tuple__38)) __PYX_ERR(1, 133, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__38);
+  __Pyx_GIVEREF(__pyx_tuple__38);
 
   /* "View.MemoryView":136
  * 
@@ -29981,9 +30483,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  *         if not isinstance(format, bytes):
  */
-  __pyx_tuple__40 = PyTuple_Pack(1, __pyx_kp_s_itemsize_0_for_cython_array); if (unlikely(!__pyx_tuple__40)) __PYX_ERR(1, 136, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__40);
-  __Pyx_GIVEREF(__pyx_tuple__40);
+  __pyx_tuple__39 = PyTuple_Pack(1, __pyx_kp_s_itemsize_0_for_cython_array); if (unlikely(!__pyx_tuple__39)) __PYX_ERR(1, 136, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__39);
+  __Pyx_GIVEREF(__pyx_tuple__39);
 
   /* "View.MemoryView":148
  * 
@@ -29992,9 +30494,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  * 
  */
-  __pyx_tuple__41 = PyTuple_Pack(1, __pyx_kp_s_unable_to_allocate_shape_and_str); if (unlikely(!__pyx_tuple__41)) __PYX_ERR(1, 148, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__41);
-  __Pyx_GIVEREF(__pyx_tuple__41);
+  __pyx_tuple__40 = PyTuple_Pack(1, __pyx_kp_s_unable_to_allocate_shape_and_str); if (unlikely(!__pyx_tuple__40)) __PYX_ERR(1, 148, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__40);
+  __Pyx_GIVEREF(__pyx_tuple__40);
 
   /* "View.MemoryView":176
  *             self.data = <char *>malloc(self.len)
@@ -30003,9 +30505,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  *             if self.dtype_is_object:
  */
-  __pyx_tuple__42 = PyTuple_Pack(1, __pyx_kp_s_unable_to_allocate_array_data); if (unlikely(!__pyx_tuple__42)) __PYX_ERR(1, 176, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__42);
-  __Pyx_GIVEREF(__pyx_tuple__42);
+  __pyx_tuple__41 = PyTuple_Pack(1, __pyx_kp_s_unable_to_allocate_array_data); if (unlikely(!__pyx_tuple__41)) __PYX_ERR(1, 176, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__41);
+  __Pyx_GIVEREF(__pyx_tuple__41);
 
   /* "View.MemoryView":192
  *             bufmode = PyBUF_F_CONTIGUOUS | PyBUF_ANY_CONTIGUOUS
@@ -30014,9 +30516,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *         info.buf = self.data
  *         info.len = self.len
  */
-  __pyx_tuple__43 = PyTuple_Pack(1, __pyx_kp_s_Can_only_create_a_buffer_that_is); if (unlikely(!__pyx_tuple__43)) __PYX_ERR(1, 192, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__43);
-  __Pyx_GIVEREF(__pyx_tuple__43);
+  __pyx_tuple__42 = PyTuple_Pack(1, __pyx_kp_s_Can_only_create_a_buffer_that_is); if (unlikely(!__pyx_tuple__42)) __PYX_ERR(1, 192, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__42);
+  __Pyx_GIVEREF(__pyx_tuple__42);
 
   /* "(tree fragment)":2
  * def __reduce_cython__(self):
@@ -30024,18 +30526,18 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  */
-  __pyx_tuple__44 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__44)) __PYX_ERR(1, 2, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__44);
-  __Pyx_GIVEREF(__pyx_tuple__44);
+  __pyx_tuple__43 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__43)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__43);
+  __Pyx_GIVEREF(__pyx_tuple__43);
 
   /* "(tree fragment)":4
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
  */
-  __pyx_tuple__45 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__45)) __PYX_ERR(1, 4, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__45);
-  __Pyx_GIVEREF(__pyx_tuple__45);
+  __pyx_tuple__44 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__44)) __PYX_ERR(1, 4, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__44);
+  __Pyx_GIVEREF(__pyx_tuple__44);
 
   /* "View.MemoryView":418
  *     def __setitem__(memoryview self, object index, object value):
@@ -30044,9 +30546,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  *         have_slices, index = _unellipsify(index, self.view.ndim)
  */
-  __pyx_tuple__46 = PyTuple_Pack(1, __pyx_kp_s_Cannot_assign_to_read_only_memor); if (unlikely(!__pyx_tuple__46)) __PYX_ERR(1, 418, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__46);
-  __Pyx_GIVEREF(__pyx_tuple__46);
+  __pyx_tuple__45 = PyTuple_Pack(1, __pyx_kp_s_Cannot_assign_to_read_only_memor); if (unlikely(!__pyx_tuple__45)) __PYX_ERR(1, 418, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__45);
+  __Pyx_GIVEREF(__pyx_tuple__45);
 
   /* "View.MemoryView":495
  *             result = struct.unpack(self.view.format, bytesitem)
@@ -30055,9 +30557,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *         else:
  *             if len(self.view.format) == 1:
  */
-  __pyx_tuple__47 = PyTuple_Pack(1, __pyx_kp_s_Unable_to_convert_item_to_object); if (unlikely(!__pyx_tuple__47)) __PYX_ERR(1, 495, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__47);
-  __Pyx_GIVEREF(__pyx_tuple__47);
+  __pyx_tuple__46 = PyTuple_Pack(1, __pyx_kp_s_Unable_to_convert_item_to_object); if (unlikely(!__pyx_tuple__46)) __PYX_ERR(1, 495, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__46);
+  __Pyx_GIVEREF(__pyx_tuple__46);
 
   /* "View.MemoryView":520
  *     def __getbuffer__(self, Py_buffer *info, int flags):
@@ -30066,9 +30568,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  *         if flags & PyBUF_ND:
  */
-  __pyx_tuple__48 = PyTuple_Pack(1, __pyx_kp_s_Cannot_create_writable_memory_vi); if (unlikely(!__pyx_tuple__48)) __PYX_ERR(1, 520, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__48);
-  __Pyx_GIVEREF(__pyx_tuple__48);
+  __pyx_tuple__47 = PyTuple_Pack(1, __pyx_kp_s_Cannot_create_writable_memory_vi); if (unlikely(!__pyx_tuple__47)) __PYX_ERR(1, 520, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__47);
+  __Pyx_GIVEREF(__pyx_tuple__47);
 
   /* "View.MemoryView":570
  *         if self.view.strides == NULL:
@@ -30077,9 +30579,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  *         return tuple([stride for stride in self.view.strides[:self.view.ndim]])
  */
-  __pyx_tuple__49 = PyTuple_Pack(1, __pyx_kp_s_Buffer_view_does_not_expose_stri); if (unlikely(!__pyx_tuple__49)) __PYX_ERR(1, 570, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__49);
-  __Pyx_GIVEREF(__pyx_tuple__49);
+  __pyx_tuple__48 = PyTuple_Pack(1, __pyx_kp_s_Buffer_view_does_not_expose_stri); if (unlikely(!__pyx_tuple__48)) __PYX_ERR(1, 570, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__48);
+  __Pyx_GIVEREF(__pyx_tuple__48);
 
   /* "View.MemoryView":577
  *     def suboffsets(self):
@@ -30088,12 +30590,12 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  *         return tuple([suboffset for suboffset in self.view.suboffsets[:self.view.ndim]])
  */
-  __pyx_tuple__50 = PyTuple_New(1); if (unlikely(!__pyx_tuple__50)) __PYX_ERR(1, 577, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__50);
+  __pyx_tuple__49 = PyTuple_New(1); if (unlikely(!__pyx_tuple__49)) __PYX_ERR(1, 577, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__49);
   __Pyx_INCREF(__pyx_int_neg_1);
   __Pyx_GIVEREF(__pyx_int_neg_1);
-  PyTuple_SET_ITEM(__pyx_tuple__50, 0, __pyx_int_neg_1);
-  __Pyx_GIVEREF(__pyx_tuple__50);
+  PyTuple_SET_ITEM(__pyx_tuple__49, 0, __pyx_int_neg_1);
+  __Pyx_GIVEREF(__pyx_tuple__49);
 
   /* "(tree fragment)":2
  * def __reduce_cython__(self):
@@ -30101,18 +30603,18 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  */
-  __pyx_tuple__51 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__51)) __PYX_ERR(1, 2, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__51);
-  __Pyx_GIVEREF(__pyx_tuple__51);
+  __pyx_tuple__50 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__50)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__50);
+  __Pyx_GIVEREF(__pyx_tuple__50);
 
   /* "(tree fragment)":4
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
  */
-  __pyx_tuple__52 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__52)) __PYX_ERR(1, 4, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__52);
-  __Pyx_GIVEREF(__pyx_tuple__52);
+  __pyx_tuple__51 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__51)) __PYX_ERR(1, 4, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__51);
+  __Pyx_GIVEREF(__pyx_tuple__51);
 
   /* "View.MemoryView":703
  *     for suboffset in suboffsets[:ndim]:
@@ -30121,9 +30623,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  * 
  */
-  __pyx_tuple__53 = PyTuple_Pack(1, __pyx_kp_s_Indirect_dimensions_not_supporte); if (unlikely(!__pyx_tuple__53)) __PYX_ERR(1, 703, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__53);
-  __Pyx_GIVEREF(__pyx_tuple__53);
+  __pyx_tuple__52 = PyTuple_Pack(1, __pyx_kp_s_Indirect_dimensions_not_supporte); if (unlikely(!__pyx_tuple__52)) __PYX_ERR(1, 703, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__52);
+  __Pyx_GIVEREF(__pyx_tuple__52);
 
   /* "(tree fragment)":2
  * def __reduce_cython__(self):
@@ -30131,18 +30633,18 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  */
-  __pyx_tuple__54 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__54)) __PYX_ERR(1, 2, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__54);
-  __Pyx_GIVEREF(__pyx_tuple__54);
+  __pyx_tuple__53 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__53)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__53);
+  __Pyx_GIVEREF(__pyx_tuple__53);
 
   /* "(tree fragment)":4
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
  */
-  __pyx_tuple__55 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__55)) __PYX_ERR(1, 4, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__55);
-  __Pyx_GIVEREF(__pyx_tuple__55);
+  __pyx_tuple__54 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__54)) __PYX_ERR(1, 4, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__54);
+  __Pyx_GIVEREF(__pyx_tuple__54);
   __pyx_tuple__56 = PyTuple_Pack(3, __pyx_int_184977713, __pyx_int_136983863, __pyx_int_112105877); if (unlikely(!__pyx_tuple__56)) __PYX_ERR(1, 4, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__56);
   __Pyx_GIVEREF(__pyx_tuple__56);
@@ -30230,7 +30732,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __pyx_tuple__66 = PyTuple_Pack(5, __pyx_n_s_pyx_type, __pyx_n_s_pyx_checksum, __pyx_n_s_pyx_state, __pyx_n_s_pyx_PickleError, __pyx_n_s_pyx_result); if (unlikely(!__pyx_tuple__66)) __PYX_ERR(1, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__66);
   __Pyx_GIVEREF(__pyx_tuple__66);
-  __pyx_codeobj__67 = (PyObject*)__Pyx_PyCode_New(3, 0, 5, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__66, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_pyx_unpickle_Enum, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__67)) __PYX_ERR(1, 1, __pyx_L1_error)
+  __pyx_codeobj__55 = (PyObject*)__Pyx_PyCode_New(3, 0, 5, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__66, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_pyx_unpickle_Enum, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__55)) __PYX_ERR(1, 1, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -30701,6 +31203,7 @@ static CYTHON_SMALL_CODE int __pyx_pymod_exec_interpolation(PyObject *__pyx_pyin
 #endif
 #endif
 {
+  __Pyx_TraceDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
   PyObject *__pyx_t_3 = NULL;
@@ -30822,9 +31325,10 @@ if (!__Pyx_RefNanny) {
   #if defined(__Pyx_Generator_USED) || defined(__Pyx_Coroutine_USED)
   if (__Pyx_patch_abc() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   #endif
+  __Pyx_TraceCall("__Pyx_PyMODINIT_FUNC PyInit_interpolation(void)", __pyx_f[0], 1, 0, __PYX_ERR(0, 1, __pyx_L1_error));
 
   /* "bonndit/tracking/interpolation.pyx":4
- * #cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True,
+ * #cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, profile=True,
  * # warn.unused_results=True
  * import Cython             # <<<<<<<<<<<<<<
  * from tqdm import tqdm
@@ -31699,7 +32203,7 @@ if (!__Pyx_RefNanny) {
 
   /* "bonndit/tracking/interpolation.pyx":1
  * #%%cython --annotate             # <<<<<<<<<<<<<<
- * #cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True,
+ * #cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, profile=True,
  * # warn.unused_results=True
  */
   __pyx_t_8 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 1, __pyx_L1_error)
@@ -31859,6 +32363,7 @@ if (!__Pyx_RefNanny) {
  *     __pyx_result.name = __pyx_state[0]
  *     if len(__pyx_state) > 1 and hasattr(__pyx_result, '__dict__'):
  */
+  __Pyx_TraceReturn(Py_None, 0);
 
   /*--- Wrapped vars code ---*/
 
@@ -32105,6 +32610,120 @@ static int __Pyx__ArgTypeTest(PyObject *obj, PyTypeObject *type, const char *nam
     return 0;
 }
 
+/* PyErrFetchRestore */
+#if CYTHON_FAST_THREAD_STATE
+static CYTHON_INLINE void __Pyx_ErrRestoreInState(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb) {
+    PyObject *tmp_type, *tmp_value, *tmp_tb;
+    tmp_type = tstate->curexc_type;
+    tmp_value = tstate->curexc_value;
+    tmp_tb = tstate->curexc_traceback;
+    tstate->curexc_type = type;
+    tstate->curexc_value = value;
+    tstate->curexc_traceback = tb;
+    Py_XDECREF(tmp_type);
+    Py_XDECREF(tmp_value);
+    Py_XDECREF(tmp_tb);
+}
+static CYTHON_INLINE void __Pyx_ErrFetchInState(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb) {
+    *type = tstate->curexc_type;
+    *value = tstate->curexc_value;
+    *tb = tstate->curexc_traceback;
+    tstate->curexc_type = 0;
+    tstate->curexc_value = 0;
+    tstate->curexc_traceback = 0;
+}
+#endif
+
+/* Profile */
+#if CYTHON_PROFILE
+static int __Pyx_TraceSetupAndCall(PyCodeObject** code,
+                                   PyFrameObject** frame,
+                                   PyThreadState* tstate,
+                                   const char *funcname,
+                                   const char *srcfile,
+                                   int firstlineno) {
+    PyObject *type, *value, *traceback;
+    int retval;
+    if (*frame == NULL || !CYTHON_PROFILE_REUSE_FRAME) {
+        if (*code == NULL) {
+            *code = __Pyx_createFrameCodeObject(funcname, srcfile, firstlineno);
+            if (*code == NULL) return 0;
+        }
+        *frame = PyFrame_New(
+            tstate,                          /*PyThreadState *tstate*/
+            *code,                           /*PyCodeObject *code*/
+            __pyx_d,                  /*PyObject *globals*/
+            0                                /*PyObject *locals*/
+        );
+        if (*frame == NULL) return 0;
+        if (CYTHON_TRACE && (*frame)->f_trace == NULL) {
+            Py_INCREF(Py_None);
+            (*frame)->f_trace = Py_None;
+        }
+#if PY_VERSION_HEX < 0x030400B1
+    } else {
+        (*frame)->f_tstate = tstate;
+#endif
+    }
+    __Pyx_PyFrame_SetLineNumber(*frame, firstlineno);
+    retval = 1;
+    __Pyx_EnterTracing(tstate);
+    __Pyx_ErrFetchInState(tstate, &type, &value, &traceback);
+    #if CYTHON_TRACE
+    if (tstate->c_tracefunc)
+        retval = tstate->c_tracefunc(tstate->c_traceobj, *frame, PyTrace_CALL, NULL) == 0;
+    if (retval && tstate->c_profilefunc)
+    #endif
+        retval = tstate->c_profilefunc(tstate->c_profileobj, *frame, PyTrace_CALL, NULL) == 0;
+    __Pyx_LeaveTracing(tstate);
+    if (retval) {
+        __Pyx_ErrRestoreInState(tstate, type, value, traceback);
+        return __Pyx_IsTracing(tstate, 0, 0) && retval;
+    } else {
+        Py_XDECREF(type);
+        Py_XDECREF(value);
+        Py_XDECREF(traceback);
+        return -1;
+    }
+}
+static PyCodeObject *__Pyx_createFrameCodeObject(const char *funcname, const char *srcfile, int firstlineno) {
+    PyCodeObject *py_code = 0;
+#if PY_MAJOR_VERSION >= 3
+    py_code = PyCode_NewEmpty(srcfile, funcname, firstlineno);
+    if (likely(py_code)) {
+        py_code->co_flags |= CO_OPTIMIZED | CO_NEWLOCALS;
+    }
+#else
+    PyObject *py_srcfile = 0;
+    PyObject *py_funcname = 0;
+    py_funcname = PyString_FromString(funcname);
+    if (unlikely(!py_funcname)) goto bad;
+    py_srcfile = PyString_FromString(srcfile);
+    if (unlikely(!py_srcfile)) goto bad;
+    py_code = PyCode_New(
+        0,
+        0,
+        0,
+        CO_OPTIMIZED | CO_NEWLOCALS,
+        __pyx_empty_bytes,     /*PyObject *code,*/
+        __pyx_empty_tuple,     /*PyObject *consts,*/
+        __pyx_empty_tuple,     /*PyObject *names,*/
+        __pyx_empty_tuple,     /*PyObject *varnames,*/
+        __pyx_empty_tuple,     /*PyObject *freevars,*/
+        __pyx_empty_tuple,     /*PyObject *cellvars,*/
+        py_srcfile,       /*PyObject *filename,*/
+        py_funcname,      /*PyObject *name,*/
+        firstlineno,
+        __pyx_empty_bytes      /*PyObject *lnotab*/
+    );
+bad:
+    Py_XDECREF(py_srcfile);
+    Py_XDECREF(py_funcname);
+#endif
+    return py_code;
+}
+#endif
+
 /* MemviewSliceInit */
 static int
 __Pyx_init_memviewslice(struct __pyx_memoryview_obj *memview,
@@ -32322,41 +32941,6 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg
 static CYTHON_INLINE void __Pyx_RaiseUnboundLocalError(const char *varname) {
     PyErr_Format(PyExc_UnboundLocalError, "local variable '%s' referenced before assignment", varname);
 }
-
-/* None */
-static void __Pyx_RaiseUnboundMemoryviewSliceNogil(const char *varname) {
-    #ifdef WITH_THREAD
-    PyGILState_STATE gilstate = PyGILState_Ensure();
-    #endif
-    __Pyx_RaiseUnboundLocalError(varname);
-    #ifdef WITH_THREAD
-    PyGILState_Release(gilstate);
-    #endif
-}
-
-/* PyErrFetchRestore */
-#if CYTHON_FAST_THREAD_STATE
-static CYTHON_INLINE void __Pyx_ErrRestoreInState(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb) {
-    PyObject *tmp_type, *tmp_value, *tmp_tb;
-    tmp_type = tstate->curexc_type;
-    tmp_value = tstate->curexc_value;
-    tmp_tb = tstate->curexc_traceback;
-    tstate->curexc_type = type;
-    tstate->curexc_value = value;
-    tstate->curexc_traceback = tb;
-    Py_XDECREF(tmp_type);
-    Py_XDECREF(tmp_value);
-    Py_XDECREF(tmp_tb);
-}
-static CYTHON_INLINE void __Pyx_ErrFetchInState(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb) {
-    *type = tstate->curexc_type;
-    *value = tstate->curexc_value;
-    *tb = tstate->curexc_traceback;
-    tstate->curexc_type = 0;
-    tstate->curexc_value = 0;
-    tstate->curexc_traceback = 0;
-}
-#endif
 
 /* WriteUnraisableException */
 static void __Pyx_WriteUnraisable(const char *name, CYTHON_UNUSED int clineno,
@@ -36843,19 +37427,6 @@ __pyx_fail:
         }\
         return (target_type) value;\
     }
-
-/* None */
-    static CYTHON_INLINE int __Pyx_ErrOccurredWithGIL(void) {
-  int err;
-  #ifdef WITH_THREAD
-  PyGILState_STATE _save = PyGILState_Ensure();
-  #endif
-  err = !!PyErr_Occurred();
-  #ifdef WITH_THREAD
-  PyGILState_Release(_save);
-  #endif
-  return err;
-}
 
 /* MemviewDtypeToObject */
     static CYTHON_INLINE PyObject *__pyx_memview_get_double(const char *itemp) {
