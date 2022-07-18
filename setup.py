@@ -21,7 +21,7 @@ ext_modules = [
 		include_dirs=[numpy.get_include(), "/opt/intel/oneapi/mkl/2022.0.2/include"],
 		libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
 		library_dirs=["/opt/intel/oneapi/mkl/2022.0.2/lib/intel64"],
-		extra_compile_args=["-Wall", "-m64", "-ggdb3"],
+		extra_compile_args=["-Wall", "-m64",  "-Ofast"],
 		extra_link_args=["-Wl,--no-as-needed"]
 	),
 	Extension(
@@ -30,42 +30,48 @@ ext_modules = [
 		include_dirs=[numpy.get_include(), "/opt/intel/oneapi/mkl/2022.0.2/include"],
 		libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
 		library_dirs=["/opt/intel/oneapi/mkl/2022.0.2/lib/intel64"],
-		extra_compile_args=["-Wall", "-m64", "-ggdb3"],
+		extra_compile_args=["-Wall", "-m64", "-Ofast"],
 		extra_link_args=["-Wl,--no-as-needed"]
 	),
 	Extension(
 		"bonndit.utilc.hota",
 		["src/bonndit/utilc/hota.pyx"],
+		extra_compile_args=["-Ofast"],
 	),
 	Extension(
 		"bonndit.utilc.structures",
 		["src/bonndit/utilc/structures.pyx"],
+		extra_compile_args=["-Ofast"],
 	),
 	Extension(
 		"bonndit.utilc.penalty_spherical",
 		["src/bonndit/utilc/penalty_spherical.pyx"],
+		extra_compile_args=["-Ofast"],
 	),
 	Extension(
 		"bonndit.utilc.lowrank",
 		["src/bonndit/utilc/lowrank.pyx"],
+		extra_compile_args=["-Ofast"],
 	),
 	Extension(
 		"bonndit.directions.fodfapprox",
 		["src/bonndit/directions/fodfapprox.pyx"],
 		include_dirs=[numpy.get_include(), '.'],
 		define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
-		extra_compile_args=['-fopenmp'],
+		extra_compile_args=['-fopenmp', '-Ofast'],
 		extra_link_args=['-fopenmp'],
 	),
 	Extension(
 		"bonndit.tracking.ItoW",
 		["src/bonndit/tracking/ItoW.pyx"],
+		extra_compile_args=["-Ofast"],
 	),
 	Extension(
 		"bonndit.tracking.alignedDirection",
 		["src/bonndit/tracking/alignedDirection.pyx"],
 		include_dirs=[numpy.get_include(), '.'],
 		define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
+		extra_compile_args=["-Ofast"],
 	), Extension(
 		"bonndit.tracking.kalman.model",
 		["src/bonndit/tracking/kalman/model.pyx"],
@@ -73,7 +79,7 @@ ext_modules = [
 		include_dirs=[numpy.get_include(), "/opt/intel/oneapi/mkl/2022.0.2/include"],
 		libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
 		library_dirs=["/opt/intel/oneapi/mkl/2022.0.2/lib/intel64"],
-		extra_compile_args=["-Wall", "-m64", "-ggdb3"],
+		extra_compile_args=["-Wall", "-m64", "-Ofast"],
 		extra_link_args=["-Wl,--no-as-needed"]
 
 	),
@@ -84,7 +90,7 @@ ext_modules = [
 		include_dirs=[numpy.get_include(), "/opt/intel/oneapi/mkl/2022.0.2/include"],
 		libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
 		library_dirs=["/opt/intel/oneapi/mkl/2022.0.2/lib/intel64"],
-		extra_compile_args=["-Wall", "-m64", "-ggdb3"],
+		extra_compile_args=["-Wall", "-m64",  '-Ofast'],
 		extra_link_args=["-Wl,--no-as-needed"]
 
 	),
@@ -95,12 +101,13 @@ ext_modules = [
 		include_dirs=[numpy.get_include(), "/opt/intel/oneapi/mkl/2022.0.2/include"],
 		libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
 		library_dirs=["/opt/intel/oneapi/mkl/2022.0.2/lib/intel64"],
-		extra_compile_args=["-Wall", "-m64", "-ggdb3"],
+		extra_compile_args=["-Wall", "-m64", "-Ofast"],
 		extra_link_args=["-Wl,--no-as-needed"]
 	),
 	Extension(
 		"bonndit.tracking.integration",
 		["src/bonndit/tracking/integration.pyx"],
+		extra_compile_args=["-Ofast"],
 	),
 	Extension(
 		"bonndit.tracking.stopping",
@@ -109,30 +116,35 @@ ext_modules = [
 	Extension(
 		"bonndit.tracking.tracking_prob",
 		["src/bonndit/tracking/tracking_prob.pyx"],
-		extra_compile_args=['-fopenmp'],
+		extra_compile_args=['-fopenmp', "-Ofast"],
 		extra_link_args=['-fopenmp'],
 	),
 	Extension(
 		"bonndit.pmodels.means",
 		["src/bonndit/pmodels/means.pyx"],
+		extra_compile_args=["-Ofast"],
 	),
 	Extension(
 		"bonndit.pmodels.model_avg",
 		["src/bonndit/pmodels/model_avg.pyx"],
+		extra_compile_args=["-Ofast"],
 	),
 	Extension(
 		"bonndit.filter.filter",
 		["src/bonndit/filter/filter.pyx"],
+		extra_compile_args=["-Ofast"],
 	),
 	Extension(
 		"bonndit.filter.filter",
 		["src/bonndit/filter/filter.pyx"],
+		extra_compile_args=["-Ofast"],
 	),
 	Extension(
 		"bonndit.directions.csd_peaks",
 		["src/bonndit/directions/csd_peaks.pyx"],
 		include_dirs=[numpy.get_include()],
 		define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
+		extra_compile_args=["-Ofast"],
 	),
 ]
 

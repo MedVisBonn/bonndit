@@ -4,6 +4,9 @@
 {
     "distutils": {
         "depends": [],
+        "extra_compile_args": [
+            "-Ofast"
+        ],
         "name": "bonndit.pmodels.means",
         "sources": [
             "src/bonndit/pmodels/means.pyx"
