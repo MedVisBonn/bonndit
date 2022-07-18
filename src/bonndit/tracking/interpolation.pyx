@@ -419,7 +419,7 @@ cdef class TrilinearFODF(Interpolation):
                 self.best_dir[i], pow(self.length[i], 1 / 4),
                 self.best_dir_approx[:, i])
         self.prob.calculate_probabilities(self.best_dir, old_dir)
-        self.next_dir = self.prob.best_fit
+        mult_with_scalar(self.next_dir, 1, self.prob.best_fit)
         return 0
 
 
