@@ -4,6 +4,9 @@
 {
     "distutils": {
         "depends": [],
+        "extra_compile_args": [
+            "-Ofast"
+        ],
         "name": "bonndit.pmodels.model_avg",
         "sources": [
             "src/bonndit/pmodels/model_avg.pyx"

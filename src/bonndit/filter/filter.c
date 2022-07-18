@@ -4,6 +4,9 @@
 {
     "distutils": {
         "depends": [],
+        "extra_compile_args": [
+            "-Ofast"
+        ],
         "name": "bonndit.filter.filter",
         "sources": [
             "src/bonndit/filter/filter.pyx"

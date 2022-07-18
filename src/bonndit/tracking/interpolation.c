@@ -13,13 +13,13 @@
         "extra_compile_args": [
             "-Wall",
             "-m64",
-            "-ggdb3"
+            "-Ofast"
         ],
         "extra_link_args": [
             "-Wl,--no-as-needed"
         ],
         "include_dirs": [
-            "/tmp/pip-build-env-5vbzudk3/overlay/lib/python3.8/site-packages/numpy/core/include",
+            "/tmp/pip-build-env-_ggg0_oh/overlay/lib/python3.8/site-packages/numpy/core/include",
             "/opt/intel/oneapi/mkl/2022.0.2/include"
         ],
         "libraries": [
