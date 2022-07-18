@@ -116,7 +116,7 @@ cdef double approx_initial(
     double[:] ls, double[:, :] vs, double[:, :] tens, double[:] ten, int k,
     double[:] valsec, double[:] val, double[:] der, double[:] testv,
     double[:] anisoten, double[:] isoten
-) nogil:
+):  # nogil:
     cdef double orignorm, newnorm
     cdef double[:] res
     orignorm = newnorm = hota_4o3d_sym_norm(ten)

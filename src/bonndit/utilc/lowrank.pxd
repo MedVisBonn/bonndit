@@ -5,7 +5,7 @@ cdef double approx_initial(
     double[:], double[:, :], double[:, :], double[:], int, double[:],
     double[:], double[:],
     double[:], double[:], double[:]
-) nogil
+)  # nogil
 cdef void init_max_3d(double[:], double[:], double[:]) nogil
 cdef int refine_rank1_3d(
     double[:], double[:], double[:], double[:],
