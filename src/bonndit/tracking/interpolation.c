@@ -19,7 +19,7 @@
             "-Wl,--no-as-needed"
         ],
         "include_dirs": [
-            "/tmp/pip-build-env-pyxt5fek/overlay/lib/python3.8/site-packages/numpy/core/include",
+            "/tmp/pip-build-env-4qhy9e4w/overlay/lib/python3.8/site-packages/numpy/core/include",
             "/opt/intel/oneapi/mkl/2022.0.2/include"
         ],
         "libraries": [
@@ -9120,7 +9120,7 @@ if (unlikely(!__pyx_v_7bonndit_8tracking_13interpolation_valsec.memview)) { __Py
  * 		for i in range(3):
  * 			mult_with_scalar(self.best_dir[i], pow(self.length[i], 1/4), self.best_dir_approx[:,i])             # <<<<<<<<<<<<<<
  * 		self.prob.calculate_probabilities(self.best_dir, old_dir)
- * 		self.next_dir = self.prob.best_fit
+ * 		mult_with_scalar(self.next_dir,1, self.prob.best_fit)
  */
     if (unlikely(!__pyx_v_self->__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 293, __pyx_L1_error)}
     __pyx_t_7.data = __pyx_v_self->__pyx_base.best_dir.data;
@@ -9165,7 +9165,7 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_t_7, pow((*((dou
  * 		for i in range(3):
  * 			mult_with_scalar(self.best_dir[i], pow(self.length[i], 1/4), self.best_dir_approx[:,i])
  * 		self.prob.calculate_probabilities(self.best_dir, old_dir)             # <<<<<<<<<<<<<<
- * 		self.next_dir = self.prob.best_fit
+ * 		mult_with_scalar(self.next_dir,1, self.prob.best_fit)
  * 		return 0
  */
   if (unlikely(!__pyx_v_self->__pyx_base.best_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 294, __pyx_L1_error)}
@@ -9174,21 +9174,17 @@ __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_t_7, pow((*((dou
   /* "bonndit/tracking/interpolation.pyx":295
  * 			mult_with_scalar(self.best_dir[i], pow(self.length[i], 1/4), self.best_dir_approx[:,i])
  * 		self.prob.calculate_probabilities(self.best_dir, old_dir)
- * 		self.next_dir = self.prob.best_fit             # <<<<<<<<<<<<<<
+ * 		mult_with_scalar(self.next_dir,1, self.prob.best_fit)             # <<<<<<<<<<<<<<
  * 		return 0
  * 
  */
+  if (unlikely(!__pyx_v_self->__pyx_base.next_dir.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 295, __pyx_L1_error)}
   if (unlikely(!__pyx_v_self->__pyx_base.prob->best_fit.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 295, __pyx_L1_error)}
-  __pyx_t_4 = __pyx_v_self->__pyx_base.prob->best_fit;
-  __PYX_INC_MEMVIEW(&__pyx_t_4, 1);
-  __PYX_XDEC_MEMVIEW(&__pyx_v_self->__pyx_base.next_dir, 0);
-  __pyx_v_self->__pyx_base.next_dir = __pyx_t_4;
-  __pyx_t_4.memview = NULL;
-  __pyx_t_4.data = NULL;
+  __pyx_f_7bonndit_5utilc_14cython_helpers_mult_with_scalar(__pyx_v_self->__pyx_base.next_dir, 1.0, __pyx_v_self->__pyx_base.prob->best_fit);
 
   /* "bonndit/tracking/interpolation.pyx":296
  * 		self.prob.calculate_probabilities(self.best_dir, old_dir)
- * 		self.next_dir = self.prob.best_fit
+ * 		mult_with_scalar(self.next_dir,1, self.prob.best_fit)
  * 		return 0             # <<<<<<<<<<<<<<
  * 
  * 
