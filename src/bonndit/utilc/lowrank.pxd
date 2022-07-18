@@ -1,6 +1,6 @@
 #%%cython --annotate
 #cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True,
-# warn.unused_results=True
+# warn.unused_results=True, profile=True
 
 cdef double approx_initial(double[:], double[:,:], double[:,:], double[:], int ,double[:], double[:], double[:],
                                 double[:],double[:], double[:]) nogil
