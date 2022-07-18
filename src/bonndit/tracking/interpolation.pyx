@@ -1,5 +1,5 @@
 #%%cython --annotate
-#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True,
+#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, profile=True,
 # warn.unused_results=True
 import Cython
 from tqdm import tqdm
@@ -51,7 +51,7 @@ cdef class Interpolation:
 
 
 
-	cdef void calc_cube(self,double[:] point) nogil:
+	cdef void calc_cube(self,double[:] point) : # : # : # nogil:
 		""" This function calculates the cube around a point.
 
 		Parameters
@@ -66,7 +66,7 @@ cdef class Interpolation:
 		add_pointwise(self.floor_point, neigh, point)
 		floor_pointwise_matrix(self.floor_point, self.floor_point)
 
-	cdef void nearest_neigh(self,double[:] point) nogil:
+	cdef void nearest_neigh(self,double[:] point) : # : # : # nogil:
 		""" Return the nearest neighbour to a given point by l2 norm. Therefore uses the cube around a point and calc
 		the distance to all other points.
 
@@ -95,7 +95,7 @@ cdef class Interpolation:
 		self.best_ind = best_ind
 
 	#somehow slicing is not possible
-	cdef void set_vector(self, int index, int j) nogil:
+	cdef void set_vector(self, int index, int j) : # : # : # nogil:
 		cdef int i
 		for i in range(3):
 			self.vector[i] = self.vector_field[i + 1, j, int(self.floor_point[index, 0]),
@@ -103,7 +103,7 @@ cdef class Interpolation:
 
 
 	#@Cython.cdivision(True)
-	cdef void main_dir(self, double[:] point) nogil:
+	cdef void main_dir(self, double[:] point) : # : # : # nogil:
 			cdef double zero = 0
 			self.nearest_neigh(point)
 			self.set_vector(self.best_ind, 0)
@@ -111,12 +111,12 @@ cdef class Interpolation:
 			                                                   int(self.floor_point[ self.best_ind, 1]),
 			                                                  int(self.floor_point[self.best_ind, 2])], 0.25), self.vector)
 
-	cdef int interpolate(self,double[:] point, double[:] old_dir, int r) nogil except *:
+	cdef int interpolate(self,double[:] point, double[:] old_dir, int r) : # : # : # nogil except *:
 		pass
 
 
 cdef class FACT(Interpolation):
-	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) nogil except *:
+	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) : # : # : # nogil except *:
 		cdef int i
 		cdef double l, max_value
 		self.nearest_neigh(point)
@@ -221,7 +221,7 @@ cdef class TrilinearFODF(Interpolation):
 		print(self.sigma_2, self.sigma_1, self.r)
 
 
-	cdef void trilinear(self, double[:] point) nogil except *:
+	cdef void trilinear(self, double[:] point) : # : # : # nogil except *:
 		cdef int i, j, k, m,n,o
 		for i in range(8):
 			j = <int> floor(i / 2) % 2
@@ -241,9 +241,9 @@ cdef class TrilinearFODF(Interpolation):
 		cblas_daxpy(self.vlinear.shape[1], (point[0] - floor(point[0])), &self.vlinear[1,0], 1, &self.vlinear[0,0], 1)
 		cblas_dcopy(self.vlinear.shape[1], &self.vlinear[0,0], 1, &self.fodf[0], 1)
 
-	cdef void neigh(self, double[:] point) nogil except *:
+	cdef void neigh(self, double[:] point) : # : # : # nogil except *:
 		cdef double scale = 0, dis=0
-		cdef int i, index
+		cdef int i, index, p_0 = <int> point[0], p_1 = <int> point[1], p_2 = <int> point[2]
 		self.trilinear(point)
 		set_zero_vector(self.fodf1)
 		for index in range(<int> self.neighbors.shape[0]):
@@ -256,19 +256,19 @@ cdef class TrilinearFODF(Interpolation):
 			if self.data.shape[1] > point[0] + self.neighbors[index, 0] >= 0 \
 				and self.data.shape[2] > point[1] + self.neighbors[index, 1] >= 0 \
 				and self.data.shape[3] > point[2] + self.neighbors[index, 2] >= 0:
-				sub_vectors(self.empty, self.fodf[1:], self.data[1:, <int> point[0] + self.neighbors[index, 0], \
-												  <int> point[1] + self.neighbors[index, 1], \
-												  <int> point[2] + self.neighbors[index, 2]])
+				sub_vectors(self.empty, self.fodf[1:], self.data[1:, p_0 + self.neighbors[index, 0], \
+												  p_1 + self.neighbors[index, 1], \
+												  p_2 + self.neighbors[index, 2]])
 				dis = exp(-pow(hota_4o3d_sym_norm(self.empty),2)/pow(self.sigma_1, 2))*dis/self.sigma_2
 				scale += dis
 				for i in range(16):
-					self.fodf1[i] += dis*self.data[i, <int> point[0] + self.neighbors[index, 0], \
-												  <int> point[1] + self.neighbors[index, 1], \
-												  <int> point[2] + self.neighbors[index, 2]]
+					self.fodf1[i] += dis*self.data[i, p_0 + self.neighbors[index, 0], \
+												  p_1 + self.neighbors[index, 1], \
+												  p_2 + self.neighbors[index, 2]]
 		if scale > 0:
 			mult_with_scalar(self.fodf, 1/scale, self.fodf1)
 
-	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) nogil except *:
+	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) : # : # : # nogil except *:
 	#	with gil: print(np.array(old_dir))
 		# Initialize with last step. Except we are starting again.
 		if r==0:
@@ -313,7 +313,7 @@ cdef class Trilinear(Interpolation):
 
 
 
-	cdef void set_array(self, int array, int index, int i) nogil:
+	cdef void set_array(self, int array, int index, int i) : # : # : # nogil:
 		self.set_vector(index, i)
 		if self.vector_field[0, i, int(self.floor_point[index, 0]),int(self.floor_point[index, 1]),
 		                     int(self.floor_point[index, 2])] != 0 and self.vector_field[0, i, int(self.floor_point[index, 0]),int(self.floor_point[index, 1]),
@@ -328,7 +328,7 @@ cdef class Trilinear(Interpolation):
 
 
 
-	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) nogil except *:
+	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) : # : # : # nogil except *:
 		""" This function calculates the interpolation based on https://en.wikipedia.org/wiki/Trilinear_interpolation
 		for each vectorfield. Afterwards the we chose randomly from the 3 vectors.
 
@@ -400,7 +400,7 @@ cdef class Trilinear(Interpolation):
 		return 0
 
 #	### TODO is here a better way?
-	cdef void permute(self, double[:] point) nogil except *:
+	cdef void permute(self, double[:] point) : # : # : # nogil except *:
 		""" Little anoying... If a cube was already cached, this function uses the cache to set the dir parameter
 		accordingly. We loop through all indices and for each index through the 2 saved vectors. The two saved
 		vectors are set to the first two directions and the remaining is set to the last direction. To get the last
@@ -436,7 +436,7 @@ cdef class Trilinear(Interpolation):
 					self.cuboid[index,i,k] = exponent * z * self.vector_field[1 +k, permute_poss[self.cache[int(point[0]), int(point[1]),int(point[2]), index*4], i], int(self.floor_point[index, 0]),int(self.floor_point[index, 1]),int(self.floor_point[index, 2])]
 
 
-	cdef void set_new_poss(self) nogil except *:
+	cdef void set_new_poss(self) : # : # : # nogil except *:
 		cdef int i,j,k
 		for i in range(8):
 			set_zero_matrix(self.cuboid[i])
@@ -445,7 +445,7 @@ cdef class Trilinear(Interpolation):
 				for k in range(3):
 					self.cuboid[i, j, k] = best[4*i + j + 1] * test_cuboid[i, permute_poss[best[4*i], j], k]
 
-	cdef int kmeans(self, double[:] point) nogil except *:
+	cdef int kmeans(self, double[:] point) : # : # : # nogil except *:
 		cdef int i, j, k, l, max_try=0, best_min=0
 		cdef double exponent = 0, best_angle=0, min_angle=0, con=0, test_angle=0
 		for i in range(8):
@@ -507,7 +507,7 @@ cdef class Trilinear(Interpolation):
 
 			if max_try == 1000:
 				con = 0
-				with gil: print('I do not converge')
+				#with gil: print('I do not converge')
 				break
 		set_zero_matrix(self.best_dir)
 		return int(con)
@@ -533,14 +533,14 @@ cdef class UKFFodf(UKF):
 	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities prob, **kwargs):
 		super(UKFFodf, self).__init__(vector_field, grid, prob, **kwargs)
 
-	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) nogil except *:
+	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) : # : # : # nogil except *:
 		cdef int i, info = 0
 		# Interpolate current point
 		self._kalman.linear(point, self.y, self.mlinear, self.data)
 		# If we are at the seed. Initialize the Kalmanfilter
 		if restart == 0:
-			with gil:
-				self._model.kinit(self.mean, point, old_dir, self.P, self.y)
+			#with gil:
+			self._model.kinit(self.mean, point, old_dir, self.P, self.y)
 		# Run Kalmannfilter
 
 		info = self._kalman.update_kalman_parameters(self.mean, self.P, self.y)
@@ -585,15 +585,15 @@ cdef class UKFMultiTensor(UKF):
 	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities prob, **kwargs):
 		super(UKFMultiTensor, self).__init__(vector_field, grid, prob, **kwargs)
 
-	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) nogil except *:
+	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) : # : # : # nogil except *:
 		cdef int z, i, info = 0
 		# Interpolate current point
 		self._kalman.linear(point, self.y, self.mlinear, self.data)
 		# If we are at the seed. Initialize the Kalmanfilter
 		if restart == 0:
-			with gil:
+#			with gil:
 				##print(np.array(self.y))
-				self._model.kinit(self.mean, point, old_dir, self.P, self.y)
+			self._model.kinit(self.mean, point, old_dir, self.P, self.y)
 		# Run Kalmannfilter
 		info = self._kalman.update_kalman_parameters(self.mean, self.P, self.y)
 		#cblas_dcopy(self.mean.shape[0], &self.mean[0], 1, &self.tmpmean[0], 1)

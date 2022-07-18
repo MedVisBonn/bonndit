@@ -1,5 +1,5 @@
 #%%cython --annotate
-#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True,
+#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, profile=True
 # warn.unused_results=True
 
 cdef class Probabilities:
@@ -8,24 +8,24 @@ cdef class Probabilities:
 	cdef double expectation, sigma
 	cdef double[:] probability, angles, best_fit
 	cdef double[:,:] test_vectors
-	cdef void random_choice(self, double[:]) nogil  except *
-	cdef void aligned_direction(self, double[:,:], double[:]) nogil  except *
-	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+	cdef void random_choice(self, double[:]) # nogil  except *
+	cdef void aligned_direction(self, double[:,:], double[:]) # nogil  except *
+	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
 
 cdef class Gaussian(Probabilities):
-	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
 
 cdef class Laplacian(Probabilities):
-	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
 
 cdef class ScalarOld(Probabilities):
-	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
 
 cdef class ScalarNew(Probabilities):
-	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
 
 cdef class Deterministic(Probabilities):
-	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
 
 cdef class Deterministic2(Probabilities):
-	cdef void calculate_probabilities(self, double[:,:], double[:]) nogil except *
+	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *

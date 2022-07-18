@@ -1,5 +1,5 @@
 #%%cython --annotate
-#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, warn.unused_results=True
+#cython: profile=True, language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, warn.unused_results=True
 
 # import numpy as np
 import numpy as np
@@ -15,7 +15,7 @@ from cython.parallel cimport threadid
 DTYPE = np.float64
 
 #Algorithm 1: 2
-cdef double set_initial_spherical(double[:,:] v, double[:,:] pen) nogil:
+cdef double set_initial_spherical(double[:,:] v, double[:,:] pen) : # nogil:
     cdef int i, l = pen.shape[1]
     for i in range(l):
         add_vectors(v[:,i], v[:,i], pen[:,i])
@@ -24,7 +24,7 @@ cdef double set_initial_spherical(double[:,:] v, double[:,:] pen) nogil:
 # Get sum of neighbourhood for each voxel. Divide by
 ###
 cdef void get_neighbor_for_coor(double[:] nearest_fodf_sum, double[:,:,:,:]  fodf, int[:]
-                                 coor, int[:,:] neighbors) nogil:
+                                 coor, int[:,:] neighbors) : # nogil:
 
     cdef int index
     for index in range(neighbors.shape[0]):

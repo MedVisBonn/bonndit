@@ -1,4 +1,4 @@
-#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True,
+#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, profile=True
 # warn.unused_results=True
 import sys
 import nrrd
@@ -26,7 +26,7 @@ ctypedef struct possible_features:
 cdef void tracking(double[:,:,:,:] paths, double[:] seed,
                    int seed_shape, Interpolation interpolate,
               Integration integrate, Trafo trafo, Validator validator, int max_track_length, int save_steps,
-	                   int samples, double[:,:,:,:] features, possible_features features_save) nogil except *:
+	                   int samples, double[:,:,:,:] features, possible_features features_save) : # nogil except *:
 	"""
         Initializes the tracking for one seed in both directions.
 	@param paths:
@@ -79,7 +79,7 @@ cdef void tracking(double[:,:,:,:] paths, double[:] seed,
 				break
 
 cdef bint forward_tracking(double[:,:] paths,  Interpolation interpolate,
-                       Integration integrate, Trafo trafo, Validator validator, int max_track_length, int save_steps, double[:,:] features, possible_features feature_save) nogil except *:
+                       Integration integrate, Trafo trafo, Validator validator, int max_track_length, int save_steps, double[:,:] features, possible_features feature_save) : # nogil except *:
 	"""
         This function do the tracking into one direction.
 	@param paths: empty path array to save the streamline points.

@@ -1,5 +1,5 @@
 #%%cython --annotate
-#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True,
+#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, profile=True,
 # warn.unused_results=True
 import os
 
@@ -33,7 +33,7 @@ cdef class Validator:
 
 
 
-	cdef bint wm_checker(self, double[:] point) nogil except *:
+	cdef bint wm_checker(self, double[:] point) : # nogil except *:
 		""" Checks if the wm density is at a given point below a threshold.
 		@param point: 3 dimensional point
 		"""
@@ -42,7 +42,7 @@ cdef class Validator:
 		else:
 			return False
 
-	cdef bint index_checker(self, double[:] point) nogil except *:
+	cdef bint index_checker(self, double[:] point) : # nogil except *:
 		"""
 		Checks if the index is within the array.
 		@param point: 3 dimensional point
@@ -57,7 +57,7 @@ cdef class Validator:
 
 
 
-	cdef bint next_point_checker(self, double[:] point) nogil except *:
+	cdef bint next_point_checker(self, double[:] point) : # nogil except *:
 		"""
 		Check if a given direction is valid e.g. not zero and not infinity
 		@param point: given direction
@@ -68,7 +68,7 @@ cdef class Validator:
 		else:
 			return False
 
-	cdef void set_path_zero(self, double[:,:] path, double[:,:] features) nogil except *:
+	cdef void set_path_zero(self, double[:,:] path, double[:,:] features) : # nogil except *:
 		set_zero_matrix(path)
 		set_zero_matrix(features)
 
@@ -81,14 +81,14 @@ cdef class CurvatureNotValidator:
 		self.points = np.zeros([5,3])
 		self.trafo = trafo
 
-	cdef bint curvature_checker(self, double[:,:] path,  double[:] features) nogil except *:
+	cdef bint curvature_checker(self, double[:,:] path,  double[:] features) : # nogil except *:
 		return False
 
 cdef class CurvatureValidator(CurvatureNotValidator):
 	#def __cinit__(self, double max_angle):
 #		super().__cinit__(max_angle)
 
-	cdef bint curvature_checker(self, double[:,:] path,  double[:] features) nogil except *:
+	cdef bint curvature_checker(self, double[:,:] path,  double[:] features) : # nogil except *:
 			"""
 			Checks the angles between the current direction and the directions anlong the polygon. If a angle is to large returns True
 			@param path: polygon to check
@@ -122,10 +122,10 @@ cdef class ROIInNotValidator:
 		self.inclusion_check = np.zeros(1)
 
 
-	cdef int included(self, double[:] point) nogil except *:
+	cdef int included(self, double[:] point) : # nogil except *:
 		return 0
 
-	cdef bint included_checker(self) nogil except *:
+	cdef bint included_checker(self) : # nogil except *:
 		return False
 
 cdef class ROIInValidator(ROIInNotValidator):
@@ -134,7 +134,7 @@ cdef class ROIInValidator(ROIInNotValidator):
 		self.inclusion_num = inclusion.shape[0]//2
 		self.inclusion_check = np.zeros(inclusion.shape[0]//2)
 
-	cdef int included(self, double[:] point) nogil except *:
+	cdef int included(self, double[:] point) : # nogil except *:
 		cdef int i
 		if sum_c(self.inclusion_check) == self.inclusion_num:
 			return 0
@@ -155,7 +155,7 @@ cdef class ROIInValidator(ROIInNotValidator):
 		self.inclusion_check = np.zeros(self.inclusion_num)
 
 
-	cdef bint included_checker(self) nogil except *:
+	cdef bint included_checker(self) : # nogil except *:
 		return sum_c(self.inclusion_check) != self.inclusion_num
 
 
@@ -164,7 +164,7 @@ cdef class ROIExNotValidator:
 		self.exclusion_cube = np.zeros([3,3])
 		self.exclusion_num = 0
 
-	cdef bint excluded(self, double[:] point) nogil except *:
+	cdef bint excluded(self, double[:] point) : # nogil except *:
 		return False
 
 
@@ -173,7 +173,7 @@ cdef class ROIExValidator(ROIExNotValidator):
 		self.exclusion_cube = exclusion
 		self.exclusion_num = len(exclusion.shape[0])
 
-	cdef bint excluded(self, double[:] point) nogil except *:
+	cdef bint excluded(self, double[:] point) : # nogil except *:
 		cdef int i
 		for i in range(self.exclusion_num):
 			if not bigger(point, self.exclusion_cube[2*i]):

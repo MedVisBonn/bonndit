@@ -1,5 +1,5 @@
 #%%cython --annotate
-#cython: language_level=3, boundscheck=True, wraparound=True, warn.unused=True, warn.unused_args=True,
+#cython: language_level=3, boundscheck=True, wraparound=True, warn.unused=True, warn.unused_args=True, profile=True,
 # warn.unused_results=True
 
 from bonndit.utilc.cython_helpers cimport matrix_mult, add_vectors, sub_vectors, set_zero_vector
@@ -18,7 +18,7 @@ cdef class Trafo:
 
 
 
-	cdef void itow(self, double[:] point) nogil:
+	cdef void itow(self, double[:] point) : # nogil:
 		"""
 		Converts a point from index space to world space
 		@param point: vector (3,)
@@ -30,7 +30,7 @@ cdef class Trafo:
 		add_vectors(self.point_itow, self.origin, self.point_itow)
 
 
-	cdef void wtoi(self, double[:] point) nogil:
+	cdef void wtoi(self, double[:] point) : # nogil:
 
 		"""
     		Converts a point from world space to index space

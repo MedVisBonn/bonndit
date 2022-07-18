@@ -1,5 +1,5 @@
 #%%cython --annotate
-#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True,
+#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, profile=True
 # warn.unused_results=True
 
 from .ItoW cimport Trafo
@@ -17,14 +17,14 @@ cdef class Interpolation:
 	cdef Probabilities prob
 	cdef int best_ind
 	cdef double[:] next_dir, vector
-	cdef void main_dir(self, double[:]) nogil
-	cdef void calc_cube(self, double[:]) nogil
-	cdef void nearest_neigh(self, double[:]) nogil
-	cdef void set_vector(self, int, int) nogil
-	cdef int interpolate(self, double[:], double[:], int) nogil except *
+	cdef void main_dir(self, double[:]) # nogil
+	cdef void calc_cube(self, double[:]) # nogil
+	cdef void nearest_neigh(self, double[:]) # nogil
+	cdef void set_vector(self, int, int) # nogil
+	cdef int interpolate(self, double[:], double[:], int) # nogil except *
 
 cdef class FACT(Interpolation):
-	cdef int interpolate(self, double[:], double[:], int) nogil except *
+	cdef int interpolate(self, double[:], double[:], int) # nogil except *
 
 
 cdef class Trilinear(Interpolation):
@@ -35,11 +35,11 @@ cdef class Trilinear(Interpolation):
 #	cdef int[:,:,:,:] cache
 	cdef int[:] floor
 	cdef int[:] permutation
-	cdef void set_array(self, int, int, int) nogil
-	cdef int interpolate(self, double[:], double[:], int) nogil except *
-	cdef void set_new_poss(self) nogil except *
-	cdef int kmeans(self, double[:]) nogil except *
-	cdef void permute(self, double[:]) nogil except *
+	cdef void set_array(self, int, int, int) # nogil
+	cdef int interpolate(self, double[:], double[:], int) # nogil except *
+	cdef void set_new_poss(self) # nogil except *
+	cdef int kmeans(self, double[:]) # nogil except *
+	cdef void permute(self, double[:]) # nogil except *
 
 cdef class TrilinearFODF(Interpolation):
 	cdef double[:,:,:,:] data
@@ -58,9 +58,9 @@ cdef class TrilinearFODF(Interpolation):
 	cdef int rank
 	cdef double[:,:] vlinear
 	cdef int[:,:] neighbors
-	cdef void trilinear(self, double[:] point) nogil except *
-	cdef void neigh(self, double[:] point) nogil except *
-	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) nogil except *
+	cdef void trilinear(self, double[:] point) # nogil except *
+	cdef void neigh(self, double[:] point) # nogil except *
+	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) # nogil except *
 
 cdef class UKF(Interpolation):
 	cdef double[:] mean
@@ -70,13 +70,13 @@ cdef class UKF(Interpolation):
 	cdef double[:] y
 	cdef Kalman _kalman
 	cdef AbstractModel _model
-	cdef int interpolate(self, double[:], double[:], int) nogil except *
+	cdef int interpolate(self, double[:], double[:], int) # nogil except *
 
 cdef class UKFFodf(UKF):
-	cdef int interpolate(self, double[:], double[:], int) nogil except *
+	cdef int interpolate(self, double[:], double[:], int) # nogil except *
 
 cdef class UKFMultiTensor(UKF):
-	cdef int interpolate(self, double[:], double[:], int) nogil except *
+	cdef int interpolate(self, double[:], double[:], int) # nogil except *
 
 
 
