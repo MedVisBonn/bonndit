@@ -10,4 +10,4 @@ cdef void init_max_3d(double[:], double[:], double[:]) nogil
 cdef int refine_rank1_3d(
     double[:], double[:], double[:], double[:],
     double[:], double[:], double[:]
-) nogil except *
+)  # nogil except *
