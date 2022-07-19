@@ -1,6 +1,9 @@
 #%%cython --annotate
 #cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, profile=True,
 # warn.unused_results=True
+# cython: linetrace=True
+# cython: binding=True
+# distutils: define_macros=CYTHON_TRACE_NOGIL=1
 import Cython
 from tqdm import tqdm
 from bonndit.utilc.cython_helpers cimport add_pointwise, floor_pointwise_matrix, norm, mult_with_scalar,\
@@ -163,6 +166,7 @@ cdef class TrilinearFODF(Interpolation):
 		self.fodf = np.zeros((16,))
 		self.fodf1 = np.zeros((16,))
 		self.length = np.zeros((3,))
+		self.inc= np.int32(np.prod(kwargs['data'].shape[1:]))
 		self.empty = np.zeros((15,))
 		if kwargs['r'] == -1:
 			kwargs['r'] = 2
@@ -242,7 +246,7 @@ cdef class TrilinearFODF(Interpolation):
 		cblas_dcopy(self.vlinear.shape[1], &self.vlinear[0,0], 1, &self.fodf[0], 1)
 
 	cdef void neigh(self, double[:] point) : # : # : # nogil except *:
-		cdef double scale = 0, dis=0
+		cdef double x, scale = 0, dis=0
 		cdef int i, index, p_0 = <int> point[0], p_1 = <int> point[1], p_2 = <int> point[2]
 		self.trilinear(point)
 		set_zero_vector(self.fodf1)
@@ -253,18 +257,23 @@ cdef class TrilinearFODF(Interpolation):
 			dis = cblas_dnrm2(3, &self.dist[0], 1)
 			if dis > self.r or (index>27 and self.auto):
 				break
-			if self.data.shape[1] > point[0] + self.neighbors[index, 0] >= 0 \
-				and self.data.shape[2] > point[1] + self.neighbors[index, 1] >= 0 \
-				and self.data.shape[3] > point[2] + self.neighbors[index, 2] >= 0:
-				sub_vectors(self.empty, self.fodf[1:], self.data[1:, p_0 + self.neighbors[index, 0], \
-												  p_1 + self.neighbors[index, 1], \
-												  p_2 + self.neighbors[index, 2]])
-				dis = exp(-pow(hota_4o3d_sym_norm(self.empty),2)/pow(self.sigma_1, 2))*dis/self.sigma_2
-				scale += dis
-				for i in range(16):
-					self.fodf1[i] += dis*self.data[i, p_0 + self.neighbors[index, 0], \
-												  p_1 + self.neighbors[index, 1], \
-												  p_2 + self.neighbors[index, 2]]
+			#if self.data.shape[1] > point[0] + self.neighbors[index, 0] >= 0 \
+			#	and self.data.shape[2] > point[1] + self.neighbors[index, 1] >= 0 \
+			#	and self.data.shape[3] > point[2] + self.neighbors[index, 2] >= 0:
+
+			sub_vectors(self.empty, self.fodf[1:], self.data[1:, p_0 + self.neighbors[index, 0], \
+											  p_1 + self.neighbors[index, 1], \
+											  p_2 + self.neighbors[index, 2]])
+			x = hota_4o3d_sym_norm(self.empty)
+			dis = exp(-(x*x)/(self.sigma_1*self.sigma_1))*dis/self.sigma_2
+			scale += dis
+			#cblas_daxpy(16, dis, &self.data[0, p_0 + self.neighbors[index, 0], \
+			#								  p_1 + self.neighbors[index, 1], \
+			#								  p_2 + self.neighbors[index, 2]], self.inc, &self.fodf1[0], 1)
+			for i in range(16):
+				self.fodf1[i] += dis*self.data[i, p_0 + self.neighbors[index, 0], \
+											  p_1 + self.neighbors[index, 1], \
+											  p_2 + self.neighbors[index, 2]]
 		if scale > 0:
 			mult_with_scalar(self.fodf, 1/scale, self.fodf1)
 

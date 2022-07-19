@@ -64,7 +64,7 @@ cdef void init_max_3d(double[:] s, double[:] v, double[:] tens) nogil:
 
 cdef double refine_rankk_3d(double[:] ls, double[:,:] vs, double[:,:] tens, double[:] res, double resnorm,
                                    double orignorm, int k, double[:] valsec, double[:] val, double[:] der,
-                                   double[:] testv,double[:] anisoten, double[:] isoten) nogil except *:
+                                   double[:] testv,double[:] anisoten, double[:] isoten): # nogil except *:
     """
     Caluculate best rank k approximation of an 4th order tensor
     """
@@ -113,7 +113,7 @@ double[:] valsec, double[:] val, double[:] der, double[:] testv,double[:] anisot
         refine_rankk_3d(ls, vs, tens, res, newnorm, orignorm, k, valsec, val, der, testv, anisoten, isoten)
 
 
-cdef double init_rank1_3d(double[:] s, double[:] v, double[:] tens) nogil:
+cdef double init_rank1_3d(double[:] s, double[:] v, double[:] tens):#  nogil:
     """
     Find best initial direction on sphere for rank1 approximation of a fourth order tensor. Here the abs value is
     used.
@@ -121,8 +121,8 @@ cdef double init_rank1_3d(double[:] s, double[:] v, double[:] tens) nogil:
 
     cdef int i
     cdef double absval, absmax=-1, val
-    with gil:
-        print(*s, *v, DIM)
+  #  with gil:
+   #     print(*s, *v, DIM)
     for i in range(_max_candidates_3d):
         val = hota_4o3d_sym_s_form(tens, _candidates_3d_d[DIM*i:DIM*(i+1)])
         absval = fabs(val)
@@ -133,7 +133,7 @@ cdef double init_rank1_3d(double[:] s, double[:] v, double[:] tens) nogil:
 
 """@cython.cdivision(True)"""
 cdef int refine_rank1_3d(double[:] s, double[:] v, double[:] tens, double[:] der, double[:] testv,double[:] anisoten,
-                         double[:] isoten) nogil except *:
+                         double[:] isoten): #  nogil except *:
     """
     Gradient descent with armijo stepsize
     """

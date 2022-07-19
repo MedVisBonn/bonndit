@@ -1,6 +1,9 @@
 #%%cython --annotate
 #cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, profile=True
-# warn.unused_results=True
+# cython: linetrace=True
+# cython: binding=True
+# distutils: define_macros=CYTHON_TRACE_NOGIL=1
+
 
 from .ItoW cimport Trafo
 from .alignedDirection cimport Probabilities
@@ -48,6 +51,7 @@ cdef class TrilinearFODF(Interpolation):
 	cdef double[:] empty
 	cdef double sigma_1
 	cdef double sigma_2
+	cdef int inc
 	cdef double[:] point_diff
 	cdef double[:,:] trafo
 	cdef double[:] dist
