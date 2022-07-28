@@ -1,8 +1,6 @@
 #%%cython --annotate
-#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, profile=True
-# cython: linetrace=True
-# cython: binding=True
-# distutils: define_macros=CYTHON_TRACE_NOGIL=1
+#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True
+
 
 
 from .ItoW cimport Trafo

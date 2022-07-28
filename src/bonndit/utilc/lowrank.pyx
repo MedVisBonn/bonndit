@@ -1,5 +1,5 @@
 #%%cython --annotate
-#cython: profile=True, language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, warn.unused_results=True
+#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, warn.unused_results=True
 cimport cython
 import numpy as np
 from libc.math cimport sqrt, fabs
