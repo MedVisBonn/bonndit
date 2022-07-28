@@ -167,6 +167,7 @@ def main():
 
 	parser.add_argument('-v', '--verbose', default=True)
 	parser.add_argument('-r', '--exclusion', default=argparse.SUPPRESS)
+	parser.add_argument('--min_len', default=0)
 	parser.add_argument('-ri', '--inclusion', default=argparse.SUPPRESS)
 	parser.add_argument('-fsl', default="")
 	parser.add_argument('--features', nargs='+', default="")
@@ -260,6 +261,7 @@ def main():
 
 	tracking_parameters = {
 		'prob': args.prob,
+		'min_len': int(args.min_len),
 		'space directions': meta['space directions'][-3:],
 		'space origin': meta['space origin'],
 		'trafo_fsl': trafo_fsl,

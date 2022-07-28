@@ -1,4 +1,4 @@
-#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, profile=True
+#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True
 # warn.unused_results=True
 import sys
 import nrrd
@@ -26,7 +26,7 @@ ctypedef struct possible_features:
 cdef void tracking(double[:,:,:,:] paths, double[:] seed,
                    int seed_shape, Interpolation interpolate,
               Integration integrate, Trafo trafo, Validator validator, int max_track_length, int save_steps,
-	                   int samples, double[:,:,:,:] features, possible_features features_save) : # nogil except *:
+	                   int samples, double[:,:,:,:] features, possible_features features_save, int minlen) : # nogil except *:
 	"""
         Initializes the tracking for one seed in both directions.
 	@param paths:
@@ -41,7 +41,7 @@ cdef void tracking(double[:,:,:,:] paths, double[:] seed,
 	@param samples:
 	@param features:
 	"""
-	cdef int k=0, j
+	cdef int k=0, j, l, m
 
 	for j in range(samples):
 		k=0
@@ -54,17 +54,18 @@ cdef void tracking(double[:,:,:,:] paths, double[:] seed,
 				integrate.old_dir = interpolate.next_dir
 			else:
 				integrate.old_dir = seed[3:]
-			status1 = forward_tracking(paths[j,:,0, :], interpolate, integrate, trafo, validator, max_track_length, save_steps,
-			                 features[j,:,0, :], features_save)
+			status1, m = forward_tracking(paths[j,:,0, :], interpolate, integrate, trafo, validator, max_track_length, save_steps,
+			                 features[j,:,0, :], features_save,)
+
 			if seed_shape == 3:
 				interpolate.main_dir(paths[j, 0, 1])
 				mult_with_scalar(integrate.old_dir, -1.0 ,interpolate.next_dir)
 			else:
 				mult_with_scalar(integrate.old_dir, -1.0 ,seed[3:])
-			status2 = forward_tracking(paths[j,:,1,:], interpolate, integrate, trafo, validator, max_track_length, save_steps,
+			status2, l = forward_tracking(paths[j,:,1,:], interpolate, integrate, trafo, validator, max_track_length, save_steps,
 			                 features[j,:,1, :], features_save)
 			# if not found bot regions of interest delete path.
-			if validator.ROIIn.included_checker() or not status1 or not status2:
+			if validator.ROIIn.included_checker() or not status1 or not status2 or (l+m)*save_steps*integrate.stepsize < minlen:
 				validator.set_path_zero(paths[j,:,1,:], features[j,:,1, :])
 				validator.set_path_zero(paths[j, :, 0, :], features[j, :, 0, :])
 				trafo.wtoi(seed[:3])
@@ -78,7 +79,7 @@ cdef void tracking(double[:,:,:,:] paths, double[:] seed,
 			if k==5:
 				break
 
-cdef bint forward_tracking(double[:,:] paths,  Interpolation interpolate,
+cdef forward_tracking(double[:,:] paths,  Interpolation interpolate,
                        Integration integrate, Trafo trafo, Validator validator, int max_track_length, int save_steps, double[:,:] features, possible_features feature_save) : # nogil except *:
 	"""
         This function do the tracking into one direction.
@@ -148,7 +149,7 @@ cdef bint forward_tracking(double[:,:] paths,  Interpolation interpolate,
 			paths[k//save_steps] = trafo.point_itow
 		validator.ROIIn.included(paths[k//save_steps])
 		if validator.ROIEx.excluded(paths[k//save_steps]):
-			return False
+			return False, k
 		if feature_save.chosen_angle >= 0:
 			features[k//save_steps,feature_save.chosen_angle] = interpolate.prob.chosen_angle
 		if feature_save.prob_chosen >= 0:
@@ -159,15 +160,15 @@ cdef bint forward_tracking(double[:,:] paths,  Interpolation interpolate,
 			features[k//save_steps,feature_save.prob_others_2] = interpolate.prob.probability[2]
 		# Check curvature between current point and point 30mm ago
 		if validator.Curve.curvature_checker(paths[:k//save_steps], features[k//save_steps:k//save_steps + 1,1]):
-			return False
+			return False, k
 		#integrate.old_dir = interpolate.next_dir
 	else:
 		trafo.itow(paths[k//save_steps + 1])
 		paths[k//save_steps + 1] = trafo.point_itow
-	if k == 0:
-		trafo.itow(paths[k//save_steps])
-		paths[k//save_steps] = trafo.point_itow
-	return True
+	#if k == 0:
+	#	trafo.itow(paths[k//save_steps])
+	#	paths[k//save_steps] = trafo.point_itow
+	return True, k
 
 cpdef tracking_all(vector_field, wm_mask, seeds, tracking_parameters, postprocessing, ukf_parameters, trilinear_parameters, logging, saving):
 	"""
@@ -292,7 +293,7 @@ cpdef tracking_all(vector_field, wm_mask, seeds, tracking_parameters, postproces
 	#	print("1", np.asarray(features[k,j,:,0]))
 	#	print("1", np.asarray(features[k,j,:,1]))
 		#Do the tracking for this seed with the direction
-		tracking(paths[k], seeds[i], seeds[i].shape[0], interpolate, integrate, trafo, validator, tracking_parameters['max_track_length'], tracking_parameters['sw_save'], tracking_parameters['samples'], features[k], saving['features'])
+		tracking(paths[k], seeds[i], seeds[i].shape[0], interpolate, integrate, trafo, validator, tracking_parameters['max_track_length'], tracking_parameters['sw_save'], tracking_parameters['samples'], features[k], saving['features'], tracking_parameters['min_len'])
 		# delete all zero arrays.
 
 		for j in range(tracking_parameters['samples']):

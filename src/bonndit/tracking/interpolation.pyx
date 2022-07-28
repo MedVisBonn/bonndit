@@ -1,9 +1,7 @@
 #%%cython --annotate
-#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, profile=True,
+#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, profile=False,
 # warn.unused_results=True
-# cython: linetrace=True
-# cython: binding=True
-# distutils: define_macros=CYTHON_TRACE_NOGIL=1
+
 import Cython
 from tqdm import tqdm
 from bonndit.utilc.cython_helpers cimport add_pointwise, floor_pointwise_matrix, norm, mult_with_scalar,\
@@ -246,34 +244,28 @@ cdef class TrilinearFODF(Interpolation):
 		cblas_dcopy(self.vlinear.shape[1], &self.vlinear[0,0], 1, &self.fodf[0], 1)
 
 	cdef void neigh(self, double[:] point) : # : # : # nogil except *:
-		cdef double x, scale = 0, dis=0
-		cdef int i, index, p_0 = <int> point[0], p_1 = <int> point[1], p_2 = <int> point[2]
+		cdef double x, scale = 0, dis=0, distance =0
+		cdef int i, index, p_0 = <int> point[0], p_1 = <int> point[1], p_2 = <int> point[2], pw_0, pw_1, pw_2
 		self.trilinear(point)
-		set_zero_vector(self.fodf1)
+		cblas_dscal(16,0, &self.fodf1[0],1)
 		for index in range(<int> self.neighbors.shape[0]):
+			pw_0 = p_0 + self.neighbors[index, 0]
+			pw_1 = p_1 + self.neighbors[index, 1]
+			pw_2 = p_2 + self.neighbors[index, 2]
 			for i in range(3):
-				self.point_diff[i] = point[i]%1
+				self.point_diff[i] = self.neighbors[index, i] - point[i]%1
 			cblas_dgemv(CblasRowMajor, CblasNoTrans, 3,3,1, &self.trafo[0,0], 3, &self.point_diff[0], 1, 0, &self.dist[0], 1)
-			dis = cblas_dnrm2(3, &self.dist[0], 1)
-			if dis > self.r or (index>27 and self.auto):
+			distance = cblas_dnrm2(3, &self.dist[0], 1)
+			if distance > self.r or (index>27 and self.auto):
 				break
-			#if self.data.shape[1] > point[0] + self.neighbors[index, 0] >= 0 \
-			#	and self.data.shape[2] > point[1] + self.neighbors[index, 1] >= 0 \
-			#	and self.data.shape[3] > point[2] + self.neighbors[index, 2] >= 0:
-
-			sub_vectors(self.empty, self.fodf[1:], self.data[1:, p_0 + self.neighbors[index, 0], \
-											  p_1 + self.neighbors[index, 1], \
-											  p_2 + self.neighbors[index, 2]])
-			x = hota_4o3d_sym_norm(self.empty)
-			dis = exp(-(x*x)/(self.sigma_1*self.sigma_1))*dis/self.sigma_2
-			scale += dis
-			#cblas_daxpy(16, dis, &self.data[0, p_0 + self.neighbors[index, 0], \
-			#								  p_1 + self.neighbors[index, 1], \
-			#								  p_2 + self.neighbors[index, 2]], self.inc, &self.fodf1[0], 1)
-			for i in range(16):
-				self.fodf1[i] += dis*self.data[i, p_0 + self.neighbors[index, 0], \
-											  p_1 + self.neighbors[index, 1], \
-											  p_2 + self.neighbors[index, 2]]
+			if self.data.shape[1] > pw_0 >= 0 and self.data.shape[2] > pw_1 >= 0 and self.data.shape[3] > pw_2 >= 0:
+				sub_vectors(self.empty, self.fodf[1:], self.data[1:, pw_0, pw_1, pw_2])
+				x = hota_4o3d_sym_norm(self.empty)
+				dis = exp(-(x*x)/(self.sigma_1*self.sigma_1))# - distance/self.sigma_2)
+				scale += dis
+				for i in range(16):
+					self.fodf1[i] += dis*self.data[i, pw_0, pw_1, pw_2]
+				#cblas_daxpy(16, dis, &self.data[0, pw_0, pw_1, pw_2], 1, &self.fodf1[0], 1)
 		if scale > 0:
 			mult_with_scalar(self.fodf, 1/scale, self.fodf1)
 
@@ -281,8 +273,8 @@ cdef class TrilinearFODF(Interpolation):
 	#	with gil: print(np.array(old_dir))
 		# Initialize with last step. Except we are starting again.
 		if r==0:
-			set_zero_matrix(self.best_dir)
-			set_zero_vector(self.length)
+			cblas_dscal(9,0, &self.best_dir[0,0],1)
+			cblas_dscal(3,0, &self.length[0],1)
 		# If self.r==0: Interpolate trilinear else: calculate average over neighborhood.
 
 		cdef int i
@@ -292,16 +284,17 @@ cdef class TrilinearFODF(Interpolation):
 			self.neigh(point)
 		if self.fodf[0] == 0:
 			return -1
-		set_zero_matrix(tens)
+		#set_zero_matrix(tens)
 		for i in range(3):
 			hota_4o3d_sym_eval(tens[i, :], self.length[i], self.best_dir_approx[:, i])
-			sub_vectors(self.fodf[1:], self.fodf[1:], tens[i,:])
+			cblas_daxpy(15, -1, &tens[i,0], 1, &self.fodf[1], 1)
+#		tijk_approx_rankk_3d_f(*self.length[0], *self.best_dir_approx[0,0], )
 		approx_initial(self.length, self.best_dir_approx, tens, self.fodf[1:], self.rank, valsec, val,der, testv, anisoten, isoten)
 
 		for i in range(3):
 			mult_with_scalar(self.best_dir[i], pow(self.length[i], 1/4), self.best_dir_approx[:,i])
 		self.prob.calculate_probabilities(self.best_dir, old_dir)
-		mult_with_scalar(self.next_dir,1, self.prob.best_fit)
+		cblas_dcopy(3, &self.prob.best_fit[0], 1, &self.next_dir[0],1)
 		return 0
 
 

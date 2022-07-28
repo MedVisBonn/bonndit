@@ -1,5 +1,5 @@
 #%%cython --annotate
-#cython: language_level=3, boundscheck=False, profile=True,
+#cython: language_level=3, boundscheck=False,
 import cython
 from libc.math cimport acos, pi, exp, fabs, cos, pow, tanh
 from libc.stdlib cimport rand, srand, RAND_MAX

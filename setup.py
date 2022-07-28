@@ -6,7 +6,6 @@
 from setuptools import setup, find_packages
 from distutils.extension import Extension
 from Cython.Build import cythonize
-from Cython.Compiler.Options import get_directive_defaults
 import numpy
 
 with open('README.rst') as readme_file:
@@ -98,7 +97,7 @@ ext_modules = [
 	Extension(
 		"bonndit.tracking.interpolation",
 		["src/bonndit/tracking/interpolation.pyx"],
-		define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"), ('CYTHON_TRACE', '1')],
+		define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
 		include_dirs=[numpy.get_include(), "/opt/intel/oneapi/mkl/2022.0.2/include"],
 		libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
 		library_dirs=["/opt/intel/oneapi/mkl/2022.0.2/lib/intel64"],
@@ -190,7 +189,7 @@ setup(
 			 'scripts/bundle-filtering',
 			 'scripts/csd-peaks',
 			 'scripts/data2fodf'],
-	ext_modules=cythonize(ext_modules, compiler_directives={'linetrace': True}),
+	ext_modules=cythonize(ext_modules, compiler_directives={'boundscheck': False, 'wraparound': False, 'optimize.unpack_method_calls': False}),
 	# cmdclass={'build_ext': build_ext},
 	package_data={"": ['*.pxd', '*.npz']},
 	setup_requires=setup_requirements,

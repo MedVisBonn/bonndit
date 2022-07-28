@@ -90,7 +90,9 @@ cdef class fODFModel(AbstractModel):
 		cdef int i, j, n = X.shape[0]//4
 		for i in range(X.shape[1]):
 			for j in range(n):
-				cblas_dscal(3, 1/cblas_dnrm2(3,&X[4*j, i],X.shape[1]),&X[4*j, i],X.shape[1])
+				if cblas_dnrm2(3,&X[4*j, i],X.shape[1]) != 0:
+					cblas_dscal(3, 1/cblas_dnrm2(3,&X[4*j, i],X.shape[1]),&X[4*j, i],X.shape[1])
+
 				X[j * 4 + 3, i] = max(X[j * 4 + 3, i], self._lambda_min)
 
 

@@ -1,5 +1,5 @@
 #%%cython --annotate
-#cython: profile=True, language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, warn.unused_results=True
+#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, warn.unused_results=True
 
 # import numpy as np
 import numpy as np
