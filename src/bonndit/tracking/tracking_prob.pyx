@@ -280,10 +280,10 @@ cpdef tracking_all(
     trafo_matrix[:3, 3] = tracking_parameters['space origin']
     trafo_matrix[3, 3] = 1
     validator = Validator(
-        wm_mask, np.array(wm_mask.shape, dtype=np.intc),
-        tracking_parameters['wmmin'], postprocessing['inclusion'],
-        postprocessing['exclusion'], tracking_parameters['max_angle'],
-        trafo, tracking_parameters['stepsize'])
+        np.array(wm_mask.shape, dtype=np.intc),
+        postprocessing['inclusion'], postprocessing['exclusion'],
+        tracking_parameters['max_angle'], trafo,
+        tracking_parameters['stepsize'], tracking_parameters)
 
 
 
