@@ -2,6 +2,7 @@
 #cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True,
 # warn.unused_results=True
 import os
+from scipy.interpolate import RegularGridInterpolator
 
 from bonndit.utilc.cython_helpers cimport sub_vectors, angle_deg, sum_c, set_zero_matrix, bigger, smaller, mult_with_scalar, norm
 import numpy as np
@@ -12,10 +13,14 @@ DTYPE = np.float64
 ## TODO Mich um die Registrierung kümmern.
 cdef class Validator:
 	def __cinit__(self, double[:,:,:] wm_mask, int[:] shape, double min_wm, inclusion, exclusion,  double
-		max_angle, Trafo trafo, double step_width):
-		self.min_wm = min_wm
-		self.wm_mask = wm_mask
+		max_angle, Trafo trafo, double step_width, **kwargs):
+		#self.min_wm = min_wm
+		#self.wm_mask = wm_mask
 		self.shape = shape
+		if 'act' in kwargs:
+			self.WM = ACT(kwargs['act'])
+		else:
+			self.WM = WMChecker(wm_mask, min_wm)
 		if isinstance(inclusion, np.ndarray):
 			self.ROIIn = ROIInValidator(inclusion)
 		else:
@@ -25,22 +30,20 @@ cdef class Validator:
 		else:
 			self.ROIEx = ROIExNotValidator(np.zeros((3,3)))
 		if max_angle > 0:
-			print("maxangle", max_angle)
 			self.Curve = CurvatureValidator(max_angle, trafo, step_width)
 		else:
-			print("maxangle", max_angle-1)
 			self.Curve = CurvatureNotValidator(max_angle, trafo, step_width)
 
 
 
-	cdef bint wm_checker(self, double[:] point) : # nogil except *:
-		""" Checks if the wm density is at a given point below a threshold.
-		@param point: 3 dimensional point
-		"""
-		if self.wm_mask[int(point[0]), int(point[1]), int(point[2])] < self.min_wm:
-			return True
-		else:
-			return False
+	#cdef bint wm_checker(self, double[:] point) : # nogil except *:
+	#	""" Checks if the wm density is at a given point below a threshold.
+	#	@param point: 3 dimensional point
+	#	"""
+	#	if self.wm_mask[int(point[0]), int(point[1]), int(point[2])] < self.min_wm:
+	#		return True
+	#	else:
+	#		return False
 
 	cdef bint index_checker(self, double[:] point) : # nogil except *:
 		"""
@@ -71,6 +74,80 @@ cdef class Validator:
 	cdef void set_path_zero(self, double[:,:] path, double[:,:] features) : # nogil except *:
 		set_zero_matrix(path)
 		set_zero_matrix(features)
+
+cdef class WMChecker:
+	cdef __cinit__(self, wm_mask, min_wm):
+		self.min_wm = min_wm
+		self.wm_mask = wm_mask
+
+	cdef void reset(self):
+		pass
+
+	cdef bint sgm_checker(self, double[:] point):
+		return 0
+
+	cdef bint wm_checker(self, double[:] point) : # nogil except *:
+			""" Checks if the wm density is at a given point below a threshold.
+			@param point: 3 dimensional point
+			"""
+			if self.wm_mask[int(point[0]), int(point[1]), int(point[2])] < self.min_wm:
+				return 0
+			else:
+				return -1
+
+cdef class ACT:
+	"""
+	Format of five_tt:
+    0: Cortical grey matter
+    1: Sub-cortical grey matter
+    2: White matter
+    3: CSF
+    4: Pathological tissue
+	"""
+	cdef __cinit__(self, five_tt):
+		x = np.linspace(0, five_tt.shape[1], five_tt.shape[1])
+		y = np.linspace(0, five_tt.shape[2], five_tt.shape[2])
+		z = np.linspace(0, five_tt.shape[3], five_tt.shape[3])
+		self.entered_sgm = 0
+		self.cgm = RegularGridInterpolator((x,y,z), five_tt[0])
+		self.sgm = RegularGridInterpolator((x, y, z), five_tt[1])
+		self.wm = RegularGridInterpolator((x, y, z), five_tt[2])
+		self.csf = RegularGridInterpolator((x, y, z), five_tt[3])
+
+	cdef void reset(self):
+		self.entered_sgm = 0
+
+	cdef bint wm_checker(self, double[:] point):
+		cgm = self.cgm(point)
+		csf = self.csf(point)
+		sgm = self.sgm(point)
+		wm = self.sgm(point)
+		#check case 6:
+		if wm > 0.5:
+			return -1
+		if self.entered_sgm:
+			if sgm<0.5:
+				return 1
+		# ACT cases 1..3
+		if cgm > 0.5:
+			return 1
+		if csf > 0.5:
+			return 2
+		if cgm + csf + sgm + wm < 0.3:
+			return 1
+		#case 6
+		if sgm>0.5:
+			self.entered_sgm = 1
+
+
+
+
+	cdef bint sgm_checker(self, double[:] point):
+		sgm = self.sgm(point)
+		if sgm>0.5:
+			return 1
+		else:
+			return 0
 
 
 cdef class CurvatureNotValidator:

@@ -92,19 +92,23 @@ cdef forward_tracking(double[:,:] paths,  Interpolation interpolate,
     @param features: empty feature array. To save informations to the streamline
 	"""
 	# check wm volume
-	cdef int k
+	cdef int k, con
 	# thousand is max length for pathway
 	interpolate.prob.old_fa = 1
+	validator.WM.reset()
 	for k in range((max_track_length-1)*save_steps):
 		# validate index and wm density.
 
 		if validator.index_checker(paths[(k-1)//save_steps + 1]):
 			set_zero_vector(paths[(k-1)//save_steps + 1])
 			break
-		if validator.wm_checker(paths[(k-1)//save_steps + 1]):
+		con = validator.WM.wm_checker(paths[(k - 1) // save_steps + 1])
+		if con == 0:
 			trafo.itow(paths[(k-1)//save_steps + 1])
 			paths[(k-1)//save_steps + 1] = trafo.point_itow
 			break
+		elif con > 0:
+			return False, k
 		# find matching directions
 		if sum_c(integrate.old_dir) == 0:
 			#trafo.itow(paths[(k-1)//save_steps + 1])
@@ -160,7 +164,11 @@ cdef forward_tracking(double[:,:] paths,  Interpolation interpolate,
 			features[k//save_steps,feature_save.prob_others_2] = interpolate.prob.probability[2]
 		# Check curvature between current point and point 30mm ago
 		if validator.Curve.curvature_checker(paths[:k//save_steps], features[k//save_steps:k//save_steps + 1,1]):
-			return False, k
+			if validator.WM.sgm_checker(paths[k//save_steps]):
+				trafo.itow(paths[(k - 1) // save_steps + 1])
+				paths[(k - 1) // save_steps + 1] = trafo.point_itow
+			else:
+				return False, k
 		#integrate.old_dir = interpolate.next_dir
 	else:
 		trafo.itow(paths[k//save_steps + 1])
