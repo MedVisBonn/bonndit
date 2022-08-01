@@ -10,11 +10,22 @@ cdef class Validator:
 		CurvatureNotValidator Curve
 		ROIInNotValidator ROIIn
 		ROIExNotValidator ROIEx
+		WMChecker WM
 
-	cdef bint wm_checker(self, double[:]) # nogil except *
 	cdef bint index_checker(self, double[:]) # nogil except *
 	cdef bint next_point_checker(self, double[:]) # nogil except *
 	cdef void set_path_zero(self, double[:,:], double[:,:]) # nogil except *
+
+cdef class WMChecker:
+	cdef void reset(self)
+	cdef bint sgm_checker(self, double[:] point)
+	cdef bint wm_checker(self, double[:] point)
+
+cdef class ACT(WMChecker):
+	cdef void reset(self)
+	cdef bint wm_checker(self, double[:] )
+	cdef bint sgm_checker(self, double[:])
+
 
 
 cdef class CurvatureNotValidator:

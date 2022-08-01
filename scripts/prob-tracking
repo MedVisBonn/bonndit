@@ -98,6 +98,7 @@ def main():
 							 'and the direction of the vector, the second dimension denotes different directions',
 						default=argparse.SUPPRESS)
 	parser.add_argument('--wmvolume', help='WM Mask - output of mtdeconv', default=argparse.SUPPRESS)
+	parser.add_argument('--act', help='5tt output of 5ttgen. Will perform act if supplied.', default=argparse.SUPPRESS)
 	parser.add_argument('--seedpoints',
 						help='Seedspointfile: Each row denotes a seed point, where the first  3 columns give the \n'
 							 ' seed point in (x,y,z). Further 3 additional columns can specified to define a initial \n'
@@ -258,7 +259,10 @@ def main():
 		trafo_fsl = np.identity(4)
 
 	logging.info("Start fiber tracking")
-
+	if args.act:
+		act = load('act', args, 'act.nii.gz', args.i, logging, nib.load)
+	else:
+		act = None
 	tracking_parameters = {
 		'prob': args.prob,
 		'min_len': int(args.min_len),
@@ -275,6 +279,8 @@ def main():
 		'max_angle': float(args.maxangle),
 		'samples': int(args.samples),
 		'wmmin': float(args.wmmin),
+		'wm_mask': np.float64(wm_mask),
+		'act': act.get_fdata() if act else None,
 		'verbose': args.verbose,
 		'sw_save': int(args.sw_save)
 	}

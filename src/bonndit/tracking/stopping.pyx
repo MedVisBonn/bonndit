@@ -12,15 +12,14 @@ DTYPE = np.float64
 
 ## TODO Mich um die Registrierung kümmern.
 cdef class Validator:
-	def __cinit__(self, double[:,:,:] wm_mask, int[:] shape, double min_wm, inclusion, exclusion,  double
+	def __cinit__(self, int[:] shape, inclusion, exclusion,  double
 		max_angle, Trafo trafo, double step_width, **kwargs):
-		#self.min_wm = min_wm
-		#self.wm_mask = wm_mask
+
 		self.shape = shape
 		if 'act' in kwargs:
-			self.WM = ACT(kwargs['act'])
+			self.WM = ACT(kwargs)
 		else:
-			self.WM = WMChecker(wm_mask, min_wm)
+			self.WM = WMChecker(kwargs)
 		if isinstance(inclusion, np.ndarray):
 			self.ROIIn = ROIInValidator(inclusion)
 		else:
@@ -76,9 +75,9 @@ cdef class Validator:
 		set_zero_matrix(features)
 
 cdef class WMChecker:
-	cdef __cinit__(self, wm_mask, min_wm):
-		self.min_wm = min_wm
-		self.wm_mask = wm_mask
+	cdef __cinit__(self, **kwargs):
+		self.min_wm = kwargs['wmmin']
+		self.wm_mask = kwargs['wm_mask']
 
 	cdef void reset(self):
 		pass
@@ -95,24 +94,24 @@ cdef class WMChecker:
 			else:
 				return -1
 
-cdef class ACT:
+cdef class ACT(WMChecker):
 	"""
-	Format of five_tt:
+	Format of kwargs['act']:
     0: Cortical grey matter
     1: Sub-cortical grey matter
     2: White matter
     3: CSF
     4: Pathological tissue
 	"""
-	cdef __cinit__(self, five_tt):
-		x = np.linspace(0, five_tt.shape[1], five_tt.shape[1])
-		y = np.linspace(0, five_tt.shape[2], five_tt.shape[2])
-		z = np.linspace(0, five_tt.shape[3], five_tt.shape[3])
+	cdef __cinit__(self, **kwargs):
+		x = np.linspace(0, kwargs['act'].shape[1], kwargs['act'].shape[1])
+		y = np.linspace(0, kwargs['act'].shape[2], kwargs['act'].shape[2])
+		z = np.linspace(0, kwargs['act'].shape[3], kwargs['act'].shape[3])
 		self.entered_sgm = 0
-		self.cgm = RegularGridInterpolator((x,y,z), five_tt[0])
-		self.sgm = RegularGridInterpolator((x, y, z), five_tt[1])
-		self.wm = RegularGridInterpolator((x, y, z), five_tt[2])
-		self.csf = RegularGridInterpolator((x, y, z), five_tt[3])
+		self.cgm = RegularGridInterpolator((x,y,z), kwargs['act'][0])
+		self.sgm = RegularGridInterpolator((x, y, z), kwargs['act'][1])
+		self.wm = RegularGridInterpolator((x, y, z), kwargs['act'][2])
+		self.csf = RegularGridInterpolator((x, y, z), kwargs['act'][3])
 
 	cdef void reset(self):
 		self.entered_sgm = 0
