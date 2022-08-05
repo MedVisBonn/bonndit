@@ -71,7 +71,6 @@ cdef class Interpolation:
         self.cuboid = np.zeros((8, 3, 3), dtype=DTYPE)
         self.floor_point = np.zeros((8, 3), dtype=DTYPE)
         self.inv_trafo = np.linalg.inv(kwargs['trafo_data'])
-        print(np.linalg.inv(kwargs['trafo_data']), kwargs['trafo_data'])
         self.point_index = np.zeros((4,), dtype=DTYPE)
         self.point_world = np.zeros((4,), dtype=DTYPE)
         self.best_dir = np.zeros((3, 3), dtype=DTYPE)
@@ -402,6 +401,7 @@ cdef class TrilinearFODF(Interpolation):
         # Initialize with last step. Except we are starting again.
         self.point_world[:3] = point
         self.point_world[3] = 1
+        print(np.array(self.point_world))
         cblas_dgemv(
             CblasRowMajor, CblasNoTrans, 4, 4, 1,
             &self.inv_trafo[0, 0], 4, &self.point_world[0], 1, 0,
