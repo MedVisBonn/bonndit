@@ -264,8 +264,9 @@ cpdef tracking_all(vector_field, wm_mask, seeds, tracking_parameters, postproces
 			validator.set_path_zero(paths[k,j, :, 1, :], features[k,j, :, 1, :])
 			validator.set_path_zero(paths[k,j, :, 0, :], features[k,j, :, 0, :])
 			print(seeds[i][:3])
-			paths[k,j, 0, 0,:] = seeds[i][:3]
-			paths[k,j, 0, 1,:] = seeds[i][:3]
+			for l in range(3):
+				paths[k,j, 0, 0,l] = seeds[i][l]
+				paths[k,j, 0, 1,l] = seeds[i][l]
 			if "Deterministic" in tracking_parameters['prob'] or tracking_parameters['ukf'] == "LowRank":
 				for l in range(3):
 					paths[k,j, 0, 0,l] +=  np.random.normal(0,1)
