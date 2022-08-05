@@ -111,9 +111,10 @@ cdef class Interpolation:
 			cdef double zero = 0
 			self.point_world[:3] = point
 			self.point_world[3] = 1
+			print('index', np.asarray(self.point_world))
 			cblas_dgemv(CblasRowMajor, CblasNoTrans, 4, 4, 1, &self.inv_trafo[0, 0], 4, &self.point_world[0], 1, 0,
 						&self.point_index[0], 1)
-
+			print('index',np.asarray(self.point_index))
 			self.nearest_neigh(self.point_index[:3])
 			self.set_vector(self.best_ind, 0)
 			mult_with_scalar(self.next_dir, pow(self.vector_field[0, 0, int(self.floor_point[			                                                                                            self.best_ind, 0]),
