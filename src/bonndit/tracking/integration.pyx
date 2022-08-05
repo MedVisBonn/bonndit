@@ -122,8 +122,10 @@ cdef class RungeKutta(Integration):
             self.three_vector,
             self.stepsize / (2 * norm(direction)), direction)
         add_vectors(self.k2_x, coordinate, self.three_vector)
+        print(1, np.array(self.k2_x))
         if self.interpolate.interpolate(self.k2_x, direction, 1) != 0:
             return 1
+        print(1, np.array(self.interpolate.next_dir))
         self.k2 = self.interpolate.next_dir
         self.old_dir = self.k1
         if sum_c(self.k2) == 0 or sum_c(self.k2) != sum_c(self.k2):
