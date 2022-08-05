@@ -45,6 +45,7 @@ cdef class Interpolation:
 		self.cuboid = np.zeros((8, 3, 3), dtype=DTYPE)
 		self.floor_point = np.zeros((8, 3), dtype=DTYPE)
 		self.inv_trafo = np.linalg.inv(kwargs['trafo_data'])
+		print(np.linalg.inv(kwargs['trafo_data']), kwargs['trafo_data'])
 		self.point_index = np.zeros((4,), dtype=DTYPE)
 		self.point_world = np.zeros((4,), dtype=DTYPE)
 		self.best_dir  = np.zeros((3,3), dtype=DTYPE)
