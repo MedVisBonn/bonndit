@@ -91,7 +91,7 @@ cdef void tracking(
                     features[j, 0, 1, features_save.seedpoint] = 1
             else:
                 break
-            if k == 5:
+            if k == 2:
                 break
 
 cdef forward_tracking(
@@ -199,9 +199,10 @@ cdef forward_tracking(
         if validator.Curve.curvature_checker(
             paths[:k // save_steps],
             features[k // save_steps:k // save_steps + 1, 1]):
-            if validator.WM.sgm_checker(paths[k // save_steps]):
-                trafo.itow(paths[(k - 1) // save_steps + 1])
-                paths[(k - 1) // save_steps + 1] = trafo.point_itow
+
+            if validator.WM.sgm_checker(trafo.point_wtoi):
+                trafo.itow(paths[k // save_steps + 1])
+                paths[k // save_steps + 1] = trafo.point_itow
             else:
                 return False, k
         # integrate.old_dir = interpolate.next_dir
@@ -281,9 +282,8 @@ cpdef tracking_all(
     trafo_matrix[3, 3] = 1
     validator = Validator(
         np.array(wm_mask.shape, dtype=np.intc),
-        postprocessing['inclusion'], postprocessing['exclusion'],
-        tracking_parameters['max_angle'], trafo,
-        tracking_parameters['stepsize'], tracking_parameters)
+        postprocessing['inclusion'], postprocessing['exclusion'], trafo,
+        **tracking_parameters)
 
 
 
