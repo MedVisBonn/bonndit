@@ -347,8 +347,15 @@ def main():
 									tracking_parameters, postprocessing, ukf_parameter,trilinear_parameters,  logging, saving)
 	del tracking_parameters, postprocessing, ukf_parameter, trilinear_parameters, vector_field, wm_mask, seeds, act
 	if 'disk' in args:
+		start = time.time()
+		paths_len = np.loadtxt(args.disk_file + 'len')
+		paths = np.loadtxt(args.disk_file)
+		print('numpy ', time.time() - start)
+		start = time.time()
 		paths_len = pd.read_csv(args.disk_file + 'len', header=None, dtype=int).values.flatten()
 		paths = pd.read_csv(args.disk_file, header=None, delimiter=" ").values
+		print('pandas ', time.time() - start)
+
 		paths = [tuple(x) for x in paths]
 		if args.disk_delete:
 			os.remove(args.disk_file)
