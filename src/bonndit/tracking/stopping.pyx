@@ -3,6 +3,7 @@
 # warn.unused_results=True
 import os
 from scipy.interpolate import RegularGridInterpolator
+from bonndit.utilc.blas_lapack cimport cblas_dgemv, CblasRowMajor, CblasNoTrans
 
 from bonndit.utilc.cython_helpers cimport sub_vectors, angle_deg, sum_c, set_zero_matrix, bigger, smaller, mult_with_scalar, norm
 import numpy as np
@@ -90,7 +91,8 @@ cdef class WMChecker:
 			""" Checks if the wm density is at a given point below a threshold.
 			@param point: 3 dimensional point
 			"""
-			self.point = self.inv_trafo @ point
+			cblas_dgemv(CblasRowMajor, CblasNoTrans, 4, 4, 1, &self.inv_trafo[0, 0], 1, &point[0], 1, 0,
+						&self.point[0], 1)
 			if self.wm_mask[int(self.point[0]), int(self.point[1]), int(self.point[2])] < self.min_wm:
 				return 0
 			else:
