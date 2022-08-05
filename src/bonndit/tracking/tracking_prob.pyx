@@ -48,7 +48,7 @@ cdef void tracking(
 	@param samples:
 	@param features:
 	"""
-    cdef int k = 0, j, l, m
+    cdef int k = 0, j, l, m, u
 
     for j in range(samples):
         k = 0
@@ -83,9 +83,9 @@ cdef void tracking(
                 validator.set_path_zero(
                     paths[j, :, 0, :],
                     features[j, :, 0, :])
-                trafo.wtoi(seed[:3])
-                paths[j, 0, 0] = trafo.point_wtoi
-                paths[j, 0, 1] = trafo.point_wtoi
+                for u in range(3):
+                    paths[j, 0, 0, u] = seed[u]
+                    paths[j, 0, 1, u] = seed[u]
                 if features_save.seedpoint >= 0:
                     features[j, 0, 0, features_save.seedpoint] = 1
                     features[j, 0, 1, features_save.seedpoint] = 1
