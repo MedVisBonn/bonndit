@@ -163,7 +163,10 @@ cdef class FACT(Interpolation):
     ) :  # : # : # nogil except *:
         cdef int i
         cdef double l, max_value
-        self.point_index = self.inv_trafo @ point
+        cblas_dgemv(
+            CblasRowMajor, CblasNoTrans, 4, 4, 1,
+            &self.inv_trafo[0, 0], 1, &point[0], 1, 0, &self.point_index[0], 1)
+
         self.nearest_neigh(self.point_index[:3])
         max_value = fmax(
             fmax(
@@ -392,7 +395,9 @@ cdef class TrilinearFODF(Interpolation):
     ) :  # : # : # nogil except *:
     # with gil: print(np.array(old_dir))
         # Initialize with last step. Except we are starting again.
-        self.point_index = self.inv_trafo @ point
+        cblas_dgemv(
+            CblasRowMajor, CblasNoTrans, 4, 4, 1,
+            &self.inv_trafo[0, 0], 1, &point[0], 1, 0, &self.point_index[0], 1)
         if r == 0:
             cblas_dscal(9, 0, &self.best_dir[0, 0], 1)
             cblas_dscal(3, 0, &self.length[0], 1)
@@ -491,7 +496,9 @@ cdef class Trilinear(Interpolation):
         cdef int i, j
         cdef int con = 1
         cdef double test = 0
-        self.point_index = self.inv_trafo @ point
+        cblas_dgemv(
+            CblasRowMajor, CblasNoTrans, 4, 4, 1,
+            &self.inv_trafo[0, 0], 1, &point[0], 1, 0, &self.point_index[0], 1)
         self.calc_cube(self.point_index[:3])
         for i in range(3):
             self.floor[i] = int(self.point_index[i])
@@ -795,7 +802,9 @@ cdef class UKFFodf(UKF):
         self, double[:] point, double[:] old_dir,
         int restart
     ) :  # : # : # nogil except *:
-        self.point_index = self.inv_trafo @ point
+        cblas_dgemv(
+            CblasRowMajor, CblasNoTrans, 4, 4, 1,
+            &self.inv_trafo[0, 0], 1, &point[0], 1, 0, &self.point_index[0], 1)
         cdef int i, info = 0
         # Interpolate current point
         self._kalman.linear(
@@ -864,7 +873,9 @@ cdef class UKFMultiTensor(UKF):
         self, double[:] point, double[:] old_dir,
         int restart
     ) :  # : # : # nogil except *:
-        self.point_index = self.inv_trafo @ point
+        cblas_dgemv(
+            CblasRowMajor, CblasNoTrans, 4, 4, 1,
+            &self.inv_trafo[0, 0], 1, &point[0], 1, 0, &self.point_index[0], 1)
         cdef int z, i, info = 0
         # Interpolate current point
         self._kalman.linear(
