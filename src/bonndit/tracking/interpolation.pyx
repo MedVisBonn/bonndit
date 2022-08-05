@@ -286,9 +286,7 @@ cdef class TrilinearFODF(Interpolation):
 		# Initialize with last step. Except we are starting again.
 		self.point_world[:3] = point
 		self.point_world[3] = 1
-		print('before', np.array(self.point_world))
 		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4,4,1,&self.inv_trafo[0,0], 4, &self.point_world[0], 1, 0, &self.point_index[0],1)
-		print('after', np.array(self.point_index))
 		if r==0:
 			cblas_dscal(9,0, &self.best_dir[0,0],1)
 			cblas_dscal(3,0, &self.length[0],1)

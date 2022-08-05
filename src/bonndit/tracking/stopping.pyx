@@ -56,7 +56,6 @@ cdef class Validator:
 		self.point_world[3] = 1
 		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4, 4, 1, &self.inv_trafo[0, 0], 4, &self.point_world[0], 1, 0,
 					&self.point[0], 1)
-		print('stop here',  np.asarray(self.point))
 		if self.point[0] < 0 or self.point[1] < 0 or self.point[2] < 0:
 			return True
 		elif self.point[0] >= self.shape[0] or self.point[1] >= self.shape[1] or self.point[2] >= self.shape[2]:
@@ -102,7 +101,7 @@ cdef class WMChecker:
 			self.point_world[:3] = point
 			self.point_world[3] = 1
 			cblas_dgemv(CblasRowMajor, CblasNoTrans, 4, 4, 1, &self.inv_trafo[0, 0], 4, &self.point_world[0], 1, 0,&self.point[0], 1)
-			print('stop here', np.asarray(self.point))
+
 			if self.wm_mask[int(self.point[0]), int(self.point[1]), int(self.point[2])] < self.min_wm:
 				return 0
 			else:

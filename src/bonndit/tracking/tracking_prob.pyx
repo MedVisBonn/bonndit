@@ -99,35 +99,35 @@ cdef forward_tracking(double[:,:] paths,  Interpolation interpolate,
 	validator.WM.reset()
 	for k in range((max_track_length-1)*save_steps):
 		# validate index and wm density.
-		print(2)
+
 		if validator.index_checker(paths[(k-1)//save_steps + 1]):
 			set_zero_vector(paths[(k-1)//save_steps + 1])
 			break
-		print(3)
+
 		con = validator.WM.wm_checker(paths[(k - 1) // save_steps + 1])
 		if con == 0:
 			break
 		elif con > 0:
 			return False, k
-		print(4)
+
 		# find matching directions
 		if sum_c(integrate.old_dir) == 0:
 			set_zero_vector(paths[(k-1)//save_steps + 1])
 			set_zero_vector(features[(k - 1) // save_steps + 1])
 
 			break
-		print(5)
+
 		if interpolate.interpolate(paths[(k-1)//save_steps + 1], integrate.old_dir, (k-1)//save_steps + 1) != 0:
 			break
-		print(6)
+
 		# Check next step is valid. If it is: Integrate. else break
 		if validator.next_point_checker(interpolate.next_dir):
 			set_zero_vector(paths[(k-1)//save_steps + 1])
 			break
-		print(7)
+
 		if integrate.integrate(interpolate.next_dir, paths[(k-1)//save_steps + 1])!= 0:
 			break
-		print(8)
+
 		if sum_c(integrate.next_point) == 0:
 			break
 
