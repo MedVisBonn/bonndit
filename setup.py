@@ -112,6 +112,12 @@ ext_modules = [
 	Extension(
 		"bonndit.tracking.stopping",
 		["src/bonndit/tracking/stopping.pyx"],
+		define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
+		include_dirs=[numpy.get_include(), "/opt/intel/oneapi/mkl/2022.0.2/include"],
+		libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
+		library_dirs=["/opt/intel/oneapi/mkl/2022.0.2/lib/intel64"],
+		extra_compile_args=["-Wall", "-m64", "-Ofast"],
+		extra_link_args=["-Wl,--no-as-needed"]
 	),
 	Extension(
 		"bonndit.tracking.tracking_prob",
