@@ -347,8 +347,8 @@ def main():
 									tracking_parameters, postprocessing, ukf_parameter,trilinear_parameters,  logging, saving)
 	del tracking_parameters, postprocessing, ukf_parameter, trilinear_parameters, vector_field, wm_mask, seeds, act
 	if 'disk' in args:
-		paths_len = pd.read_csv(args.disk_file + 'len').values
-		paths = pd.read_csv(args.disk_file, delimiter=" ").values
+		paths_len = pd.read_csv(args.disk_file + 'len', header=None, dtype=int).values
+		paths = pd.read_csv(args.disk_file, header=None, delimiter=" ").values
 		paths = [tuple(x) for x in paths]
 		if args.disk_delete:
 			os.remove(args.disk_file)
@@ -365,7 +365,10 @@ def main():
 		PlyData([tracks, endindex]).write(args.o)
 
 	elif args.o.endswith('tck'):
+
 		paths_len = np.array(paths_len, dtype=int)
+		print(paths)
+		print(paths_len)
 		paths = np.array(paths)[:,:3]
 		streamlines = nib.streamlines.ArraySequence(np.split(paths, paths_len))
 
