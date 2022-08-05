@@ -370,15 +370,9 @@ def main():
 
 		#paths_len = np.array(paths_len, dtype=int)
 		paths = np.array(paths)[:,:3]
-		start = time.time()
 		streamlines = nib.streamlines.ArraySequence(np.split(paths, paths_len))
-		print('streamlines' , time.time() - start)
-		start = time.time()
 		mytractogram = nib.streamlines.tractogram.Tractogram(streamlines, affine_to_rasmm=np.identity(4))
-		print('mytractorgram', time.time() - start)
-		start = time.time()
 		tractogram = nib.streamlines.tck.TckFile(mytractogram)
-		print('tractorgram', time.time() - start)
 		tractogram.save(args.o)
 	logging.info(f"Output file has been written to {args.o}")
 
