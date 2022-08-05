@@ -5,6 +5,9 @@ from bonndit.tracking.ItoW cimport Trafo
 cdef class Validator:
 	cdef:
 		double min_wm
+		double[:,:] inv_trafo
+		double[:] point
+		double[:] point_world
 		double[:,:,:] wm_mask
 		int[:] shape
 		CurvatureNotValidator Curve

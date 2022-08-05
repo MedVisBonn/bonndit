@@ -14,7 +14,9 @@ DTYPE = np.float64
 ## TODO Mich um die Registrierung kümmern.
 cdef class Validator:
 	def __cinit__(self, int[:] shape, inclusion, exclusion,  Trafo trafo, **kwargs):
-
+		self.inv_trafo = np.linalg.inv(kwargs['trafo_mask'])
+		self.point = np.zeros((4,))
+		self.point_world = np.zeros((4,))
 		self.shape = shape
 		if kwargs['act'] is not None:
 			self.WM = ACT(kwargs)
@@ -50,9 +52,13 @@ cdef class Validator:
 		@param point: 3 dimensional point
 		@return: True if the point is not valid.
 		"""
-		if point[0] < 0 or point[1] < 0 or point[2] < 0:
+		self.point_world[:3] = point
+		self.point_world[3] = 1
+		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4, 4, 1, &self.inv_trafo[0, 0], 4, &self.point_world[0], 1, 0,
+					&self.point[0], 1)
+		if self.point[0] < 0 or self.point[1] < 0 or self.point[2] < 0:
 			return True
-		elif point[0] >= self.shape[0] or point[1] >= self.shape[1] or point[2] >= self.shape[2]:
+		elif self.point[0] >= self.shape[0] or self.point[1] >= self.shape[1] or self.point[2] >= self.shape[2]:
 			return True
 		else:
 			return False
