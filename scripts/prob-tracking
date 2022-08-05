@@ -6,6 +6,7 @@ import cython
 import random
 import logging
 
+import pandas as pd
 from dipy.core.gradients import gradient_table
 
 from bonndit.tracking.tracking_prob import tracking_all
@@ -344,9 +345,10 @@ def main():
 
 	paths, paths_len = tracking_all(np.float64(vector_field), np.float64(wm_mask), np.float64(seeds),
 									tracking_parameters, postprocessing, ukf_parameter,trilinear_parameters,  logging, saving)
+	del tracking_parameters, postprocessing, ukf_parameter, trilinear_parameters, vector_field, wm_mask, seeds, act
 	if 'disk' in args:
-		paths_len = np.loadtxt(args.disk_file + 'len')
-		paths = np.loadtxt(args.disk_file)
+		paths_len = pd.read_csv(args.disk_file + 'len').values
+		paths = pd.read_csv(args.disk_file, delimiter=" ").values
 		paths = [tuple(x) for x in paths]
 		if args.disk_delete:
 			os.remove(args.disk_file)
