@@ -12,11 +12,10 @@ DTYPE = np.float64
 
 ## TODO Mich um die Registrierung kümmern.
 cdef class Validator:
-	def __cinit__(self, int[:] shape, inclusion, exclusion,  double
-		max_angle, Trafo trafo, double step_width, **kwargs):
+	def __cinit__(self, int[:] shape, inclusion, exclusion,  Trafo trafo, **kwargs):
 
 		self.shape = shape
-		if 'act' in kwargs:
+		if kwargs['act'] is not None:
 			self.WM = ACT(kwargs)
 		else:
 			self.WM = WMChecker(kwargs)
@@ -28,10 +27,10 @@ cdef class Validator:
 			self.ROIEx = ROIExValidator(exclusion)
 		else:
 			self.ROIEx = ROIExNotValidator(np.zeros((3,3)))
-		if max_angle > 0:
-			self.Curve = CurvatureValidator(max_angle, trafo, step_width)
+		if kwargs['max_angle'] > 0:
+			self.Curve = CurvatureValidator(kwargs['max_angle'], trafo, kwargs['stepsize'])
 		else:
-			self.Curve = CurvatureNotValidator(max_angle, trafo, step_width)
+			self.Curve = CurvatureNotValidator(kwargs['max_angle'], trafo, kwargs['stepsize'])
 
 
 
@@ -75,7 +74,7 @@ cdef class Validator:
 		set_zero_matrix(features)
 
 cdef class WMChecker:
-	cdef __cinit__(self, **kwargs):
+	def __cinit__(self, kwargs):
 		self.min_wm = kwargs['wmmin']
 		self.wm_mask = kwargs['wm_mask']
 
@@ -103,15 +102,15 @@ cdef class ACT(WMChecker):
     3: CSF
     4: Pathological tissue
 	"""
-	cdef __cinit__(self, **kwargs):
-		x = np.linspace(0, kwargs['act'].shape[1], kwargs['act'].shape[1])
-		y = np.linspace(0, kwargs['act'].shape[2], kwargs['act'].shape[2])
-		z = np.linspace(0, kwargs['act'].shape[3], kwargs['act'].shape[3])
+	def __cinit__(self, kwargs):
+		x = np.linspace(0, kwargs['act'].shape[0], kwargs['act'].shape[0])
+		y = np.linspace(0, kwargs['act'].shape[1], kwargs['act'].shape[1])
+		z = np.linspace(0, kwargs['act'].shape[2], kwargs['act'].shape[2])
 		self.entered_sgm = 0
-		self.cgm = RegularGridInterpolator((x,y,z), kwargs['act'][0])
-		self.sgm = RegularGridInterpolator((x, y, z), kwargs['act'][1])
-		self.wm = RegularGridInterpolator((x, y, z), kwargs['act'][2])
-		self.csf = RegularGridInterpolator((x, y, z), kwargs['act'][3])
+		self.cgm = RegularGridInterpolator((x,y,z), kwargs['act'][...,0])
+		self.sgm = RegularGridInterpolator((x, y, z), kwargs['act'][...,1])
+		self.wm = RegularGridInterpolator((x, y, z), kwargs['act'][...,2])
+		self.csf = RegularGridInterpolator((x, y, z), kwargs['act'][...,3])
 
 	cdef void reset(self):
 		self.entered_sgm = 0
@@ -120,23 +119,31 @@ cdef class ACT(WMChecker):
 		cgm = self.cgm(point)
 		csf = self.csf(point)
 		sgm = self.sgm(point)
-		wm = self.sgm(point)
+		wm = self.wm(point)
 		#check case 6:
-		if wm > 0.5:
-			return -1
 		if self.entered_sgm:
 			if sgm<0.5:
-				return 1
-		# ACT cases 1..3
+				return 0
+			else:
+				return  -1
+		# continue
+		if wm > 0.5:
+			return -1
+
+		# ACT cases 1 => accept
 		if cgm > 0.5:
-			return 1
+			return 0
+		# case 2 => reject
 		if csf > 0.5:
 			return 2
+		# case 3 => accept
 		if cgm + csf + sgm + wm < 0.3:
-			return 1
+			return 0
 		#case 6
 		if sgm>0.5:
 			self.entered_sgm = 1
+			return -1
+		return 0
 
 
 

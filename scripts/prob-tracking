@@ -259,7 +259,7 @@ def main():
 		trafo_fsl = np.identity(4)
 
 	logging.info("Start fiber tracking")
-	if args.act:
+	if "act" in args:
 		act = load('act', args, 'act.nii.gz', args.i, logging, nib.load)
 	else:
 		act = None
@@ -356,12 +356,21 @@ def main():
 	for x in saving['features']:
 		if saving['features'][x] >= 0 and x != 'len':
 			features[saving['features'][x]] = x
-	tracks = PlyElement.describe(np.array(paths, dtype=[('x', 'f4'), ('y', 'f4'), ('z', 'f4')] + [(x, 'f4') for x in features]), 'vertices',
-								 comments=[])
-	endindex = PlyElement.describe(np.array(paths_len, dtype=[('endindex', 'i4')]), 'fiber')
-	PlyData([tracks, endindex]).write(args.o)
-	logging.info(f"Output file has been written to {args.o}")
+	if args.o.endswith('ply'):
+		tracks = PlyElement.describe(np.array(paths, dtype=[('x', 'f4'), ('y', 'f4'), ('z', 'f4')] + [(x, 'f4') for x in features]), 'vertices',
+									 comments=[])
+		endindex = PlyElement.describe(np.array(paths_len, dtype=[('endindex', 'i4')]), 'fiber')
+		PlyData([tracks, endindex]).write(args.o)
 
+	elif args.o.endswith('tck'):
+		paths_len = np.array(paths_len, dtype=int)
+		paths = np.array(paths)[:,:3]
+		streamlines = nib.streamlines.ArraySequence(np.split(paths, paths_len))
+
+		mytractogram = nib.streamlines.tractogram.Tractogram(streamlines, affine_to_rasmm=np.identity(4))
+		tractogram = nib.streamlines.tck.TckFile(mytractogram)
+		tractogram.save(args.o)
+	logging.info(f"Output file has been written to {args.o}")
 
 if __name__ == "__main__":
 	main()
