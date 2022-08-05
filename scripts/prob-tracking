@@ -18,6 +18,7 @@ import numpy as np
 from plyfile import PlyElement, PlyData
 
 from bonndit.utils.io import fsl_gtab_to_worldspace, fsl_flip_sign
+import time
 
 path_tree = []
 
