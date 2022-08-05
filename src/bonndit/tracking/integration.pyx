@@ -90,22 +90,15 @@ cdef class RungeKutta(Integration):
 
 	cdef int integrate(self, double[:] direction, double[:] coordinate) : # nogil except *:
 		mult_with_scalar(self.three_vector, self.stepsize/(2*norm(direction)), direction)
-		self.trafo.itow(coordinate)
-		add_vectors(self.three_vector, self.trafo.point_itow, self.three_vector)
-		self.trafo.wtoi(self.three_vector)
-		self.k2_x = self.trafo.point_wtoi
+		add_vectors(self.k2_x, coordinate, self.three_vector)
 		if self.interpolate.interpolate(self.k2_x, direction, 1) != 0:
 			return 1
 		self.k2 = self.interpolate.next_dir
-
 		self.old_dir = self.k1
 		if sum_c(self.k2) == 0 or sum_c(self.k2) != sum_c(self.k2):
 			return 1
 		mult_with_scalar(self.k1, self.stepsize/norm(self.k2), self.k2)
-		self.trafo.itow(coordinate)
-		add_vectors(self.k2, self.trafo.point_itow, self.k1)
-		self.trafo.wtoi(self.k2)
-		self.next_point = self.trafo.point_wtoi
+		add_vectors(self.next_point, coordinate, self.k1)
 		return 0
 
 

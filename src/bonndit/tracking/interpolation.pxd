@@ -12,6 +12,8 @@ cdef class Interpolation:
 	cdef double[:,:,:,:,:] vector_field
 	cdef double[:,:,:] cuboid
 	cdef double[:,:]  floor_point
+	cdef double[:,:] inv_trafo
+	cdef double[:] point_index
 	cdef double[:,:] best_dir
 	cdef int[:,:,:,:] cache
 	cdef double chosen_angle

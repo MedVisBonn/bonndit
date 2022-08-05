@@ -75,6 +75,8 @@ cdef class Validator:
 
 cdef class WMChecker:
 	def __cinit__(self, kwargs):
+		self.inv_trafo = np.linalg.inv(kwargs['trafo_mask'])
+		self.point = np.zeros((3,))
 		self.min_wm = kwargs['wmmin']
 		self.wm_mask = kwargs['wm_mask']
 
@@ -88,7 +90,8 @@ cdef class WMChecker:
 			""" Checks if the wm density is at a given point below a threshold.
 			@param point: 3 dimensional point
 			"""
-			if self.wm_mask[int(point[0]), int(point[1]), int(point[2])] < self.min_wm:
+			self.point = self.inv_trafo @ point
+			if self.wm_mask[int(self.point[0]), int(self.point[1]), int(self.point[2])] < self.min_wm:
 				return 0
 			else:
 				return -1

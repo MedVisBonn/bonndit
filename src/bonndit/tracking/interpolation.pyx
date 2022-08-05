@@ -44,6 +44,8 @@ cdef class Interpolation:
 		self.vector = np.zeros((3,), dtype=DTYPE)
 		self.cuboid = np.zeros((8, 3, 3), dtype=DTYPE)
 		self.floor_point = np.zeros((8, 3), dtype=DTYPE)
+		self.inv_trafo = np.linalg.inv(kwargs['trafo_data'])
+		self.point_index = np.zeros((4))
 		self.best_dir  = np.zeros((3,3), dtype=DTYPE)
 		self.next_dir = np.zeros((3,), dtype=DTYPE)
 		self.cache = np.zeros((grid[0], grid[1], grid[2], 4 * 8), dtype=np.int32)
@@ -120,7 +122,8 @@ cdef class FACT(Interpolation):
 	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) : # : # : # nogil except *:
 		cdef int i
 		cdef double l, max_value
-		self.nearest_neigh(point)
+		self.point_index = self.inv_trafo @ point
+		self.nearest_neigh(self.point_index[:3])
 		max_value = fmax(fmax(self.vector_field[0, 0, int(self.floor_point[self.best_ind, 0]), int(self.floor_point[
 			                                                                                   self.best_ind,1]),
 		                                   int(self.floor_point[self.best_ind, 2])], self.vector_field[0, 1,
@@ -272,6 +275,7 @@ cdef class TrilinearFODF(Interpolation):
 	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) : # : # : # nogil except *:
 	#	with gil: print(np.array(old_dir))
 		# Initialize with last step. Except we are starting again.
+		self.point_index = self.inv_trafo @ point
 		if r==0:
 			cblas_dscal(9,0, &self.best_dir[0,0],1)
 			cblas_dscal(3,0, &self.length[0],1)
@@ -279,9 +283,9 @@ cdef class TrilinearFODF(Interpolation):
 
 		cdef int i
 		if self.r==0:
-			self.trilinear(point)
+			self.trilinear(self.point_index[:3])
 		else:
-			self.neigh(point)
+			self.neigh(self.point_index[:3])
 		if self.fodf[0] == 0:
 			return -1
 		#set_zero_matrix(tens)
@@ -346,14 +350,15 @@ cdef class Trilinear(Interpolation):
 		cdef int i, j
 		cdef int con = 1
 		cdef double test=0
-		self.calc_cube(point)
+		self.point_index = self.inv_trafo @ point
+		self.calc_cube(self.point_index[:3])
 		for i in range(3):
-			self.floor[i] = int(point[i])
+			self.floor[i] = int(self.point_index[i])
 		# Check if the best dir is initialized. If no initizialize first with the nearest neighbor. Then fit neighbors.
 		for i in range(3):
 			test+=norm(self.best_dir[i])
 		if test==0:
-			self.nearest_neigh(point)
+			self.nearest_neigh(self.point_index[:3])
 			for i in range(3):
 				if point_validator(self.vector_field[0, i, int(self.floor_point[self.best_ind, 0]), int(self.floor_point[self.best_ind,1]),int(self.floor_point[self.best_ind, 2])], 1):
 					l = pow(fabs(self.vector_field[0, i, int(self.floor_point[self.best_ind, 0]),int(self.floor_point[self.best_ind, 1]), int(self.floor_point[self.best_ind,2])]), 1 / 4)
@@ -363,15 +368,15 @@ cdef class Trilinear(Interpolation):
 				mult_with_scalar(self.best_dir[i], l, self.vector)
 
 		if sum_c_int(self.cache[self.floor[0], self.floor[1], self.floor[2],:]) != 0:
-			self.permute(point)
+			self.permute(self.point_index[:3])
 		else:
-			con = self.kmeans(point)
+			con = self.kmeans(self.point_index[:3])
 		#else:
 		#	self.permute(point)
 		if con:
 
 			for i in range(3):
-				self.point[i] = point[i]%1
+				self.point[i] = self.point_index[i]%1
 
 			for i in range(3):
 				# interpolate in x direction
@@ -536,13 +541,14 @@ cdef class UKFFodf(UKF):
 		super(UKFFodf, self).__init__(vector_field, grid, prob, **kwargs)
 
 	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) : # : # : # nogil except *:
+		self.point_index  = self.inv_trafo @ point
 		cdef int i, info = 0
 		# Interpolate current point
-		self._kalman.linear(point, self.y, self.mlinear, self.data)
+		self._kalman.linear(self.point_index[:3], self.y, self.mlinear, self.data)
 		# If we are at the seed. Initialize the Kalmanfilter
 		if restart == 0:
 			#with gil:
-			self._model.kinit(self.mean, point, old_dir, self.P, self.y)
+			self._model.kinit(self.mean, self.point_index[:3], old_dir, self.P, self.y)
 		# Run Kalmannfilter
 
 		info = self._kalman.update_kalman_parameters(self.mean, self.P, self.y)
@@ -588,14 +594,15 @@ cdef class UKFMultiTensor(UKF):
 		super(UKFMultiTensor, self).__init__(vector_field, grid, prob, **kwargs)
 
 	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) : # : # : # nogil except *:
+		self.point_index  = self.inv_trafo @ point
 		cdef int z, i, info = 0
 		# Interpolate current point
-		self._kalman.linear(point, self.y, self.mlinear, self.data)
+		self._kalman.linear(self.point_index[:3], self.y, self.mlinear, self.data)
 		# If we are at the seed. Initialize the Kalmanfilter
 		if restart == 0:
 #			with gil:
 				##print(np.array(self.y))
-			self._model.kinit(self.mean, point, old_dir, self.P, self.y)
+			self._model.kinit(self.mean, self.point_index[:3], old_dir, self.P, self.y)
 		# Run Kalmannfilter
 		info = self._kalman.update_kalman_parameters(self.mean, self.P, self.y)
 		#cblas_dcopy(self.mean.shape[0], &self.mean[0], 1, &self.tmpmean[0], 1)

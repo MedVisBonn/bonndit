@@ -202,6 +202,10 @@ def main():
 		raise Exception()
 	# Load data
 	vector_field, meta, = load('infile', args, 'rank3.nrrd', args.i, logging, nrrd.read)
+	trafo_data = np.zeros((4,4))
+	trafo_data[:3,:3] = meta['space directions'][-3:]
+	trafo_data[:3,3] = meta['space origin'][-3:]
+	trafo_data[3,3] = 1
 	# print(meta)
 	if vector_field.shape[0] != 4:
 		logging.error("Wrong dimension on first axis. Has to contain 4 values.")
@@ -214,12 +218,14 @@ def main():
 		raise Exception()
 	logging.info("Multivectorfield loaded")
 	if 'wmvolume' not in args:
-		wm_mask, _ = load('wmvolume', args, 'wmvolume.nrrd', args.i, logging, nrrd.read)
+		wm_mask, trafo_mask = load('wmvolume', args, 'wmvolume.nrrd', args.i, logging, nrrd.read)
 	elif args.wmvolume.endswith('nrrd'):
-		wm_mask, _ = load('wmvolume', args, 'wmvolume.nrrd', args.i, logging, nrrd.read)
+		wm_mask, trafo_mask = load('wmvolume', args, 'wmvolume.nrrd', args.i, logging, nrrd.read)
 	elif args.wmvolume.endswith('nii.gz'):
 		wm_mask = load('wmvolume', args, 'wmvolume.nrrd', args.i, logging, nib.load)
+		trafo_mask = wm_mask.affine
 		wm_mask = wm_mask.get_fdata()
+
 	else:
 		logging.error("Wmvolume has wrong format. Only nii.gz and nrrd are accepted.")
 		raise Exception()
@@ -263,10 +269,12 @@ def main():
 	logging.info("Start fiber tracking")
 	if "act" in args:
 		act = load('act', args, 'act.nii.gz', args.i, logging, nib.load)
+		trafo_mask = act.affine
 	else:
 		act = None
 	tracking_parameters = {
 		'prob': args.prob,
+		'trafo_data': trafo_data,
 		'min_len': int(args.min_len),
 		'space directions': meta['space directions'][-3:],
 		'space origin': meta['space origin'],
@@ -274,6 +282,7 @@ def main():
 		'ukf': args.ukf if 'ukf' in args else False,
 		'variance': float(args.var),
 		'expectation': float(args.exp),
+		'trafo_mask': trafo_mask,
 		'stepsize': float(args.sw),
 		'max_track_length': int(args.mtlength),
 		'integration': args.integration,
@@ -294,6 +303,7 @@ def main():
 	if args.interpolation == 'TrilinearFODF':
 		trilinear_parameters = {
 			'data': load('data', args, 'fodf.nrrd', args.i, logging, nrrd.read)[0],
+			'trafo_data': trafo_data,
 			'sigma_1': float(args.sigma_1),
 			'sigma_2': float(args.sigma_2),
 			'trafo': meta['space directions'][-3:],
@@ -306,6 +316,7 @@ def main():
 	if "ukf" in args:
 
 		ukf_parameter = {
+			'trafo_data': trafo_data,
 			'data': np.array(data, dtype=np.float64),
 			#	'vector_field': np.array(vector_field, dtype=np.float64),
 			'dim_model': int(args.ukf_dim_model),

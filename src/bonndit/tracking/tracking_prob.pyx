@@ -104,25 +104,16 @@ cdef forward_tracking(double[:,:] paths,  Interpolation interpolate,
 			break
 		con = validator.WM.wm_checker(paths[(k - 1) // save_steps + 1])
 		if con == 0:
-			trafo.itow(paths[(k-1)//save_steps + 1])
-			paths[(k-1)//save_steps + 1] = trafo.point_itow
 			break
 		elif con > 0:
 			return False, k
 		# find matching directions
 		if sum_c(integrate.old_dir) == 0:
-			#trafo.itow(paths[(k-1)//save_steps + 1])
-			#paths[(k-1)//save_steps + 1] = trafo.point_itow
 			set_zero_vector(paths[(k-1)//save_steps + 1])
 			set_zero_vector(features[(k - 1) // save_steps + 1])
-		#	with gil:
-		#		print('i break third at k = ',  str(k))
+
 			break
 		if interpolate.interpolate(paths[(k-1)//save_steps + 1], integrate.old_dir, (k-1)//save_steps + 1) != 0:
-			trafo.itow(paths[(k-1)//save_steps + 1])
-			paths[(k-1)//save_steps + 1] = trafo.point_itow
-		#	with gil:
-		#		print('i break fourth at k = ',  str(k))
 			break
 
 		# Check next step is valid. If it is: Integrate. else break
@@ -131,26 +122,14 @@ cdef forward_tracking(double[:,:] paths,  Interpolation interpolate,
 			break
 
 		if integrate.integrate(interpolate.next_dir, paths[(k-1)//save_steps + 1])!= 0:
-			trafo.itow(paths[(k-1)//save_steps + 1])
-			paths[(k-1)//save_steps + 1] = trafo.point_itow
-		#	with gil:
-		#		print('i break fourth at k = ',  str(k))
 			break
 		if sum_c(integrate.next_point) == 0:
-			trafo.itow(paths[(k-1)//save_steps + 1])
-			paths[(k-1)//save_steps + 1] = trafo.point_itow
-		#	with gil:
-		#		print('i break fourth at k = ',  str(k))
 			break
 
 		# update old dir
 		paths[k//save_steps + 1] = integrate.next_point
 		# check if next dir is near region of interest:
 
-
-		if k%save_steps == 0:
-			trafo.itow(paths[k//save_steps])
-			paths[k//save_steps] = trafo.point_itow
 		validator.ROIIn.included(paths[k//save_steps])
 		if validator.ROIEx.excluded(paths[k//save_steps]):
 			return False, k
@@ -165,15 +144,10 @@ cdef forward_tracking(double[:,:] paths,  Interpolation interpolate,
 		# Check curvature between current point and point 30mm ago
 		if validator.Curve.curvature_checker(paths[:k//save_steps], features[k//save_steps:k//save_steps + 1,1]):
 
-			if validator.WM.sgm_checker(trafo.point_wtoi):
-				trafo.itow(paths[k//save_steps + 1])
-				paths[k//save_steps + 1] = trafo.point_itow
-			else:
+			if not validator.WM.sgm_checker(trafo.point_wtoi):
 				return False, k
 		#integrate.old_dir = interpolate.next_dir
-	else:
-		trafo.itow(paths[k//save_steps + 1])
-		paths[k//save_steps + 1] = trafo.point_itow
+
 	#if k == 0:
 	#	trafo.itow(paths[k//save_steps])
 	#	paths[k//save_steps] = trafo.point_itow
@@ -249,9 +223,9 @@ cpdef tracking_all(vector_field, wm_mask, seeds, tracking_parameters, postproces
 	elif tracking_parameters['ukf'] == "LowRank":
 		interpolate = UKFFodf(vector_field, dim[2:5], directionGetter, **ukf_parameters)
 	elif tracking_parameters['interpolation'] == "FACT":
-		interpolate = FACT(vector_field, dim[2:5], directionGetter )
+		interpolate = FACT(vector_field, dim[2:5], directionGetter, **tracking_parameters)
 	elif tracking_parameters['interpolation'] == "Trilinear":
-		interpolate = Trilinear(vector_field, dim[2:5], directionGetter)
+		interpolate = Trilinear(vector_field, dim[2:5], directionGetter, **tracking_parameters)
 	elif tracking_parameters['interpolation'] == "TrilinearFODF":
 		interpolate = TrilinearFODF(vector_field, dim[2:5], directionGetter, **trilinear_parameters)
 	else:
