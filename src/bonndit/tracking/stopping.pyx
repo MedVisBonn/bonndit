@@ -19,8 +19,8 @@ cdef class Validator:
         **kwargs
     ):
         self.inv_trafo = np.linalg.inv(kwargs['trafo_mask'])
-        self.point = np.zeros((4,))
-        self.point_world = np.zeros((4,))
+        self.point = np.zeros((4,), dtype=DTYPE)
+        self.point_world = np.zeros((4,), dtype=DTYPE)
         self.shape = shape
         if kwargs['act'] is not None:
             self.WM = ACT(kwargs)
@@ -96,8 +96,8 @@ cdef class Validator:
 cdef class WMChecker:
     def __cinit__(self, kwargs):
         self.inv_trafo = np.linalg.inv(kwargs['trafo_mask'])
-        self.point = np.zeros((4,))
-        self.point_world = np.zeros((4,))
+        self.point = np.zeros((4,), dtype=DTYPE)
+        self.point_world = np.zeros((4,), dtype=DTYPE)
         self.min_wm = kwargs['wmmin']
         self.wm_mask = kwargs['wm_mask']
 
