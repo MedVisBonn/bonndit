@@ -45,7 +45,8 @@ cdef class Interpolation:
 		self.cuboid = np.zeros((8, 3, 3), dtype=DTYPE)
 		self.floor_point = np.zeros((8, 3), dtype=DTYPE)
 		self.inv_trafo = np.linalg.inv(kwargs['trafo_data'])
-		self.point_index = np.zeros((4))
+		self.point_index = np.zeros((4,), dtype=DTYPE)
+		self.point_world = np.zeros((4,), dtype=DTYPE)
 		self.best_dir  = np.zeros((3,3), dtype=DTYPE)
 		self.next_dir = np.zeros((3,), dtype=DTYPE)
 		self.cache = np.zeros((grid[0], grid[1], grid[2], 4 * 8), dtype=np.int32)
@@ -122,7 +123,9 @@ cdef class FACT(Interpolation):
 	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) : # : # : # nogil except *:
 		cdef int i
 		cdef double l, max_value
-		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4,4,1,&self.inv_trafo[0,0], 1, &point[0], 1, 0, &self.point_index[0],1)
+		self.point_world[:3] = point
+		self.point_world[3] = 1
+		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4,4,1,&self.inv_trafo[0,0], 4, &self.point_world[0], 1, 0, &self.point_index[0],1)
 
 		self.nearest_neigh(self.point_index[:3])
 		max_value = fmax(fmax(self.vector_field[0, 0, int(self.floor_point[self.best_ind, 0]), int(self.floor_point[
@@ -276,7 +279,9 @@ cdef class TrilinearFODF(Interpolation):
 	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) : # : # : # nogil except *:
 	#	with gil: print(np.array(old_dir))
 		# Initialize with last step. Except we are starting again.
-		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4,4,1,&self.inv_trafo[0,0], 1, &point[0], 1, 0, &self.point_index[0],1)
+		self.point_world[:3] = point
+		self.point_world[3] = 1
+		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4,4,1,&self.inv_trafo[0,0], 4, &self.point_world[0], 1, 0, &self.point_index[0],1)
 		if r==0:
 			cblas_dscal(9,0, &self.best_dir[0,0],1)
 			cblas_dscal(3,0, &self.length[0],1)
@@ -351,7 +356,9 @@ cdef class Trilinear(Interpolation):
 		cdef int i, j
 		cdef int con = 1
 		cdef double test=0
-		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4,4,1,&self.inv_trafo[0,0], 1, &point[0], 1, 0, &self.point_index[0],1)
+		self.point_world[:3] = point
+		self.point_world[3] = 1
+		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4,4,1,&self.inv_trafo[0,0], 4, &self.point_world[0], 1, 0, &self.point_index[0],1)
 		self.calc_cube(self.point_index[:3])
 		for i in range(3):
 			self.floor[i] = int(self.point_index[i])
@@ -542,7 +549,9 @@ cdef class UKFFodf(UKF):
 		super(UKFFodf, self).__init__(vector_field, grid, prob, **kwargs)
 
 	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) : # : # : # nogil except *:
-		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4,4,1,&self.inv_trafo[0,0], 1, &point[0], 1, 0, &self.point_index[0],1)
+		self.point_world[:3] = point
+		self.point_world[3] = 1
+		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4,4,1,&self.inv_trafo[0,0], 4, &self.point_world[0], 1, 0, &self.point_index[0],1)
 		cdef int i, info = 0
 		# Interpolate current point
 		self._kalman.linear(self.point_index[:3], self.y, self.mlinear, self.data)
@@ -595,7 +604,9 @@ cdef class UKFMultiTensor(UKF):
 		super(UKFMultiTensor, self).__init__(vector_field, grid, prob, **kwargs)
 
 	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) : # : # : # nogil except *:
-		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4,4,1,&self.inv_trafo[0,0], 1, &point[0], 1, 0, &self.point_index[0],1)
+		self.point_world[:3] = point
+		self.point_world[3] = 1
+		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4,4,1,&self.inv_trafo[0,0], 4, &self.point_world[0], 1, 0, &self.point_index[0],1)
 		cdef int z, i, info = 0
 		# Interpolate current point
 		self._kalman.linear(self.point_index[:3], self.y, self.mlinear, self.data)

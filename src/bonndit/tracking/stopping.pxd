@@ -20,6 +20,7 @@ cdef class WMChecker:
 	cdef:
 		double[:,:] inv_trafo
 		double[:] point
+		double[:] point_world
 		double min_wm
 		double[:,:,:] wm_mask
 		cgm
