@@ -33,6 +33,8 @@ cdef class WMChecker:
 	cdef void reset(self)
 	cdef bint sgm_checker(self, double[:] point)
 	cdef bint wm_checker(self, double[:] point)
+	cdef bint wm_checker_ex(self, double[:] point)
+
 
 cdef class ACT(WMChecker):
 	cdef:

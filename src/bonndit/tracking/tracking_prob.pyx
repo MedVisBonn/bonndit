@@ -103,9 +103,16 @@ cdef forward_tracking(double[:,:] paths,  Interpolation interpolate,
 		if validator.index_checker(paths[(k-1)//save_steps + 1]):
 			set_zero_vector(paths[(k-1)//save_steps + 1])
 			break
-
+		# check if neigh is wm.
 		con = validator.WM.wm_checker(paths[(k - 1) // save_steps + 1])
 		if con == 0:
+			# If not wm. Set all zero until wm
+			for l in range((k - 1) // save_steps + 1):
+				con = validator.WM.wm_checker_ex(paths[(k - 1) // save_steps + 1 - save_steps * l])
+				if con == 0:
+					set_zero_vector(paths[(k - 1) // save_steps + 1 - save_steps * l])
+				else:
+					break
 			break
 		elif con > 0:
 			return False, k

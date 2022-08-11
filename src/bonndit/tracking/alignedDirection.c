@@ -14,7 +14,7 @@
             "-Ofast"
         ],
         "include_dirs": [
-            "/tmp/pip-build-env-wsfao9ce/overlay/lib/python3.8/site-packages/numpy/core/include",
+            "/tmp/pip-build-env-udb6blga/overlay/lib/python3.8/site-packages/numpy/core/include",
             "."
         ],
         "name": "bonndit.tracking.alignedDirection",
