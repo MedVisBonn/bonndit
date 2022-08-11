@@ -14,7 +14,7 @@
             "-Ofast"
         ],
         "include_dirs": [
-            "/tmp/pip-build-env-qjvyu3o1/overlay/lib/python3.8/site-packages/numpy/core/include",
+            "/tmp/pip-build-env-wsfao9ce/overlay/lib/python3.8/site-packages/numpy/core/include",
             "."
         ],
         "name": "bonndit.tracking.alignedDirection",
@@ -4172,7 +4172,7 @@ __pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_3) == __pyx
       /* "bonndit/tracking/alignedDirection.pyx":146
  * 			#	with gil:
  * 			#		print('First angle ' , self.angles[i], pow(cos(pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)*norm(self.test_vectors[i]))
- * 				self.probability[i]=pow(cos(pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)             # <<<<<<<<<<<<<<
+ * 				self.probability[i]=pow(cos(pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)*exp(pow(norm(self.test_vectors[i]) - self.old_fa,2))             # <<<<<<<<<<<<<<
  * 			else:
  * 				self.probability[i] = 0
  */
@@ -4183,9 +4183,26 @@ __pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_3) == __pyx
       }
       if (unlikely(!__pyx_v_self->__pyx_base.angles.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 146, __pyx_L1_error)}
       __pyx_t_7 = __pyx_v_i;
-      if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 146, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->__pyx_base.test_vectors.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 146, __pyx_L1_error)}
+      __pyx_t_4.data = __pyx_v_self->__pyx_base.test_vectors.data;
+      __pyx_t_4.memview = __pyx_v_self->__pyx_base.test_vectors.memview;
+      __PYX_INC_MEMVIEW(&__pyx_t_4, 0);
+      {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_i;
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_self->__pyx_base.test_vectors.strides[0];
+        __pyx_t_4.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_4.shape[0] = __pyx_v_self->__pyx_base.test_vectors.shape[1];
+__pyx_t_4.strides[0] = __pyx_v_self->__pyx_base.test_vectors.strides[1];
+    __pyx_t_4.suboffsets[0] = -1;
+
+if (unlikely(!__pyx_v_self->__pyx_base.probability.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 146, __pyx_L1_error)}
       __pyx_t_8 = __pyx_v_i;
-      *((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.probability.data + __pyx_t_8 * __pyx_v_self->__pyx_base.probability.strides[0]) )) = pow(cos(pow(((((__pyx_v_self->__pyx_base.expectation / __pyx_t_6) * (*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.angles.data + __pyx_t_7 * __pyx_v_self->__pyx_base.angles.strides[0]) )))) / 180.0) * M_PI), 2.0)), __pyx_v_self->__pyx_base.sigma);
+      *((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.probability.data + __pyx_t_8 * __pyx_v_self->__pyx_base.probability.strides[0]) )) = (pow(cos(pow(((((__pyx_v_self->__pyx_base.expectation / __pyx_t_6) * (*((double *) ( /* dim=0 */ (__pyx_v_self->__pyx_base.angles.data + __pyx_t_7 * __pyx_v_self->__pyx_base.angles.strides[0]) )))) / 180.0) * M_PI), 2.0)), __pyx_v_self->__pyx_base.sigma) * exp(pow((__pyx_f_7bonndit_5utilc_14cython_helpers_norm(__pyx_t_4) - __pyx_v_self->__pyx_base.old_fa), 2.0)));
+      __PYX_XDEC_MEMVIEW(&__pyx_t_4, 1);
+      __pyx_t_4.memview = NULL;
+      __pyx_t_4.data = NULL;
 
       /* "bonndit/tracking/alignedDirection.pyx":143
  * 		#	print(*self.angles)
@@ -4198,7 +4215,7 @@ __pyx_t_5 = ((__pyx_f_7bonndit_5utilc_14cython_helpers_sum_c(__pyx_t_3) == __pyx
     }
 
     /* "bonndit/tracking/alignedDirection.pyx":148
- * 				self.probability[i]=pow(cos(pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)
+ * 				self.probability[i]=pow(cos(pow(self.expectation/pow(2*pi,0.5)*self.angles[i]/180*pi,2)),self.sigma)*exp(pow(norm(self.test_vectors[i]) - self.old_fa,2))
  * 			else:
  * 				self.probability[i] = 0             # <<<<<<<<<<<<<<
  * 		self.random_choice(direction)

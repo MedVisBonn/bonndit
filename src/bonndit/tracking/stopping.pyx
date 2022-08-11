@@ -130,10 +130,14 @@ cdef class ACT(WMChecker):
 		self.entered_sgm = 0
 
 	cdef bint wm_checker(self, double[:] point):
-		cgm = self.cgm(point)
-		csf = self.csf(point)
-		sgm = self.sgm(point)
-		wm = self.wm(point)
+		self.point_world[:3] = point
+		self.point_world[3] = 1
+		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4, 4, 1, &self.inv_trafo[0, 0], 4, &self.point_world[0], 1, 0,&self.point[0], 1)
+
+		cgm = self.cgm(self.point[:3])
+		csf = self.csf(self.point[:3])
+		sgm = self.sgm(self.point[:3])
+		wm = self.wm(self.point[:3])
 		#check case 6:
 		if self.entered_sgm:
 			if sgm<0.5:
@@ -163,7 +167,11 @@ cdef class ACT(WMChecker):
 
 
 	cdef bint sgm_checker(self, double[:] point):
-		sgm = self.sgm(point)
+		self.point_world[:3] = point
+		self.point_world[3] = 1
+		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4, 4, 1, &self.inv_trafo[0, 0], 4, &self.point_world[0], 1, 0,&self.point[0], 1)
+
+		sgm = self.sgm(self.point[:3])
 		if sgm>0.5:
 			return 1
 		else:

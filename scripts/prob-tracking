@@ -347,6 +347,7 @@ def main():
 			'chosen_angle': args.features.index('angle') if 'angle' in args.features else -2,
 			'seedpoint': args.features.index('seedpoint') if 'seedpoint' in args.features else -2,
 			'prob_chosen': args.features.index('prob_chosen') if 'prob_chosen' in args.features else -2,
+			'fa': args.features.index('fa') if 'fa' in args.features else -2,
 			'prob_others_0': args.features.index('prob_others') if 'prob_others' in args.features else -2,
 			'prob_others_1': args.features.index('prob_others') + 1 if 'prob_others' in args.features else -2,
 			'prob_others_2': args.features.index('prob_others') + 2 if 'prob_others' in args.features else -2,

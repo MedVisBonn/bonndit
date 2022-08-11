@@ -20,6 +20,7 @@ ctypedef struct possible_features:
 	int prob_others_0
 	int prob_others_1
 	int prob_others_2
+	int fa
 	int len
 
 
@@ -54,7 +55,6 @@ cdef void tracking(double[:,:,:,:] paths, double[:] seed,
 				integrate.old_dir = interpolate.next_dir
 			else:
 				integrate.old_dir = seed[3:]
-			print(1)
 			status1, m = forward_tracking(paths[j,:,0, :], interpolate, integrate, trafo, validator, max_track_length, save_steps,
 			                 features[j,:,0, :], features_save,)
 
@@ -146,6 +146,8 @@ cdef forward_tracking(double[:,:] paths,  Interpolation interpolate,
 			features[k//save_steps,feature_save.prob_others_0] = interpolate.prob.probability[0]
 			features[k//save_steps,feature_save.prob_others_1] = interpolate.prob.probability[1]
 			features[k//save_steps,feature_save.prob_others_2] = interpolate.prob.probability[2]
+		if feature_save.fa >= 0:
+			features[k//save_steps,feature_save.fa] = interpolate.prob.old_fa
 		# Check curvature between current point and point 30mm ago
 		if validator.Curve.curvature_checker(paths[:k//save_steps], features[k//save_steps:k//save_steps + 1,1]):
 
@@ -268,7 +270,7 @@ cpdef tracking_all(vector_field, wm_mask, seeds, tracking_parameters, postproces
 		for j in range(tracking_parameters['samples']):
 			validator.set_path_zero(paths[k,j, :, 1, :], features[k,j, :, 1, :])
 			validator.set_path_zero(paths[k,j, :, 0, :], features[k,j, :, 0, :])
-			print(seeds[i][:3])
+
 			for l in range(3):
 				paths[k,j, 0, 0,l] = seeds[i][l]
 				paths[k,j, 0, 1,l] = seeds[i][l]
