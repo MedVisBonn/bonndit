@@ -61,19 +61,12 @@ cdef class Euler(Integration):
 
 
 		"""
-        # print("ssd", *coordinate)
-        self.trafo.itow(coordinate)
         self.old_dir = direction
         # Normalize the direction so each Euler step has the requested length.
         mult_with_scalar(
             self.three_vector, self.stepsize / norm(direction),
             direction)
-        add_vectors(
-            self.three_vector, self.trafo.point_itow,
-            self.three_vector)
-        self.trafo.wtoi(self.three_vector)
-        self.next_point \
-            = self.trafo.point_wtoi  # self.three_vector #coordinate #self.trafo.point_wtoi
+        add_vectors(self.next_point, coordinate, self.three_vector)
         return 0
 
 cdef class EulerUKF(Integration):
@@ -122,10 +115,8 @@ cdef class RungeKutta(Integration):
             self.three_vector,
             self.stepsize / (2 * norm(direction)), direction)
         add_vectors(self.k2_x, coordinate, self.three_vector)
-        print(1, np.array(self.k2_x))
         if self.interpolate.interpolate(self.k2_x, direction, 1) != 0:
             return 1
-        print(1, np.array(self.interpolate.next_dir))
         self.k2 = self.interpolate.next_dir
         self.old_dir = self.k1
         if sum_c(self.k2) == 0 or sum_c(self.k2) != sum_c(self.k2):
