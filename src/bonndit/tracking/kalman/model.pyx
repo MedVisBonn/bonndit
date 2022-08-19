@@ -72,8 +72,9 @@ cdef class fODFModel(AbstractModel):
     ) nogil except *:
         # Calculates m = v/||v||, by doing matrix operation 1/||v||*v*1 + 0*m
         # with gil: print(np.array(v))
-        cblas_dcopy(3, &v[0], inc, &m[0], 1)
-        cblas_dscal(3, 1 / cblas_dnrm2(3, &v[0], inc), &m[0], 1)
+        if cblas_dnrm2(3, &v[0], inc) != 0:
+            cblas_dcopy(3, &v[0], inc, &m[0], 1)
+            cblas_dscal(3, 1 / cblas_dnrm2(3, &v[0], inc), &m[0], 1)
 
     cdef void predict_new_observation(
         self, double[:, :] observations,
