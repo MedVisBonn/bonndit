@@ -571,11 +571,14 @@ cdef class UKFFodf(UKF):
 		if info != 0:
 			return info
 		for i in range(self._model.num_tensors):
-			cblas_dscal(3, 1 / cblas_dnrm2(3, &self.mean[4*i], 1), &self.mean[4*i], 1)
-			if cblas_ddot(3, &self.mean[4*i], 1, &old_dir[0],1) < 0:
-				cblas_dscal(3, -1, &self.mean[4*i], 1)
-			self.mean[4*i+3] = max(self.mean[4*i+3],_lambda_min)
-
+			if cblas_dnrm2(3, &self.mean[4*i], 1) != 0:
+				cblas_dscal(3, 1 / cblas_dnrm2(3, &self.mean[4*i], 1), &self.mean[4*i], 1)
+				if cblas_ddot(3, &self.mean[4*i], 1, &old_dir[0],1) < 0:
+					cblas_dscal(3, -1, &self.mean[4*i], 1)
+				self.mean[4*i+3] = max(self.mean[4*i+3],_lambda_min)
+			else:
+				cblas_dscal(3, cblas_dnrm2(3, &self.mean[4 * i], 1), &self.mean[4 * i], 1)
+				self.mean[4 * i + 3] = max(self.mean[4 * i + 3], _lambda_min)
 
 
 		for i in range(self._model.num_tensors):
