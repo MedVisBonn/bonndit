@@ -72,6 +72,7 @@ cdef class fODFModel(AbstractModel):
     ) nogil except *:
         # Calculates m = v/||v||, by doing matrix operation 1/||v||*v*1 + 0*m
         # with gil: print(np.array(v))
+        # WHAT TODO else?
         if cblas_dnrm2(3, &v[0], inc) != 0:
             cblas_dcopy(3, &v[0], inc, &m[0], 1)
             cblas_dscal(3, 1 / cblas_dnrm2(3, &v[0], inc), &m[0], 1)
@@ -88,11 +89,12 @@ cdef class fODFModel(AbstractModel):
             &observations[0, 0], 1)
         for i in range(number_of_tensors):
             for j in range(sigma_points.shape[1]):
+
                 self.normalize(
                     self.m, sigma_points[i * 4: i * 4 + 3, j],
                     sigma_points.shape[1])
                 lam = max(sigma_points[i * 4 + 3, j], 0.01)
-                hota_4o3d_sym_eval(self.res, pow(lam, 1 / 4), self.m)
+                hota_4o3d_sym_eval(self.res, lam, self.m)
                 cblas_daxpy(
                     observations.shape[0], 1, &self.res[0], 1,
                     &observations[0, j], observations.shape[1])
