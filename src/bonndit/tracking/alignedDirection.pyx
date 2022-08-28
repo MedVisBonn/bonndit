@@ -186,7 +186,12 @@ cdef class ScalarOld(Probabilities):
                                 2 * pi,
                                 0.5) * self.angles[i] / 180 * pi, 2)),
                     self.sigma) \
-                    * exp(pow(norm(self.test_vectors[i]) - self.old_fa, 2))
+                    * exp(
+                    -pow(
+                        norm(self.test_vectors[i]) - self.old_fa,
+                        2) / 0.01)
+
+
             else:
                 self.probability[i] = 0
         self.random_choice(direction)

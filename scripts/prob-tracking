@@ -420,27 +420,18 @@ def main():
     if "ukf" in args:
 
         ukf_parameter = {
-            'trafo_data': trafo_data,
-            'data': np.array(data, dtype=np.float64),
-            # 'vector_field': np.array(vector_field, dtype=np.float64),
+            'trafo_data': trafo_data, 'data': np.array(
+                data, dtype=np.float64),
             'dim_model': int(args.ukf_dim_model),
             'model': 'fodf' if args.ukf == "LowRank" else 'MultiTensor',
-            'gradients': bvecs.astype(np.float64).T if bvecs is not None else "",
-            'baseline': baseline,
-            'b': bvals,
-            'b0': 3000,
-            'process noise': np.array(args.ukf_pnoise,
-                                      dtype=np.float64) if 'ukf_pnoise' in args else "",
-            'measurement noise': np.array(args.ukf_mnoise,
-                                          dtype=np.float64) if 'ukf_mnoise' in args else ""
-        }
+            'gradients': bvecs.astype(np.float64).T
+            if bvecs is not None else "", 'baseline': baseline, 'b': bvals,
+            'b0': 3000, 'process noise': np.array(
+                args.ukf_pnoise, dtype=np.float64)
+            if 'ukf_pnoise' in args else "", 'measurement noise': np.array(
+                args.ukf_mnoise, dtype=np.float64)
+            if 'ukf_mnoise' in args else ""}
         if args.ukf == "MultiTensor":
-            # bvecs = fsl_flip_sign(bvecs.T, meta['space directions'][-3:,-3:])
-            # bvecs = np.dot(bvecs, np.transpose(meta['space
-            # directions'][-3:,-3:]))
-            # ukf_parameter['gradients'] = bvecs
-            # ukf_parameter['b'] = bvals
-            # logging.info('Rotation to worldspace finished')
             if ukf_parameter['data'].shape[0] \
                     != ukf_parameter['gradients'].shape[0]:
                 if ukf_parameter['data'].shape[0] \
