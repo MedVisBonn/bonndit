@@ -20,29 +20,29 @@ cdef class Validator:
 	cdef void set_path_zero(self, double[:,:], double[:,:]) # nogil except *
 
 cdef class WMChecker:
-	cdef:
-		double[:,:] inv_trafo
-		double[:] point
-		double[:] point_world
-		double min_wm
-		double[:,:,:] wm_mask
-		cgm
-		sgm
-		wm
-		csf
-	cdef void reset(self)
-	cdef bint sgm_checker(self, double[:] point)
-	cdef bint wm_checker(self, double[:] point)
-	cdef bint wm_checker_ex(self, double[:] point)
+	cdef double[:,:] inv_trafo
+	cdef double[:] point
+	cdef double[:] point_world
+#	cdef int entered_sgm
+	cdef double min_wm
+	cdef double[:,:,:] wm_mask
 
-
-cdef class ACT(WMChecker):
-	cdef:
-		int entered_sgm
 
 	cdef void reset(self)
-	cdef bint wm_checker(self, double[:] )
 	cdef bint sgm_checker(self, double[:])
+	cdef bint wm_checker(self, double[:])
+	cdef bint wm_checker_ex(self, double[:])
+
+
+#cdef class ACT(WMChecker):
+#	cdef:
+#		cgm
+#		sgm
+#		wm
+#		csf
+#	cdef void reset(self)
+#	cdef bint wm_checker(self, double[:] )
+#	cdef bint sgm_checker(self, double[:])
 
 
 

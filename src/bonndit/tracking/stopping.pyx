@@ -8,20 +8,21 @@ from bonndit.utilc.blas_lapack cimport cblas_dgemv, CblasRowMajor, CblasNoTrans
 from bonndit.utilc.cython_helpers cimport sub_vectors, angle_deg, sum_c, set_zero_matrix, bigger, smaller, mult_with_scalar, norm
 import numpy as np
 from bonndit.tracking.ItoW cimport Trafo
+from bonndit.utilc.trilinear cimport linear
 DTYPE = np.float64
 
+cdef double[:] y = np.zeros((8,))
 
-## TODO Mich um die Registrierung kümmern.
 cdef class Validator:
 	def __cinit__(self, int[:] shape, inclusion, exclusion,  Trafo trafo, **kwargs):
 		self.inv_trafo = np.linalg.inv(kwargs['trafo_mask'])
 		self.point = np.zeros((4,), dtype=DTYPE)
 		self.point_world = np.zeros((4,), dtype=DTYPE)
 		self.shape = shape
-		if kwargs['act'] is not None:
-			self.WM = ACT(kwargs)
-		else:
-			self.WM = WMChecker(kwargs)
+	#	if kwargs['act'] is not None:
+	#		self.WM = ACT(kwargs)
+	#	else:
+		self.WM = WMChecker(kwargs)
 		if isinstance(inclusion, np.ndarray):
 			self.ROIIn = ROIInValidator(inclusion)
 		else:
@@ -82,11 +83,18 @@ cdef class Validator:
 
 cdef class WMChecker:
 	def __cinit__(self, kwargs):
+		x = np.linspace(0, kwargs['wm_mask'].shape[0] - 1, kwargs['wm_mask'].shape[0])
+		y = np.linspace(0, kwargs['wm_mask'].shape[1] - 1, kwargs['wm_mask'].shape[1])
+		z = np.linspace(0, kwargs['wm_mask'].shape[2] - 1, kwargs['wm_mask'].shape[2])
 		self.inv_trafo = np.linalg.inv(kwargs['trafo_mask'])
 		self.point = np.zeros((4,), dtype=DTYPE)
 		self.point_world = np.zeros((4,), dtype=DTYPE)
 		self.min_wm = kwargs['wmmin']
-		self.wm_mask = kwargs['wm_mask']
+
+		#self.entered_sgm = 0
+		#self.wm_mask = RegularGridInterpolator((x, y, z), kwargs['wm_mask'])
+		self.wm_mask = np.array(kwargs['wm_mask'], dtype=DTYPE)
+
 
 	cdef void reset(self):
 		pass
@@ -98,15 +106,12 @@ cdef class WMChecker:
 			""" Checks if the wm density is at a given point below a threshold.
 			@param point: 3 dimensional point
 			"""
-			cdef int i,j,k
+			cdef int i=0,j=0,k=0
 			self.point_world[:3] = point
 			self.point_world[3] = 1
 			cblas_dgemv(CblasRowMajor, CblasNoTrans, 4, 4, 1, &self.inv_trafo[0, 0], 4, &self.point_world[0], 1, 0,&self.point[0], 1)
-			for i in range(-3,4):
-				for j in range(-3, 4):
-					for k in range(-3, 4):
-						if self.wm_mask[int(self.point[0] - i), int(self.point[1] - j), int(self.point[2] - k)] > self.min_wm:
-							return -1
+			if linear(self.point[:3], y, self.wm_mask) > self.min_wm:
+				return -1
 			else:
 				return 0
 
@@ -117,80 +122,81 @@ cdef class WMChecker:
 				self.point_world[:3] = point
 				self.point_world[3] = 1
 				cblas_dgemv(CblasRowMajor, CblasNoTrans, 4, 4, 1, &self.inv_trafo[0, 0], 4, &self.point_world[0], 1, 0,&self.point[0], 1)
-				if self.wm_mask[int(self.point[0]), int(self.point[1]), int(self.point[2])] > self.min_wm:
+				if linear(self.point[:3], y, self.wm_mask)  > self.min_wm:
 					return -1
 				else:
 					return 0
 
-cdef class ACT(WMChecker):
-	"""
-	Format of kwargs['act']:
-    0: Cortical grey matter
-    1: Sub-cortical grey matter
-    2: White matter
-    3: CSF
-    4: Pathological tissue
-	"""
-	def __cinit__(self, kwargs):
-		x = np.linspace(0, kwargs['act'].shape[0], kwargs['act'].shape[0])
-		y = np.linspace(0, kwargs['act'].shape[1], kwargs['act'].shape[1])
-		z = np.linspace(0, kwargs['act'].shape[2], kwargs['act'].shape[2])
-		self.entered_sgm = 0
-		self.cgm = RegularGridInterpolator((x,y,z), kwargs['act'][...,0])
-		self.sgm = RegularGridInterpolator((x, y, z), kwargs['act'][...,1])
-		self.wm = RegularGridInterpolator((x, y, z), kwargs['act'][...,2])
-		self.csf = RegularGridInterpolator((x, y, z), kwargs['act'][...,3])
-
-	cdef void reset(self):
-		self.entered_sgm = 0
-
-	cdef bint wm_checker(self, double[:] point):
-		self.point_world[:3] = point
-		self.point_world[3] = 1
-		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4, 4, 1, &self.inv_trafo[0, 0], 4, &self.point_world[0], 1, 0,&self.point[0], 1)
-
-		cgm = self.cgm(self.point[:3])
-		csf = self.csf(self.point[:3])
-		sgm = self.sgm(self.point[:3])
-		wm = self.wm(self.point[:3])
-		#check case 6:
-		if self.entered_sgm:
-			if sgm<0.5:
-				return 0
-			else:
-				return  -1
-		# continue
-		if wm > 0.5:
-			return -1
-
-		# ACT cases 1 => accept
-		if cgm > 0.5:
-			return 0
-		# case 2 => reject
-		if csf > 0.5:
-			return 2
-		# case 3 => accept
-		if cgm + csf + sgm + wm < 0.3:
-			return 0
-		#case 6
-		if sgm>0.5:
-			self.entered_sgm = 1
-			return -1
-		return 0
-
-
-
-
-	cdef bint sgm_checker(self, double[:] point):
-		self.point_world[:3] = point
-		self.point_world[3] = 1
-		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4, 4, 1, &self.inv_trafo[0, 0], 4, &self.point_world[0], 1, 0,&self.point[0], 1)
-
-		sgm = self.sgm(self.point[:3])
-		if sgm>0.5:
-			return 1
-		else:
-			return 0
+#cdef class ACT(WMChecker):
+#	"""
+#	Format of kwargs['act']:
+#    0: Cortical grey matter
+#    1: Sub-cortical grey matter
+#    2: White matter
+#    3: CSF
+#    4: Pathological tissue
+#	"""
+#	def __cinit__(self, kwargs):
+#	#	super().__init__(kwargs)
+#		x = np.linspace(0, kwargs['act'].shape[0] - 1, kwargs['act'].shape[0])
+#		y = np.linspace(0, kwargs['act'].shape[1] - 1, kwargs['act'].shape[1])
+#		z = np.linspace(0, kwargs['act'].shape[2] - 1, kwargs['act'].shape[2])
+#		self.entered_sgm = 0
+#		self.cgm = RegularGridInterpolator((x,y,z), kwargs['act'][...,0])
+#		self.sgm = RegularGridInterpolator((x, y, z), kwargs['act'][...,1])
+#		self.wm = RegularGridInterpolator((x, y, z), kwargs['act'][...,2])
+#		self.csf = RegularGridInterpolator((x, y, z), kwargs['act'][...,3])
+#
+#	cdef void reset(self):
+#		self.entered_sgm = 0
+#
+#	cdef bint wm_checker(self, double[:] point):
+#		self.point_world[:3] = point
+#		self.point_world[3] = 1
+#		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4, 4, 1, &self.inv_trafo[0, 0], 4, &self.point_world[0], 1, 0,&self.point[0], 1)
+#
+#		cgm = self.cgm(self.point[:3])
+#		csf = self.csf(self.point[:3])
+#		sgm = self.sgm(self.point[:3])
+#		wm = self.wm(self.point[:3])
+#		#check case 6:
+#		if self.entered_sgm:
+#			if sgm<0.5:
+#				return 0
+#			else:
+#				return  -1
+#		# continue
+#		if wm > 0.5:
+#			return -1
+#
+#		# ACT cases 1 => accept
+#		if cgm > 0.5:
+#			return 0
+#		# case 2 => reject
+#		if csf > 0.5:
+#			return 2
+#		# case 3 => accept
+#		if cgm + csf + sgm + wm < 0.3:
+#			return 0
+#		#case 6
+#		if sgm>0.5:
+#			self.entered_sgm = 1
+#			return -1
+#		return 0
+#
+#
+#
+#
+#	cdef bint sgm_checker(self, double[:] point):
+#		self.point_world[:3] = point
+#		self.point_world[3] = 1
+#		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4, 4, 1, &self.inv_trafo[0, 0], 4, &self.point_world[0], 1, 0,&self.point[0], 1)
+#
+#		sgm = self.sgm(self.point[:3])
+#		if sgm>0.5:
+#			return 1
+#		else:
+#			return 0
 
 
 cdef class CurvatureNotValidator:

@@ -39,6 +39,11 @@ ext_modules = [
 		extra_compile_args=["-Ofast"],
 	),
 	Extension(
+		"bonndit.utilc.trilinear",
+		["src/bonndit/utilc/trilinear.pyx"],
+		extra_compile_args=["-Ofast"],
+	),
+	Extension(
 		"bonndit.utilc.structures",
 		["src/bonndit/utilc/structures.pyx"],
 		extra_compile_args=["-Ofast"],
@@ -69,9 +74,11 @@ ext_modules = [
 	Extension(
 		"bonndit.tracking.alignedDirection",
 		["src/bonndit/tracking/alignedDirection.pyx"],
-		include_dirs=[numpy.get_include(), '.'],
-		define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
-		extra_compile_args=["-Ofast"],
+		include_dirs=[numpy.get_include(), "/opt/intel/oneapi/mkl/2022.0.2/include"],
+		libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
+		library_dirs=["/opt/intel/oneapi/mkl/2022.0.2/lib/intel64"],
+		extra_compile_args=["-Wall", "-m64", "-Ofast"],
+		extra_link_args=["-Wl,--no-as-needed"]
 	), Extension(
 		"bonndit.tracking.kalman.model",
 		["src/bonndit/tracking/kalman/model.pyx"],

@@ -53,7 +53,9 @@ cdef class Kalman:
 			n = <int> point[1] + j
 			o = <int> point[2] + k
 
-			dm2toc(&vlinear[i, 0], data[:,m,n,o],  vlinear.shape[1])
+			dm2toc(&vlinear[i, 0], data[m,n,o,:],  vlinear.shape[1])
+
+
 		for i in range(4):
 			cblas_dscal(vlinear.shape[1], (1 + floor(point[2]) - point[2]), &vlinear[i, 0], 1)
 			cblas_daxpy(vlinear.shape[1], (point[2] - floor(point[2])), &vlinear[4+i, 0], 1, &vlinear[i,0], 1)
@@ -138,7 +140,7 @@ cdef class Kalman:
 
 
 		special_mat_mul(self.P_xx, self.X2, self.weights, self.X2, 1)
-
+		#with gil: print('P_xx', np.array(self.P_xx))
 		cblas_daxpy(self.P_xx.shape[0] * self.P_xx.shape[1], 1, &self._model.PROCESS_NOISE[0,0], 1, &self.P_xx[0, 0], 1)
 		self._model.predict_new_observation(self.gamma, self.X) # eq. 23
 
@@ -147,6 +149,7 @@ cdef class Kalman:
 			cblas_dcopy(self.pred_Y_mean.shape[0], &self.pred_Y_mean[0], 1, &self.gamma2[0,i], self.gamma2.shape[1])
 		sub_pointwise(&self.gamma2[0,0],&self.gamma[0,0], &self.gamma2[0,0], self.gamma2.shape[0]*self.gamma2.shape[1])
 		special_mat_mul(self.P_yy, self.gamma2, self.weights, self.gamma2, 1)
+		#with gil: print('P_yy', np.array(self.P_yy))
 		cblas_daxpy(self.P_yy.shape[0] * self.P_yy.shape[1], 1, &self._model.MEASUREMENT_NOISE[0, 0], 1, &self.P_yy[0, 0], 1)
 		special_mat_mul(self.P_xy, self.X2, self.weights, self.gamma2, 1)
 		# compute Kalman GAIN
