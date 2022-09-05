@@ -3,6 +3,7 @@
 
 import numpy as np
 from bonndit.utilc.cython_helpers cimport norm, add_vectors, mult_with_scalar, sum_c
+from bonndit.utilc.blas_lapack cimport *
 from .ItoW cimport Trafo
 ###
 # Given a direction and a Coordinate compute the next point
@@ -68,7 +69,8 @@ cdef class EulerUKF(Integration):
 
 
 		"""
-		mult_with_scalar(self.three_vector, self.stepsize/norm(direction), direction)
+		cblas_dgemv(CblasRowMajor, CblasNoTrans, 3,3, 1, &self.trafo.ItoW[0,0], 3, &direction[0], 1, 0, &self.next_point[0],1)
+		mult_with_scalar(self.three_vector, self.stepsize/norm(direction), self.next_point)
 		self.old_dir = direction
 		add_vectors(self.next_point, coordinate, self.three_vector)
 		return 0

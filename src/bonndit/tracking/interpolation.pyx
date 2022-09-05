@@ -3,6 +3,7 @@
 # warn.unused_results=True
 
 import Cython
+import cython
 from tqdm import tqdm
 from bonndit.utilc.cython_helpers cimport add_pointwise, floor_pointwise_matrix, norm, mult_with_scalar,\
 	add_vectors, sub_vectors, scalar, clip, set_zero_vector, set_zero_matrix, sum_c, sum_c_int, set_zero_vector_int, \
@@ -39,7 +40,7 @@ cdef double[:] placeholder = np.zeros((3,), dtype=DTYPE)
 
 cdef class Interpolation:
 
-	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities prob, **kwargs):
+	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities probClass, **kwargs):
 		self.vector_field = vector_field
 		self.vector = np.zeros((3,), dtype=DTYPE)
 		self.cuboid = np.zeros((8, 3, 3), dtype=DTYPE)
@@ -51,7 +52,7 @@ cdef class Interpolation:
 		self.next_dir = np.zeros((3,), dtype=DTYPE)
 		self.cache = np.zeros((grid[0], grid[1], grid[2], 4 * 8), dtype=np.int32)
 		self.best_ind = 0
-		self.prob = prob
+		self.prob = probClass
 
 
 
@@ -170,8 +171,8 @@ cdef double[:] valsec = np.empty([1, ], dtype=DTYPE), \
 cdef double[:, :] tens = np.zeros([3, 15], dtype=DTYPE)
 
 cdef class TrilinearFODF(Interpolation):
-	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities prob, **kwargs):
-		super(TrilinearFODF, self).__init__(vector_field, grid, prob, **kwargs)
+	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities probClass, **kwargs):
+		super(TrilinearFODF, self).__init__(vector_field, grid, probClass, **kwargs)
 		self.data = kwargs['data']
 		self.fodf = np.zeros((16,))
 		self.fodf1 = np.zeros((16,))
@@ -316,8 +317,8 @@ cdef class TrilinearFODF(Interpolation):
 
 
 cdef class Trilinear(Interpolation):
-	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities prob, **kwargs):
-		super(Trilinear, self).__init__(vector_field, grid, prob, **kwargs)
+	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities probClass, **kwargs):
+		super(Trilinear, self).__init__(vector_field, grid, probClass, **kwargs)
 		self.array = np.zeros((2,3), dtype=DTYPE)
 		self.x_array = np.zeros((4,3), dtype=DTYPE)
 		self.point = np.zeros((3,), dtype=DTYPE)
@@ -345,7 +346,7 @@ cdef class Trilinear(Interpolation):
 
 
 
-	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) : # : # : # nogil except *:
+	cpdef int interpolate(self, double[:] point, double[:] old_dir, int r) : # : # : # nogil except *:
 		""" This function calculates the interpolation based on https://en.wikipedia.org/wiki/Trilinear_interpolation
 		for each vectorfield. Afterwards the we chose randomly from the 3 vectors.
 
@@ -533,14 +534,14 @@ cdef class Trilinear(Interpolation):
 		return int(con)
 
 cdef class UKF(Interpolation):
-	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities prob, **kwargs):
-		super(UKF, self).__init__(vector_field, grid, prob, **kwargs)
+	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities probClass, **kwargs):
+		super(UKF, self).__init__(vector_field, grid, probClass, **kwargs)
 		self.mean = np.zeros((kwargs['dim_model'],), dtype=np.float64)
 		self.mlinear  = np.zeros((8,kwargs['data'].shape[3]), dtype=np.float64) ##  Shpuld be always 8. Was dim_model before?
 		self.P = np.zeros((kwargs['dim_model'],kwargs['dim_model']), dtype=np.float64)
 		self.y = np.zeros((kwargs['data'].shape[3],), dtype=np.float64)
 		if kwargs['baseline'] != "" and kwargs['model'] != 'fodf':
-			self.data = kwargs['data']/kwargs['baseline'][np.newaxis,:,:,:]
+			self.data = kwargs['data']/kwargs['baseline'][:,:,:,np.newaxis]
 		else:
 			self.data = kwargs['data']
 		if kwargs['model'] == 'fodf':
@@ -586,31 +587,18 @@ cdef class UKFFodf(UKF):
 
 
 		self.prob.calculate_probabilities(self.best_dir, old_dir)
-
-		#if self.prob.best_fit[0] != self.mean[0] or self.prob.best_fit[1] != self.mean[1] or self.prob.best_fit[2] != self.mean[2]:
-		#	cblas_dswap(4, &self.mean[0], 1, &self.mean[4], 1)
-		#	for i in range(4):
-		#		cblas_dswap(4, &self.P[i,0], 1, &self.P[i+4,4], 1)
-		#		cblas_dswap(4, &self.P[i,4], 1, &self.P[i+4,0], 1)		#:th gil:
-		#print('dir', np.array(self.prob.best_fit), np.array(self.best_dir[0]), np.array(self.best_dir[1]))
 		self.next_dir = self.prob.best_fit
 
-		#if cblas_ddot(3, &self.mean[0], 1, &old_dir[0],1) < cblas_ddot(3, &self.mean[4], 1, &old_dir[0],1):
-		#	cblas_dswap(4, &self.mean[0], 1, &self.mean[4], 1)
-		#	for i in range(4):
-		#		cblas_dswap(4, &self.P[i,0], 1, &self.P[i+4,4], 1)
-		#		cblas_dswap(4, &self.P[i,4], 1, &self.P[i+4,0], 1)
-		#dctov(&self.mean[0], self.next_dir)
-	#	with gil: print('dir', np.array(self.next_dir))
 		return info
 
 
 
 
 cdef class UKFMultiTensor(UKF):
-	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities prob, **kwargs):
-		super(UKFMultiTensor, self).__init__(vector_field, grid, prob, **kwargs)
+	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities probClass, **kwargs):
+		super(UKFMultiTensor, self).__init__(vector_field, grid, probClass, **kwargs)
 
+	@cython.cdivision(True)
 	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) : # : # : # nogil except *:
 		self.point_world[:3] = point
 		self.point_world[3] = 1
@@ -627,7 +615,8 @@ cdef class UKFMultiTensor(UKF):
 		info = self._kalman.update_kalman_parameters(self.mean, self.P, self.y)
 		#cblas_dcopy(self.mean.shape[0], &self.mean[0], 1, &self.tmpmean[0], 1)
 		for i in range(self._model.num_tensors):
-			cblas_dscal(3, 1 / cblas_dnrm2(3, &self.mean[5*i], 1), &self.mean[5*i], 1)
+			if cblas_dnrm2(3, &self.mean[5*i], 1) != 0:
+				cblas_dscal(3, 1 / cblas_dnrm2(3, &self.mean[5*i], 1), &self.mean[5*i], 1)
 			if cblas_ddot(3, &self.mean[5*i], 1, &old_dir[0],1) < 0:
 				cblas_dscal(3, -1, &self.mean[5*i], 1)
 			self.mean[5*i+3] = max(self.mean[5*i+3],_lambda_min)
@@ -642,47 +631,6 @@ cdef class UKFMultiTensor(UKF):
 				set_zero_vector(self.best_dir[i])
 		self.prob.calculate_probabilities(self.best_dir, old_dir)
 		self.next_dir = self.prob.best_fit
-#		if self._model.num_tensors == 1:
-#			dctov(&self.mean[0], self.next_dir)
-#		if self._model.num_tensors == 2:
-#			if cblas_ddot(3, &self.mean[0], 1, &old_dir[0],1) < cblas_ddot(3, &self.mean[5], 1, &old_dir[0],1):
-	#			cblas_dswap(5, &self.mean[0], 1, &self.mean[5], 1)
-	#			for i in range(5):
-	#				cblas_dswap(5, &self.P[i,0], 1, &self.P[i+5,5], 1)
-	#				cblas_dswap(5, &self.P[i,5], 1, &self.P[i+5,0], 1)
-#				dctov(&self.mean[0], self.next_dir)
-#			else:
-#				dctov(&self.mean[5], self.next_dir)
-#
-#		if self._model.num_tensors == 3:
-#			dot1 = cblas_ddot(3, &self.mean[0], 1, &old_dir[0], 1)
-#			dot2 = cblas_ddot(3, &self.mean[5], 1, &old_dir[0], 1)
-#			dot3 = cblas_ddot(3, &self.mean[10], 1, &old_dir[0], 1)
-#			if dot1 < dot3 and dot1 < dot2:
-#				dctov(&self.mean[0], self.next_dir)
-#			elif dot2 < dot1 and dot2 < dot3:
-#				dctov(&self.mean[5], self.next_dir)
-#			elif dot3 < dot1 and dot3 < dot2:
-#				dctov(&self.mean[10], self.next_dir)
-	#			if dot2 > dot3:
-	#				#turn second and third direction
-	#			elif dot2 < dot1:
-	#				# turn first and second direction
-	#		else:
-	#			# turn first and third direction
-	#			if dot2 > dot3:
-	#				# turn second and third direction
-	#				pass
-	#			elif dot2 < dot1:
-	#				# turn first and second direction
-
-
-		#		#with gil: print('dir', np.array(self.next_dir))
-#		z = 0
-#
-#		if fa(self.mean[5 + 3],self.mean[5 + 4],self.mean[5 + 4]) < 0.15:
-#			z += 1
-
 		return info
 
 

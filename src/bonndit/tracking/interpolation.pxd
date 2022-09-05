@@ -40,7 +40,7 @@ cdef class Trilinear(Interpolation):
 	cdef int[:] floor
 	cdef int[:] permutation
 	cdef void set_array(self, int, int, int) # nogil
-	cdef int interpolate(self, double[:], double[:], int) # nogil except *
+	cpdef int interpolate(self, double[:], double[:], int) # nogil except *
 	cdef void set_new_poss(self) # nogil except *
 	cdef int kmeans(self, double[:]) # nogil except *
 	cdef void permute(self, double[:]) # nogil except *

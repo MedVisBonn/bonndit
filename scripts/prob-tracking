@@ -218,9 +218,17 @@ def main():
 		raise Exception()
 	logging.info("Multivectorfield loaded")
 	if 'wmvolume' not in args:
-		wm_mask, trafo_mask = load('wmvolume', args, 'wmvolume.nrrd', args.i, logging, nrrd.read)
+		wm_mask, trafo = load('wmvolume', args, 'wmvolume.nrrd', args.i, logging, nrrd.read)
+		trafo_mask = np.zeros((4, 4))
+		trafo_mask[:3, :3] = trafo['space directions']
+		trafo_mask[:3, 3] = trafo['space origin']
+		trafo_mask[3,3] = 1
 	elif args.wmvolume.endswith('nrrd'):
-		wm_mask, trafo_mask = load('wmvolume', args, 'wmvolume.nrrd', args.i, logging, nrrd.read)
+		wm_mask, trafo = load('wmvolume', args, 'wmvolume.nrrd', args.i, logging, nrrd.read)
+		trafo_mask = np.zeros((4,4))
+		trafo_mask[:3,:3] = trafo['space directions']
+		trafo_mask[:3,3] = trafo['space origin']
+		trafo_mask[3,3] = 1
 	elif args.wmvolume.endswith('nii.gz'):
 		wm_mask = load('wmvolume', args, 'wmvolume.nrrd', args.i, logging, nib.load)
 		trafo_mask = wm_mask.affine
@@ -240,11 +248,14 @@ def main():
 		logging.info("raw data loaded")
 		if args.ukf == 'MultiTensor':
 			data, _ = load('ukf_data', args, 'data.nrrd', args.i, logging, nrrd.read)
+			data = np.moveaxis(data, 0, -1)
+			print(data.shape)
 			bvals = load('ukf_bvals', args, 'bvals', args.i, logging, np.loadtxt)
 			logging.info("bvals loaded")
 			bvecs = load('ukf_bvecs', args, 'bvecs', args.i, logging, np.loadtxt)
 			logging.info("bvecs loaded")
 			baseline, _ = load('ukf_baseline', args, 'baseline.nrrd', args.i, logging, nrrd.read)
+
 			logging.info("b0 loaded")
 		elif args.ukf == 'LowRank':
 			data, _ = load('ukf_data', args, 'fodf.nrrd', args.i, logging, nrrd.read)
@@ -328,8 +339,8 @@ def main():
 			'measurement noise': np.array(args.ukf_mnoise, dtype=np.float64) if 'ukf_mnoise' in args else ""
 		}
 		if args.ukf == "MultiTensor":
-			if ukf_parameter['data'].shape[0] != ukf_parameter['gradients'].shape[0]:
-				if ukf_parameter['data'].shape[0] != ukf_parameter['gradients'].T.shape[1]:
+			if ukf_parameter['data'].shape[-1] != ukf_parameter['gradients'].shape[0]:
+				if ukf_parameter['data'].shape[-1] != ukf_parameter['gradients'].T.shape[1]:
 					logging.error('Data has to have the same dimension in the last column of bvecs')
 					raise Exception()
 				ukf_parameter['gradients'] = ukf_parameter['gradients'].T
@@ -373,7 +384,6 @@ def main():
 		PlyData([tracks, endindex]).write(args.o)
 
 	elif args.o.endswith('tck'):
-
 		#paths_len = np.array(paths_len, dtype=int)
 		paths = np.array(paths)[:,:3]
 		streamlines = nib.streamlines.ArraySequence(np.split(paths, paths_len))
