@@ -364,10 +364,10 @@ cpdef tracking_all(
             for l in range(3):
                 paths[k, j, 0, 0, l] = seeds[i][l]
                 paths[k, j, 0, 1, l] = seeds[i][l]
-            if "Deterministic" in tracking_parameters['prob'] or tracking_parameters['ukf'] == "LowRank":
-                for l in range(3):
-                    paths[k, j, 0, 0, l] += np.random.normal(0, 1)
-                    paths[k, j, 0, 1, l] = paths[k, j, 0, 0, l]
+        #	if "Deterministic" in tracking_parameters['prob'] or tracking_parameters['ukf'] == "LowRank":
+            for l in range(3):
+                paths[k, j, 0, 0, l] += np.random.normal(0, 1)
+                paths[k, j, 0, 1, l] = paths[k, j, 0, 0, l]
 
         if saving['features']['seedpoint'] >= 0:
             features[k, :, 0, 0, saving['features']['seedpoint']] = 1
