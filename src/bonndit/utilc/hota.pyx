@@ -2,7 +2,11 @@
 #cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, warn.unused_results=True
 from libc.math cimport sqrt
 import numpy as np
-
+cdef double[:] order8_mult =np.array([1, 8, 8, 28, 56, 28, 56, 168, 168, 56, 70, 280, 420, 280, 70, 56, 280, 560, 560,
+                                     280, 56,
+                                     28, 168, 420, 560, 420, 168, 28, 8, 56, 168, 280, 280, 168, 56, 8, 1, 8, 28, 56,
+                                     70, 56,
+                                     28, 8, 1])
 cdef double hota_4o3d_sym_tsp(double[:] a, double[:] b) nogil:
     return a[0]*b[0]+a[10]*b[10]+a[14]*b[14]+4*(a[1]*b[1]+a[2]*b[2]+a[6]*b[6]+a[9]*b[9]+a[11]*b[11]+a[13]*b[13])+6*(a[3]*b[3]+a[5]*b[5]+a[12]*b[12])+12*(a[4]*b[4]+a[7]*b[7]+a[8]*b[8])
 
@@ -37,52 +41,52 @@ cdef hota_8o3d_sym_eval_cons(double[:,:] tensors,double[:,:] points):
     res[8] = s * np.multiply(np.multiply(np.multiply(v00, v00), v01), v22)
 
     res[9] = s * np.multiply(np.multiply(np.multiply(v00, v00), v02), v22)
-    res[10] = s *np.multiply(np.multiply(np.multiply(v00, v00), v11), v11)
-    res[11] = s *np.multiply(np.multiply(np.multiply(v00, v00), v11), v12)
+    res[10] =  s *np.multiply(np.multiply(np.multiply(v00, v00), v11), v11)
+    res[11] =  s *np.multiply(np.multiply(np.multiply(v00, v00), v11), v12)
 
-    res[12] = s *np.multiply(np.multiply(np.multiply(v00, v00), v11), v22)
-    res[13] = s *np.multiply(np.multiply(np.multiply(v00, v00), v12), v22)
-    res[14] = s *np.multiply(np.multiply(np.multiply(v00, v00), v22), v22)
+    res[12] =  s *np.multiply(np.multiply(np.multiply(v00, v00), v11), v22)
+    res[13] =  s *np.multiply(np.multiply(np.multiply(v00, v00), v12), v22)
+    res[14] =  s *np.multiply(np.multiply(np.multiply(v00, v00), v22), v22)
 
-    res[15] = s *np.multiply(np.multiply(np.multiply(v00, v01), v11), v11)
-    res[16] = s *np.multiply(np.multiply(np.multiply(v00, v01), v11), v12)
-    res[17] = s *np.multiply(np.multiply(np.multiply(v00, v01), v11), v22)
+    res[15] =  s *np.multiply(np.multiply(np.multiply(v00, v01), v11), v11)
+    res[16] =  s *np.multiply(np.multiply(np.multiply(v00, v01), v11), v12)
+    res[17] =  s *np.multiply(np.multiply(np.multiply(v00, v01), v11), v22)
 
-    res[18] = s *np.multiply(np.multiply(np.multiply(v00, v01), v12), v22)
-    res[19] = s *np.multiply(np.multiply(np.multiply(v00, v01), v22), v22)
-    res[20] = s *np.multiply(np.multiply(np.multiply(v00, v02), v22), v22)
+    res[18] =  s *np.multiply(np.multiply(np.multiply(v00, v01), v12), v22)
+    res[19] =  s *np.multiply(np.multiply(np.multiply(v00, v01), v22), v22)
+    res[20] =  s *np.multiply(np.multiply(np.multiply(v00, v02), v22), v22)
 
-    res[21] = s *np.multiply(np.multiply(np.multiply(v00, v11), v11), v11)
-    res[22] = s *np.multiply(np.multiply(np.multiply(v00, v11), v11), v12)
-    res[23] = s *np.multiply(np.multiply(np.multiply(v00, v11), v11), v22)
+    res[21] =  s *np.multiply(np.multiply(np.multiply(v00, v11), v11), v11)
+    res[22] =  s *np.multiply(np.multiply(np.multiply(v00, v11), v11), v12)
+    res[23] =  s *np.multiply(np.multiply(np.multiply(v00, v11), v11), v22)
 
-    res[24] = s *np.multiply(np.multiply(np.multiply(v00, v11), v12), v22)
-    res[25] = s *np.multiply(np.multiply(np.multiply(v00, v11), v22), v22)
-    res[26] = s *np.multiply(np.multiply(np.multiply(v00, v12), v22), v22)
+    res[24] =  s *np.multiply(np.multiply(np.multiply(v00, v11), v12), v22)
+    res[25] =  s *np.multiply(np.multiply(np.multiply(v00, v11), v22), v22)
+    res[26] =  s *np.multiply(np.multiply(np.multiply(v00, v12), v22), v22)
 
-    res[27] = s *np.multiply(np.multiply(np.multiply(v00, v22), v22), v22)
-    res[28] = s *np.multiply(np.multiply(np.multiply(v01, v11), v11), v11)
-    res[29] = s *np.multiply(np.multiply(np.multiply(v01, v11), v11), v12)
+    res[27] =  s *np.multiply(np.multiply(np.multiply(v00, v22), v22), v22)
+    res[28] =  s *np.multiply(np.multiply(np.multiply(v01, v11), v11), v11)
+    res[29] =  s *np.multiply(np.multiply(np.multiply(v01, v11), v11), v12)
 
-    res[30] = s *np.multiply(np.multiply(np.multiply(v01, v11), v11), v22)
-    res[31] = s *np.multiply(np.multiply(np.multiply(v01, v11), v12), v22)
-    res[32] = s *np.multiply(np.multiply(np.multiply(v01, v11), v22), v22)
+    res[30] =  s *np.multiply(np.multiply(np.multiply(v01, v11), v11), v22)
+    res[31] =  s *np.multiply(np.multiply(np.multiply(v01, v11), v12), v22)
+    res[32] =  s *np.multiply(np.multiply(np.multiply(v01, v11), v22), v22)
 
-    res[33] = s *np.multiply(np.multiply(np.multiply(v01, v12), v22), v22)
-    res[34] = s *np.multiply(np.multiply(np.multiply(v01, v22), v22), v22)
-    res[35] = s *np.multiply(np.multiply(np.multiply(v02, v22), v22), v22)
+    res[33] =  s *np.multiply(np.multiply(np.multiply(v01, v12), v22), v22)
+    res[34] =  s *np.multiply(np.multiply(np.multiply(v01, v22), v22), v22)
+    res[35] =  s *np.multiply(np.multiply(np.multiply(v02, v22), v22), v22)
 
-    res[36] = s *np.multiply(np.multiply(np.multiply(v11, v11), v11), v11)
-    res[37] = s *np.multiply(np.multiply(np.multiply(v11, v11), v11), v12)
-    res[38] = s *np.multiply(np.multiply(np.multiply(v11, v11), v11), v22)
+    res[36] =  s *np.multiply(np.multiply(np.multiply(v11, v11), v11), v11)
+    res[37] =  s *np.multiply(np.multiply(np.multiply(v11, v11), v11), v12)
+    res[38] =  s *np.multiply(np.multiply(np.multiply(v11, v11), v11), v22)
 
-    res[39] = s *np.multiply(np.multiply(np.multiply(v11, v11), v12), v22)
-    res[40] = s *np.multiply(np.multiply(np.multiply(v11, v11), v22), v22)
-    res[41] = s *np.multiply(np.multiply(np.multiply(v11, v12), v22), v22)
+    res[39] =  s *np.multiply(np.multiply(np.multiply(v11, v11), v12), v22)
+    res[40] =  s *np.multiply(np.multiply(np.multiply(v11, v11), v22), v22)
+    res[41] =  s *np.multiply(np.multiply(np.multiply(v11, v12), v22), v22)
 
-    res[42] = s *np.multiply(np.multiply(np.multiply(v11, v22), v22), v22)
-    res[43] = s *np.multiply(np.multiply(np.multiply(v12, v22), v22), v22)
-    res[44] = s *np.multiply(np.multiply(np.multiply(v22, v22), v22), v22)
+    res[42] =  s *np.multiply(np.multiply(np.multiply(v11, v22), v22), v22)
+    res[43] =  s *np.multiply(np.multiply(np.multiply(v12, v22), v22), v22)
+    res[44] =  s *np.multiply(np.multiply(np.multiply(v22, v22), v22), v22)
     res = np.dot(multiplicity, res)
     return np.dot(tensors, res)
 
@@ -96,65 +100,61 @@ cdef void hota_8o3d_sym_eval(double[:] res, double s, double[:] points) nogil:
     v11 = points[1]* points[1]
     v12 = points[1]* points[2]
     v22 = points[2]* points[2]
-    res[0] = s * v00 * v00 * v00 * v00
-    res[1] = s * v00 * v00 * v00 * v01
-    res[2] = s * v00 * v00 * v00 * v02
+    res[0] = order8_mult[0] * s * v00 * v00 * v00 * v00
+    res[1] = order8_mult[1] * s * v00 * v00 * v00 * v01
+    res[2] = order8_mult[2] * s * v00 * v00 * v00 * v02
+    res[3] = order8_mult[3] * s * v00 * v00 * v00 * v11
+    res[4] = order8_mult[4] * s * v00 * v00 * v00 * v12
+    res[5] = order8_mult[5] * s * v00 * v00 * v00 * v22
+    res[6] = order8_mult[6] * s * v00 * v00 * v01 * v11
+    res[7] = order8_mult[7] * s * v00 * v00 * v01 * v12
+    res[8] = order8_mult[8] * s * v00 * v00 * v01 * v22
+    res[9] = order8_mult[9] * s * v00 * v00 * v02 * v22
+    res[10] =order8_mult[10] *s * v00 * v00 * v11 * v11
+    res[11] =order8_mult[11] *s * v00 * v00 * v11 * v12
+    res[12] =order8_mult[12] *s * v00 * v00 * v11 * v22
+    res[13] =order8_mult[13] *s * v00 * v00 * v12 * v22
+    res[14] =order8_mult[14] *s * v00 * v00 * v22 * v22
 
-    res[3] = s * v00 * v00 * v00 * v11
-    res[4] = s * v00 * v00 * v00 * v12
-    res[5] = s * v00 * v00 * v00 * v22
+    res[15] =order8_mult[15] *s * v00 * v01 * v11 * v11
+    res[16] =order8_mult[16] *s * v00 * v01 * v11 * v12
+    res[17] =order8_mult[17] *s * v00 * v01 * v11 * v22
 
-    res[6] = s * v00 * v00 * v01 * v11
-    res[7] = s * v00 * v00 * v01 * v12
-    res[8] = s * v00 * v00 * v01 * v22
+    res[18] =order8_mult[18] *s * v00 * v01 * v12 * v22
+    res[19] =order8_mult[19] *s * v00 * v01 * v22 * v22
+    res[20] =order8_mult[20] *s * v00 * v02 * v22 * v22
 
-    res[9] = s * v00 * v00 * v02 * v22
-    res[10] = s * v00 * v00 * v11 * v11
-    res[11] = s * v00 * v00 * v11 * v12
+    res[21] =order8_mult[21] *s * v00 * v11 * v11 * v11
+    res[22] =order8_mult[22] *s * v00 * v11 * v11 * v12
+    res[23] =order8_mult[23] *s * v00 * v11 * v11 * v22
 
-    res[12] = s * v00 * v00 * v11 * v22
-    res[13] = s * v00 * v00 * v12 * v22
-    res[14] = s * v00 * v00 * v22 * v22
+    res[24] =order8_mult[24] *s * v00 * v11 * v12 * v22
+    res[25] =order8_mult[25] *s * v00 * v11 * v22 * v22
+    res[26] =order8_mult[26] *s * v00 * v12 * v22 * v22
 
-    res[15] = s * v00 * v01 * v11 * v11
-    res[16] = s * v00 * v01 * v11 * v12
-    res[17] = s * v00 * v01 * v11 * v22
+    res[27] =order8_mult[27] *s * v00 * v22 * v22 * v22
+    res[28] =order8_mult[28] *s * v01 * v11 * v11 * v11
+    res[29] =order8_mult[29] *s * v01 * v11 * v11 * v12
 
-    res[18] = s * v00 * v01 * v12 * v22
-    res[19] = s * v00 * v01 * v22 * v22
-    res[20] = s * v00 * v02 * v22 * v22
+    res[30] =order8_mult[30] *s * v01 * v11 * v11 * v22
+    res[31] =order8_mult[31] *s * v01 * v11 * v12 * v22
+    res[32] =order8_mult[32] *s * v01 * v11 * v22 * v22
 
-    res[21] = s * v00 * v11 * v11 * v11
-    res[22] = s * v00 * v11 * v11 * v12
-    res[23] = s * v00 * v11 * v11 * v22
+    res[33] =order8_mult[33] *s * v01 * v12 * v22 * v22
+    res[34] =order8_mult[34] *s * v01 * v22 * v22 * v22
+    res[35] =order8_mult[35] *s * v02 * v22 * v22 * v22
 
-    res[24] = s * v00 * v11 * v12 * v22
-    res[25] = s * v00 * v11 * v22 * v22
-    res[26] = s * v00 * v12 * v22 * v22
+    res[36] =order8_mult[36] *s * v11 * v11 * v11 * v11
+    res[37] =order8_mult[37] *s * v11 * v11 * v11 * v12
+    res[38] =order8_mult[38] *s * v11 * v11 * v11 * v22
 
-    res[27] = s * v00 * v22 * v22 * v22
-    res[28] = s * v01 * v11 * v11 * v11
-    res[29] = s * v01 * v11 * v11 * v12
+    res[39] =order8_mult[39] *s * v11 * v11 * v12 * v22
+    res[40] =order8_mult[40] *s * v11 * v11 * v22 * v22
+    res[41] =order8_mult[41] *s * v11 * v12 * v22 * v22
 
-    res[30] = s * v01 * v11 * v11 * v22
-    res[31] = s * v01 * v11 * v12 * v22
-    res[32] = s * v01 * v11 * v22 * v22
-
-    res[33] = s * v01 * v12 * v22 * v22
-    res[34] = s * v01 * v22 * v22 * v22
-    res[35] = s * v02 * v22 * v22 * v22
-
-    res[36] = s * v11 * v11 * v11 * v11
-    res[37] = s * v11 * v11 * v11 * v12
-    res[38] = s * v11 * v11 * v11 * v22
-
-    res[39] = s * v11 * v11 * v12 * v22
-    res[40] = s * v11 * v11 * v22 * v22
-    res[41] = s * v11 * v12 * v22 * v22
-
-    res[42] = s * v11 * v22 * v22 * v22
-    res[43] = s * v12 * v22 * v22 * v22
-    res[44] = s * v22 * v22 * v22 * v22
+    res[42] =order8_mult[42] *s * v11 * v22 * v22 * v22
+    res[43] =order8_mult[43] *s * v12 * v22 * v22 * v22
+    res[44] =order8_mult[44] *s * v22 * v22 * v22 * v22
 
 
 cdef void hota_4o3d_sym_eval(double[:] res, double s, double[:] v) nogil:

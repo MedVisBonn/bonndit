@@ -7,6 +7,11 @@ from scipy.optimize import least_squares
 import numpy as np
 from libc.math cimport pow
 
+cdef double[:] order8_mult =np.array([1, 8, 8, 28, 56, 28, 56, 168, 168, 56, 70, 280, 420, 280, 70, 56, 280, 560, 560,
+                                     280, 56,
+                                     28, 168, 420, 560, 420, 168, 28, 8, 56, 168, 280, 280, 168, 56, 8, 1, 8, 28, 56,
+                                     70, 56,
+                                     28, 8, 1])
 cdef class AbstractModel:
 	def __cinit__(self, **kwargs):
 		self.MEASUREMENT_NOISE =  np.zeros((kwargs['data'].shape[3],kwargs['data'].shape[3]), dtype=np.float64)
@@ -37,16 +42,19 @@ cdef class fODFModel(AbstractModel):
 	def __cinit__(self, **kwargs):
 		super(fODFModel, self).__init__(**kwargs)
 		self.m = np.zeros((3,))
-		self.vector_field = kwargs['vector_field']
+		vector_field = kwargs['vector_field']
 		self.res = np.zeros((15 if kwargs['order'] == 4 else 45,))
 		self.order = kwargs['order']
 		if kwargs['process noise'] == "":
 			ddiagonal(&self.PROCESS_NOISE[0, 0], np.array([0.005,0.005,0.005,0.1]), self.PROCESS_NOISE.shape[0],
 				  self.PROCESS_NOISE.shape[1])
 		if kwargs['measurement noise'] == "":
-			ddiagonal(&self.MEASUREMENT_NOISE[0, 0], np.array([0.006]), self.MEASUREMENT_NOISE.shape[0],
+			ddiagonal(&self.MEASUREMENT_NOISE[0, 0], 0.006*np.array(order8_mult), self.MEASUREMENT_NOISE.shape[0],
 				  self.MEASUREMENT_NOISE.shape[1])
 		self.num_tensors = <int> (kwargs['dim_model'] / 4)
+		for i in range(vector_field.shape[-1]):
+			vector_field[...,i] *= order8_mult[i]
+		self.vector_field = vector_field
 
 
 	cdef void normalize(self, double[:] m, double[:] v, int inc) nogil except *:
