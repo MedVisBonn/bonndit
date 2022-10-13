@@ -121,12 +121,12 @@ cdef class Interpolation:
 			                                                   int(self.floor_point[ self.best_ind, 1]),
 			                                                  int(self.floor_point[self.best_ind, 2])], 0.25), self.vector)
 
-	cdef int interpolate(self,double[:] point, double[:] old_dir, int r) : # : # : # nogil except *:
+	cpdef int interpolate(self,double[:] point, double[:] old_dir, int r) : # : # : # nogil except *:
 		pass
 
 
 cdef class FACT(Interpolation):
-	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) : # : # : # nogil except *:
+	cpdef int interpolate(self, double[:] point, double[:] old_dir, int r) : # : # : # nogil except *:
 		cdef int i
 		cdef double l, max_value
 		self.point_world[:3] = point
@@ -282,7 +282,7 @@ cdef class TrilinearFODF(Interpolation):
 		if scale > 0:
 			mult_with_scalar(self.fodf, 1/scale, self.fodf1)
 
-	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) : # : # : # nogil except *:
+	cpdef int interpolate(self, double[:] point, double[:] old_dir, int r) : # : # : # nogil except *:
 	#	with gil: print(np.array(old_dir))
 		# Initialize with last step. Except we are starting again.
 		self.point_world[:3] = point
@@ -346,6 +346,23 @@ cdef class Trilinear(Interpolation):
 
 
 
+	cpdef best_dirp(self):
+		return np.array(self.best_dir)
+
+	cpdef set_best_dirp(self, double[:,:] best_dir):
+		self.best_dir = best_dir
+
+	cpdef get_cache(self):
+		return np.array(self.cache)
+
+	cpdef get_next_dir(self):
+		return np.array(self.next_dir[0:3])
+
+	cpdef set_cache(self, int[:,:,:,:] cache):
+		self.cache = cache
+
+
+
 	cpdef int interpolate(self, double[:] point, double[:] old_dir, int r) : # : # : # nogil except *:
 		""" This function calculates the interpolation based on https://en.wikipedia.org/wiki/Trilinear_interpolation
 		for each vectorfield. Afterwards the we chose randomly from the 3 vectors.
@@ -382,9 +399,11 @@ cdef class Trilinear(Interpolation):
 				mult_with_scalar(self.best_dir[i], l, self.vector)
 
 		if sum_c_int(self.cache[self.floor[0], self.floor[1], self.floor[2],:]) != 0:
+			#print('hier wird permutiert')
 			self.permute(self.point_index[:3])
 		else:
 			con = self.kmeans(self.point_index[:3])
+			self.permute(self.point_index[:3])
 		#else:
 		#	self.permute(point)
 		if con:
@@ -418,7 +437,8 @@ cdef class Trilinear(Interpolation):
 
 		else:
 			mult_with_scalar(self.next_dir, 0, self.prob.best_fit)
-		return 0
+		#TODO change back
+		return con
 
 #	### TODO is here a better way?
 	cdef void permute(self, double[:] point) : # : # : # nogil except *:
@@ -447,14 +467,8 @@ cdef class Trilinear(Interpolation):
 					exponent = 0
 				for k in range(3):
 					placeholder[k] = self.vector_field[1 + k, permute_poss[self.cache[int(point[0]), int(point[1]),int(point[2]), index*4], i], int(self.floor_point[index, 0]),int(self.floor_point[index, 1]),int(self.floor_point[index, 2])]
-				if index > 0:
-					ang = angle_deg(self.cuboid[0,i] , placeholder)
-					if ang > 90:
-						z=-1
-					else:
-						z=1
 				for k in range(3):
-					self.cuboid[index,i,k] = exponent * z * self.vector_field[1 +k, permute_poss[self.cache[int(point[0]), int(point[1]),int(point[2]), index*4], i], int(self.floor_point[index, 0]),int(self.floor_point[index, 1]),int(self.floor_point[index, 2])]
+					self.cuboid[index,i,k] = exponent * self.cache[int(point[0]), int(point[1]),int(point[2]), index*4 + i + 1] * self.vector_field[1 +k, permute_poss[self.cache[int(point[0]), int(point[1]),int(point[2]), index*4], i], int(self.floor_point[index, 0]),int(self.floor_point[index, 1]),int(self.floor_point[index, 2])]
 
 
 	cdef void set_new_poss(self) : # : # : # nogil except *:
@@ -483,7 +497,10 @@ cdef class Trilinear(Interpolation):
 
 				for k in range(3):
 					test_cuboid[i,j,k] = exponent *  self.vector_field[1 + k, j, int(self.floor_point[i, 0]),int(self.floor_point[i, 1]),int(self.floor_point[i, 2])]
-
+		#for i in range(8):
+		# Init best dir. Since it won't work good otherwise....
+	#	for j in range(3):
+	#		add_vectors(self.best_dir[j], self.best_dir[j], test_cuboid[7, j])
 		while True:
 			con = 0
 			max_try += 1
@@ -502,20 +519,20 @@ cdef class Trilinear(Interpolation):
 							mult_with_scalar(placeholder, 1, test_cuboid[i, permute_poss[j, k]])
 							minus[k] = 1
 						sub_vectors(placeholder, placeholder, self.best_dir[k])
-						test_angle += pow(norm(placeholder),4)
+						test_angle += norm(placeholder)
 					if min_angle == 0 or test_angle < min_angle:
 						min_angle = test_angle
 					#	with gil: print(test_angle, min_angle)
 						best[4*i] = j
-						for k in range(3):
-							best[4*i + k + 1] = minus[k]
+						for u in range(3):
+							best[4*i + u + 1] = minus[u]
 
 		#	set_zero_matrix(self.best_dir)
 		#	for i in range(8):
-					for j in range(3):
-						if norm(self.best_dir[j]) == 0:
-							mult_with_scalar(placeholder, best[4*i+ 1 +j]/8, test_cuboid[i, permute_poss[best[4*i], j]])
-							add_vectors(self.best_dir[j], self.best_dir[j], placeholder)
+					for u in range(3):
+						if norm(self.best_dir[u]) == 0:
+							mult_with_scalar(placeholder, best[4*i+ 1 +u]/8, test_cuboid[i, permute_poss[best[4*i], u]])
+							add_vectors(self.best_dir[u], self.best_dir[u], placeholder)
 			for i in range(8):
 				con += fabs(best[4*i] - old_best[i])
 				old_best[i] = best[4*i]
@@ -523,7 +540,7 @@ cdef class Trilinear(Interpolation):
 				con = 1
 				for i in range(32):
 					self.cache[self.floor[0], self.floor[1], self.floor[2], i] = int(best[i])
-				self.set_new_poss()
+				#self.set_new_poss()
 				break
 
 			if max_try == 1000:
@@ -537,7 +554,7 @@ cdef class UKF(Interpolation):
 	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities probClass, **kwargs):
 		super(UKF, self).__init__(vector_field, grid, probClass, **kwargs)
 		self.mean = np.zeros((kwargs['dim_model'],), dtype=np.float64)
-		self.mlinear  = np.zeros((8,kwargs['data'].shape[3]), dtype=np.float64) ##  Shpuld be always 8. Was dim_model before?
+		self.mlinear  = np.zeros((8,kwargs['data'].shape[3]), dtype=np.float64) ##  Shpuld be always 8. For edges of cube.
 		self.P = np.zeros((kwargs['dim_model'],kwargs['dim_model']), dtype=np.float64)
 		self.y = np.zeros((kwargs['data'].shape[3],), dtype=np.float64)
 		if kwargs['baseline'] != "" and kwargs['model'] != 'fodf':
@@ -554,7 +571,7 @@ cdef class UKFFodf(UKF):
 	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities prob, **kwargs):
 		super(UKFFodf, self).__init__(vector_field, grid, prob, **kwargs)
 
-	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) : # : # : # nogil except *:
+	cpdef int interpolate(self, double[:] point, double[:] old_dir, int restart) : # : # : # nogil except *:
 		self.point_world[:3] = point
 		self.point_world[3] = 1
 		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4,4,1,&self.inv_trafo[0,0], 4, &self.point_world[0], 1, 0, &self.point_index[0],1)
@@ -599,8 +616,7 @@ cdef class UKFMultiTensor(UKF):
 	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities probClass, **kwargs):
 		super(UKFMultiTensor, self).__init__(vector_field, grid, probClass, **kwargs)
 
-	@cython.cdivision(True)
-	cdef int interpolate(self, double[:] point, double[:] old_dir, int restart) : # : # : # nogil except *:
+	cpdef int interpolate(self, double[:] point, double[:] old_dir, int restart) : # : # : # nogil except *:
 		self.point_world[:3] = point
 		self.point_world[3] = 1
 		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4,4,1,&self.inv_trafo[0,0], 4, &self.point_world[0], 1, 0, &self.point_index[0],1)

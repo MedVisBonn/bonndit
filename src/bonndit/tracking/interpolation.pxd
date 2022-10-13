@@ -25,10 +25,10 @@ cdef class Interpolation:
 	cdef void calc_cube(self, double[:]) # nogil
 	cdef void nearest_neigh(self, double[:]) # nogil
 	cdef void set_vector(self, int, int) # nogil
-	cdef int interpolate(self, double[:], double[:], int) # nogil except *
+	cpdef int interpolate(self, double[:], double[:], int) # nogil except *
 
 cdef class FACT(Interpolation):
-	cdef int interpolate(self, double[:], double[:], int) # nogil except *
+	cpdef int interpolate(self, double[:], double[:], int) # nogil except *
 
 
 cdef class Trilinear(Interpolation):
@@ -42,6 +42,11 @@ cdef class Trilinear(Interpolation):
 	cdef void set_array(self, int, int, int) # nogil
 	cpdef int interpolate(self, double[:], double[:], int) # nogil except *
 	cdef void set_new_poss(self) # nogil except *
+	cpdef get_cache(self)
+	cpdef set_cache(self, int[:,:,:,:])
+	cpdef get_next_dir(self)
+	cpdef best_dirp(self)
+	cpdef set_best_dirp(self, double[:,:])
 	cdef int kmeans(self, double[:]) # nogil except *
 	cdef void permute(self, double[:]) # nogil except *
 
@@ -65,7 +70,7 @@ cdef class TrilinearFODF(Interpolation):
 	cdef int[:,:] neighbors
 	cdef void trilinear(self, double[:] point) # nogil except *
 	cdef void neigh(self, double[:] point) # nogil except *
-	cdef int interpolate(self, double[:] point, double[:] old_dir, int r) # nogil except *
+	cpdef int interpolate(self, double[:] point, double[:] old_dir, int r) # nogil except *
 
 cdef class UKF(Interpolation):
 	cdef double[:] mean
@@ -75,13 +80,13 @@ cdef class UKF(Interpolation):
 	cdef double[:] y
 	cdef Kalman _kalman
 	cdef AbstractModel _model
-	cdef int interpolate(self, double[:], double[:], int) # nogil except *
+	cpdef int interpolate(self, double[:], double[:], int) # nogil except *
 
 cdef class UKFFodf(UKF):
-	cdef int interpolate(self, double[:], double[:], int) # nogil except *
+	cpdef int interpolate(self, double[:], double[:], int) # nogil except *
 
 cdef class UKFMultiTensor(UKF):
-	cdef int interpolate(self, double[:], double[:], int) # nogil except *
+	cpdef int interpolate(self, double[:], double[:], int) # nogil except *
 
 
 
