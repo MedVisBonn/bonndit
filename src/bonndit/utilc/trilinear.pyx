@@ -5,10 +5,10 @@
 
 from libc.math cimport fabs, floor, pow
 
-cpdef double linear(
+cdef double linear(
     double[:] point, double[:] vlinear,
     double[:, :, :] data
-):  # nogil except *:
+) nogil except *:
     cdef int i, j, k, m, n, o
     # Gather the eight voxel corners before interpolating each axis.
     for i in range(8):
