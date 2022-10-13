@@ -4,7 +4,7 @@ import numpy as np
 cimport numpy as cnp
 from tqdm import tqdm
 from libc.math cimport fabs, cos, pi
-from bonndit.utilc.hota cimport hota_8o3d_sym_eval
+from bonndit.utilc.hota cimport hota_8o3d_sym_eval_cons as hota_8o3d_sym_eval
 from bonndit.utilc.lowrank cimport refine_rank1_3d
 cimport cython
 import os
