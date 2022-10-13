@@ -21,6 +21,7 @@ cdef class AbstractModel:
 
 cdef class fODFModel(AbstractModel):
     cdef double[:] res
+    cdef int order
     cdef double[:, :, :, :, :] vector_field
     cdef void normalize(self, double[:], double[:], int) nogil except *
     cdef void predict_new_observation(

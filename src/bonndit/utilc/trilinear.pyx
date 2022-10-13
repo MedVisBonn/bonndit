@@ -5,10 +5,10 @@
 
 from libc.math cimport fabs, floor, pow
 
-cdef double linear(
+cpdef double linear(
     double[:] point, double[:] vlinear,
     double[:, :, :] data
-) nogil except *:
+):  # nogil except *:
     cdef int i, j, k, m, n, o
     # Gather the eight voxel corners before interpolating each axis.
     for i in range(8):
@@ -18,9 +18,11 @@ cdef double linear(
         n = <int> point[1] + j
         o = <int> point[2] + k
         vlinear[i] = data[m, n, o]
+        # print(i, vlinear[i])
     for i in range(4):
         vlinear[i] = (point[2] - floor(point[2])) * vlinear[4 + i] \
             + (1 + floor(point[2]) - point[2]) * vlinear[i]
+        # print(i, vlinear[i])
     for i in range(2):
         vlinear[i] = (point[1] - floor(point[1])) * vlinear[2 + i] \
             + (1 + floor(point[1]) - point[1]) * vlinear[i]
