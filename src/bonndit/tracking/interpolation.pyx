@@ -274,7 +274,7 @@ cdef class TrilinearFODF(Interpolation):
             self.sigma_2 = ((np.linalg.norm(kwargs['trafo'] @ np.array((1,
                                 0, 0)))
                     + np.linalg.norm(kwargs['trafo'] @ np.array((0, 1,
-                                0))) + np.linalg.norm(kwargs['trafo'] @ np.array((0, 0, 1)))) / 3) ** 2
+                                0))) + np.linalg.norm(kwargs['trafo'] @ np.array((0, 0, 1)))) / 3)
         else:
             self.sigma_2 = kwargs['sigma_2']
         self.neighbors = np.array(
@@ -315,7 +315,7 @@ cdef class TrilinearFODF(Interpolation):
                     else:
                         skip[i, j, k] = 1
             # nu = np.mean(var[:, skip == 0])
-            self.sigma_1 = np.median(var[:, skip == 0])
+            self.sigma_1 = np.median(var[:, skip == 0]) ** 2
         else:
             self.sigma_1 = kwargs['sigma_1']
         self.best_dir_approx = np.zeros((3, 3))
@@ -391,10 +391,8 @@ cdef class TrilinearFODF(Interpolation):
                     self.data[1:, pw_0, pw_1, pw_2])
                 x = hota_4o3d_sym_norm(self.empty)
                 dis = exp(
-                    -(x * x)
-                    / (
-                        self.sigma_1
-                        * self.sigma_1))  # - distance/self.sigma_2)
+                    -(x * x) / self.sigma_1 - distance ** 2
+                    / self.sigma_2)
                 scale += dis
                 for i in range(16):
                     self.fodf1[i] += dis * self.data[i, pw_0, pw_1, pw_2]
@@ -864,6 +862,9 @@ cdef class UKFFodf(UKF):
 
         for i in range(self._model.num_tensors):
             dctov(&self.mean[4 * i], self.best_dir[i])
+            cblas_dscal(
+                3, pow(self.mean[4 * i + 3], 0.25),
+                &self.best_dir[i, 0], 1)
 
 
         self.prob.calculate_probabilities(self.best_dir, old_dir)
