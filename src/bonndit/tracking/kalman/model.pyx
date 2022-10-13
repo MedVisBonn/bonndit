@@ -79,6 +79,7 @@ cdef class fODFModel(AbstractModel):
         for i in range(vector_field.shape[-1]):
             vector_field[..., i] *= order8_mult[i]
         self.vector_field = vector_field
+        print('i am here')
 
 
     cdef void normalize(
