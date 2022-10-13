@@ -53,8 +53,9 @@ cdef class fODFModel(AbstractModel):
 				  self.MEASUREMENT_NOISE.shape[1])
 		self.num_tensors = <int> (kwargs['dim_model'] / 4)
 
-		for i in range(vector_field.shape[0]):
-			vector_field[i] *= order8_mult[i]
+		print('i am here', kwargs['vector_field'].shape)
+		for i in range(kwargs['vector_field'].shape[0]):
+			kwargs['vector_field'][i] *= order8_mult[i]
 		self.vector_field = vector_field
 		print('i am here', vector_field.shape)
 
