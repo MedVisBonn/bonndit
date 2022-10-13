@@ -28,12 +28,16 @@ cdef void dctov(double * v, double[:] a) nogil except *:
 	for i in range(a.shape[0]):
 		a[i] = v[i]
 
+@cython.cdivision(True)
 cdef double fa(double l1, double l2, double l3) nogil except *:
 	cdef double mean, a,  b
 	mean=(l1+l2+l3)/3
 	a = pow(l1-mean, 2) + pow(l2-mean, 2) + pow(l3-mean, 2)
 	b = l1 * l1 + l2 * l2 + l3 * l3
-	return pow(3/2, 0.5) * pow(a/b , 0.5)
+	if b!=0:
+		return pow(3/2, 0.5) * pow(a/b , 0.5)
+	else:
+		return 0
 
 cdef void dm2toc(double *v, double[:] a, int num) nogil except *:
 

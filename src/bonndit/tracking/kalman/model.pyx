@@ -129,8 +129,9 @@ cdef class MultiTensorModel(AbstractModel):
 	cdef void normalize(self, double[:] m, double[:] v, int inc) nogil except *:
 		# Calculates m = v/||v||, by doing matrix operation 1/||v||*v*1 + 0*m
 		#with gil: print(np.array(v))
-		cblas_dcopy(3, &v[0], inc, &m[0], 1)
-		cblas_dscal(3, 1/cblas_dnrm2(3, &v[0],inc), &m[0], 1)
+		if cblas_dnrm2(3, &v[0],inc) != 0:
+			cblas_dcopy(3, &v[0], inc, &m[0], 1)
+			cblas_dscal(3, 1/cblas_dnrm2(3, &v[0],inc), &m[0], 1)
 
 
 
@@ -226,7 +227,8 @@ cdef class MultiTensorModel(AbstractModel):
 		cdef int i, j, n = X.shape[0]//5
 		for i in range(X.shape[1]):
 			for j in range(n):
-				cblas_dscal(3, 1/cblas_dnrm2(3,&X[5*j, i],X.shape[1]),&X[5*j, i],X.shape[1])
+				if cblas_dnrm2(3,&X[5*j, i],X.shape[1]) > 0:
+					cblas_dscal(3, 1/cblas_dnrm2(3,&X[5*j, i],X.shape[1]),&X[5*j, i],X.shape[1])
 				X[j * 5 + 3, i] = max(X[j * 5 + 3, i], self._lambda_min)
 				X[j * 5 + 4, i] = max(X[j * 5 + 4, i], self._lambda_min)
 

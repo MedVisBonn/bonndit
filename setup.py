@@ -114,7 +114,11 @@ ext_modules = [
 	Extension(
 		"bonndit.tracking.integration",
 		["src/bonndit/tracking/integration.pyx"],
-		extra_compile_args=["-Ofast"],
+		include_dirs=[numpy.get_include(), "/opt/intel/oneapi/mkl/2022.0.2/include"],
+		libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
+		library_dirs=["/opt/intel/oneapi/mkl/2022.0.2/lib/intel64"],
+		extra_compile_args=["-Wall", "-m64", "-Ofast"],
+		extra_link_args=["-Wl,--no-as-needed"]
 	),
 	Extension(
 		"bonndit.tracking.stopping",
@@ -170,8 +174,8 @@ test_requirements = ['pytest', 'nibabel', 'numpy', 'dipy', 'scipy', 'tqdm',
 					 'cvxopt', 'mpmath', 'pynrrd']
 print(find_packages('src'))
 setup(
-	author="Olivier Morelle",
-	author_email='morelle@uni-bonn.de',
+	author="Johannes Gruen",
+	author_email='jgruen@uni-bonn.de',
 	classifiers=[
 		'Topic :: Scientific/Engineering',
 		'Development Status :: 3 - Alpha',
