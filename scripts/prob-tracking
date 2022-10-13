@@ -240,6 +240,10 @@ def main():
         '--ukf_baseline', help='File containg the baseline',
         default=argparse.SUPPRESS)
     parser.add_argument(
+        '--ukf_fodf_order',
+        help='order of fODF. Only 4 and 8 are supported. Default is 4',
+        default=4)
+    parser.add_argument(
         '--ukf_dim_model', help='Dimensions of model',
         default=argparse.SUPPRESS)
     parser.add_argument(
@@ -425,8 +429,9 @@ def main():
             'dim_model': int(args.ukf_dim_model),
             'model': 'fodf' if args.ukf == "LowRank" else 'MultiTensor',
             'gradients': bvecs.astype(np.float64).T
-            if bvecs is not None else "", 'baseline': baseline, 'b': bvals,
-            'b0': 3000, 'process noise': np.array(
+            if bvecs is not None else "", 'baseline': baseline,
+            'order': int(args.ukf_fodf_order),
+            'b': bvals, 'b0': 3000, 'process noise': np.array(
                 args.ukf_pnoise, dtype=np.float64)
             if 'ukf_pnoise' in args else "", 'measurement noise': np.array(
                 args.ukf_mnoise, dtype=np.float64)
