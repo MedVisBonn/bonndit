@@ -115,10 +115,10 @@ cdef class MultiTensorModel(AbstractModel):
 		self.acq_spec_const = kwargs['b0']
 		self._lambda_min = 100
 		if kwargs['process noise'] == "":
-			ddiagonal(&self.PROCESS_NOISE[0, 0], np.array([0.005,0.005,0.005,25,25]), self.PROCESS_NOISE.shape[0],
+			ddiagonal(&self.PROCESS_NOISE[0, 0], np.array([0.003,  0.003,0.003,25,25]), self.PROCESS_NOISE.shape[0],
 				  self.PROCESS_NOISE.shape[1])
 		if kwargs['measurement noise'] == "":
-			ddiagonal(&self.MEASUREMENT_NOISE[0, 0], np.array([0.002]), self.MEASUREMENT_NOISE.shape[0],
+			ddiagonal(&self.MEASUREMENT_NOISE[0, 0], np.array([0.02]), self.MEASUREMENT_NOISE.shape[0],
 				  self.MEASUREMENT_NOISE.shape[1])
 
 	cdef void normalize(self, double[:] m, double[:] v, int inc) nogil except *:

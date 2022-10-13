@@ -196,7 +196,7 @@ cdef class TrilinearFODF(Interpolation):
 
 
 		if kwargs['sigma_2'] == 0:
-			self.sigma_2 = ((np.linalg.norm(kwargs['trafo'] @ np.array((1, 0, 0))) + np.linalg.norm(kwargs['trafo'] @ np.array((0, 1, 0))) + np.linalg.norm(kwargs['trafo'] @ np.array((0, 0, 1)))) / 3) ** 2
+			self.sigma_2 = ((np.linalg.norm(kwargs['trafo'] @ np.array((1, 0, 0))) + np.linalg.norm(kwargs['trafo'] @ np.array((0, 1, 0))) + np.linalg.norm(kwargs['trafo'] @ np.array((0, 0, 1)))) / 3)
 		else:
 			self.sigma_2 = kwargs['sigma_2']
 		self.neighbors = np.array(sorted([[i, j, k] for i in range(-int(kwargs['r']), 1 + int(kwargs['r'])) for j in
@@ -222,7 +222,7 @@ cdef class TrilinearFODF(Interpolation):
 					else:
 						skip[i,j,k] = 1
 			#nu = np.mean(var[:, skip == 0])
-			self.sigma_1 = np.median(var[:, skip == 0])
+			self.sigma_1 = np.median(var[:, skip == 0])**2
 		else:
 			self.sigma_1 = kwargs['sigma_1']
 		self.best_dir_approx = np.zeros((3,3))
@@ -274,7 +274,7 @@ cdef class TrilinearFODF(Interpolation):
 			if self.data.shape[1] > pw_0 >= 0 and self.data.shape[2] > pw_1 >= 0 and self.data.shape[3] > pw_2 >= 0:
 				sub_vectors(self.empty, self.fodf[1:], self.data[1:, pw_0, pw_1, pw_2])
 				x = hota_4o3d_sym_norm(self.empty)
-				dis = exp(-(x*x)/(self.sigma_1*self.sigma_1))# - distance/self.sigma_2)
+				dis = exp(-(x*x)/self.sigma_1 - distance**2/self.sigma_2)
 				scale += dis
 				for i in range(16):
 					self.fodf1[i] += dis*self.data[i, pw_0, pw_1, pw_2]
@@ -584,6 +584,7 @@ cdef class UKFFodf(UKF):
 
 		for i in range(self._model.num_tensors):
 			dctov(&self.mean[4*i], self.best_dir[i])
+			cblas_dscal(3,pow(self.mean[4 * i + 3], 0.25), &self.best_dir[i,0],1)
 
 
 		self.prob.calculate_probabilities(self.best_dir, old_dir)

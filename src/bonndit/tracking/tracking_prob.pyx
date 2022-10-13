@@ -283,7 +283,8 @@ cpdef tracking_all(vector_field, wm_mask, seeds, tracking_parameters, postproces
 				paths[k,j, 0, 1,l] = seeds[i][l]
 		#	if "Deterministic" in tracking_parameters['prob'] or tracking_parameters['ukf'] == "LowRank":
 			for l in range(3):
-				paths[k,j, 0, 0,l] +=  np.random.normal(0,1)
+				paths[k,j, 0, 0,l] +=  np.random.uniform(-0.5,0.5)
+
 				paths[k,j, 0, 1,l] = paths[k,j, 0, 0,l]
 
 		if saving['features']['seedpoint'] >= 0:

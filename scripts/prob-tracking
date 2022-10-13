@@ -247,12 +247,18 @@ def main():
 		logging.info("UKF Flag is set. Continue with loading UKF data")
 		logging.info("raw data loaded")
 		if args.ukf == 'MultiTensor':
-			data, _ = load('ukf_data', args, 'data.nrrd', args.i, logging, nrrd.read)
+			data, meta2 = load('ukf_data', args, 'data.nrrd', args.i, logging, nrrd.read)
 			data = np.moveaxis(data, 0, -1)
 			print(data.shape)
 			bvals = load('ukf_bvals', args, 'bvals', args.i, logging, np.loadtxt)
 			logging.info("bvals loaded")
 			bvecs = load('ukf_bvecs', args, 'bvecs', args.i, logging, np.loadtxt)
+			# Load bvals and bvecs and initialize a GradientTable object
+
+		#	print(bvecs, bvals.shape)
+			bvecs = fsl_flip_sign(bvecs.T, meta2['space directions'][-3:,-3:]).T
+
+		#	print(bvecs, bvals.shape)
 			logging.info("bvecs loaded")
 			baseline, _ = load('ukf_baseline', args, 'baseline.nrrd', args.i, logging, nrrd.read)
 
