@@ -10,7 +10,7 @@ cdef double[:] order8_mult = np.array(
         28, 168, 420, 560, 420, 168, 28, 8, 56, 168, 280, 280, 168, 56, 8,
         1, 8, 28, 56,
         70, 56,
-        28, 8, 1])
+        28, 8, 1], dtype=np.float64)
 cdef double hota_4o3d_sym_tsp(double[:] a, double[:] b) nogil:
     return a[0] * b[0] + a[10] * b[10] + a[14] * b[14] + 4 \
         * (
