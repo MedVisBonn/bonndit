@@ -11,7 +11,7 @@ cdef double[:] order8_mult =np.array([1, 8, 8, 28, 56, 28, 56, 168, 168, 56, 70,
                                      280, 56,
                                      28, 168, 420, 560, 420, 168, 28, 8, 56, 168, 280, 280, 168, 56, 8, 1, 8, 28, 56,
                                      70, 56,
-                                     28, 8, 1])
+                                     28, 8, 1], dtype=np.float64)
 cdef class AbstractModel:
 	def __cinit__(self, **kwargs):
 		self.MEASUREMENT_NOISE =  np.zeros((kwargs['data'].shape[3],kwargs['data'].shape[3]), dtype=np.float64)
