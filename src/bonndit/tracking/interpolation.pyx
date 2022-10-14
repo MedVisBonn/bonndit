@@ -550,6 +550,13 @@ cdef class Trilinear(Interpolation):
 		set_zero_matrix(self.best_dir)
 		return int(con)
 
+
+cdef double[:] order8_mult =np.array([1, 8, 8, 28, 56, 28, 56, 168, 168, 56, 70, 280, 420, 280, 70, 56, 280, 560, 560,
+                                     280, 56,
+                                     28, 168, 420, 560, 420, 168, 28, 8, 56, 168, 280, 280, 168, 56, 8, 1, 8, 28, 56,
+                                     70, 56,
+                                     28, 8, 1], dtype=np.float64)
+
 cdef class UKF(Interpolation):
 	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities probClass, **kwargs):
 		super(UKF, self).__init__(vector_field, grid, probClass, **kwargs)
@@ -560,6 +567,8 @@ cdef class UKF(Interpolation):
 		if kwargs['baseline'] != "" and kwargs['model'] != 'fodf':
 			self.data = kwargs['data']/kwargs['baseline'][:,:,:,np.newaxis]
 		else:
+			for i in range(45):
+				kwargs['data'][...,i] *= order8_mult[i]
 			self.data = kwargs['data']
 		if kwargs['model'] == 'fodf':
 			self._model = fODFModel(vector_field=vector_field, **kwargs)

@@ -52,12 +52,7 @@ cdef class fODFModel(AbstractModel):
 			ddiagonal(&self.MEASUREMENT_NOISE[0, 0], 0.006*np.array(order8_mult), self.MEASUREMENT_NOISE.shape[0],
 				  self.MEASUREMENT_NOISE.shape[1])
 		self.num_tensors = <int> (kwargs['dim_model'] / 4)
-
-		print('i am here', kwargs['vector_field'].shape)
-		for i in range(kwargs['vector_field'].shape[0]):
-			kwargs['vector_field'][i] *= order8_mult[i]
-		self.vector_field = vector_field
-		print('i am here', vector_field.shape)
+		self.vector_field = kwargs['vector_field']
 
 
 	cdef void normalize(self, double[:] m, double[:] v, int inc) nogil except *:
