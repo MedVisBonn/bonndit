@@ -301,7 +301,7 @@ cdef class MultiTensorModel(AbstractModel):
         x = np.array([sigma, phi, 1000, sigma + np.pi / 2, phi, 600])
         res = least_squares(mti, x, method='lm',
             args=(
-                np.array(y), self.gradients, self.num_tensors,
+                np.array(y), self.gradients, 1,
                 self.GLOBAL_TENSOR_UNPACK_VALUE, self.baseline_signal),
             max_nfev=100)
         b = np.zeros(10)
@@ -341,6 +341,8 @@ cdef mti(x, y, gradients, tensor_num, GLOBAL_TENSOR_UNPACK_VALUE, b):
             np.outer(
                 orth[1],
                 orth[1]) + np.outer(orth[2], orth[2]))
+
+        asdf
         for j in range(gradients.shape[0]):
             z[j] -= 1 / tensor_num \
                 * np.exp(
