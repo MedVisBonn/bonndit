@@ -2,11 +2,12 @@
 #cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, warn.unused_results=True
 from libc.math cimport sqrt
 import numpy as np
-cdef double[:] order8_mult =np.array([1, 8, 8, 28, 56, 28, 56, 168, 168, 56, 70, 280, 420, 280, 70, 56, 280, 560, 560,
-                                     280, 56,
-                                     28, 168, 420, 560, 420, 168, 28, 8, 56, 168, 280, 280, 168, 56, 8, 1, 8, 28, 56,
-                                     70, 56,
-                                     28, 8, 1], dtype=np.float64)
+from bonndit.utilc.structures cimport order4_mult,order8_mult
+#cdef double[:] order8_mult =np.array([1, 8, 8, 28, 56, 28, 56, 168, 168, 56, 70, 280, 420, 280, 70, 56, 280, 560, 560,
+#                                     280, 56,
+#                                     28, 168, 420, 560, 420, 168, 28, 8, 56, 168, 280, 280, 168, 56, 8, 1, 8, 28, 56,
+#                                     70, 56,
+#                                     28, 8, 1], dtype=np.float64)
 cdef double hota_4o3d_sym_tsp(double[:] a, double[:] b) nogil:
     return a[0]*b[0]+a[10]*b[10]+a[14]*b[14]+4*(a[1]*b[1]+a[2]*b[2]+a[6]*b[6]+a[9]*b[9]+a[11]*b[11]+a[13]*b[13])+6*(a[3]*b[3]+a[5]*b[5]+a[12]*b[12])+12*(a[4]*b[4]+a[7]*b[7]+a[8]*b[8])
 
@@ -167,21 +168,21 @@ cdef void hota_4o3d_sym_eval(double[:] res, double s, double[:] v) nogil:
     v12=v[1]*v[2]
     v22=v[2]*v[2]
 
-    res[0]=s*v00*v00
-    res[1]=s*v00*v01
-    res[2]=s*v00*v02
-    res[3]=s*v00*v11
-    res[4]=s*v00*v12
-    res[5]=s*v00*v22
-    res[6]=s*v01*v11
-    res[7]=s*v01*v12
-    res[8]=s*v01*v22
-    res[9]=s*v02*v22
-    res[10]=s*v11*v11
-    res[11]=s*v11*v12
-    res[12]=s*v11*v22
-    res[13]=s*v12*v22
-    res[14]=s*v22*v22
+    res[0]= order4_mult[0] * s*v00*v00
+    res[1]= order4_mult[1] * s*v00*v01
+    res[2]= order4_mult[2] * s*v00*v02
+    res[3]= order4_mult[3] * s*v00*v11
+    res[4]= order4_mult[4] * s*v00*v12
+    res[5]= order4_mult[5] * s*v00*v22
+    res[6]= order4_mult[6] * s*v01*v11
+    res[7]= order4_mult[7] * s*v01*v12
+    res[8]= order4_mult[8] * s*v01*v22
+    res[9]= order4_mult[9] * s*v02*v22
+    res[10]=order4_mult[10]* s*v11*v11
+    res[11]=order4_mult[11] * s*v11*v12
+    res[12]=order4_mult[13] * s*v11*v22
+    res[13]=order4_mult[14] * s*v12*v22
+    res[14]=order4_mult[15] * s*v22*v22
 
 
 cdef void hota_4o3d_sym_make_iso(double[:] res, double s) nogil:

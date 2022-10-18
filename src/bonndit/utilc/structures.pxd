@@ -29,4 +29,5 @@ ctypedef struct TijkType:
 cdef TijkRefineRank1 TijkRefineRank1Parm
 cdef TijkRefineRank TijkRefineRankkParm
 cdef int DIM
-
+cdef double[:] order4_mult
+cdef double[:] order8_mult

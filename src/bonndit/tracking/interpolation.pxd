@@ -78,6 +78,7 @@ cdef class UKF(Interpolation):
 	cdef double[:,:,:,:] data
 	cdef double[:,:] mlinear
 	cdef double[:] y
+	cdef double[:] multiplier
 	cdef Kalman _kalman
 	cdef AbstractModel _model
 	cpdef int interpolate(self, double[:], double[:], int) # nogil except *
