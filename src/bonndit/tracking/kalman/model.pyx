@@ -300,12 +300,14 @@ asdfas
         # self.basel/ine)
 
         x = np.array([sigma, phi, 1000, sigma + np.pi / 2, phi, 600])
+
         res = least_squares(mti, x, method='lm',
             args=(
                 np.array(y)[np.array(self.baseline_signal) < 1300],
                 self.gradients, self.num_tensors,
                 self.GLOBAL_TENSOR_UNPACK_VALUE, self.baseline_signal),
             max_nfev=100)
+
         b = np.zeros(10)
         # print('init')
         for i in range(self.num_tensors):
@@ -344,7 +346,7 @@ cdef mti(x, y, gradients, tensor_num, GLOBAL_TENSOR_UNPACK_VALUE, b):
                 orth[1],
                 orth[1]) + np.outer(orth[2], orth[2]))
         l = 0
-        asdfasdf
+
         for j in range(gradients.shape[0]):
             if b[j] < 1300:
                 z[l] -= 1 / tensor_num \
