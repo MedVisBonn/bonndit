@@ -14,6 +14,7 @@ import numpy as np
 import time
 from bonndit.utilc.cython_helpers cimport dm2toc
 from bonndit.utilc.hota cimport hota_4o3d_sym_norm, hota_4o3d_sym_eval
+from bonndit.utilc.structures cimport order8_mult, order4_mult
 from bonndit.utilc.lowrank cimport approx_initial
 from .ItoW cimport Trafo
 cdef int[
@@ -808,15 +809,8 @@ cdef class Trilinear(Interpolation):
         return int(con)
 
 
-cdef double[:] order8_mult = np.array(
-    [
-        1, 8, 8, 28, 56, 28, 56, 168, 168, 56, 70, 280, 420, 280, 70, 56,
-        280, 560, 560,
-        280, 56,
-        28, 168, 420, 560, 420, 168, 28, 8, 56, 168, 280, 280, 168, 56, 8,
-        1, 8, 28, 56,
-        70, 56,
-        28, 8, 1], dtype=np.float64)
+
+
 
 cdef class UKF(Interpolation):
     def __cinit__(
@@ -830,13 +824,15 @@ cdef class UKF(Interpolation):
         self.P = np.zeros((kwargs['dim_model'], kwargs['dim_model']),
             dtype=np.float64)
         self.y = np.zeros((kwargs['data'].shape[3],), dtype=np.float64)
+        self.multiplier = order8_mult if kwargs['order'] == 8 else order4_mult
         if kwargs['baseline'] != "" and kwargs['model'] != 'fodf':
             self.data = kwargs['data'] / kwargs['baseline'][:, :, :,
                 np.newaxis]
         else:
-            for i in range(45):
-                kwargs['data'][..., i] *= order8_mult[i]
-            self.data = kwargs['data']
+            data = np.array(kwargs['data'])
+            for i in range(45 if kwargs['order'] == 8 else 15):
+                data[..., i] *= self.multiplier[i]
+            self.data = data
         if kwargs['model'] == 'fodf':
             self._model = fODFModel(vector_field=vector_field, **kwargs)
         else:
@@ -902,7 +898,6 @@ cdef class UKFFodf(UKF):
 
         self.prob.calculate_probabilities(self.best_dir, old_dir)
         self.next_dir = self.prob.best_fit
-
         return info
 
 
