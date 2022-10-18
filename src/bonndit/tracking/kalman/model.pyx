@@ -216,7 +216,7 @@ cdef class MultiTensorModel(AbstractModel):
 
 		#self.linear(point, self.BASELINE_SIGNAL, self.slinear, self.basel/ine)
 		x = np.array([sigma,phi,1000,sigma + np.pi/2,phi,600])
-		res = least_squares(mti, x, method='lm', args=(np.array(y), self.gradients, self.num_tensors, self.GLOBAL_TENSOR_UNPACK_VALUE, self.baseline_signal),max_nfev=100)
+		res = least_squares(mti, x, method='lm', args=(np.array(y), self.gradients,1, self.GLOBAL_TENSOR_UNPACK_VALUE, self.baseline_signal),max_nfev=100)
 		b = np.zeros(10)
 		#print('init')
 		for i in range(self.num_tensors):
@@ -243,6 +243,8 @@ cdef mti(x, y, gradients, tensor_num, GLOBAL_TENSOR_UNPACK_VALUE, b):
 	for i in range(tensor_num):
 		orth = orthonormal_from_sphere(x[i * 3], x[i * 3 + 1])
 		D = x[i * 3 + 2] * (np.outer(orth[0], orth[0])) + x[i * 3 + 2] / 8 * (np.outer(orth[1], orth[1]) + np.outer(orth[2], orth[2]))
+
+		asdf
 		for j in range(gradients.shape[0]):
 			z[j] -= 1 / tensor_num * np.exp(- b[j] * (gradients[j] @ D @ gradients[j].T) * GLOBAL_TENSOR_UNPACK_VALUE)
 	return z
