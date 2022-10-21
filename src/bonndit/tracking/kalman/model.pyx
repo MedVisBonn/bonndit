@@ -137,6 +137,7 @@ cdef class fODFModel(AbstractModel):
                         0, i,
                         <int> point[0], <int> point[1], <int> point[2]]
 
+
     cdef void constrain(self, double[:, :] X) nogil except *:
         cdef int i, j, n = X.shape[0] // 4
         for i in range(X.shape[1]):
