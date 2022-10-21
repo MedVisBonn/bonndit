@@ -308,7 +308,10 @@ cdef class TrilinearFODF(Interpolation):
 		approx_initial(self.length, self.best_dir_approx, tens, self.fodf[1:], self.rank, valsec, val,der, testv, anisoten, isoten)
 
 		for i in range(3):
-			mult_with_scalar(self.best_dir[i], pow(self.length[i], 1/4), self.best_dir_approx[:,i])
+			if self.length[i] > 0.1:
+				mult_with_scalar(self.best_dir[i], pow(self.length[i], 1/4), self.best_dir_approx[:,i])
+			else:
+				mult_with_scalar(self.best_dir[i], 0, self.best_dir_approx[:,i])
 		self.prob.calculate_probabilities(self.best_dir, old_dir)
 		cblas_dcopy(3, &self.prob.best_fit[0], 1, &self.next_dir[0],1)
 		return 0
@@ -582,6 +585,10 @@ cdef class UKFFodf(UKF):
 		if restart == 0:
 			#with gil:
 			self._model.kinit(self.mean, self.point_index[:3], old_dir, self.P, self.y)
+			for i in range(10):
+			#	print(np.array(self.y))
+				info = self._kalman.update_kalman_parameters(self.mean, self.P, self.y)
+			#	print(np.array(self.P))
 		# Run Kalmannfilter
 
 		info = self._kalman.update_kalman_parameters(self.mean, self.P, self.y)
@@ -601,8 +608,11 @@ cdef class UKFFodf(UKF):
 
 		for i in range(self._model.num_tensors):
 			dctov(&self.mean[4*i], self.best_dir[i])
-			cblas_dscal(3,pow(self.mean[4 * i + 3], 0.25), &self.best_dir[i,0],1)
-
+			if self.mean[4 * i + 3] > 0.1:
+				#print(self.mean[4 * i + 3])
+				cblas_dscal(3,pow(self.mean[4 * i + 3], 0.25), &self.best_dir[i,0],1)
+			else:
+				cblas_dscal(3,0, &self.best_dir[i,0],1)
 
 		self.prob.calculate_probabilities(self.best_dir, old_dir)
 		self.next_dir = self.prob.best_fit

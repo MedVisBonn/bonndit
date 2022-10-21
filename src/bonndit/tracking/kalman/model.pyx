@@ -94,6 +94,7 @@ cdef class fODFModel(AbstractModel):
 						cblas_dscal(3, -1, &mean[4*j], 1)
 					mean[j*4 + 3] = self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]]
 
+
 	cdef void constrain(self, double[:,:] X) nogil except *:
 		cdef int i, j, n = X.shape[0]//4
 		for i in range(X.shape[1]):
