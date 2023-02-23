@@ -96,6 +96,7 @@ cdef forward_tracking(double[:,:] paths,  Interpolation interpolate,
 	cdef int k, con
 	# thousand is max length for pathway
 	interpolate.prob.old_fa = 1
+	integrate.old_dir = np.zeros((3,))
 	validator.WM.reset()
 	for k in range((max_track_length-1)*save_steps):
 		# validate index and wm density.

@@ -19,6 +19,8 @@ def main():
 
 	parser.add_argument('outfile',
 						help='5D output file with the approximation result (4,r,x,y,z)', default=argparse.SUPPRESS)
+
+	parser.add_argument()
 	parser.add_argument('-r', help='rank', default=3)
 	parser.add_argument('-v', '--verbose', default=True)
 	args = parser.parse_args()

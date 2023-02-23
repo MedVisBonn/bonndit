@@ -415,7 +415,7 @@ class ShResponse(object):
 
         f = self.kernel_wm[0] / self.wm_response[0]
         wmout[mask] = [x[0] * f for x in result]
-
+        # TODO das macht keinen sinn?
         out[mask, 0] = 1
         out[mask, :] = [esh.esh_to_sym(x) for x in result]
 
