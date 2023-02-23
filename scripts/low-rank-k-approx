@@ -17,7 +17,7 @@ def main():
         'by Schultz/Seidel (2008).',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument(
-        'infile',
+        '--infile', nargs='+',
         help=(
             '4D input file containing fODFs in masked higher-order tensor '
             'format (1+#fODF coefficients,x,y,z)'
@@ -25,9 +25,11 @@ def main():
         default=argparse.SUPPRESS)
 
     parser.add_argument(
-        'outfile',
+        '--outfile',
         help='5D output file with the approximation result (4,r,x,y,z)',
         default=argparse.SUPPRESS)
+    parser.add_argument('-i', help='initialize')
+
     parser.add_argument('-r', help='rank', default=3)
     parser.add_argument('-v', '--verbose', default=True)
     args = parser.parse_args()
@@ -51,8 +53,11 @@ def main():
         logging.getLogger('').addHandler(console)
 
     # Load fODF input file
-    fodfs, meta = nrrd.read(args.infile)
-
+    fodfs = [0] * len(args.infile)
+    for i, f in enumerate(args.infile):
+        fodfs[i], meta = nrrd.read(f)
+    fodfs = np.mean(fodfs, axis=0)
+    print(fodfs.shape)
     if fodfs.shape[0] != 16:
         logging.error("fodf has to be 4th order tensor.")
         raise Exception()
@@ -65,13 +70,19 @@ def main():
 
     data = fodfs.reshape((fodfs.shape[0], -1))
     NUM = data.shape[1]
-    output = np.zeros((4, int(args.r), NUM))
+    if args.i:
+
+        output, _ = nrrd.read(args.i)
+        output = np.float64(output.reshape((4, int(args.r), NUM)))
+    else:
+        output = np.zeros((4, int(args.r), NUM))
     # check format:
     approx_all_spherical(
         output, np.float64(fodfs),
-        np.int(0),
+        int(0),
         np.float32(0),
-        np.int(args.r),
+        int(args.r),
+        int(args.i is not None),
         args.verbose)
     logging.info(f"Low-rank {args.r} approximation is calculated")
 
@@ -79,7 +90,10 @@ def main():
     newmeta = {k: meta[k] for k in ['space', 'space origin']}
     newmeta['kinds'] = ['list', 'list', 'space', 'space', 'space']
     newmeta['space directions'] = np.vstack(
-        ([np.nan, np.nan, np.nan], meta['space directions']))
+        (
+            [np.nan, np.nan, np.nan],
+            [np.nan, np.nan, np.nan],
+            meta['space directions']))
     nrrd.write(args.outfile, np.float32(output), newmeta)
     logging.info(f"Low-rank {args.r} approximation is saved to {args.outfile}")
 

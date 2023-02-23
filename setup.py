@@ -7,6 +7,14 @@ from setuptools import setup, find_packages
 from distutils.extension import Extension
 from Cython.Build import cythonize
 import numpy
+import os
+
+if "MKLROOT" not in os.environ:
+    raise Exception("""MKLROOT has to be a enviroment Variable. Follow the 
+					https://www.intel.com/content/www/us/en/develop/documentation/oneapi-programming-guide/top/oneapi
+					-development-environment-setup.html description to set them correctly""")
+
+mklroot = os.environ["MKLROOT"]
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -18,24 +26,20 @@ ext_modules = [
     Extension(
         "bonndit.utilc.blas_lapack",
         ["src/bonndit/utilc/blas_lapack.pyx"],
-        include_dirs=[
-            numpy.get_include(),
-            "/opt/intel/oneapi/mkl/2022.0.2/include"],
-        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m",
-                   "dl"],
-        library_dirs=["/opt/intel/oneapi/mkl/2022.0.2/lib/intel64"],
+        include_dirs=[numpy.get_include(), "%s/include" % mklroot],
+        libraries=["mkl_rt", "mkl_sequential",
+                   "mkl_core", "pthread", "m", "dl"],
+        library_dirs=["%s/lib/intel64" % mklroot],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
         extra_link_args=["-Wl,--no-as-needed"]
     ),
     Extension(
         "bonndit.utilc.cython_helpers",
         ["src/bonndit/utilc/cython_helpers.pyx"],
-        include_dirs=[
-            numpy.get_include(),
-            "/opt/intel/oneapi/mkl/2022.0.2/include"],
-        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m",
-                   "dl"],
-        library_dirs=["/opt/intel/oneapi/mkl/2022.0.2/lib/intel64"],
+        include_dirs=[numpy.get_include(), "%s/include" % mklroot],
+        libraries=["mkl_rt", "mkl_sequential",
+                   "mkl_core", "pthread", "m", "dl"],
+        library_dirs=["%s/lib/intel64" % mklroot],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
         extra_link_args=["-Wl,--no-as-needed"]
     ),
@@ -80,24 +84,20 @@ ext_modules = [
     Extension(
         "bonndit.tracking.alignedDirection",
         ["src/bonndit/tracking/alignedDirection.pyx"],
-        include_dirs=[
-            numpy.get_include(),
-            "/opt/intel/oneapi/mkl/2022.0.2/include"],
-        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m",
-                   "dl"],
-        library_dirs=["/opt/intel/oneapi/mkl/2022.0.2/lib/intel64"],
+        include_dirs=[numpy.get_include(), "%s/include" % mklroot],
+        libraries=["mkl_rt", "mkl_sequential",
+                   "mkl_core", "pthread", "m", "dl"],
+        library_dirs=["%s/lib/intel64" % mklroot],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
         extra_link_args=["-Wl,--no-as-needed"]
     ), Extension(
         "bonndit.tracking.kalman.model",
         ["src/bonndit/tracking/kalman/model.pyx"],
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
-        include_dirs=[
-            numpy.get_include(),
-            "/opt/intel/oneapi/mkl/2022.0.2/include"],
-        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m",
-                   "dl"],
-        library_dirs=["/opt/intel/oneapi/mkl/2022.0.2/lib/intel64"],
+        include_dirs=[numpy.get_include(), "%s/include" % mklroot],
+        libraries=["mkl_rt", "mkl_sequential",
+                   "mkl_core", "pthread", "m", "dl"],
+        library_dirs=["%s/lib/intel64" % mklroot],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
         extra_link_args=["-Wl,--no-as-needed"]
 
@@ -106,12 +106,10 @@ ext_modules = [
         "bonndit.tracking.kalman.kalman",
         ["src/bonndit/tracking/kalman/kalman.pyx"],
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
-        include_dirs=[
-            numpy.get_include(),
-            "/opt/intel/oneapi/mkl/2022.0.2/include"],
-        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m",
-                   "dl"],
-        library_dirs=["/opt/intel/oneapi/mkl/2022.0.2/lib/intel64"],
+        include_dirs=[numpy.get_include(), "%s/include" % mklroot],
+        libraries=["mkl_rt", "mkl_sequential",
+                   "mkl_core", "pthread", "m", "dl"],
+        library_dirs=["%s/lib/intel64" % mklroot],
         extra_compile_args=["-Wall", "-m64", '-Ofast'],
         extra_link_args=["-Wl,--no-as-needed"]
 
@@ -120,24 +118,20 @@ ext_modules = [
         "bonndit.tracking.interpolation",
         ["src/bonndit/tracking/interpolation.pyx"],
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
-        include_dirs=[
-            numpy.get_include(),
-            "/opt/intel/oneapi/mkl/2022.0.2/include"],
-        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m",
-                   "dl"],
-        library_dirs=["/opt/intel/oneapi/mkl/2022.0.2/lib/intel64"],
+        include_dirs=[numpy.get_include(), "%s/include" % mklroot],
+        libraries=["mkl_rt", "mkl_sequential",
+                   "mkl_core", "pthread", "m", "dl"],
+        library_dirs=["%s/lib/intel64" % mklroot],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
         extra_link_args=["-Wl,--no-as-needed"]
     ),
     Extension(
         "bonndit.tracking.integration",
         ["src/bonndit/tracking/integration.pyx"],
-        include_dirs=[
-            numpy.get_include(),
-            "/opt/intel/oneapi/mkl/2022.0.2/include"],
-        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m",
-                   "dl"],
-        library_dirs=["/opt/intel/oneapi/mkl/2022.0.2/lib/intel64"],
+        include_dirs=[numpy.get_include(), "%s/include" % mklroot],
+        libraries=["mkl_rt", "mkl_sequential",
+                   "mkl_core", "pthread", "m", "dl"],
+        library_dirs=["%s/lib/intel64" % mklroot],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
         extra_link_args=["-Wl,--no-as-needed"]
     ),
@@ -145,12 +139,10 @@ ext_modules = [
         "bonndit.tracking.stopping",
         ["src/bonndit/tracking/stopping.pyx"],
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
-        include_dirs=[
-            numpy.get_include(),
-            "/opt/intel/oneapi/mkl/2022.0.2/include"],
-        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m",
-                   "dl"],
-        library_dirs=["/opt/intel/oneapi/mkl/2022.0.2/lib/intel64"],
+        include_dirs=[numpy.get_include(), "%s/include" % mklroot],
+        libraries=["mkl_rt", "mkl_sequential",
+                   "mkl_core", "pthread", "m", "dl"],
+        library_dirs=["%s/lib/intel64" % mklroot],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
         extra_link_args=["-Wl,--no-as-needed"]
     ),

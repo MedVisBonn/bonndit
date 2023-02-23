@@ -38,7 +38,6 @@ cdef class Kalman:
         self.gamma2 = np.zeros((dim_data, 2 * dim_model + 1), dtype=np.float64)
         self.KAPPA = 0.3
         self.D = np.zeros((dim_model, dim_model), dtype=np.float64)
-        # self.c = np.zeros((10,), dtype=np.float64)
         self.C = np.zeros((dim_data, dim_model), dtype=np.float64)
 
         self.compute_convex_weights(
@@ -167,15 +166,11 @@ cdef class Kalman:
             self.KAPPA)  # eq. 17
         if info != 0:
             return info
-        # check
         self._model.constrain(self.X)
-        # pred X mean check
         cblas_dgemv(
             CblasRowMajor, CblasNoTrans, self.X.shape[0],
             self.X.shape[1], 1, &self.X[0, 0], self.X.shape[1],
             &self.weights[0], 1, 0, &self.pred_X_mean[0], 1)
-
-        # Line 174-183
         for i in range(self.X2.shape[1]):
             cblas_dcopy(
                 self.pred_X_mean.shape[0], &self.pred_X_mean[0], 1,
@@ -186,12 +181,10 @@ cdef class Kalman:
 
 
         special_mat_mul(self.P_xx, self.X2, self.weights, self.X2, 1)
-        # with gil: print('P_xx', np.array(self.P_xx))
         cblas_daxpy(
             self.P_xx.shape[0] * self.P_xx.shape[1], 1,
             &self._model.PROCESS_NOISE[0, 0], 1, &self.P_xx[0, 0], 1)
         self._model.predict_new_observation(self.gamma, self.X)  # eq. 23
-
         cblas_dgemv(
             CblasRowMajor, CblasNoTrans, self.gamma.shape[0],
             self.gamma.shape[1], 1, &self.gamma[0, 0], self.gamma.shape[1],
@@ -204,7 +197,6 @@ cdef class Kalman:
             &self.gamma2[0, 0], &self.gamma[0, 0],
             &self.gamma2[0, 0], self.gamma2.shape[0] * self.gamma2.shape[1])
         special_mat_mul(self.P_yy, self.gamma2, self.weights, self.gamma2, 1)
-        # with gil: print('P_yy', np.array(self.P_yy))
         cblas_daxpy(
             self.P_yy.shape[0] * self.P_yy.shape[1], 1,
             &self._model.MEASUREMENT_NOISE[0, 0], 1, &self.P_yy[0, 0], 1)
@@ -222,9 +214,6 @@ cdef class Kalman:
         sub_pointwise(
             &self.y_diff[0], &y[0], &self.pred_Y_mean[0],
             self.pred_Y_mean.shape[0])
-        # with gil:
-        # print(np.linalg.norm(np.array(self.y_diff))/np.linalg.norm(np.array(y)))
-
         cblas_dgemv(
             CblasRowMajor, CblasNoTrans, self.K.shape[0],
             self.K.shape[1], 1, &self.K[0, 0], self.K.shape[1],
@@ -237,7 +226,6 @@ cdef class Kalman:
             self.P_yy.shape[0], self.K.shape[0], self.P_yy.shape[1], 1,
             &self.P_yy[0, 0], self.P_yy.shape[1], &self.K[0, 0],
             self.P_yy.shape[1], 0, &self.C[0, 0], self.K.shape[0])
-
         cblas_dgemm(
             CblasRowMajor, CblasNoTrans, CblasNoTrans,
             self.K.shape[0], self.C.shape[1], self.K.shape[1], 1,
