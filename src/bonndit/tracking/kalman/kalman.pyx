@@ -186,7 +186,6 @@ cdef class Kalman:
 
 
         special_mat_mul(self.P_xx, self.X2, self.weights, self.X2, 1)
-        # with gil: print('P_xx', np.array(self.P_xx))
         cblas_daxpy(
             self.P_xx.shape[0] * self.P_xx.shape[1], 1,
             &self._model.PROCESS_NOISE[0, 0], 1, &self.P_xx[0, 0], 1)
@@ -204,7 +203,6 @@ cdef class Kalman:
             &self.gamma2[0, 0], &self.gamma[0, 0],
             &self.gamma2[0, 0], self.gamma2.shape[0] * self.gamma2.shape[1])
         special_mat_mul(self.P_yy, self.gamma2, self.weights, self.gamma2, 1)
-        # with gil: print('P_yy', np.array(self.P_yy))
         cblas_daxpy(
             self.P_yy.shape[0] * self.P_yy.shape[1], 1,
             &self._model.MEASUREMENT_NOISE[0, 0], 1, &self.P_yy[0, 0], 1)
@@ -222,9 +220,6 @@ cdef class Kalman:
         sub_pointwise(
             &self.y_diff[0], &y[0], &self.pred_Y_mean[0],
             self.pred_Y_mean.shape[0])
-        # with gil:
-        # print(np.linalg.norm(np.array(self.y_diff))/np.linalg.norm(np.array(y)))
-
         cblas_dgemv(
             CblasRowMajor, CblasNoTrans, self.K.shape[0],
             self.K.shape[1], 1, &self.K[0, 0], self.K.shape[1],
