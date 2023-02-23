@@ -3,6 +3,9 @@
 from libc.math cimport sqrt
 import numpy as np
 
+
+cdef int[:] order_4_mult = np.array([1.0, 4.0, 4.0, 6.0, 12.0, 6.0, 4.0, 12.0, 12.0, 4.0, 1.0, 4.0, 6.0, 4.0, 1.0], dtype=np.int32)
+
 cdef double hota_4o3d_sym_tsp(double[:] a, double[:] b) nogil:
     return a[0]*b[0]+a[10]*b[10]+a[14]*b[14]+4*(a[1]*b[1]+a[2]*b[2]+a[6]*b[6]+a[9]*b[9]+a[11]*b[11]+a[13]*b[13])+6*(a[3]*b[3]+a[5]*b[5]+a[12]*b[12])+12*(a[4]*b[4]+a[7]*b[7]+a[8]*b[8])
 

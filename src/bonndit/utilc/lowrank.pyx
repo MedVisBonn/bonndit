@@ -5,6 +5,7 @@ import numpy as np
 from libc.math cimport sqrt, fabs
 from .cython_helpers cimport sub_vectors, mult_with_scalar, add_vectors, scalar
 from .structures cimport TijkRefineRank1Parm, TijkRefineRankkParm, DIM
+from .cython_helpers cimport set_zero_matrix, set_zero_vector
 from .hota cimport hota_4o3d_sym_eval, hota_4o3d_sym_norm, hota_4o3d_sym_make_iso, hota_4o3d_sym_v_form, \
     hota_4o3d_mean, hota_4o3d_sym_s_form
 
@@ -85,7 +86,12 @@ cdef double refine_rankk_3d(double[:] ls, double[:,:] vs, double[:,:] tens, doub
                     res[j] += tens[i,j]
                 ls[i] = hota_4o3d_sym_s_form(res, vs[:,i])
                 if TijkRefineRankkParm.pos and ls[i] < 0:
-                    init_max_3d(ls[i: i+1], vs[:,i], res)
+                    ls[i] = 0.1
+                  #  set_zero_vector(ls)
+                  #  set_zero_matrix(vs)
+                  #  return 0
+
+                    #init_max_3d(ls[i: i+1], vs[:,i], res)
     #        refine_rank1_sum_3d(ls[i:i+1], vs[:, i])
             refine_rank1_3d(ls[i: i+1], vs[:,i], res, der, testv, anisoten, isoten)
             if not TijkRefineRankkParm.pos==1 or ls[i]>0:
@@ -93,7 +99,9 @@ cdef double refine_rankk_3d(double[:] ls, double[:,:] vs, double[:,:] tens, doub
                 sub_vectors(res, res, tens[i,:])
 
             else:
-                ls[i] = 0
+                ls[i] = 0.1
+                hota_4o3d_sym_eval(tens[i, :], ls[i], vs[:,i])
+                sub_vectors(res, res, tens[i,:])
         newnorm = hota_4o3d_sym_norm(res)
         if not (newnorm > TijkRefineRankkParm.eps_res and resnorm - newnorm > TijkRefineRankkParm.eps_impr*orignorm):
             #print([x for x in res], resnorm, newnorm, orignorm)
