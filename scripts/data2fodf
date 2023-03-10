@@ -93,3 +93,15 @@ else
 fi
 
 mtdeconv -o "${outfolder}/mtdeconv/ankele" -v True -k rank1 -r 4 -C hpsd "${indir}"
+
+for i in {5..25}
+do
+  ( if [ -d "/data/directions_test/test${i}" ]; then
+    python test.py -i /data/directions_test/996782/ -s 30 -o /data/directions_test/test${i}
+  else
+    echo "${i} done"
+  fi ) &
+done
+
+
+

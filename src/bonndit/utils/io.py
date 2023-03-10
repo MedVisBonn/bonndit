@@ -63,7 +63,8 @@ def metadata_checker(ref, *kwargs):
 			if not np.all(np.dot(I, file.affine[:3, 3]) == ref[:3,3]):
 				msg = 'Input corrupted. File {} is shifted compared to the data file'.format(file.get_filename())
 				raise Exception(msg)
-			output.append(nib.Nifti1Image(file.get_fdata()[::I[0,0],::I[1,1],::I[2,2]], ref))
+			print(I[0,0], I[1,1], I[2,2])
+			output.append(nib.Nifti1Image(file.get_fdata()[::int(I[0,0]),::int(I[1,1]),::int(I[2,2])], ref))
 	return output
 
 

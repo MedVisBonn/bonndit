@@ -187,7 +187,6 @@ class ShResponseEstimator(object):
         wm_sh_coef = self.sh_accumulate(wm_sh_coeffs)
         signal_wm = self.sh_compress(wm_sh_coef)
 
-        print(self.gtab.bvals)
         return ShResponse(self, signal_wm)
 
     def sh_accumulate(self, sh_coeffs):

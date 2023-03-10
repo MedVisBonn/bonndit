@@ -1,15 +1,7 @@
-#%%cython --annotate
-#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, warn.unused_results=True
-cimport cython
+from scipy import optimize
+from bonndit.utilc.hota cimport hota_4o3d_sym_s_form, hota_4o3d_sym_eval, hota_4o3d_sym_tsp, hota_4o3d_sym_v_form, hota_4o3d_sym_norm
 import numpy as np
-from libc.math cimport sqrt, fabs
-from .cython_helpers cimport sub_vectors, mult_with_scalar, add_vectors, scalar
-from .structures cimport TijkRefineRank1Parm, TijkRefineRankkParm, DIM
-from .hota cimport hota_4o3d_sym_eval, hota_4o3d_sym_norm, hota_4o3d_sym_make_iso, hota_4o3d_sym_v_form, \
-    hota_4o3d_mean, hota_4o3d_sym_s_form
 
-
-DTYPE = np.float64
 
 cdef double[:] _candidates_3d_d = np.array([
     -0.546405, 0.619202, 0.563943,
@@ -43,153 +35,109 @@ cdef double[:] _candidates_3d_d = np.array([
     -0.752333,-0.301447, 0.585769,
     -0.975732, 0.165497,-0.143382])
 
+
+
+
+
+
+
+
+
+
+
 cdef int _max_candidates_3d=30
 
-cdef void init_max_3d(double[:] s, double[:] v, double[:] tens) nogil:
+cdef double[:,:] real_candidates = np.zeros((_max_candidates_3d, 15))
+get_real_candidates(real_candidates)
+
+cdef get_real_candidates(t):
+    cdef int i, j, k
+    for i in range(0, _max_candidates_3d):
+        hota_4o3d_sym_eval(t[i], 1, _candidates_3d_d[3 * i: 3 * (i + 1)])
+
+
+cdef init_max_3d(double[:,:] tens, int n):
     """
     Find best initial direction on sphere for rank1 approximation of a fourth order tensor.
     """
-    cdef double norm_max, val
-    cdef int i
-    s[0] = hota_4o3d_sym_s_form(tens, _candidates_3d_d[:3])
-    norm_max = s[0]
-    v[:] = _candidates_3d_d[0: DIM]
+    cdef double val, min_val=-1
+    cdef int i,j,k
     for i in range(1, _max_candidates_3d):
-        val = hota_4o3d_sym_s_form(tens, _candidates_3d_d[DIM*i: DIM*(i+1)])
-        if val>norm_max:
-            norm_max = val
-            s[0] = val
-            v[:] = _candidates_3d_d[DIM*i: DIM*(i+1)]
+        for j in range(i, _max_candidates_3d):
+            for k in range(j, _max_candidates_3d):
+                val = 0
+                for l in range(n):
+                    val += hota_4o3d_sym_norm(tens[l] - real_candidates[i] - real_candidates[l] - real_candidates[k])
+                if min_val == -1 or val < min_val:
+                    l,m,o = i,j,k
+                    min_val = val
+    return np.concatenate([_candidates_3d_d[3*(l-1): 3*l], _candidates_3d_d[3*(m-1): 3*m], _candidates_3d_d[3*(o-1): 3*o], np.array([1,1,1])])
 
 
-cdef double refine_rankk_3d(double[:] ls, double[:,:] vs, double[:,:] tens, double[:] res, double resnorm,
-                                   double orignorm, int k, double[:] valsec, double[:] val, double[:] der,
-                                   double[:] testv,double[:] anisoten, double[:] isoten) nogil except *:
-    """
-    Caluculate best rank k approximation of an 4th order tensor
-    """
-    cdef double newnorm = resnorm
-    cdef int i, j
-    while True:
-        resnorm = newnorm
-        for i in range(k):
-            # add a new term
-            if ls[i] == 0:
-                if TijkRefineRankkParm.pos:
-                    init_max_3d(ls[i: i+1], vs[:,i], res)
-                else:
-                    init_rank1_3d(ls[i:i+1], vs[:,i], res)
-            # refine an existing term
-            else:
-                for j in range(15):
-                    res[j] += tens[i,j]
-                ls[i] = hota_4o3d_sym_s_form(res, vs[:,i])
-                if TijkRefineRankkParm.pos and ls[i] < 0:
-                    init_max_3d(ls[i: i+1], vs[:,i], res)
-
-            refine_rank1_3d(ls[i: i+1], vs[:,i], res, der, testv, anisoten, isoten)
-            if not TijkRefineRankkParm.pos==1 or ls[i]>0:
-                hota_4o3d_sym_eval(tens[i, :], ls[i], vs[:,i])
-                sub_vectors(res, res, tens[i,:])
-
-            else:
-                ls[i] = 0
-        newnorm = hota_4o3d_sym_norm(res)
-        if not (newnorm > TijkRefineRankkParm.eps_res and resnorm - newnorm > TijkRefineRankkParm.eps_impr*orignorm):
-            #print([x for x in res], resnorm, newnorm, orignorm)
-            break
+def average(fodfs, n):
+    x0 = init_max_3d(fodfs, n)
+    res = optimize.m(opt_func, x0, jac=jacobian, args=(fodfs, n), )
+    l = calc_lambda(res['x'][:9], fodfs, n)
+    return l, res['x'][:9]
 
 
 
-cdef double approx_initial(double[:] ls, double[:,:] vs, double[:,:] tens, double[:] ten, int k,
-double[:] valsec, double[:] val, double[:] der, double[:] testv,double[:] anisoten, double[:] isoten) nogil:
-    cdef double orignorm, newnorm
-    cdef double[:] res
-    orignorm = newnorm = hota_4o3d_sym_norm(ten)
-    res = ten
-    if orignorm < TijkRefineRankkParm.eps_res or k == 0:
-        pass
-    else:
-        refine_rankk_3d(ls, vs, tens, res, newnorm, orignorm, k, valsec, val, der, testv, anisoten, isoten)
+def opt_func(v, f, n):
+    l =calc_lambda(v, f, n)
+    summand0= 0
+    for i in range(3):
+        hota_4o3d_sym_eval(t[i], 1 ,v[3*i: 3*(i+1)])
+    t[0] = np.sum(t, axis=0)
+    for i in range(n):
+        summand0 += hota_4o3d_sym_norm(f[i] - t[0])**2
+    for i in range(3):
+        summand0 += v[9+i]*(np.linalg.norm(v[3*i: 3*(i+1)]) - 1)
+    return summand0
+
+def calc_lambda(v, fodf, n):
+    placeholder1 = np.zeros((15,))
+    placeholder2 = np.zeros((15,))
+    placeholder3 = np.zeros((15,))
+    T = np.zeros((3,))
+    tsp = np.zeros((3,))
+    hota_4o3d_sym_eval(placeholder1, 1, v[:3])
+    hota_4o3d_sym_eval(placeholder2, 1, v[3:6])
+    hota_4o3d_sym_eval(placeholder3, 1, v[6:9])
+    tsp[0] = hota_4o3d_sym_tsp(placeholder1, placeholder2)
+    tsp[1] = hota_4o3d_sym_tsp(placeholder1, placeholder3)
+    tsp[2] = hota_4o3d_sym_tsp(placeholder2, placeholder3)
+    for i in range(3):
+        summand1=0
+        for j in range(n):
+            summand1 += hota_4o3d_sym_s_form(fodf[j], v[3*i: 3*(i+1)])
+        T[i] = summand1
+    x = (   T[0]*tsp[2] ** 2*n ** 2 - 4*T[0] - tsp[2]*tsp[0]*T[2]*n ** 2 - tsp[2]*tsp[1]*T[1]*n ** 2 + 2*tsp[0]*T[1]*n + 2*tsp[1]*T[2]*n)/ (tsp[2] ** 2*n **2 - tsp[2]*tsp[0]*tsp[1]*n ** 3 + tsp[0] ** 2*n ** 2 + tsp[1] ** 2*n ** 2 - 4)
+    y = (  -T[0]*tsp[2]*tsp[1]*n ** 2 + 2*T[0]*tsp[0]*n + 2*tsp[2]*T[2]*n - tsp[0]*tsp[1]*T[2]*n ** 2 + tsp[1] ** 2*T[1]*n ** 2 - 4*T[1])/ (tsp[2] ** 2*n ** 2 - tsp[2]*tsp[0]*tsp[1]*n ** 3 + tsp[0] ** 2*n ** 2 + tsp[1] ** 2*n ** 2 - 4)
+    z = (  -T[0]*tsp[2]*tsp[0]*n ** 2 + 2*T[0]*tsp[1]*n + 2*tsp[2]*T[1]*n + tsp[0] ** 2*T[2]*n ** 2 - tsp[0]*tsp[1]*T[1]*n ** 2 - 4*T[2])/ (tsp[2] ** 2*n ** 2 - tsp[2]*tsp[0]*tsp[1]*n ** 3 + tsp[0] ** 2*n ** 2 + tsp[1] ** 2*n ** 2 - 4)
+    return [x,y,z]
 
 
-cdef double init_rank1_3d(double[:] s, double[:] v, double[:] tens) nogil:
-    """
-    Find best initial direction on sphere for rank1 approximation of a fourth order tensor. Here the abs value is
-    used.
-    """
-
-    cdef int i
-    cdef double absval, absmax=-1, val
-    with gil:
-        print(*s, *v, DIM)
-    for i in range(_max_candidates_3d):
-        val = hota_4o3d_sym_s_form(tens, _candidates_3d_d[DIM*i:DIM*(i+1)])
-        absval = fabs(val)
-        if absval>absmax:
-            absmax=absval
-            s[:] = val
-            v[:] = _candidates_3d_d[DIM*i:DIM*(i+1)]
-
-"""@cython.cdivision(True)"""
-cdef int refine_rank1_3d(double[:] s, double[:] v, double[:] tens, double[:] der, double[:] testv,double[:] anisoten,
-                         double[:] isoten) nogil except *:
-    """
-    Gradient descent with armijo stepsize
-    """
-
-    cdef int sign = 1 if s[0]>0 else -1
-    cdef double iso = hota_4o3d_mean(tens)
-    hota_4o3d_sym_make_iso(isoten, iso)
-    cdef int i, armijoct,  k=tens.shape[0]
-    cdef double anisonorm, anisonorminv, alpha, beta, oldval, val
-    for i in range(k):
-        anisoten[i] = tens[i] - isoten[i]
-    anisonorm = hota_4o3d_sym_norm(anisoten)
-    if anisonorm < TijkRefineRank1Parm.eps_start:
-        return 1
-    else:
-        anisonorminv = 1/anisonorm
-    alpha = beta = TijkRefineRank1Parm.beta*anisonorminv
-    oldval = s[0] - iso
-    _4o3d_sym_grad(der, anisoten, v)
-
-    while True:
-        armijoct = 0
-        while True:
-            armijoct += 1
-            der_len=sqrt(scalar(der,der))
-            if armijoct>TijkRefineRank1Parm.maxTry:
-                return 2
-            mult_with_scalar(testv, sign*alpha, der)
-            add_vectors(testv, v, testv)
-            dist = sqrt(scalar(testv,testv))
-
-            mult_with_scalar(testv, 1/dist,testv) #Vektor
-            dist = 1 - sqrt(scalar(v,testv))
-            val = hota_4o3d_sym_s_form(anisoten, testv)
-            if sign*val >= sign*oldval + TijkRefineRank1Parm.sigma*der_len*dist:
-                v[:] = testv
-                s[0] = val + iso
-                _4o3d_sym_grad(der, anisoten, v)
-                if alpha < beta:
-                    alpha /= TijkRefineRank1Parm.gamma
-                break
-            alpha *= TijkRefineRank1Parm.gamma
-        if sign*(val-oldval) <= TijkRefineRank1Parm.eps_impr *anisonorm:
-            break
-        oldval = val
-    return 1
-
-
-cdef void _4o3d_sym_grad(double[:] res, double[:] a, double[:] v) nogil:
-    """
-    Calculate spherical gradient of symetric 4th order tensor on sphere.
-    """
-    hota_4o3d_sym_v_form(res, a, v)
-    cdef int i, k = 3
-    for i in range(k):
-        res[i] *= 4
-    cdef double proj = scalar(res, v)
-    for i in range(k):
-        res[i] -= proj * v[i]
+def jacobian(v, f, n):
+    l =calc_lambda(v, f, n)
+    t = np.zeros((45,))
+    placeholder = np.zeros((3,))
+    out = np.zeros((12,))
+    for i in range(3):
+        hota_4o3d_sym_eval(t[15*i: 15*(i+1)], 1, v[3*i: 3*(i+1)])
+    for i in range(3):
+        summand1 = 0
+        summand2 = 0
+        summand3 = 0
+        for j in range(n):
+            hota_4o3d_sym_v_form(placeholder, f[j], v[3 * i: 3 * (i + 1)])
+            summand1 -= 2 * l[i] * placeholder
+        for j in range(3):
+            if i == j:
+                continue
+            hota_4o3d_sym_v_form(placeholder, t[15 * j:15 * (j + 1)], v[3 * i:3 * (i + 1)])
+            summand2 += n * l[i] * l[j] * placeholder
+        summand3 = v[9:]*v[3*i:3*(i+1)]
+        out[3*i:3*(i+1)] = summand1 + summand2 + summand3
+    for i in range(3):
+        out[9+i] = np.linalg.norm(v[3*i:3*(i+1)])
+    return out

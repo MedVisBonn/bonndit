@@ -4,18 +4,20 @@
 # import numpy as np
 import numpy as np
 import psutil
-from bonndit.utilc.average cimport approx_initial
+import scipy
+from bonndit.utilc.hota cimport hota_4o3d_sym_eval, order_4_mult
+from bonndit.utilc.lowrank cimport approx_initial
 from bonndit.utilc.penalty_spherical cimport calc_norm_spherical, refine_average_spherical
 from bonndit.utilc.cython_helpers cimport mult_with_scalar, sub_vectors, \
     set_zero_vector, set_zero_matrix, add_vectors
 from tqdm import tqdm
-cimport numpy as np
+#cimport numpy as np
 from cython.parallel cimport threadid
 
 DTYPE = np.float64
 
 #Algorithm 1: 2
-cdef double set_initial_spherical(double[:,:] v, double[:,:] pen) nogil:
+cdef double set_initial_spherical(double[:,:] v, double[:,:] pen) : # nogil:
     cdef int i, l = pen.shape[1]
     for i in range(l):
         add_vectors(v[:,i], v[:,i], pen[:,i])
@@ -24,7 +26,7 @@ cdef double set_initial_spherical(double[:,:] v, double[:,:] pen) nogil:
 # Get sum of neighbourhood for each voxel. Divide by
 ###
 cdef void get_neighbor_for_coor(double[:] nearest_fodf_sum, double[:,:,:,:]  fodf, int[:]
-                                 coor, int[:,:] neighbors) nogil:
+                                 coor, int[:,:] neighbors) : # nogil:
 
     cdef int index
     for index in range(neighbors.shape[0]):
@@ -38,7 +40,7 @@ cdef void get_neighbor_for_coor(double[:] nearest_fodf_sum, double[:,:,:,:]  fod
 
 
 
-cpdef approx_all_spherical(double[:,:,:] output, double[:,:] data, double[:,:,:,:]  fodf, int nearest, double nu, int rank, verbose):
+cpdef approx_all_spherical(double[:,:,:] output, double[:,:,:,:]  fodf, int nearest, double nu, int rank, int init, verbose):
     """ This function calculates the best tensor approximation with spherical approximation as described in xy.
 
     Parameters
@@ -46,8 +48,7 @@ cpdef approx_all_spherical(double[:,:,:] output, double[:,:] data, double[:,:,:,
     output The output
     data tensor data
     fodf TODO this can be replaced with a shape
-    nearest integer. How many neighbours should be used for the calculation. Given a point x all neighbours with
-                        norm(x,y) < nearest are used
+    nearest integer. How many neighbours should be used for the calculation. Given a point x all neighbours with norm(x,y) < nearest are used
     nu [0,inf) regularization strength
     run_all True or False. If True it regularizes. If False it calculates just the average
 
@@ -57,7 +58,7 @@ cpdef approx_all_spherical(double[:,:,:] output, double[:,:] data, double[:,:,:,
     """
     ##Number of threads to allocate memory to each thread and prevent interference.
     cdef int thread_num = psutil.cpu_count()
-    cdef int i, j, k, num = data.shape[1]
+    cdef int i, j, k, num =	fodf.shape[1] * fodf.shape[2] * fodf.shape[3]
     ##Neighbors of each voxel with absolut norm leq nearest
     cdef int[:,:] neighbors = np.array([[i, j, k] for i in range(-nearest, nearest + 1) \
                                         for j in range(-nearest, nearest + 1) for k in
@@ -91,8 +92,39 @@ cpdef approx_all_spherical(double[:,:,:] output, double[:,:] data, double[:,:,:,
        # set_zero_matrix(nearest_fodf[:,:, threadid()])
         set_zero_vector(sum_data[:, threadid()])
         get_neighbor_for_coor(sum_data[:, threadid()], fodf, coordinates[i],neighbors)
+        bsingle =  np.array(sum_data[:, threadid()])
         if sum_data[0, threadid()] == 0.0 or fodf[0, coordinates[i,0], coordinates[i,1], coordinates[i,2]] == 0.0:
             continue
+
+        # Initialize the tens
+        if init:
+            for j in range(rank):
+                hota_4o3d_sym_eval(tens[j, :, threadid()], 1, output[1:, j, i])
+            # copy to account for weighting
+            A = []
+            b = []
+            for j in range(15):
+                b = b + [bsingle[j] for k in range(order_4_mult[j])]
+                A = A + [tens[:, j, threadid()] for k in range(order_4_mult[j])]
+            b = np.array(b)
+            A = np.array(A)
+            # least squares
+            result = scipy.optimize.least_squares(minimize, np.array(output[0, :, i]), args=(A, b), bounds=([0,0,0], np.inf))
+            x = result.x
+           # print(result)
+            mult_with_scalar(output[0, :, i],  1, x)
+            if min(x) < 0:
+                print(result)
+            #print(x)
+        # sub from the data. To initialize the iterative process!
+        for j in range(rank):
+            hota_4o3d_sym_eval(tens[j, :, threadid()], output[0, j, i], output[1:, j, i])
+            sub_vectors(sum_data[1:,  threadid()], sum_data[1:,  threadid()], tens[j,:,  threadid()])
+
+
+
+
+
 
         ##Calc the Average
         approx_initial(output[0, :, i] , output[1:, :, i] , tens[:,:,  threadid()], sum_data[1:,  threadid()],
@@ -100,3 +132,8 @@ cpdef approx_all_spherical(double[:,:,:] output, double[:,:] data, double[:,:,:,
                                val[:, threadid()],
                                der[:, threadid()], testv[:, threadid()], anisoten[:, threadid()], isoten[:, threadid()])
 
+
+
+
+def minimize(x, A, b):
+    return A@x - b

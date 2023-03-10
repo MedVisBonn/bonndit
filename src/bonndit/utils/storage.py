@@ -7,7 +7,7 @@ import numpy as np
 
 # treat arrays in the program as world space...
 # automatically try to convert between world/file-space while loading/saving
-from bonndit.utils import nrrd
+from . import nrrd
 
 auto_convert_world_space = True
 
@@ -242,7 +242,7 @@ def load(filename, dtype=None):
         img = NIB.load(filename)
         data = img.get_fdata()
         data = apply_dtype(data, dtype)
-        affine = img.get_affine()
+        affine = img.affine
         meta = affine_to_meta3d(affine)
 
         return data, meta

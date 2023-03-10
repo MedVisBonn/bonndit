@@ -21,6 +21,8 @@ def main():
 						help='Three infiles containing low rank approx of rank 1 2 3', default=argparse.SUPPRESS)
 	parser.add_argument('-t', '--type',
 						help='selection or averaging', default='averaging')
+	parser.add_argument('-s', '--save_prob',
+						help='save probabilities', default=0)
 	parser.add_argument('-o', '--outfile', required=True,
 						help='5D output file with the approximation result (4,r,x,y,z)', default=argparse.SUPPRESS)
 	parser.add_argument('-a', '--a', default=1,
@@ -30,6 +32,7 @@ def main():
 	parser.add_argument('-v', '--verbose', default=True)
 
 	args = parser.parse_args()
+	print(args)
 
 	logging.basicConfig(filename=os.path.join("./", 'peak-modelling.log'),
 						format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
@@ -81,6 +84,13 @@ def main():
 	model_avg(output, low_rank, fodf, args.type, modelling, np.float64(args.a), np.float64(args.b), args.verbose)
 	output = output.reshape((4, 3) + fodf.shape[1:])
 	# update meta file.
+	if args.save_prob:
+		# swap columns
+		temp = np.copy(modelling[0])
+		modelling[0] = np.copy(modelling[2])
+		modelling[2] = temp
+		nrrd.write(args.outfile.replace('.nrrd', 'probabilities.nrrd'), np.float32(modelling), meta)
+		logging.info(f"Successfully created probabilities and saved to {args.outfile.replace('.nrrd', 'probabilities.nrrd')}")
 	newmeta = {k: meta[k] for k in ['space', 'space origin']}
 	newmeta['kinds'] = ['list', 'list', 'space', 'space', 'space']
 	newmeta['space directions'] = np.vstack(([np.nan, np.nan, np.nan], meta['space directions']))

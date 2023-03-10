@@ -262,9 +262,7 @@ class ShoreMultiTissueResponseEstimator(object):
         # Calculate wm response
         wm_voxels = data.get_fdata()[wm_mask.get_fdata() == 1]
         wm_vecs = dti_vecs.get_fdata()[wm_mask.get_fdata() == 1]
-      #  scale = np.mean(wm_voxels, axis=0)[0]
-       # for i in range(wm_voxels.shape[0]):
-        #    wm_voxels[i] *= (scale / wm_voxels[i, 0])
+
         wmshore_coeffs = bd.ShoreModel(self.gtab, self.order, self.zeta,
                                        self.tau).fit(wm_voxels, vecs=wm_vecs,
                                                      verbose=verbose,
@@ -631,17 +629,19 @@ class ShoreMultiTissueResponse(object):
         # Return fODFs and Volume fractions as separate numpy.ndarray objects
         NN = esh.LENGTH[self.order]
         out = np.zeros(space + (NN,))
+        residuals = np.zeros(space + (data.shape[-1], ))
         gmout = np.zeros(space)
         wmout = np.zeros(space)
         csfout = np.zeros(space)
 
+        residuals[mask, :] = [np.matmul(conv_mat, result[i]) - data[i] for i, x in enumerate(result)]
         out[mask, :] = [esh.esh_to_sym(x[:NN]) for x in result]
         f = self.kernel_csf[0][0] / max(self.signal_csf[0], 1e-10)
         wmout[mask] = [x[0] * f for x in result]
         gmout[mask] = [x[NN] * f for x in result]
         csfout[mask] = [x[NN + 1] * f for x in result]
 
-        return out, wmout, gmout, csfout
+        return out, wmout, gmout, csfout, residuals
 
     def deconvolve(self, data, conv_matrix):
         """

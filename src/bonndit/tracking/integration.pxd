@@ -1,8 +1,9 @@
 #%%cython --annotate
-#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True,
+#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True
 # warn.unused_results=True
 
 from .ItoW cimport Trafo
+from .interpolation cimport Interpolation
 
 cdef class Integration:
 	cdef double stepsize, width
@@ -12,7 +13,20 @@ cdef class Integration:
 	cdef Trafo trafo
 	cdef double[:] old_dir
 
-	cdef void integrate(self, double[:], double[:]) nogil
+	cdef int integrate(self, double[:], double[:]) # nogil except *
 
 cdef class Euler(Integration):
-	cdef void integrate(self, double[:], double[:]) nogil
+	cdef int integrate(self, double[:], double[:]) # nogil except *
+
+cdef class EulerUKF(Integration):
+	cdef int integrate(self, double[:], double[:]) # nogil except *
+
+cdef class RungeKutta(Integration):
+	cdef Interpolation interpolate
+	cdef double[:] k1
+	cdef double[:] k2
+	cdef double[:] k2_x
+
+	cdef int integrate(self, double[:], double[:]) # nogil except *
+
+
