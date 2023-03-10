@@ -2,11 +2,43 @@
 # warn.unused_results=True
 from bonndit.utilc.blas_lapack cimport *
 from bonndit.utilc.hota cimport hota_4o3d_sym_eval, hota_8o3d_sym_eval
-from bonndit.utilc.sh_rot cimport SHRotateRealCoef, map_dipy_to_pysh_o4, map_pysh_to_dipy_o4, sh_watson_coeffs
-from bonndit.utilc.cython_helpers cimport special_mat_mul, orthonormal_from_sphere, dinit, sphere2world, ddiagonal, world2sphere
+from bonndit.utilc.watsonfitwrapper cimport SHRotateRealCoef, map_dipy_to_pysh_o4, map_pysh_to_dipy_o4, sh_watson_coeffs
+from bonndit.utilc.cython_helpers cimport special_mat_mul, orthonormal_from_sphere, dinit, sphere2world, ddiagonal, world2sphere, sphere2cart
 from scipy.optimize import least_squares
 import numpy as np
 from libc.math cimport pow
+
+cdef double[:,:,:] dj_o4 = np.array([
+    [[1.0,0.0, -0.5, -0.0,0.375],
+    [0.0, -0.70710678, -0.0,0.4330127,0.],
+    [0.0,0.0,0.61237244,0.0, -0.39528471],
+    [0.0,0.0,0.0, -0.55901699, -0.],
+    [0.0,0.0,0.0,0.0,0.52291252]
+    ],
+    [[0.0,0.70710678,0.0, -0.4330127, -0.],
+    [0.0,0.5, -0.5, -0.125,0.375],
+    [0.0,0.0, -0.5,0.39528471,0.1767767],
+    [0.0,0.0,0.0,0.48412292, -0.33071891],
+    [0.0,0.0,0.0,0.0, -0.46770717]
+    ],
+    [[0.0,0.0,0.61237244,0.0, -0.39528471],
+    [0.0,0.0,0.5, -0.39528471, -0.1767767],
+    [0.0,0.0,0.25, -0.5,0.25],
+    [0.0,0.0,0.0, -0.30618622,0.46770717],
+    [0.0,0.0,0.0,0.0,0.33071891]
+    ],
+    [[0.0,0.0,0.0,0.55901699,0.],
+    [0.0,0.0,0.0,0.48412292, -0.33071891],
+    [0.0,0.0,0.0,0.30618622, -0.46770717],
+    [0.0,0.0,0.0,0.125, -0.375],
+    [0.0,0.0,0.0,0.0, -0.1767767]
+    ],
+    [[0.0,0.0,0.0,0.0,0.52291252],
+    [0.0,0.0,0.0,0.0,0.46770717],
+    [0.0,0.0,0.0,0.0,0.33071891],
+    [0.0,0.0,0.0,0.0,0.1767767],
+    [0.0,0.0,0.0,0.0,0.0625]]])
+
 
 cdef class AbstractModel:
 	def __cinit__(self, **kwargs):
@@ -144,13 +176,13 @@ cdef class WatsonModel(AbstractModel):
 				kappa = exp(sigma_points[i*4 + 1, j])
 				self.angles[1] = sigma_points[i*4 + 2, j]
 				self.angles[2] = sigma_points[i*4 + 3, j]
-				sh_watson_coeffs(kappa, self.dipy_v, self.order)
+				sh_watson_coeffs(kappa, &self.dipy_v[0], self.order)
 				self.dipy_v[0] *= self.rank_1_rh_o4[0]
 				self.dipy_v[3] *= self.rank_1_rh_o4[1]
 				self.dipy_v[10] *= self.rank_1_rh_o4[2]
-				map_dipy_to_pysh_o4(self.dipy_v, self.pysh_v)
-				SHRotateRealCoef(self.rot_pysh_v, self.pysh_v, self.order, self.angles)
-				map_pysh_to_dipy_o4(self.rot_pysh_v,self.dipy_v)
+				map_dipy_to_pysh_o4(&self.dipy_v[0], &self.pysh_v[0])
+				SHRotateRealCoef(&self.rot_pysh_v[0], &self.pysh_v[0], self.order, &self.angles[0], &dj_o4[0][0][0])
+				map_pysh_to_dipy_o4(&self.rot_pysh_v[0],&self.dipy_v[0])
 				cblas_daxpy(observations.shape[0],1,&self.rot_pysh_v[0], 1, &observations[0,j], observations.shape[1])
 
 
@@ -165,7 +197,7 @@ cdef class WatsonModel(AbstractModel):
 		ddiagonal(&P[0,0], Pv, P.shape[0], P.shape[1])
 
 		for i in range(self.vector_field.shape[1]):
-			sphere2cat(self.vector_field[0:2,i, <int> point[0], <int> point[1], <int> point[2]], dir)
+			sphere2cart(self.vector_field[0:2,i, <int> point[0], <int> point[1], <int> point[2]], dir)
 			dot[i] = cblas_ddot(3, &dir[0], 1, &init_dir[0],1)
 		dot1 = sorted(dot, key=lambda x: abs(x))
 		for i in range(self.vector_field.shape[1]):
@@ -189,11 +221,13 @@ cdef class BinghamModel(WatsonModel):
 		# Convolution with rank 1 kernel:
 		self.lookup_table *= [2.51327412, 1.43615664, 0.31914592] * (len(self.lookup_table)//3)
 
-	cdef sh_bingham_coeffs(self, kappa, beta):
-		# TODO doublecheck that the indeces are right.
-		self.dipy_v[0] = self.lookup_table[int(kappa/10 + beta*60) + 0]
-		self.dipy_v[3] = self.lookup_table[int(kappa/10 + beta*60) + 1]
-		self.dipy_v[10] = self.lookup_table[int(kappa/10 + beta*60) + 2]
+	cdef int convert_to_index(self, double i, double j, double k) nogil except *:
+		return <int> ((j - 1) * 500 * 3 + (k - 1) * 3 + i // 2 + 1)
+
+	cdef void sh_bingham_coeffs(self, double kappa, double beta) nogil except *:
+		self.dipy_v[0] = self.lookup_table[self.convert_to_index(0, kappa*10, beta*10)]
+		self.dipy_v[3] = self.lookup_table[self.convert_to_index(2, kappa*10, beta*10)]
+		self.dipy_v[10] = self.lookup_table[self.convert_to_index(4, kappa*10, beta*10)]
 #
 #
 #	cdef void normalize(self, double[:] m, double[:] v, int inc) nogil except *:
@@ -216,9 +250,9 @@ cdef class BinghamModel(WatsonModel):
 				self.angles[1] = sigma_points[i*6 + 4, j]
 				self.angles[2] = sigma_points[i*6 + 5, j]
 				self.sh_bingham_coeffs(kappa, beta)
-				map_dipy_to_pysh_o4(self.dipy_v, self.pysh_v)
-				SHRotateRealCoef(self.rot_pysh_v, self.pysh_v, self.order, self.angles)
-				map_pysh_to_dipy_o4(self.rot_pysh_v,self.dipy_v)
+				map_dipy_to_pysh_o4(&self.dipy_v[0], &self.pysh_v[0])
+				SHRotateRealCoef(&self.rot_pysh_v[0], &self.pysh_v[0], self.order, &self.angles[0], &dj_o4[0][0][0])
+				map_pysh_to_dipy_o4(&self.rot_pysh_v[0], &self.dipy_v[0])
 				cblas_daxpy(observations.shape[0], lam ,&self.dipy_v[0], 1, &observations[0,j], observations.shape[1])
 
 #
@@ -234,7 +268,7 @@ cdef class BinghamModel(WatsonModel):
 		ddiagonal(&P[0,0], Pv, P.shape[0], P.shape[1])
 
 		for i in range(self.vector_field.shape[1]):
-			sphere2cat(self.vector_field[0:2,i, <int> point[0], <int> point[1], <int> point[2]], dir)
+			sphere2cart(self.vector_field[0:2,i, <int> point[0], <int> point[1], <int> point[2]], dir)
 			dot[i] = cblas_ddot(3, &dir[0], 1, &init_dir[0],1)
 		dot1 = sorted(dot, key=lambda x: abs(x))
 		for i in range(self.vector_field.shape[1]):

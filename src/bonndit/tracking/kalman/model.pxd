@@ -23,6 +23,28 @@ cdef class fODFModel(AbstractModel):
 	cdef void constrain(self, double[:,:]) nogil except *
 
 
+cdef class WatsonModel(AbstractModel):
+	cdef double[:] res
+	cdef int order
+	cdef double[:,:,:,:,:] vector_field
+	cdef double[:] rank_1_rh_o4
+	cdef double[:] angles
+	cdef double[:] rot_pysh_v
+	cdef double[:] pysh_v
+	cdef double[:] dipy_v
+	#cdef void normalize(self, double[:], double[:], int) nogil except *
+	cdef void predict_new_observation(self, double[:,:], double[:,:]) nogil except *
+	cdef bint kinit(self, double[:], double[:], double[:], double[:,:], double[:])
+	cdef void constrain(self, double[:,:]) nogil except *
+
+cdef class BinghamModel(WatsonModel):
+	cdef double[:] lookup_table
+	cdef int convert_to_index(self, double, double, double) nogil except *
+	cdef void sh_bingham_coeffs(self, double, double) nogil except *
+	cdef void predict_new_observation(self, double[:,:], double[:,:]) nogil except *
+	cdef bint kinit(self, double[:], double[:], double[:], double[:,:], double[:])
+	cdef void constrain(self, double[:,:]) nogil except *
+
 cdef class MultiTensorModel(AbstractModel):
 	cdef double[:,:] M
 	cdef double[:] q

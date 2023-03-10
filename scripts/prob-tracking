@@ -115,7 +115,7 @@ def main():
 	parser.add_argument('-o', help='Filename for output file in ply format.', required=True, default=argparse.SUPPRESS)
 	parser.add_argument('-mtlength', help='Maximum track steps.', default=300)
 	parser.add_argument('--samples', help='Samples per seed.', default=1)
-	parser.add_argument('-maxangle', help='Max angle over the last 30 mm of the streamline', default=130)
+	parser.add_argument('-max_angle', help='Max angle over the last 30 mm of the streamline', default=130)
 	parser.add_argument('--var', help='Variance for probabilistic direction selection..', default=1)
 	parser.add_argument('--exp', help='Expectation for probabilistic direction selection.', default=0)
 
@@ -168,6 +168,13 @@ def main():
 	parser.add_argument('--ukf_pnoise', help='Process noise', nargs='+', default=argparse.SUPPRESS)
 	parser.add_argument('--ukf_mnoise', help='Measurement noise', nargs='+', default=argparse.SUPPRESS)
 	# subsubparser = parser_ukf.add_subparsers(help = 'Decide between low-rank and Multitensor model')
+
+	# Arguments for Watson fitting
+	parser.add_argument('--kappa_range', help='For Watson fitting: range of initial kappa values to randomly sample from.', default='39.9,40')
+	parser.add_argument('--max_sampling_angle', help='For Watson fitting: max angle to watson peak to randomly sample from.', default=90)
+	parser.add_argument('--max_kappa', help='For Watson fitting: max kappa value to sample from, higher values get clipped', default=80)
+	parser.add_argument('--min_kappa', help='For Watson fitting: min kappa value to sample from, if lower the tracking is stopped', default=1)
+	parser.add_argument('--watson_prob_dir_selection', help='If added, in the Watson direction selection the distribution is chosen as in ScalarNew followed by the sampling.', action='store_true')
 
 	parser.add_argument('-v', '--verbose', default=True)
 	parser.add_argument('-r', '--exclusion', default=argparse.SUPPRESS)
@@ -264,7 +271,7 @@ def main():
 			baseline, _ = load('ukf_baseline', args, 'baseline.nrrd', args.i, logging, nrrd.read)
 
 			logging.info("b0 loaded")
-		elif args.ukf == 'LowRank':
+		elif args.ukf in ['LowRank', 'Watson', 'Bingham']:
 			data, _ = load('ukf_data', args, 'fodf.nrrd', args.i, logging, nrrd.read)
 			data = np.moveaxis(data, 0, -1)
 			data = data[:, :, :, 1:]

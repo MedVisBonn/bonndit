@@ -81,12 +81,23 @@ cdef class UKF(Interpolation):
 	cdef Kalman _kalman
 	cdef AbstractModel _model
 	cpdef int interpolate(self, double[:], double[:], int) # nogil except *
+	cdef int select_next_dir(self, int, double[:])
 
 cdef class UKFFodf(UKF):
-	cpdef int interpolate(self, double[:], double[:], int) # nogil except *
+	cdef int select_next_dir(self, int, double[:]) # nogil except *
+
+cdef class UKFWatson(UKF):
+	cdef int select_next_dir(self, int, double[:]) # nogil except *
+
+cdef class UKFBingham(UKF):
+	cdef double[:,:,:] A
+	cdef double[:,:] mu
+	cdef double[:,:] l_k_b
+	cdef int select_next_dir(self, int, double[:]) # nogil except *
+
 
 cdef class UKFMultiTensor(UKF):
-	cpdef int interpolate(self, double[:], double[:], int) # nogil except *
+	cdef int select_next_dir(self, int, double[:]) # nogil except *
 
 
 

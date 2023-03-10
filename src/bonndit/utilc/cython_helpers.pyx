@@ -2,7 +2,7 @@
 #cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, warn.unused_results=True
 cimport cython
 import numpy as np
-from libc.math cimport pow, floor, acos, pi
+from libc.math cimport pow, floor, acos, pi, sqrt, atan2, sin, cos
 from libc.stdio cimport printf
 from .blas_lapack cimport *
 
@@ -65,10 +65,22 @@ cdef world2sphere(double x,double y, double z):
 		raise Exception()
 	return r, sigma, phi
 
+cdef r_z_r_y_r_z(double a, double b, double c):
+	# getestet und für gut befunden!
+	return np.array(
+		[[cos(a) * cos(b) * cos(c) - sin(a) * sin(c), - cos(a)*cos(b)*sin(c) - sin(a)*cos(c), cos(a) * sin(b)],
+		 [sin(a) * cos(b) * cos(c) + cos(a) * sin(c), - sin(a) * cos(b) * sin(c) + cos(a) * cos(c), sin(a) * sin(b)],
+		 [-sin(b) * cos(c), sin(b) * sin(c), cos(b)]])
+
 cdef orthonormal_from_sphere(double sigma, double phi):
 	return [sphere2world(1, sigma, phi),sphere2world(1, sigma + np.pi/2, phi),np.array([-np.sin(sigma)*np.sin(phi),np.sin(sigma)*np.cos(phi), 0])]
 
-
+cdef void sphere2cart(double[:] sphere, double[:] cart) nogil:
+	cdef double sin_theta
+	sin_theta = sin(sphere[0])
+	cart[0] = cos(sphere[1]) * sin_theta
+	cart[1] = sin(sphere[1]) * sin_theta
+	cart[2] = cos(sphere[0])
 
 
 cdef int inverse(double[:,:] A, double[:] WORKER, int [:] IPIV) nogil except *:
