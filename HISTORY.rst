@@ -2,6 +2,11 @@
 History
 =======
 
+0.3.0 (2023-03-15)
+-----------------
+* Included UKF tractography
+* Included regularized tractography
+
 0.2.0 (2021-09-17)
 ------------------
 * Included the missing steps of the whole tracking pipeline.

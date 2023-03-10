@@ -213,6 +213,7 @@ def main():
             all_files += [args.csfmask, args.gmmask, args.wmmask]
         else:
             ff = 1
+
         # Test whether all required files are available
         for f in all_files:
             filepath = os.path.join(indir, f)
@@ -239,7 +240,6 @@ def main():
             wm_mask = nib.Nifti1Image(
                 masks.get_fdata()[:, :, :, 2],
                 masks.affine)
-
         else:
             csf_mask = bd.load(os.path.join(indir, args.csfmask))
             gm_mask = bd.load(os.path.join(indir, args.gmmask))
@@ -264,6 +264,7 @@ def main():
         logging.info('Input loaded.')
 
         # Create tissue masks based on fractional anisotropy values
+
         wm_mask = fa_guided_mask(
             wm_mask, dti_fa, dti_mask,
             tissue_threshold=0.95,
@@ -311,16 +312,16 @@ def main():
 
     # Deconvolution if 'responseonly' is not set
     if not args.responseonly:
-        out, wmout, gmout, csfout = fit.fodf(
-            data, pos=args.constraint,
-            mask=dti_mask, kernel=args.kernel,
-            verbose=args.verbose,
-            cpus=args.workers)
+        out, wmout, gmout, csfout, residuals = fit.fodf(
+            data, pos=args.constraint, mask=dti_mask, kernel=args.kernel,
+            verbose=args.verbose, cpus=args.workers)
         logging.info(
             'Signal deconvolved with multiple tissue response functions.')
-
+        residuals = nib.Nifti1Image(residuals, affine=data.affine)
+        nib.save(residuals, os.path.join(outdir, 'residuals.nii.gz'))
         fields.save_tensor(os.path.join(outdir, "fodf.nrrd"), out,
                            mask=dti_mask.get_fdata(), meta=meta)
+
         logging.info('fODFs saved.')
 
         # Save volumes
