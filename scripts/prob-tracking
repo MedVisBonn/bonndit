@@ -311,7 +311,7 @@ def main():
 		'max_track_length': int(args.mtlength),
 		'integration': args.integration,
 		'interpolation': args.interpolation,
-		'max_angle': float(args.maxangle),
+		'max_angle': float(args.max_angle),
 		'samples': int(args.samples),
 		'wmmin': float(args.wmmin),
 		'wm_mask': np.float64(wm_mask),
