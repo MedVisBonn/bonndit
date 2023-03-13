@@ -8,33 +8,12 @@ from distutils.extension import Extension
 from Cython.Build import cythonize
 import numpy
 import os
+from findblas.distutils import build_ext_with_blas
 
-if "MKLROOT" not in os.environ:
-    print("""MKLROOT has to be a enviroment Variable. Follow the 
-					https://www.intel.com/content/www/us/en/develop/documentation/oneapi-programming-guide/top/oneapi-development-environment-setup.html description to set them correctly
-					
-					Fallback option scipy blas will be used. """)
-    blas = Extension(
-        "bonndit.utilc.blas_lapack",
-        ["src/bonndit/utilc/blas_lapack.pyx"],
-        include_dirs=[numpy.get_include(), '/usr/lib'],
-        libraries=["openblas"],
-        library_dirs=['/usr/lib'],
-        extra_compile_args=["-Wall", "-m64", "-Ofast"],
-        extra_link_args=["-Wl,--no-as-needed"]
-    )
-else:
 
-    mklroot = os.environ["MKLROOT"]
-    blas = Extension(
-        "bonndit.utilc.blas_lapack",
-        ["src/bonndit/utilc/blas_lapack.pyx"],
-        include_dirs=[numpy.get_include(), "%s/include" % mklroot],
-        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
-        library_dirs=["%s/lib/intel64" % mklroot],
-        extra_compile_args=["-Wall", "-m64", "-Ofast"],
-        extra_link_args=["-Wl,--no-as-needed"]
-    )
+#blas_path, blas_file, incl_path, incl_file, flags = findblas.find_blas()
+
+
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -45,7 +24,13 @@ with open('HISTORY.rst') as history_file:
 
 
 ext_modules = [
-    blas,
+    Extension(
+        "bonndit.utilc.blas_lapack",
+        ["src/bonndit/utilc/blas_lapack.pyx"],
+        include_dirs=[numpy.get_include()],
+        extra_compile_args=["-Wall", "-m64", "-Ofast"],
+        extra_link_args=["-Wl,--no-as-needed"]
+    ),
     Extension(
         "bonndit.utilc.cython_helpers",
         ["src/bonndit/utilc/cython_helpers.pyx"],
@@ -220,7 +205,7 @@ setup(
              'scripts/data2fodf'],
     ext_modules=cythonize(ext_modules, compiler_directives={'boundscheck': False, 'wraparound': False,
                                                             'optimize.unpack_method_calls': False}),
-    # cmdclass={'build_ext': build_ext},
+    cmdclass = {'build_ext': build_ext_with_blas},
     package_data={"": ['*.pxd', '*.npz']},
     setup_requires=setup_requirements,
     test_suite='tests',

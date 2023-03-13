@@ -1,4 +1,4 @@
-cdef extern from 'cblas.h':
+cdef extern from 'findblas.h':
 	enum CBLAS_LAYOUT:
 		CblasRowMajor = 101
 		CblasColMajor = 102
