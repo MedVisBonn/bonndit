@@ -243,7 +243,7 @@ def main():
 		wm_mask = wm_mask.get_fdata()
 
 	else:
-		logging.error("Wmvolume has wrong format. Only nii.gz and nrrd are accepted.")
+		logging.error("WMvolume has wrong format. Only nii.gz and nrrd are accepted.")
 		raise Exception()
 	if vector_field.shape[-3:] != wm_mask.shape:
 		logging.error("Vectorfield (x,y,z) and wm mask have to have same dimensions.")
@@ -257,7 +257,6 @@ def main():
 		if args.ukf == 'MultiTensor':
 			data, meta2 = load('ukf_data', args, 'data.nrrd', args.i, logging, nrrd.read)
 			data = np.moveaxis(data, 0, -1)
-			print(data.shape)
 			bvals = load('ukf_bvals', args, 'bvals', args.i, logging, np.loadtxt)
 			logging.info("bvals loaded")
 			bvecs = load('ukf_bvecs', args, 'bvecs', args.i, logging, np.loadtxt)

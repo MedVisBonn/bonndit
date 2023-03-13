@@ -86,15 +86,6 @@ cdef class UKF(Interpolation):
 cdef class UKFFodf(UKF):
 	cdef int select_next_dir(self, int, double[:]) # nogil except *
 
-cdef class UKFWatson(UKF):
-	cdef int select_next_dir(self, int, double[:]) # nogil except *
-
-cdef class UKFBingham(UKF):
-	cdef double[:,:,:] A
-	cdef double[:,:] mu
-	cdef double[:,:] l_k_b
-	cdef int select_next_dir(self, int, double[:]) # nogil except *
-
 
 cdef class UKFMultiTensor(UKF):
 	cdef int select_next_dir(self, int, double[:]) # nogil except *

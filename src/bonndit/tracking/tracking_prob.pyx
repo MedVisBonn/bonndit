@@ -7,7 +7,7 @@ from .alignedDirection cimport  Gaussian, Laplacian, ScalarOld, ScalarNew, Proba
 from .ItoW cimport Trafo
 from .stopping cimport Validator
 from .integration cimport  Euler, Integration, EulerUKF, RungeKutta
-from .interpolation cimport  FACT, Trilinear, Interpolation, UKFFodf, UKFMultiTensor, TrilinearFODF, UKFBingham, UKFWatson
+from .interpolation cimport  FACT, Trilinear, Interpolation, UKFFodf, UKFMultiTensor, TrilinearFODF
 from bonndit.utilc.cython_helpers cimport mult_with_scalar, sum_c, sum_c_int, set_zero_vector, sub_vectors, \
 	angle_deg, norm
 import numpy as np
@@ -205,11 +205,7 @@ cpdef tracking_all(vector_field, wm_mask, seeds, tracking_parameters, postproces
 	cdef Probabilities directionGetter
 	cdef Validator validator
 	#select appropriate model #TODO hier das richtige einfügren
-	if tracking_parameters['ukf'] == "Watson":
-		directionGetter = WatsonDirGetter(0, tracking_parameters['variance'])
-	elif tracking_parameters['ukf'] == "Bingham":
-		directionGetter = BinghamDirGetter(0, tracking_parameters['variance'])
-	elif tracking_parameters['prob'] == "Gaussian":
+	if tracking_parameters['prob'] == "Gaussian":
 		directionGetter = Gaussian(0, tracking_parameters['variance'])
 	elif tracking_parameters['prob'] == "Laplacian":
 		directionGetter = Laplacian(0, tracking_parameters['variance'])
@@ -240,10 +236,6 @@ cpdef tracking_all(vector_field, wm_mask, seeds, tracking_parameters, postproces
 		interpolate = UKFMultiTensor(vector_field, dim[2:5], directionGetter, **ukf_parameters)
 	elif tracking_parameters['ukf'] == "LowRank":
 		interpolate = UKFFodf(vector_field, dim[2:5], directionGetter, **ukf_parameters)
-	elif tracking_parameters['ukf'] == "Watson":
-		interpolate = UKFWatson(vector_field, dim[2:5], directionGetter, **ukf_parameters)
-	elif tracking_parameters['ukf'] == "Bingham":
-		interpolate = UKFBingham(vector_field, dim[2:5], directionGetter, **ukf_parameters)
 	elif tracking_parameters['interpolation'] == "FACT":
 		interpolate = FACT(vector_field, dim[2:5], directionGetter, **tracking_parameters)
 	elif tracking_parameters['interpolation'] == "Trilinear":

@@ -15,7 +15,7 @@ from bonndit.utilc.hota cimport hota_4o3d_sym_norm, hota_4o3d_sym_eval
 from bonndit.utilc.lowrank cimport approx_initial
 from .ItoW cimport Trafo
 cdef int[:,:] permute_poss = np.array([[0,1,2],[0,2,1], [1,0,2], [1,2,0], [2,1,0], [2,0,1]], dtype=np.int32)
-from .kalman.model cimport AbstractModel, fODFModel, MultiTensorModel, BinghamModel, WatsonModel
+from .kalman.model cimport AbstractModel, fODFModel, MultiTensorModel
 from .kalman.kalman cimport Kalman
 from .alignedDirection cimport Probabilities
 from libc.math cimport pow, pi, acos, floor, fabs,fmax, exp
@@ -566,10 +566,6 @@ cdef class UKF(Interpolation):
 			self.data = kwargs['data']
 		if kwargs['model'] == 'fodf':
 			self._model = fODFModel(vector_field=vector_field, **kwargs)
-		elif kwargs['model'] == 'watson':
-			self._model = WatsonModel(vector_field=vector_field, **kwargs)
-		elif kwargs['model'] == 'bingham':
-			self._model = BinghamModel(vector_field=vector_field, **kwargs)
 		else:
 			self._model = MultiTensorModel(**kwargs)
 		self._kalman = Kalman(kwargs['data'].shape[3], kwargs['dim_model'], self._model)
@@ -642,77 +638,6 @@ cdef class UKFFodf(UKF):
 		self.next_dir = self.prob.best_fit
 
 		return info
-
-cdef class UKFWatson(UKF):
-	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities prob, **kwargs):
-		super(UKFWatson, self).__init__(vector_field, grid, prob, **kwargs)
-
-
-	cdef int select_next_dir(self, int info, double[:] old_dir):
-		if info != 0:
-			return info
-#		for i in range(3):
-#			sphere2cart(self.x_v2[0, i * 4 + 2:i * 4 + 4], self.mean[i])
-#
-#			# flip x and z back to align with data:
-#			self.best_dir[i, 0] = -self.best_dir[i, 0]
-#			self.best_dir[i, 2] = -self.best_dir[i, 2]
-#
-#			self.weights[i] = fabs(self.x_v2[0, i * 4])
-#			self.kappas[i] = exp(self.x_v2[0, i * 4 + 1])
-#
-		for i in range(self._model.num_tensors):
-			if cblas_dnrm2(3, &self.mean[4*i], 1) != 0:
-				cblas_dscal(3, 1 / cblas_dnrm2(3, &self.mean[4*i], 1), &self.mean[4*i], 1)
-				if cblas_ddot(3, &self.mean[4*i], 1, &old_dir[0],1) < 0:
-					cblas_dscal(3, -1, &self.mean[4*i], 1)
-				self.mean[4*i+3] = max(self.mean[4*i+3],_lambda_min)
-			else:
-				cblas_dscal(3, cblas_dnrm2(3, &self.mean[4 * i], 1), &self.mean[4 * i], 1)
-				self.mean[4 * i + 3] = max(self.mean[4 * i + 3], _lambda_min)
-
-
-		for i in range(self._model.num_tensors):
-			dctov(&self.mean[4*i], self.best_dir[i])
-			if self.mean[4 * i + 3] > 0.1:
-				#print(self.mean[4 * i + 3])
-				cblas_dscal(3,pow(self.mean[4 * i + 3], 0.25), &self.best_dir[i,0],1)
-			else:
-				cblas_dscal(3,0, &self.best_dir[i,0],1)
-
-		self.prob.calculate_probabilities(self.best_dir, old_dir)
-		self.next_dir = self.prob.best_fit
-
-		return info
-
-cdef class UKFBingham(UKF):
-	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities prob, **kwargs):
-		super(UKFBingham, self).__init__(vector_field, grid, prob, **kwargs)
-		self.A = np.zeros((self._model.num_tensors, 3, 3))
-		self.mu = np.zeros((self._model.num_tensors, 3))
-		self.l_k_b = np.zeros((self._model.num_tensors, 3))
-
-	cdef int select_next_dir(self, int info, double[:] old_dir):
-		if info != 0:
-			return info
-
-		for i in range(self._model.num_tensors):
-			self.R = r_z_r_y_r_z(self.mean[6 * i+3], self.mean[6 * i+4], self.mean[6 * i+5])
-			self.A[i] = (self.R[:,0] @ self.R[:, 0].T - self.R[:,1] @ self.R[:, 1].T)
-			# enough to reorient just mu
-			self.mu[i] = self.R[:,2]
-			if cblas_ddot(3, &self.mu[i,0], 1, &old_dir[0],1) < 0:
-				cblas_dscal(3, -1, &self.mu[i,0], 1)
-			self.l_k_b[i, 0] = max(self.mean[6 * i + 0], _lambda_min)
-			self.l_k_b[i, 1] = max(self.mean[6 * i + 1], _lambda_min)
-			self.l_k_b[i, 2] = max(self.mean[6 * i + 2], _lambda_min)
-
-		self.prob.calculate_probabilities_sampled(self.mu, old_dir, self.A, self.l_k_b)
-		self.next_dir = self.prob.best_fit
-
-		return info
-
-
 
 
 cdef class UKFMultiTensor(UKF):

@@ -26,14 +26,6 @@ ceres_libs         = ['glog', 'gflags']
 watson_libraries   = ceres_libs + suite_sparse_libs + ['pthread', 'fftw3', 'm', 'watsonfit']
 
 ext_modules = [
-	Extension("bonndit.utilc.watsonfitwrapper",
-        sources=["src/bonndit/utilc/watsonfitwrapper.pyx"],
-        include_dirs=[".",numpy.get_include(),"/usr/lib"],
-        libraries=watson_libraries,
-        language="c++",
-        extra_compile_args=["-I.", "-O3", "-ffast-math", "-march=native", "-fopenmp"],
-        extra_link_args=["-L/usr/local/include","-fopenmp","-Wl,--no-as-needed"]
-    ),
     Extension(
         "bonndit.utilc.blas_lapack",
         ["src/bonndit/utilc/blas_lapack.pyx"],
