@@ -1,4 +1,4 @@
-cdef extern from 'mkl.h':
+cdef extern from "cblas.h":
 	enum CBLAS_LAYOUT:
 		CblasRowMajor = 101
 		CblasColMajor = 102
