@@ -18,7 +18,7 @@ if "MKLROOT" not in os.environ:
         "bonndit.utilc.blas_lapack",
         ["src/bonndit/utilc/blas_lapack.pyx"],
         include_dirs=[numpy.get_include(), '/usr/lib'],
-        libraries=["blas", "pthread", "m", "dl"],
+        libraries=["openblas"],
         library_dirs=['/usr/lib'],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
         extra_link_args=["-Wl,--no-as-needed"]
