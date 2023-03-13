@@ -365,7 +365,7 @@ def main():
 
     else:
         logging.error(
-            "Wmvolume has wrong format. Only nii.gz and nrrd are accepted.")
+            "WMvolume has wrong format. Only nii.gz and nrrd are accepted.")
         raise Exception()
     if vector_field.shape[-3:] != wm_mask.shape:
         logging.error(
@@ -382,7 +382,6 @@ def main():
             data, meta2 = load('ukf_data', args, 'data.nrrd',
                                args.i, logging, nrrd.read)
             data = np.moveaxis(data, 0, -1)
-            print(data.shape)
             bvals = load('ukf_bvals', args, 'bvals',
                          args.i, logging, np.loadtxt)
             logging.info("bvals loaded")
