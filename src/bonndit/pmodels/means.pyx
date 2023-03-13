@@ -10,7 +10,7 @@ from bonndit.utilc.cython_helpers cimport angle_deg, add_vectors, mult_with_scal
 from libc.math cimport fabs
 
 c = [(x,y,z) for x in (1,2,3) for y in (4,5,0) for z in (7,0)]
-d =[(x,y,z) for x in c for y in c for z in c if sum(set(x + y+ z)) == 22 == sum(x) + sum(y) + sum(z)]
+d =[(x,y,z) for x in c for y in c for z in c if sum(set(x + y+ z)) == 22 and 22 == sum(x) + sum(y) + sum(z)]
 cdef int[:,:,:] all_opt = np.array([d[x] for x in range(len(d)) if not [y for y in d[:x] if (d[x][0] in y) and (d[x][1] in y) and (d[x][2] in y)]], dtype=np.int32)
 
 cdef void mean_calc(double[:,:] output, double[:,:,:] vectors, double[:] prob) except *:
