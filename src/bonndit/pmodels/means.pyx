@@ -14,8 +14,8 @@ c = [(x, y, z) for x in (1, 2, 3) for y in (4, 5, 0) for z in (7, 0)]
 d = [
     (
         x, y,
-        z) for x in c for y in c for z in c if sum(set(x + y + z)) == 22
-    == sum(x) + sum(y) + sum(z)]
+        z) for x in c for y in c for z in c if sum(set(x + y + z))
+    == 22 and 22 == sum(x) + sum(y) + sum(z)]
 cdef int[
     :, :,
     :] all_opt \
