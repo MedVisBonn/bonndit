@@ -1,0 +1,23 @@
+package:
+  name: bonndit
+  version: 0.2.0
+
+source:
+ #git_rev: https://github.com/MedVisBonn/bonndit/releases/latest
+  git_url: https://github.com/MedVisBonn/bonndit.git
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - Cython
+    - numpy
+    - findblas
+    - wheel
+  run:
+    - python
+
+about:
+  home: https://github.com/MedVisBonn/bonndit
+  summary: "Latest dMRI software from University of Bonn"
+  license: GPL

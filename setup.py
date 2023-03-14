@@ -7,11 +7,7 @@ from setuptools import setup, find_packages
 from distutils.extension import Extension
 from Cython.Build import cythonize
 import numpy
-import os
 from findblas.distutils import build_ext_with_blas
-
-
-# blas_path, blas_file, incl_path, incl_file, flags = findblas.find_blas()
 
 
 with open('README.rst') as readme_file:
@@ -169,31 +165,40 @@ test_requirements = ['pytest', 'nibabel', 'numpy', 'dipy', 'scipy', 'tqdm',
                      'cvxopt', 'mpmath', 'pynrrd']
 print(find_packages('src'))
 setup(
-    author="Johannes Gruen", author_email='jgruen@uni-bonn.de',
-    classifiers=['Topic :: Scientific/Engineering',
-                 'Development Status :: 3 - Alpha',
-                 'Intended Audience :: Science/Research',
-                 (
-                     'License :: OSI Approved :: GNU General Public License '
-                     'v3 (GPLv3)'
-                 ),
-                 'Natural Language :: English',
-                 'Programming Language :: Python :: 3.5',
-                 'Programming Language :: Python :: 3.6',
-                 'Programming Language :: Python :: 3.7',],
+    author="Johannes Gruen",
+    author_email='jgruen@uni-bonn.de',
+    classifiers=[
+        'Topic :: Scientific/Engineering',
+        'Development Status :: 3 - Alpha',
+        'Intended Audience :: Science/Research',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'Natural Language :: English',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+    ],
     description=(
         'The bonndit package contains the latest diffusion imaging tools '
         'developed at the University of Bonn.'
     ),
-    install_requires=requirements, license="GNU General Public License v3",
-    long_description=readme + '\n\n' + history, include_package_data=True,
-    keywords='bonndit', name='bonndit',
+    install_requires=requirements,
+    license="GNU General Public License v3",
+    long_description=readme + '\n\n' + history,
+    include_package_data=True,
+    keywords='bonndit',
+    name='bonndit',
+
     packages=find_packages('src', exclude=('tests',)),
     package_dir={'': 'src'},
-    scripts=['scripts/mtdeconv', 'scripts/stdeconv', 'scripts/kurtosis',
-             'scripts/dtiselectvols', 'scripts/low-rank-k-approx',
-             'scripts/peak-modelling', 'scripts/prob-tracking',
-             'scripts/bundle-filtering', 'scripts/csd-peaks',
+    scripts=['scripts/mtdeconv',
+             'scripts/stdeconv',
+             'scripts/kurtosis',
+             'scripts/dtiselectvols',
+             'scripts/low-rank-k-approx',
+             'scripts/peak-modelling',
+             'scripts/prob-tracking',
+             'scripts/bundle-filtering',
+             'scripts/csd-peaks',
              'scripts/data2fodf'],
     ext_modules=cythonize(
         ext_modules,
@@ -201,7 +206,10 @@ setup(
                              'optimize.unpack_method_calls': False}),
     cmdclass={'build_ext': build_ext_with_blas},
     package_data={"": ['*.pxd', '*.npz']},
-    setup_requires=setup_requirements, test_suite='tests',
-    tests_require=test_requirements,
-    url='https://github.com/MedVisBonn/bonndit', version='0.2.0',
-    zip_safe=False,)
+    setup_requires=[],  # setup_requirements,
+    test_suite='tests',
+    tests_require=[],  # test_requirements,
+    url='https://github.com/MedVisBonn/bonndit',
+    version='0.2.0',
+    zip_safe=False,
+)

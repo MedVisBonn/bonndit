@@ -8,4 +8,3 @@ mpmath~=1.1.0
 setuptools~=57.0.0
 pytest~=6.2.5
 cython~=3.0a6
-findblas==0.1.20
