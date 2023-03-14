@@ -6,12 +6,16 @@ source:
  #git_rev: https://github.com/MedVisBonn/bonndit/releases/latest
   git_url: https://github.com/MedVisBonn/bonndit.git
 
+build:
+  preserve_egg_dir: True
+
+
 requirements:
   build:
     - python
     - setuptools
     - Cython
-    - numpy >=1.20.0
+    - numpy {{ numpy }}
     - findblas
     - wheel
     - dipy
