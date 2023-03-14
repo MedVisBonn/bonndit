@@ -157,10 +157,10 @@ ext_modules = [
     ),
 ]
 
-requirements = ['nibabel', 'numpy', 'pandas',  'scipy', 'tqdm',
-                'cvxopt', 'mpmath', 'plyfile', 'Cython', 'pynrrd']
+#requirements = ['nibabel', 'numpy', 'pandas',  'scipy', 'tqdm',
+#                'cvxopt', 'mpmath', 'plyfile', 'Cython', 'pynrrd']
 
-setup_requirements = ['pytest-runner', 'cython']
+#setup_requirements = ['pytest-runner', 'cython']
 
 #test_requirements = ['pytest', 'nibabel', 'numpy', 'dipy', 'scipy', 'tqdm',
 #                     'cvxopt', 'mpmath', 'pynrrd']
@@ -179,7 +179,7 @@ setup(
         'Programming Language :: Python :: 3.7',
     ],
     description="The bonndit package contains the latest diffusion imaging tools developed at the University of Bonn.",
-    install_requires=requirements,
+  #  install_requires=requirements,
     license="GNU General Public License v3",
     long_description=readme + '\n\n' + history,
     include_package_data=True,

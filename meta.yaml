@@ -18,9 +18,19 @@ requirements:
     - numpy {{ numpy }}
     - findblas
     - wheel
-    - dipy
   run:
     - python
+    - nibabel
+    - numpy
+    - pandas
+    - scipy
+    - tqdm
+    - cvxopt
+    - mpmath
+    - plyfile
+    - Cython
+    - pynrrd
+    - dipy
 
 about:
   home: https://github.com/MedVisBonn/bonndit
