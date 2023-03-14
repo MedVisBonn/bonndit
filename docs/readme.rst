@@ -310,6 +310,18 @@ The methods implemented in :code:`low-rank-k-approx` was first introduced in
 
 * Thomas Schultz, Hans-Peter Seidel: Estimating Crossing Fibers: A Tensor Decomposition Approach. In: IEEE Transactions on Visualization and Computer Graphics, 14(6):1635-42, 2008
 
+The methods implemented in :code:`peak-modelling` was first introduced in
+
+* Johannes Grün, Gemma van der Voort, Thomas Schultz: Reducing Model Uncertainty in Crossing Fiber Tractography. In proceedings of EG Workshop on Visual Computing for Biology and Medicine, pages 55-64, 2021
+
+Extended in:
+
+* Johannes Grün, Gemma van der Voort, Thomas Schultz: Model Averaging and Bootstrap Consensus Based Uncertainty Reduction in Diffusion MRI Tractography. In: Computer Graphics Forum, 2022
+
+The regularized tractography methods (joint low-rank and low-rank UKF) were first implemented in :code:`prob-tracking` and introduced in
+
+* Johannes Grün, Samuel Gröschel, Thomas Schultz: Spatially Regularized Low-Rank Tensor Approximation for Accurate and Fast Tractography. In NeuroImage, 2023
+
 
 The use of quadratic cone programming to make the kurtosis fit more stable which is implemented in :code:`kurtosis` has been explained in the methods section of
 
