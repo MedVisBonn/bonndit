@@ -162,8 +162,8 @@ requirements = ['nibabel', 'numpy', 'pandas',  'scipy', 'tqdm',
 
 setup_requirements = ['pytest-runner', 'cython']
 
-test_requirements = ['pytest', 'nibabel', 'numpy', 'dipy', 'scipy', 'tqdm',
-                     'cvxopt', 'mpmath', 'pynrrd']
+#test_requirements = ['pytest', 'nibabel', 'numpy', 'dipy', 'scipy', 'tqdm',
+#                     'cvxopt', 'mpmath', 'pynrrd']
 print(find_packages('src'))
 setup(
     author="Johannes Gruen",
