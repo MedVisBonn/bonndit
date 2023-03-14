@@ -157,7 +157,7 @@ ext_modules = [
     ),
 ]
 
-requirements = ['nibabel', 'numpy', 'pandas', 'dipy', 'fury', 'scipy', 'tqdm',
+requirements = ['nibabel', 'numpy', 'pandas',  'scipy', 'tqdm',
                 'cvxopt', 'mpmath', 'plyfile', 'Cython', 'pynrrd']
 
 setup_requirements = ['pytest-runner', 'cython']
