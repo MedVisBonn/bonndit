@@ -11,7 +11,7 @@ requirements:
     - python
     - setuptools
     - Cython
-    - numpy
+    - numpy >=1.20.0
     - findblas
     - wheel
     - dipy
