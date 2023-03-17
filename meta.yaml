@@ -15,12 +15,12 @@ requirements:
   build:
     - python
     - Cython
-    - numpy >=1.20
+    - numpy =1.20
     - findblas
   run:
     - python
     - nibabel
-    - numpy >=1.20
+    - numpy =1.20
     - pandas
     - scipy
     - tqdm
