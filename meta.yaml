@@ -4,35 +4,50 @@ package:
 
 source:
   path: ./
-  #fn: v0.2.1
-  #url: https://github.com/MedVisBonn/bonndit/archive/refs/tags/v0.2.1.tar.gz
-  #git_url: https://github.com/MedVisBonn/bonndit.git
 
 build:
   preserve_egg_dir: True
+
+
 
 
 requirements:
   build:
     - python
     - Cython
-    - numpy {{ numpy }}
+    - numpy >=1.20
     - findblas
   run:
     - python
     - nibabel
-    - numpy {{ numpy }}
+    - numpy >=1.20
     - pandas
     - scipy
     - tqdm
     - cvxopt
+    - argparse
+    - findblas
     - mpmath
     - plyfile
     - Cython
     - pynrrd
     - dipy
 
+test:
+  imports:
+    - bonndit
+    - bonndit.utils
+  requires:
+    - cvxopt
+    - dipy
+    - mpmath
+    - nibabel
+    - numpy
+    - pytest
+    - scipy
+    - tqdm
+
 about:
-  home: https://github.com/MedVisBonn/bonndit
+  home: ./
   summary: "Latest dMRI software from University of Bonn"
   license: GPL

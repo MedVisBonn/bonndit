@@ -156,13 +156,13 @@ ext_modules = [
     ),
 ]
 
-# requirements = ['nibabel', 'numpy', 'pandas',  'scipy', 'tqdm',
-# 'cvxopt', 'mpmath', 'plyfile', 'Cython', 'pynrrd']
+requirements = ['nibabel', 'numpy', 'pandas', 'scipy', 'tqdm',
+                'cvxopt', 'mpmath', 'plyfile', 'Cython', 'pynrrd']
 
-# setup_requirements = ['pytest-runner', 'cython']
+setup_requirements = ['pytest-runner', 'cython']
 
-# test_requirements = ['pytest', 'nibabel', 'numpy', 'dipy', 'scipy', 'tqdm',
-# 'cvxopt', 'mpmath', 'pynrrd']
+test_requirements = ['pytest', 'nibabel', 'numpy', 'dipy', 'scipy', 'tqdm',
+                     'cvxopt', 'mpmath', 'pynrrd']
 print(find_packages('src'))
 setup(
     author="Johannes Gruen",
@@ -207,6 +207,9 @@ setup(
     cmdclass={'build_ext': build_ext_with_blas},
     package_data={"": ['*.pxd', '*.npz']},
     url='https://github.com/MedVisBonn/bonndit',
-    version='0.2.0',
+    setup_requires=setup_requirements,
+    test_suite='tests',
+    tests_require=test_requirements,
+    version='0.2.1',
     zip_safe=False,
 )

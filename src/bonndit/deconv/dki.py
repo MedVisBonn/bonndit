@@ -702,7 +702,7 @@ ix4 = [
     [0, 1, 2, 2], [0, 2, 2, 2], [1, 1, 1, 1], [1, 1, 1, 2], [1, 1, 2, 2],
     [1, 2, 2, 2], [2, 2, 2, 2]]
 
-invix4 = np.zeros((3, 3, 3, 3), dtype=np.int)
+invix4 = np.zeros((3, 3, 3, 3), dtype=int)
 for i in range(3):
     for j in range(3):
         for k in range(3):
