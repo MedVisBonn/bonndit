@@ -13,7 +13,6 @@ from bonndit.utilc.cython_helpers cimport mult_with_scalar, sub_vectors, \
     set_zero_vector, set_zero_matrix, add_vectors
 from tqdm import tqdm
 # cimport numpy as np
-from cython.parallel cimport threadid
 
 DTYPE = np.float64
 
@@ -68,7 +67,6 @@ cpdef approx_all_spherical(
     """
     # Number of threads to allocate memory to each thread and prevent
     # interference.
-    cdef int thread_num = psutil.cpu_count()
     cdef int i, j, k, num = fodf.shape[1] * fodf.shape[2] * fodf.shape[3]
     # Neighbors of each voxel with absolut norm leq nearest
     cdef int[:, :] neighbors = np.array(
@@ -90,40 +88,34 @@ cpdef approx_all_spherical(
             [i, j, k] for i in range(fodf.shape[1]) for j in range(fodf.shape[2]) \
             for k in range(fodf.shape[3])], dtype=np.intc)
 
-    cdef double[:, :] sum_data = np.zeros((16, thread_num), dtype=DTYPE)
+    cdef double[:] sum_data = np.zeros((16), dtype=DTYPE)
    # cdef double[:,:,:] nearest_fodf = np.zeros([16, thread_num], dtype=DTYPE)
     # many helper variables
-    cdef double[:, :, :] vs = np.zeros([4, 3, thread_num], dtype=DTYPE)
-    cdef double[:, :] valsec = np.empty([1, thread_num], dtype=DTYPE), \
-        val = np.empty([1, thread_num], dtype=DTYPE), \
-        der = np.empty([3, thread_num], dtype=DTYPE),
-    cdef double[:, :] testv = np.empty([3, thread_num], dtype=DTYPE), \
-        anisoten = np.empty([15, thread_num], dtype=DTYPE), \
-        isoten = np.empty([15, thread_num], dtype=DTYPE)
-    cdef double[:] norm = np.zeros([thread_num], dtype=DTYPE)
-    cdef double[:, :] res = np.empty([16, thread_num], dtype=DTYPE),
-    cdef double[:, :, :] tens = np.zeros([3, 15, thread_num], dtype=DTYPE)
-    cdef double[:, :, :] tens_average = np.zeros(
-        [3, 15, thread_num],
-        dtype=DTYPE)
-    cdef double[:, :, :] pen_act = np.empty([3, 3, thread_num], dtype=DTYPE), \
-        three_matrix = np.empty([3, 3, thread_num], dtype=DTYPE)
-    cdef double[:, :] three_vector = np.empty([3, thread_num], dtype=DTYPE), \
-        one_vector = np.empty([1, thread_num], dtype=DTYPE)
-    cdef double[
-        :, :,
-        :] three_vector_placeholder = np.empty([3, 5, thread_num], dtype=DTYPE)
+    cdef double[:, :] vs = np.zeros([4, 3], dtype=DTYPE)
+    cdef double[:] valsec = np.empty([1,], dtype=DTYPE), \
+        val = np.empty([1,], dtype=DTYPE), \
+        der = np.empty([3,], dtype=DTYPE),
+    cdef double[:] testv = np.empty([3,], dtype=DTYPE), \
+        anisoten = np.empty([15,], dtype=DTYPE), \
+        isoten = np.empty([15,], dtype=DTYPE)
+    cdef double[:] norm = np.zeros([1,], dtype=DTYPE)
+    cdef double[:] res = np.empty([16,], dtype=DTYPE),
+    cdef double[:, :] tens = np.zeros([3, 15,], dtype=DTYPE)
+    cdef double[:, :] tens_average = np.zeros([3, 15,], dtype=DTYPE)
+    cdef double[:, :] pen_act = np.empty([3, 3], dtype=DTYPE), \
+        three_matrix = np.empty([3, 3], dtype=DTYPE)
+    cdef double[:] three_vector = np.empty([3,], dtype=DTYPE), \
+        one_vector = np.empty([1,], dtype=DTYPE)
+    cdef double[:, :] three_vector_placeholder = np.empty([3, 5,], dtype=DTYPE)
     # print(1)
     for i in tqdm(range(num), disable=not verbose):
         # get neighbourhood for each coordinate and save in the blocked thread
         # memory.
        # set_zero_matrix(nearest_fodf[:,:, threadid()])
-        set_zero_vector(sum_data[:, threadid()])
-        get_neighbor_for_coor(
-            sum_data[:, threadid()], fodf, coordinates[i],
-            neighbors)
-        bsingle = np.array(sum_data[:, threadid()])
-        if sum_data[0, threadid()] == 0.0 or fodf[
+        set_zero_vector(sum_data[:])
+        get_neighbor_for_coor(sum_data[:], fodf, coordinates[i], neighbors)
+        bsingle = np.array(sum_data[:])
+        if sum_data[0] == 0.0 or fodf[
             0, coordinates[i, 0],
             coordinates[i, 1], coordinates[i, 2]] == 0.0:
             continue
@@ -131,16 +123,13 @@ cpdef approx_all_spherical(
         # Initialize the tens
         if init:
             for j in range(rank):
-                hota_4o3d_sym_eval(tens[j, :, threadid()], 1, output[1:, j, i])
+                hota_4o3d_sym_eval(tens[j, :], 1, output[1:, j, i])
             # copy to account for weighting
             A = []
             b = []
             for j in range(15):
                 b = b + [bsingle[j] for k in range(order_4_mult[j])]
-                A = A + [
-                    tens[
-                        :, j,
-                        threadid()] for k in range(order_4_mult[j])]
+                A = A + [tens[:, j] for k in range(order_4_mult[j])]
             b = np.array(b)
             A = np.array(A)
             # least squares
@@ -156,12 +145,8 @@ cpdef approx_all_spherical(
             # print(x)
         # sub from the data. To initialize the iterative process!
         for j in range(rank):
-            hota_4o3d_sym_eval(
-                tens[j, :, threadid()], output[0, j, i],
-                output[1:, j, i])
-            sub_vectors(
-                sum_data[1:, threadid()], sum_data[1:, threadid()],
-                tens[j, :, threadid()])
+            hota_4o3d_sym_eval(tens[j, :], output[0, j, i], output[1:, j, i])
+            sub_vectors(sum_data[1:], sum_data[1:], tens[j, :])
 
 
 
@@ -170,12 +155,10 @@ cpdef approx_all_spherical(
 
         # Calc the Average
         approx_initial(
-            output[0, :, i], output[1:, :, i], tens[:, :, threadid()],
-            sum_data[1:, threadid()],
-            rank, valsec[:, threadid()],
-            val[:, threadid()],
-            der[:, threadid()], testv[:, threadid()],
-            anisoten[:, threadid()], isoten[:, threadid()])
+            output[0, :, i], output[1:, :, i], tens[:, :], sum_data[1:],
+            rank, valsec[:],
+            val[:],
+            der[:], testv[:], anisoten[:], isoten[:])
 
 
 

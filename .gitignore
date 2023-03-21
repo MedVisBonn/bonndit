@@ -4,7 +4,6 @@ __pycache__/
 *$py.class
 # Stream of Streamlines files
 .stream*
-
 # C extensions
 *.so
 *.c
@@ -12,6 +11,8 @@ __pycache__/
 # Distribution / packaging
 .Python
 env/
+test_env/
+test_envv/
 build/
 develop-eggs/
 dist/
