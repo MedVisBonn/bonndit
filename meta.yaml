@@ -7,7 +7,7 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 4c84d9c69a87ac33619cb34039f8758ff4b798f6f5d65788d758795bc6af6e45
+  sha256: b1a205ba3b95538562cbd769100ad4955fea8fc940deabaa11d9fca1691b9f1a
 
 build:
   number: 0
@@ -19,9 +19,9 @@ requirements:
   host:
     - python
     - pip
-    - cython
-    - findblas
-    - numpy
+    - cython=0.29.33
+    - findblas=1.0.0
+    - numpy=
   run:
     - python
     - dipy
