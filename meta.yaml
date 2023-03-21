@@ -1,41 +1,48 @@
+{% set name = "bonnndit" %}
+{% set version = "0.2.10" %}
+
 package:
-  name: bonndit
-  version: 0.2.1
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  path: ./
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 4c84d9c69a87ac33619cb34039f8758ff4b798f6f5d65788d758795bc6af6e45
 
 build:
-  preserve_egg_dir: True
-
-
-
+  number: 0
+  script: "{{ PYTHON }} -m pip install . -vv"
 
 requirements:
   build:
+    - {{ compiler('c') }}
+  host:
     - python
-    - Cython
-    - numpy =1.20
+    - pip
+    - cython
     - findblas
+    - numpy
   run:
     - python
+    - dipy
     - nibabel
-    - numpy =1.20
-    - pandas
-    - scipy
+    - numpy
     - tqdm
     - cvxopt
-    - argparse
-    - findblas
     - mpmath
     - plyfile
-    - Cython
     - pynrrd
-    - dipy
 
 test:
   imports:
     - bonndit
+    - bonndit.deconv
+    - bonndit.directions
+    - bonndit.filter
+    - bonndit.pmodels
+    - bonndit.tracking
+    - bonndit.tracking.kalman
+    - bonndit.utilc
     - bonndit.utils
   requires:
     - cvxopt
@@ -43,11 +50,20 @@ test:
     - mpmath
     - nibabel
     - numpy
+    - pynrrd
     - pytest
     - scipy
     - tqdm
 
 about:
-  home: ./
-  summary: "Latest dMRI software from University of Bonn"
-  license: GPL
+  home: "https://github.com/MedVisBonn/bonndit"
+  license: "GNU General Public v3 (GPLv3)"
+  license_family: GPL3
+  license_file: 
+  summary: "The bonndit package contains the latest diffusion imaging tools developed at the University of Bonn."
+  doc_url: 
+  dev_url: 
+
+extra:
+  recipe-maintainers:
+    - your-github-id-here

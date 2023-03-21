@@ -1,11 +1,11 @@
 bonndit\.utils package
-======================
+========================
 
 Submodules
 ----------
 
 bonndit\.utils\.dwmri module
-----------------------------
+-----------------------------
 
 .. automodule:: bonndit.utils.dwmri
     :members:
@@ -13,7 +13,7 @@ bonndit\.utils\.dwmri module
     :show-inheritance:
 
 bonndit\.utils\.esh module
---------------------------
+---------------------------
 
 .. automodule:: bonndit.utils.esh
     :members:
@@ -21,7 +21,7 @@ bonndit\.utils\.esh module
     :show-inheritance:
 
 bonndit\.utils\.fields module
------------------------------
+------------------------------
 
 .. automodule:: bonndit.utils.fields
     :members:

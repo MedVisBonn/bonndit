@@ -158,9 +158,9 @@ ext_modules = [
 ]
 
 requirements = ['nibabel', 'numpy', 'pandas',  'scipy', 'tqdm',
-                'cvxopt', 'mpmath', 'plyfile', 'Cython', 'pynrrd']
+                'cvxopt', 'mpmath', 'plyfile', 'findblas', 'Cython', 'pynrrd']
 
-setup_requirements = ['pytest-runner', 'cython']
+setup_requirements = ['pytest-runner', 'cython', 'findblas']
 
 test_requirements = ['pytest', 'nibabel', 'numpy', 'dipy', 'scipy', 'tqdm',
                      'cvxopt', 'mpmath', 'pynrrd']
@@ -183,8 +183,8 @@ setup(
     license="GNU General Public License v3",
     long_description=readme + '\n\n' + history,
     include_package_data=True,
-    keywords='bonndit',
-    name='bonndit',
+    keywords='bonnndit',
+    name='bonnndit',
 
     packages=find_packages('src', exclude=('tests',)),
     package_dir={'': 'src'},
@@ -206,6 +206,6 @@ setup(
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
-    version='0.2.1',
+    version='0.2.13',
     zip_safe=False,
 )

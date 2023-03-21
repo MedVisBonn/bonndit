@@ -1,6 +1,6 @@
-=======
+========
 bonndit
-=======
+========
 
 
 .. image:: https://img.shields.io/pypi/v/bonndit.svg
@@ -21,7 +21,6 @@ included. On the one hand simple peak extraction and on the other hand a low ran
 Further an average and selection approach is implemented, which reduces the model uncertainty. Within
 these multivectorfields we can apply a probabilistic streamline based tracking approach, which can be filtered afterwards.
 
-To install it the mkl library from intel has to be installed and the :code:`MKLROOT` has to be set!
 
 * Free software: GNU General Public License v3
 * Documentation: https://bonndit.readthedocs.io.
@@ -50,6 +49,42 @@ Features
 
 Getting Started
 ------------------
+
+This introduction will help a new user to reconstruct the right CST tract of a HCP subject. For a more detailed description of all commands we refer to the next sections.
+
+First, you need to download HCP diffusion MRI data from the HCP website. This dataset includes high-quality diffusion MRI images and preprocessed data. You can download the data for free after registering on the HCP db website (db.humanconnectome.org/) and agreeing to the licence.
+To follow the tutorial please download patient 904044.
+As an intermediate step we reconstruct fODFs as it was proposed by Anekele et al. [2]. In this method the single fiber response function (which is then used for deconvolution) is estimated using voxels with an high fractional anisotropy.
+To estimate the FA values we are selecting first high b-values (>1500) and the corresonding b vectors and measurements via:
+.. code-block:: console
+
+    dtiselectvols --outdata "HCPdir/dtidata.nii.gz" --outbvecs "HCPdir/dtibvecs" --outbvals "HCPdir/dtibvals" --indata "HCPdir/data.nii.gz" --inbvecs "HCPdir/bvecs" --inbvals "HCPdir/bvals"
+
+Next we are estimating tensors via  (FSL MUSS INSTALLIERT SEIN)
+
+.. code-block:: console
+
+    dtifit -k "HCPdir/dtidata.nii.gz" -o "HCPdir/dti" -m "HCPdir/mask.nii.gz" -r "HCPdir/dtibvecs" -b "HCPdir/dtibvals" -w
+
+The `dti_FA.nii.gz` contains the FA values and can be inspected with fsleyes.
+As a second step we are segmenting the T1 image into WM/GM/CSF. Therefore, we apply the mask to it via
+.. code-block:: console
+
+    fslmaths "HCPdir/T1w_acpc_dc_restore_1.25.nii.gz" -mas "HCPdir/mask.nii.gz" "HCPdir/T1_masked.nii.gz"
+
+and running the segmentation via
+.. code-block:: console
+
+    fast -o "HCPdir/fast" "HCPdir/T1_masked.nii.gz"
+
+Having all prerequisites the fODFs can be estimated using
+
+.. code-block:: console
+
+    mtdeconv -o "HCPdir/mtdeconv/" -v True -k rank1 -r 4 -C hpsd "HCPdir"
+
+
+
 mtdeconv
 ~~~~~~~~~~~~
 
@@ -60,7 +95,6 @@ For calculating the multi-tissue response functions and the fODFs for given data
     $ mtdeconv -i /path/to/your/data
 
 The specified folder should contain the following files:
-
 * :code:`bvecs`: b-vectors
 * :code:`bvals`: b-values
 * :code:`data.nii.gz`: The diffusion weighted data
