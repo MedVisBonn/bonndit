@@ -244,9 +244,6 @@ def main():
         help='order of fODF. Only 4 and 8 are supported. Default is 4',
         default=4)
     parser.add_argument(
-        '--ukf_dim_model', help='Dimensions of model',
-        default=argparse.SUPPRESS)
-    parser.add_argument(
         '--ukf_pnoise', help='Process noise', nargs='+',
         default=argparse.SUPPRESS)
     parser.add_argument(
@@ -388,12 +385,8 @@ def main():
             bvecs = load('ukf_bvecs', args, 'bvecs',
                          args.i, logging, np.loadtxt)
             # Load bvals and bvecs and initialize a GradientTable object
-
-        # print(bvecs, bvals.shape)
             bvecs = fsl_flip_sign(
                 bvecs.T, meta2['space directions'][-3:, -3:]).T
-
-        # print(bvecs, bvals.shape)
             logging.info("bvecs loaded")
             baseline, _ = load('ukf_baseline', args,
                                'baseline.nrrd', args.i, logging, nrrd.read)
@@ -404,7 +397,6 @@ def main():
                            args.i, logging, nrrd.read)
             data = np.moveaxis(data, 0, -1)
             data = data[:, :, :, 1:]
-            print(data.shape)
             bvals = None
             bvecs = None
             baseline = None
@@ -480,7 +472,8 @@ def main():
         ukf_parameter = {
             'trafo_data': trafo_data, 'data': np.array(
                 data, dtype=np.float64),
-            'dim_model': int(args.ukf_dim_model),
+            'dim_model': vector_field.shape[1] * 5
+            if args.ukf == "MultiTensor" else vector_field.shape[1] * 4,
             'model': 'fodf' if args.ukf == "LowRank" else 'MultiTensor',
             'gradients': bvecs.astype(np.float64).T
             if bvecs is not None else "", 'baseline': baseline,
