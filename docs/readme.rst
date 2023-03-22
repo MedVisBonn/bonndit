@@ -103,17 +103,30 @@ To run the easiest version of the tractography code we run the following command
 
     prob-tracking -i "HCPdir/mtdeconv/" --seedpoints "bonndit/tests/cst-right.pts" -o "cst_unconstrained.tck"
 
+It uses an iterative tractography approach beginning at each seedpoint into both directions. If no direction is specified in the seed file it will \
+use the main direction of low-rank approximation at the closest voxel. Now it will track iteratively into both directions. Each iteration steps \
+contains the following parts. First the fODF at the current point is interpolated trilinearly from its surrounding. From the fODF we are \
+calculating the low-rank approximation [3]_ and choosing the next direction probabilistically. Using a Runge-Kutta integration scheme \
+we are doing a step with half step size and redo the trilinear interpolation and direction choice to use the mean direction with full step size.
+This is done until a stopping criteria is reached, which are set to a minimum wm density of 0.3 and a maximum curvature of 130 degrees over the last 30mm.
+
 To run the more advanced joint low-rank approximation we have to specify
 
 .. code-block:: console
 
     prob-tracking -i "HCPdir/mtdeconv/" --seedpoints "bonndit/tests/cst-right.pts" -o "cst_constrained.tck"
 
+Instead of using the low-rank approximation, we are using a regularised version of it the joint low-rank approximation, which was introduced in [5]_ \
+as first method.
+
 To run the low-rank UKF we have to add the "ukf" flag.
 
 .. code-block:: console
 
     prob-tracking -i "HCPdir/mtdeconv/" --seedpoints "bonndit/tests/cst-right.pts" -o "cst_ukf.tck" --ukf "lowrank"
+
+We have replaced the low-rank approximation with an UKF approach which estimated the new low-rank approximation depending on the past and regularize \
+through this. This was introduced in [5]_ as second approach.
 
 More details about various options can be found below.
 
@@ -145,8 +158,7 @@ Optional, but recommended to greatly speed up computation:
 Further important parameters are:
 
 * :code:`--rank`: The rank of the computed fODF. Higher ranks lead to sharper peaks as well as higher susceptibility to noise. Default: 4. Supported: 4,6,8
-* :code:`--kernel`: The single tissue response kernel used to estimate the CSD. Options are either `rank1` a single fiber rank-1 fiber corresponding to the rotational harmonic parts \
-                    of the spherical harmonics up to the specified order or `delta` a single peak. `rank1` reduces the susceptibility to noise. Default: rank1
+* :code:`--kernel`: The single tissue response kernel used to estimate the CSD. Options are either `rank1` a single fiber rank-1 fiber corresponding to the rotational harmonic parts of the spherical harmonics up to the specified order or `delta` a single peak. `rank1` reduces the susceptibility to noise. Default: rank1
 
 
 If you want to see a list of parameters type the following:
@@ -224,32 +236,32 @@ If not further specified the input folder has to contain the following:
     unit direction of the vector, second dimension defines different directions
     and remaining dimensions diffine the coordinate.
 
-    If the file is named differently, use the --infile argument
+    If the file is named differently, use the `--infile` argument
 
 - wmvolume.nrrd
     The white matter mask, which is an output of mtdeconv.
 
-    If the file is named differently, use the --wmmask argument
+    If the file is named differently, use the `--wmmask` argument
 
 - seedpoint.pts
     The seed point file in world coordinates. First 3 dimensions of row give
     world coordinates. Additionally a initial direction can be set by appending
     3 columns to each row denoting the direction in (x,y,z) space.
 
-    If the file is named differently, use the --seedpoint argument.
+    If the file is named differently, use the `--seedpoint` argument.
 
 If the -ukf flag is set, the input folder should also contain:
 
 - bvals
     A text file which contains the bvals for each gradient direction.
 
-    If the file is namend differenty, use the --ukf_bvals argument
+    If the file is namend differenty, use the `--ukf_bvals` argument
 
 - bvecs
     A text file which contains all gradient directions in the format Ax3
-    If the file is named differently, use the --ukf_bvecs argument
+    If the file is named differently, use the `--ukf_bvecs` argument
 - data.nrrd
-    The file with the data. If the --ukfmethod flag is set to
+    The file with the data. If the `--ukfmethod` flag is set to
 
     - MultiTensor it should be the raw data.
 
@@ -260,12 +272,12 @@ If the -ukf flag is set, the input folder should also contain:
 - baseline.nrrd
     File with b0 measurements
 
-    If the file is named differently, use the --ukf_baseline argument
+    If the file is named differently, use the `--ukf_baseline` argument
 
 If the -disk flag is set and we want to append to a file, the inputfolder should contain
     - output.txt
         A textfile with the streamlines generated so far.
-        If the file is named differently, use the --disk_append argument.
+        If the file is named differently, use the `--disk_append` argument.
 
 
 The output file is in ply format, which contain the vertex coordinates and the length of each streamline.
@@ -372,32 +384,32 @@ Reference
 
 If you use our software as part of a scientific project, please cite the corresponding publications. The method implemented in :code:`stdeconv` and :code:`mtdeconv` was first introduced in
 
-..[1] Michael Ankele, Lek-Heng Lim, Samuel Groeschel, Thomas Schultz: Fast and Accurate Multi-Tissue Deconvolution Using SHORE and H-psd Tensors. In: Proc. Medical Image Analysis and Computer-Aided Intervention (MICCAI) Part III, pp. 502-510, vol. 9902 of LNCS, Springer, 2016
+.. [1] Michael Ankele, Lek-Heng Lim, Samuel Groeschel, Thomas Schultz: Fast and Accurate Multi-Tissue Deconvolution Using SHORE and H-psd Tensors. In: Proc. Medical Image Analysis and Computer-Aided Intervention (MICCAI) Part III, pp. 502-510, vol. 9902 of LNCS, Springer, 2016
 
 It was refined and extended in
 
-..[2] Michael Ankele, Lek-Heng Lim, Samuel Groeschel, Thomas Schultz: Versatile, Robust, and Efficient Tractography With Constrained Higher-Order Tensor fODFs. In: Int'l J. of Computer Assisted Radiology and Surgery, 12(8):1257-1270, 2017
+.. [2] Michael Ankele, Lek-Heng Lim, Samuel Groeschel, Thomas Schultz: Versatile, Robust, and Efficient Tractography With Constrained Higher-Order Tensor fODFs. In: Int'l J. of Computer Assisted Radiology and Surgery, 12(8):1257-1270, 2017
 
 The methods implemented in :code:`low-rank-k-approx` was first introduced in
 
-..[3] Thomas Schultz, Hans-Peter Seidel: Estimating Crossing Fibers: A Tensor Decomposition Approach. In: IEEE Transactions on Visualization and Computer Graphics, 14(6):1635-42, 2008
+.. [3] Thomas Schultz, Hans-Peter Seidel: Estimating Crossing Fibers: A Tensor Decomposition Approach. In: IEEE Transactions on Visualization and Computer Graphics, 14(6):1635-42, 2008
 
 The methods implemented in :code:`peak-modelling` was first introduced in
 
-..[4] Johannes Grün, Gemma van der Voort, Thomas Schultz: Reducing Model Uncertainty in Crossing Fiber Tractography. In proceedings of EG Workshop on Visual Computing for Biology and Medicine, pages 55-64, 2021
+.. [4] Johannes Grün, Gemma van der Voort, Thomas Schultz: Reducing Model Uncertainty in Crossing Fiber Tractography. In proceedings of EG Workshop on Visual Computing for Biology and Medicine, pages 55-64, 2021
 
 Extended in:
 
-..[5] Johannes Grün, Gemma van der Voort, Thomas Schultz: Model Averaging and Bootstrap Consensus Based Uncertainty Reduction in Diffusion MRI Tractography. In: Computer Graphics Forum, 2022
+.. [5] Johannes Grün, Gemma van der Voort, Thomas Schultz: Model Averaging and Bootstrap Consensus Based Uncertainty Reduction in Diffusion MRI Tractography. In: Computer Graphics Forum, 2022
 
 The regularized tractography methods (joint low-rank and low-rank UKF) were first implemented in :code:`prob-tracking` and introduced in
 
-..[6] Johannes Grün, Samuel Gröschel, Thomas Schultz: Spatially Regularized Low-Rank Tensor Approximation for Accurate and Fast Tractography. In NeuroImage, 2023
+.. [6] Johannes Grün, Samuel Gröschel, Thomas Schultz: Spatially Regularized Low-Rank Tensor Approximation for Accurate and Fast Tractography. In NeuroImage, 2023
 
 
 The use of quadratic cone programming to make the kurtosis fit more stable which is implemented in :code:`kurtosis` has been explained in the methods section of
 
-..[7] Samuel Groeschel, G. E. Hagberg, T. Schultz, D. Z. Balla, U. Klose, T.-K. Hauser, T. Nägele, O. Bieri, T. Prasloski, A. MacKay, I. Krägeloh-Mann, K. Scheffler: Assessing white matter microstructure in brain regions with different myelin architecture using MRI. In: PLOS ONE 11(11):e0167274, 2016
+.. [7] Samuel Groeschel, G. E. Hagberg, T. Schultz, D. Z. Balla, U. Klose, T.-K. Hauser, T. Nägele, O. Bieri, T. Prasloski, A. MacKay, I. Krägeloh-Mann, K. Scheffler: Assessing white matter microstructure in brain regions with different myelin architecture using MRI. In: PLOS ONE 11(11):e0167274, 2016
 
 PDFs can be obtained from the respective publisher, or the academic homepage of Thomas Schultz: http://cg.cs.uni-bonn.de/en/people/prof-dr-thomas-schultz/
 
