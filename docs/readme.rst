@@ -52,15 +52,18 @@ Getting Started
 
 This introduction will help a new user to reconstruct the right CST tract of a HCP subject. For a more detailed description of all commands we refer to the next sections.
 
+**To run the following tutorial it is necessary to have FSL installed**
+
 First, you need to download HCP diffusion MRI data from the HCP website. This dataset includes high-quality diffusion MRI images and preprocessed data. You can download the data for free after registering on the HCP db website (db.humanconnectome.org/) and agreeing to the licence.
 To follow the tutorial please download patient 904044.
-As an intermediate step we reconstruct fODFs as it was proposed by Anekele et al. [2]. In this method the single fiber response function (which is then used for deconvolution) is estimated using voxels with an high fractional anisotropy.
-To estimate the FA values we are selecting first high b-values (>1500) and the corresonding b vectors and measurements via:
+As an intermediate step we reconstruct fODFs as it was proposed by Ankele et al. [2]_. In this method the single fiber response function (which is then used for deconvolution) is estimated using voxels with an high fractional anisotropy.
+To estimate the FA values we are selecting first high b-values (>1500) and the corresponding b vectors and measurements via:
+
 .. code-block:: console
 
     dtiselectvols --outdata "HCPdir/dtidata.nii.gz" --outbvecs "HCPdir/dtibvecs" --outbvals "HCPdir/dtibvals" --indata "HCPdir/data.nii.gz" --inbvecs "HCPdir/bvecs" --inbvals "HCPdir/bvals"
 
-Next we are estimating tensors via  (FSL MUSS INSTALLIERT SEIN)
+Next we are estimating tensors via FSLs'
 
 .. code-block:: console
 
@@ -68,22 +71,51 @@ Next we are estimating tensors via  (FSL MUSS INSTALLIERT SEIN)
 
 The `dti_FA.nii.gz` contains the FA values and can be inspected with fsleyes.
 As a second step we are segmenting the T1 image into WM/GM/CSF. Therefore, we apply the mask to it via
+
 .. code-block:: console
 
     fslmaths "HCPdir/T1w_acpc_dc_restore_1.25.nii.gz" -mas "HCPdir/mask.nii.gz" "HCPdir/T1_masked.nii.gz"
 
 and running the segmentation via
+
 .. code-block:: console
 
     fast -o "HCPdir/fast" "HCPdir/T1_masked.nii.gz"
 
-Having all prerequisites the fODFs can be estimated using
+Computed all prerequisites the fODFs can be estimated using
 
 .. code-block:: console
 
     mtdeconv -o "HCPdir/mtdeconv/" -v True -k rank1 -r 4 -C hpsd "HCPdir"
 
+The `fodf.nrrd` contians the computed fODFs. It can be transformed into dipy/mrtrix format using the
 
+.. code-block:: console
+
+    bonndit2mrtrix fodf.nrrd
+
+command, which will output a `fodf.nii.gz` file readable by MRtrixs' mrview etc.
+As a final step we reconstruct a fiber bundle of the right CST. Therefore, we supplied pregenerated seed points with initial directions \
+in the `bonndit/tests/cst-right.pts` file. For more information about the file format have a look into the tracking section.
+To run the easiest version of the tractography code we run the following command:
+
+.. code-block:: console
+
+    prob-tracking -i "HCPdir/mtdeconv/" --seedpoints "bonndit/tests/cst-right.pts" -o "cst_unconstrained.tck"
+
+To run the more advanced joint low-rank approximation we have to specify
+
+.. code-block:: console
+
+    prob-tracking -i "HCPdir/mtdeconv/" --seedpoints "bonndit/tests/cst-right.pts" -o "cst_constrained.tck"
+
+To run the low-rank UKF we have to add the "ukf" flag.
+
+.. code-block:: console
+
+    prob-tracking -i "HCPdir/mtdeconv/" --seedpoints "bonndit/tests/cst-right.pts" -o "cst_ukf.tck" --ukf "lowrank"
+
+More details about various options can be found below.
 
 mtdeconv
 ~~~~~~~~~~~~
@@ -108,7 +140,13 @@ The :code:`dti_*` files can be generated using FSL's :code:`dtifit`. The :code:`
 
 Optional, but recommended to greatly speed up computation:
 
-* :code:`mask.nii.gz`: Binary mask, specifying brain voxels in which to estimate the model
+* :code:`mask.nii.gz`: Binary mask, specifying brain voxels in which to estimate the model.
+
+Further important parameters are:
+
+* :code:`--rank`: The rank of the computed fODF. Higher ranks lead to sharper peaks as well as higher susceptibility to noise. Default: 4. Supported: 4,6,8
+* :code:`--kernel`: The single tissue response kernel used to estimate the CSD. Options are either `rank1` a single fiber rank-1 fiber corresponding to the rotational harmonic parts \
+                    of the spherical harmonics up to the specified order or `delta` a single peak. `rank1` reduces the susceptibility to noise. Default: rank1
 
 
 If you want to see a list of parameters type the following:
@@ -334,32 +372,32 @@ Reference
 
 If you use our software as part of a scientific project, please cite the corresponding publications. The method implemented in :code:`stdeconv` and :code:`mtdeconv` was first introduced in
 
-* Michael Ankele, Lek-Heng Lim, Samuel Groeschel, Thomas Schultz: Fast and Accurate Multi-Tissue Deconvolution Using SHORE and H-psd Tensors. In: Proc. Medical Image Analysis and Computer-Aided Intervention (MICCAI) Part III, pp. 502-510, vol. 9902 of LNCS, Springer, 2016
+..[1] Michael Ankele, Lek-Heng Lim, Samuel Groeschel, Thomas Schultz: Fast and Accurate Multi-Tissue Deconvolution Using SHORE and H-psd Tensors. In: Proc. Medical Image Analysis and Computer-Aided Intervention (MICCAI) Part III, pp. 502-510, vol. 9902 of LNCS, Springer, 2016
 
 It was refined and extended in
 
-* Michael Ankele, Lek-Heng Lim, Samuel Groeschel, Thomas Schultz: Versatile, Robust, and Efficient Tractography With Constrained Higher-Order Tensor fODFs. In: Int'l J. of Computer Assisted Radiology and Surgery, 12(8):1257-1270, 2017
+..[2] Michael Ankele, Lek-Heng Lim, Samuel Groeschel, Thomas Schultz: Versatile, Robust, and Efficient Tractography With Constrained Higher-Order Tensor fODFs. In: Int'l J. of Computer Assisted Radiology and Surgery, 12(8):1257-1270, 2017
 
 The methods implemented in :code:`low-rank-k-approx` was first introduced in
 
-* Thomas Schultz, Hans-Peter Seidel: Estimating Crossing Fibers: A Tensor Decomposition Approach. In: IEEE Transactions on Visualization and Computer Graphics, 14(6):1635-42, 2008
+..[3] Thomas Schultz, Hans-Peter Seidel: Estimating Crossing Fibers: A Tensor Decomposition Approach. In: IEEE Transactions on Visualization and Computer Graphics, 14(6):1635-42, 2008
 
 The methods implemented in :code:`peak-modelling` was first introduced in
 
-* Johannes Grün, Gemma van der Voort, Thomas Schultz: Reducing Model Uncertainty in Crossing Fiber Tractography. In proceedings of EG Workshop on Visual Computing for Biology and Medicine, pages 55-64, 2021
+..[4] Johannes Grün, Gemma van der Voort, Thomas Schultz: Reducing Model Uncertainty in Crossing Fiber Tractography. In proceedings of EG Workshop on Visual Computing for Biology and Medicine, pages 55-64, 2021
 
 Extended in:
 
-* Johannes Grün, Gemma van der Voort, Thomas Schultz: Model Averaging and Bootstrap Consensus Based Uncertainty Reduction in Diffusion MRI Tractography. In: Computer Graphics Forum, 2022
+..[5] Johannes Grün, Gemma van der Voort, Thomas Schultz: Model Averaging and Bootstrap Consensus Based Uncertainty Reduction in Diffusion MRI Tractography. In: Computer Graphics Forum, 2022
 
 The regularized tractography methods (joint low-rank and low-rank UKF) were first implemented in :code:`prob-tracking` and introduced in
 
-* Johannes Grün, Samuel Gröschel, Thomas Schultz: Spatially Regularized Low-Rank Tensor Approximation for Accurate and Fast Tractography. In NeuroImage, 2023
+..[6] Johannes Grün, Samuel Gröschel, Thomas Schultz: Spatially Regularized Low-Rank Tensor Approximation for Accurate and Fast Tractography. In NeuroImage, 2023
 
 
 The use of quadratic cone programming to make the kurtosis fit more stable which is implemented in :code:`kurtosis` has been explained in the methods section of
 
-* Samuel Groeschel, G. E. Hagberg, T. Schultz, D. Z. Balla, U. Klose, T.-K. Hauser, T. Nägele, O. Bieri, T. Prasloski, A. MacKay, I. Krägeloh-Mann, K. Scheffler: Assessing white matter microstructure in brain regions with different myelin architecture using MRI. In: PLOS ONE 11(11):e0167274, 2016
+..[7] Samuel Groeschel, G. E. Hagberg, T. Schultz, D. Z. Balla, U. Klose, T.-K. Hauser, T. Nägele, O. Bieri, T. Prasloski, A. MacKay, I. Krägeloh-Mann, K. Scheffler: Assessing white matter microstructure in brain regions with different myelin architecture using MRI. In: PLOS ONE 11(11):e0167274, 2016
 
 PDFs can be obtained from the respective publisher, or the academic homepage of Thomas Schultz: http://cg.cs.uni-bonn.de/en/people/prof-dr-thomas-schultz/
 
