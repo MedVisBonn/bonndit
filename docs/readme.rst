@@ -55,7 +55,8 @@ This introduction will help a new user to reconstruct the right CST tract of a H
 **To run the following tutorial it is necessary to have FSL installed**
 
 First, you need to download HCP diffusion MRI data from the HCP website. This dataset includes high-quality diffusion MRI images and preprocessed data. You can download the data for free after registering on the HCP db website (db.humanconnectome.org/) and agreeing to the licence.
-To follow the tutorial please download patient 904044.
+To follow the tutorial please download patient 904044. Therfore, search for 904044, click download image and select the `Diffusion Preporocessed`.
+
 As an intermediate step we reconstruct fODFs as it was proposed by Ankele et al. [2]_. In this method the single fiber response function (which is then used for deconvolution) is estimated using voxels with an high fractional anisotropy.
 To estimate the FA values we are selecting first high b-values (>1500) and the corresponding b vectors and measurements via:
 
@@ -70,6 +71,7 @@ Next we are estimating tensors via FSLs'
     dtifit -k "HCPdir/dtidata.nii.gz" -o "HCPdir/dti" -m "HCPdir/mask.nii.gz" -r "HCPdir/dtibvecs" -b "HCPdir/dtibvals" -w
 
 The `dti_FA.nii.gz` contains the FA values and can be inspected with fsleyes.
+
 As a second step we are segmenting the T1 image into WM/GM/CSF. Therefore, we apply the mask to it via
 
 .. code-block:: console
@@ -94,9 +96,16 @@ The `fodf.nrrd` contians the computed fODFs. It can be transformed into dipy/mrt
 
     bonndit2mrtrix fodf.nrrd
 
-command, which will output a `fodf.nii.gz` file readable by MRtrixs' mrview etc.
+command, which will output a `fodf.nii.gz` file readable by MRtrixs' mrview etc. From the fODFs we can extract fiber orientations
+via [3]_
+
+.. code-block:: console
+
+    low-rank-k-approx "HCPdir/mdtdeconv/fodf.nrrd" "HCPdir/mtdeconv/rank3.nrrd" -r 3
+
 As a final step we reconstruct a fiber bundle of the right CST. Therefore, we supplied pregenerated seed points with initial directions \
 in the `bonndit/tests/cst-right.pts` file. For more information about the file format have a look into the tracking section.
+
 To run the easiest version of the tractography code we run the following command:
 
 .. code-block:: console
@@ -170,7 +179,7 @@ If you want to see a list of parameters type the following:
 
 low-rank-k-approx
 ~~~~~~~~~~~~~~~~~~~~
-For calculating the low rank k approximation of a given 4th order fODF run the following command:
+For calculating the low-rank k approximation of a given 4th order fODF run the following command:
 
 .. code-block:: console
 
@@ -284,15 +293,10 @@ The output file is in ply format, which contain the vertex coordinates and the l
 
 Further parameters can be set:
 
-* :code:`--infile`: 5D (4,3,x,y,z) Multivectorfield, where the first dimension gives the length and the direction of
-                    the vector, the second dimension denotes different directions.
-
+* :code:`--infile`: 5D (4,3,x,y,z) Multivectorfield, where the first dimension gives the length and the direction of the vector, the second dimension denotes different directions.
 * :code:`--wmvolume`: WM Mask - output of mtdeconv
 * :code:`--act`: 5tt output of 5ttgen. Will perform act if supplied.
-* :code:`--seedpoints`: Seedspointfile: Each row denotes a seed point, where the first  3 columns give the
-                        seed point in (x,y,z). Further 3 additional columns can specified to define a initial
-                        direction. Columns should be seperated by whitespace.
-
+* :code:`--seedpoints`: Seedspointfile: Each row denotes a seed point, where the first  3 columns give the seed point in (x,y,z). Further 3 additional columns can specified to define a initial direction. Columns should be seperated by whitespace.
 * :code:`--wmmin`: Minimum WM density before tracking stops, default=0.15
 * :code:`--sw_save`: Only each x step is saved. Reduces memory consumption greatly, default=1
 * :code:`--sw`: Stepwidth for Euler integration, default=0.9

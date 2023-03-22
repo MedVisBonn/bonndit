@@ -164,7 +164,6 @@ def main():
 	parser.add_argument('--ukf_bvecs', help='File containg the bvecs ', default=argparse.SUPPRESS)
 	parser.add_argument('--ukf_baseline', help='File containg the baseline', default=argparse.SUPPRESS)
 	parser.add_argument('--ukf_fodf_order', help='order of fODF. Only 4 and 8 are supported. Default is 4', default=4)
-	parser.add_argument('--ukf_dim_model', help='Dimensions of model', default=argparse.SUPPRESS)
 	parser.add_argument('--ukf_pnoise', help='Process noise', nargs='+', default=argparse.SUPPRESS)
 	parser.add_argument('--ukf_mnoise', help='Measurement noise', nargs='+', default=argparse.SUPPRESS)
 	# subsubparser = parser_ukf.add_subparsers(help = 'Decide between low-rank and Multitensor model')
@@ -261,11 +260,7 @@ def main():
 			logging.info("bvals loaded")
 			bvecs = load('ukf_bvecs', args, 'bvecs', args.i, logging, np.loadtxt)
 			# Load bvals and bvecs and initialize a GradientTable object
-
-		#	print(bvecs, bvals.shape)
 			bvecs = fsl_flip_sign(bvecs.T, meta2['space directions'][-3:,-3:]).T
-
-		#	print(bvecs, bvals.shape)
 			logging.info("bvecs loaded")
 			baseline, _ = load('ukf_baseline', args, 'baseline.nrrd', args.i, logging, nrrd.read)
 
@@ -274,7 +269,6 @@ def main():
 			data, _ = load('ukf_data', args, 'fodf.nrrd', args.i, logging, nrrd.read)
 			data = np.moveaxis(data, 0, -1)
 			data = data[:, :, :, 1:]
-			print(data.shape)
 			bvals = None
 			bvecs = None
 			baseline = None
@@ -342,7 +336,7 @@ def main():
 		ukf_parameter = {
 			'trafo_data': trafo_data,
 			'data': np.array(data, dtype=np.float64),
-			'dim_model': int(args.ukf_dim_model),
+			'dim_model': vector_field.shape[1] * 5 if args.ukf == "MultiTensor" else vector_field.shape[1]*4,
 			'model': 'fodf' if args.ukf == "LowRank" else 'MultiTensor',
 			'gradients': bvecs.astype(np.float64).T if bvecs is not None else "",
 			'baseline': baseline,
