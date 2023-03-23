@@ -60,7 +60,7 @@ def main():
 					'Reducing Model Uncertainty in Crossing Fiber Tractography, Gruen et al. (2021)',
 		formatter_class=argparse.RawTextHelpFormatter)
 	# All files needed
-	parser.add_argument('--i', help='Inputfolder should contain: \n'
+	parser.add_argument('-i', help='Inputfolder should contain: \n'
 									'	- rank3.nrrd \n'
 									'		Multidirectionfield, where the first dimension defines the length and the \n'
 									'		unit direction of the vector, second dimension defines different directions \n'
