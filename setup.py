@@ -189,6 +189,7 @@ setup(
     packages=find_packages('src', exclude=('tests',)),
     package_dir={'': 'src'},
     scripts=['scripts/mtdeconv',
+             'scripts/bonndit2mrtrix',
              'scripts/stdeconv',
              'scripts/kurtosis',
              'scripts/dtiselectvols',
