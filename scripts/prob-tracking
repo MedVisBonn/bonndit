@@ -25,7 +25,6 @@ path_tree = []
 
 def load(key, args, filename, path, logging, func):
 	if key in args:
-		print(key, getattr(args, key))
 		if os.path.exists(getattr(args, key)):
 			try:
 				data = func(getattr(args, key))
@@ -116,33 +115,33 @@ def main():
 	parser.add_argument('-mtlength', help='Maximum track steps.', default=300)
 	parser.add_argument('--samples', help='Samples per seed.', default=1)
 	parser.add_argument('-max_angle', help='Max angle over the last 30 mm of the streamline', default=130)
-	parser.add_argument('--var', help='Variance for probabilistic direction selection..', default=1)
-	parser.add_argument('--exp', help='Expectation for probabilistic direction selection.', default=0)
+	parser.add_argument('--var', help='Variance for probabilistic direction selection..', default=6)
+	parser.add_argument('--exp', help='Expectation for probabilistic direction selection.', default=3)
 
 	parser.add_argument('--interpolation', '--interpolation',
 						help='decide between FACT interpolation and Trilinear interpolation.',
-						default='Trilinear')
+						default='TrilinearFODF')
 	parser.add_argument('--sigma_1',
 						help='Only useful if interpolation is set to TrilinearFODF and dist>0. Controls sigma1 for low-rank approx',
-						default='1')
+						default='0')
 	parser.add_argument('--data',
 						help='Only useful if interpolation is set to TrilinearFODF and dist>0. Controls sigma1 for low-rank approx',
 						default=argparse.SUPPRESS)
 	parser.add_argument('--sigma_2',
 						help='Only useful if interpolation is set to TrilinearFODF and dist>0. Controls sigma2 for low-rank approx.',
-						default='1')
+						default='0')
 	parser.add_argument('--dist',
 						help='Only useful if interpolation is set to TrilinearFODF. Radius of points to include',
 						default=0)
 	parser.add_argument('--rank', help='Only useful if interpolation is set to TrilinearFODF. Rank of low-rank approx.',
-						default='Trilinear')
+						default='3')
 
 	parser.add_argument('--integration', '--integration',
 						help='Decide between Euler integration and Euler integration. '
 						, default='Euler')
 	parser.add_argument('-prob', '--prob',
 						help='Decide between Laplacian, Gaussian, Scalar, ScalarNew, Deterministic and Deterministic2 '
-						, default='Gaussian')
+						, default='ScalarNew')
 
 	# Arguments for saving each streamline on disk
 	parser.add_argument('--disk', help='Write streamlines to file instead of using ram', action='store_false')
@@ -182,7 +181,6 @@ def main():
 	parser.add_argument('-fsl', default="")
 	parser.add_argument('--features', nargs='+', default="")
 	args = parser.parse_args()
-	print(args)
 	logging.basicConfig(filename=os.path.join("./", 'prob-tracking.log'),
 						format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
 						datefmt='%y-%m-%d %H:%M',
