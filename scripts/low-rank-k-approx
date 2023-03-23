@@ -64,14 +64,14 @@ def main():
 
     data = fodfs.reshape((fodfs.shape[0], -1))
     NUM = data.shape[1]
-    if args.i:
+    if args.init:
 
-        output, _ = nrrd.read(args.i)
+        output, _ = nrrd.read(args.init)
         output = np.float64(output.reshape((4, int(args.r),NUM)))
     else:
         output = np.zeros((4, int(args.r), NUM))
     # check format:
-    approx_all_spherical(output, np.float64(fodfs), int(0), np.float32(0), int(args.r), int(args.i is not None), args.verbose)
+    approx_all_spherical(output, np.float64(fodfs), int(0), np.float32(0), int(args.r), int(args.init is not None), args.verbose)
     logging.info(f"Low-rank {args.r} approximation is calculated")
 
 
