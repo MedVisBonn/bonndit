@@ -54,8 +54,9 @@ def main():
             'Fractional anisotropy values from a DTI model (default: '
             'dti_FA.nii.gz)'
         ))
-    inputfiles.add_argument('-m', '--brainmask', default='mask.nii.gz',
-                            help='Brain mask (default: mask.nii.gz)')
+    inputfiles.add_argument(
+        '-m', '--brainmask', default='nodif_brain_mask.nii.gz',
+        help='Brain mask (default: nodif_brain_mask.nii.gz)')
     inputfiles.add_argument(
         '-Ma', '--masks', default='fast_first.nii.gz',
         help=(
