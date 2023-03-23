@@ -90,10 +90,7 @@ def main():
     newmeta = {k: meta[k] for k in ['space', 'space origin']}
     newmeta['kinds'] = ['list', 'list', 'space', 'space', 'space']
     newmeta['space directions'] = np.vstack(
-        (
-            [np.nan, np.nan, np.nan],
-            [np.nan, np.nan, np.nan],
-            meta['space directions']))
+        ([np.nan, np.nan, np.nan], meta['space directions']))
     nrrd.write(args.outfile, np.float32(output), newmeta)
     logging.info(f"Low-rank {args.r} approximation is saved to {args.outfile}")
 
