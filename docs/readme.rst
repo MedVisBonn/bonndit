@@ -95,7 +95,7 @@ The `fodf.nrrd` contians the computed fODFs. It can be transformed into dipy/mrt
 
 .. code-block:: console
 
-    bonndit2mrtrix -i fodf.nrrd -o fodf.nii.gz
+    bonndit2mrtrix -i "${HCPdir}/T1w/Diffusion/mtdeconv/fodf.nrrd" -o "${HCPdir}/T1w/Diffusion/mtdeconv/fodf.nii.gz"
 
 command, which will output a `fodf.nii.gz` file readable by MRtrixs' mrview etc. From the fODFs we can extract fiber orientations
 via [3]_
