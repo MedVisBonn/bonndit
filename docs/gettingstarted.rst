@@ -3,7 +3,7 @@ Getting Started
 
 This introduction will help a new user to reconstruct a part of the CC tract of a HCP subject. For a more detailed description of all commands we refer to the next sections.
 
-** To run the following tutorial it is necessary to have FSL installed. It can be downloaded via https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FslInstallation/ **
+** To run the following tutorial it is necessary to have FSL installed. It can be downloaded via ** https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FslInstallation/
 
 First, you need to download HCP diffusion MRI data from the HCP website. This dataset includes high-quality diffusion MRI images and preprocessed data. You can download the data for free after registering on the HCP db website (db.humanconnectome.org/) and agreeing to the licence.
 To follow the tutorial please download patient 904044. Therfore, search for 904044, click `download image` and select the `Diffusion Preporocessed`.
