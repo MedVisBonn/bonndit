@@ -1,5 +1,41 @@
 Scripts
 ------------------
+stdeconv
+~~~~~~~~~~~~
+
+For calculating the single-tissue response functions and the fODFs for given data run the following command [Ankele17]_:
+
+.. code-block:: console
+
+    $ stdeconv -i /path/to/your/data
+
+The specified folder should contain the following files:
+
+* :code:`bvecs`: b-vectors
+* :code:`bvals`: b-values
+* :code:`data.nii.gz`: The diffusion weighted data
+* :code:`dti_FA.nii.gz`: Diffusion tensor Fractional Anisotropy map
+* :code:`dti_V1.nii.gz`: The first eigenvector of the diffusion tensor
+
+The :code:`dti_*` files can be generated using FSL's :code:`dtifit`. This script works if we have no T1 data.
+
+Optional, but recommended:
+
+* :code:`mask.nii.gz`: Binary mask, specifying brain voxels in which to estimate the model.
+* :code:`fast_pve_2.nii.gz`: WM mask
+
+Further important parameters are:
+
+* :code:`--rank`: The rank of the computed fODF. Higher ranks lead to sharper peaks as well as higher susceptibility to noise. Default: 4. Supported: 4,6,8
+* :code:`--kernel`: The single tissue response kernel used to estimate the CSD. Options are either `rank1` a single fiber rank-1 fiber corresponding to the rotational harmonic parts of the spherical harmonics up to the specified order or `delta` a single peak. `rank1` reduces the susceptibility to noise. Default: rank1
+
+
+If you want to see a list of parameters type the following:
+
+.. code-block:: console
+
+    $ stdeconv -h
+
 mtdeconv
 ~~~~~~~~~~~~
 
