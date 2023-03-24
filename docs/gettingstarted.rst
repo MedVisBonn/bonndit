@@ -88,8 +88,8 @@ and run :ref:`prob-tracking` as
     prob-tracking -i "${HCPdir}/T1w/Diffusion/mtdeconv/" --seedpoints "test_CC" \
                     -o "cc_joint.tck" --dist -1
 
-Setting `\--dist -1` the algorithm chooses its neighborhood automatically, alternatively it can be set to a value > 0 to include
-a specific neighborhood size. Additional control parameters for the joint low-rank approximation are `\--sigma_1` and `\--sigma_2`, which
+Setting :code:`--dist` to a non-zero value enables the joint approximation. With :code:`--dist -1` the algorithm chooses its neighborhood automatically. Alternatively, a value > 0 includes
+a specific neighborhood size. Additional control parameters for the joint low-rank approximation are :code:`--sigma_1` and :code:`--sigma_2`, which
 control the weighting of the neighborhood as described in the publication.
 
 For comparison, basic tractography without spatial regularization can be run with the following command:
