@@ -17,6 +17,7 @@ To install bonndit via pip, run this command in your terminal:
 To install bonndit via conda, run this command in your terminal:
 
 .. code-block:: console
+
     $ conda install bonndit -c xderes -c conda-forge
 
 
