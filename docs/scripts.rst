@@ -144,48 +144,48 @@ If not further specified, the input folder has to contain the following:
     unit direction of the vector, second dimension defines different directions
     and remaining dimensions diffine the coordinate.
 
-    If the file is named differently, use the `--infile` argument
+    If the file is named differently, use the `\--infile` argument
 
 - wmvolume.nrrd
     The white matter mask, which is an output of mtdeconv.
 
-    If the file is named differently, use the `--wmmask` argument
+    If the file is named differently, use the `\--wmmask` argument
 
 - seedpoint.pts
     The seed point file in world coordinates. First 3 dimensions of row give
     world coordinates. Additionally a initial direction can be set by appending
     3 columns to each row denoting the direction in (x,y,z) space.
 
-    If the file is named differently, use the `--seedpoint` argument.
+    If the file is named differently, use the `\--seedpoint` argument.
 
 If the -ukf flag is set, the input folder should also contain:
 
 - bvals
     A text file which contains the bvals for each gradient direction.
 
-    If the file is namend differenty, use the `--ukf_bvals` argument
+    If the file is namend differenty, use the `\--ukf_bvals` argument
 
 - bvecs
     A text file which contains all gradient directions in the format Ax3
-    If the file is named differently, use the `--ukf_bvecs` argument
+    If the file is named differently, use the `\--ukf_bvecs` argument
 - data.nrrd
-    The file with the data. If the `--ukfmethod` flag is set to
+    The file with the data. If the `\--ukfmethod` flag is set to
 
     - MultiTensor it should be the raw data.
 
     - LowRank it should be the fodf.nrrd output from mtdeconv
 
-    If the file is named differently, use the --ukf_data argument.
+    If the file is named differently, use the `\--ukf_data` argument.
 
 - baseline.nrrd
     File with b0 measurements
 
-    If the file is named differently, use the `--ukf_baseline` argument
+    If the file is named differently, use the `\--ukf_baseline` argument
 
 If the -disk flag is set and we want to append to a file, the inputfolder should contain
     - output.txt
         A textfile with the streamlines generated so far.
-        If the file is named differently, use the `--disk_append` argument.
+        If the file is named differently, use the `\--disk_append` argument.
 
 
 The output file is in ply format, which contain the vertex coordinates and the length of each streamline.
@@ -198,7 +198,7 @@ Further parameters can be set:
 * :code:`--seedpoints`: Seedspointfile: Each row denotes a seed point, where the first  3 columns give the seed point in (x,y,z). Further 3 additional columns can specified to define a initial direction. Columns should be seperated by whitespace.
 * :code:`--wmmin`: Minimum WM density before tracking stops, default=0.15
 * :code:`--sw_save`: Only each x step is saved. Reduces memory consumption greatly, default=1
-* :code:`--sw`: Stepwidth for Euler integration, default=0.9
+* :code:`--sw`: Stepwidth for integration, default=0.9
 * :code:`--o`: Filename for output file in ply or tck format. Only ply is fully supported.
 * :code:`--mtlength`: Maximum track steps, default=300
 * :code:`--samples`: Samples per seed, default=1
@@ -211,8 +211,8 @@ Further parameters can be set:
 * :code:`--sigma_2`: Only useful if interpolation is set to TrilinearFODF and dist>0. Controls sigma2 for low-rank, default=1
 * :code:`--dist`: Only useful if interpolation is set to TrilinearFODF. Radius of points to include, default=0
 * :code:`--rank`: Only useful if interpolation is set to TrilinearFODF. Rank of low-rank approx.', default=3
-* :code:`--integration`: Decide between Euler integration and Euler integration, default='Euler'
-* :code:`--prob`: Decide between Laplacian, Gaussian, Scalar, ScalarNew, Deterministic and Deterministic2, default='Gaussian')
+* :code:`--integration`: Decide between Euler integration, Trilinear and TrilinearFODF integration, default='TrilinearFODF'
+* :code:`--prob`: Decide between Laplacian, Gaussian, Scalar, ScalarNew, Deterministic and Deterministic2, default='ScalarNew')
 * :code:`--disk`: Write streamlines to file instead of using ram, default=True
 * :code:`--disk_file`: Name of disk file. If not set a random filename is chosen.
 * :code:`--disk_delete`: Delete file after finish. Otherwise further Streamlines can be appended if more streamlines are needed.
