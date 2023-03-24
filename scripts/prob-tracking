@@ -246,7 +246,11 @@ def main():
 		logging.error("Vectorfield (x,y,z) and wm mask have to have same dimensions.")
 		raise Exception()
 	logging.info("WM Mask loaded")
-	seeds = load('seedpoints', args, 'seedpoints.pts', args.i, logging, np.loadtxt)
+	if args.seedpoints == "test":
+		dir_path = os.path.dirname(os.path.realpath(__file__))
+		seeds = np.loadtxt(os.path.join(dir_path, "../tests/CC.pts"))
+	else:
+		seeds = load('seedpoints', args, 'seedpoints.pts', args.i, logging, np.loadtxt)
 	logging.info("Seedfile loaded")
 	if 'ukf' in args:
 		logging.info("UKF Flag is set. Continue with loading UKF data")

@@ -40,8 +40,8 @@ def main():
 							help='First eigenvectors of a DTI model (default: dti_V1.nii.gz)')
 	inputfiles.add_argument('-a', '--dtifa', default='dti_FA.nii.gz',
 							help='Fractional anisotropy values from a DTI model (default: dti_FA.nii.gz)')
-	inputfiles.add_argument('-m', '--brainmask', default='mask.nii.gz',
-							help='Brain mask (default: mask.nii.gz)')
+	inputfiles.add_argument('-m', '--brainmask', default='nodif_brain_mask.nii.gz',
+							help='Brain mask (default: nodif_brain_mask.nii.gz)')
 	inputfiles.add_argument('-Ma', '--masks', default='fast_first.nii.gz',
 							help='Tissue masks containing white matter, gray matter and csf mask. (default: fast_first.nii.gz)')
 	inputfiles.add_argument('-W', '--wmmask', default='fast_pve_2.nii.gz',

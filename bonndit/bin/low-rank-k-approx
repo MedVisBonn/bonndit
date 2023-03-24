@@ -14,13 +14,13 @@ def main():
                     'that are given in a higher-order tensor format, as described in '
                     '"Estimating Crossing Fibers: A Tensor Decomposition Approach" '
                     'by Schultz/Seidel (2008).', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--infile', nargs='+',
+    parser.add_argument('-i', '--infile', nargs='+',
                         help='4D input file containing fODFs in masked higher-order tensor format (1+#fODF coefficients,x,y,z)', default=argparse.SUPPRESS)
 
 
-    parser.add_argument('--outfile',
+    parser.add_argument('-o', '--outfile',
                         help='5D output file with the approximation result (4,r,x,y,z)', default=argparse.SUPPRESS)
-    parser.add_argument('-i', help='initialize')
+    parser.add_argument('--init', help='initialize')
 
     parser.add_argument('-r', help='rank', default=3)
     parser.add_argument('-v', '--verbose', default=True)
@@ -64,21 +64,21 @@ def main():
 
     data = fodfs.reshape((fodfs.shape[0], -1))
     NUM = data.shape[1]
-    if args.i:
+    if args.init:
 
-        output, _ = nrrd.read(args.i)
+        output, _ = nrrd.read(args.init)
         output = np.float64(output.reshape((4, int(args.r),NUM)))
     else:
         output = np.zeros((4, int(args.r), NUM))
     # check format:
-    approx_all_spherical(output, np.float64(fodfs), int(0), np.float32(0), int(args.r), int(args.i is not None), args.verbose)
+    approx_all_spherical(output, np.float64(fodfs), int(0), np.float32(0), int(args.r), int(args.init is not None), args.verbose)
     logging.info(f"Low-rank {args.r} approximation is calculated")
 
 
     output = output.reshape((4, int(args.r)) + fodfs.shape[1:])
     newmeta = {k: meta[k] for k in ['space', 'space origin']}
     newmeta['kinds'] = ['list', 'list', 'space', 'space', 'space']
-    newmeta['space directions'] = np.vstack(([np.nan, np.nan, np.nan], [np.nan, np.nan, np.nan], meta['space directions']))
+    newmeta['space directions'] = np.vstack(([np.nan, np.nan, np.nan], meta['space directions']))
     nrrd.write(args.outfile, np.float32(output), newmeta)
     logging.info(f"Low-rank {args.r} approximation is saved to {args.outfile}")
 
