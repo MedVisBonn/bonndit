@@ -10,10 +10,10 @@ Development Lead
 Contributors
 ------------
 
-* **Michael Ankele** - *Initial work* - [momentarylapse] (https://github.com/momentarylapse)
+* **Michael Ankele** - *Constrained spherical deconvolution with tensor fODFs* - [momentarylapse] (https://github.com/momentarylapse)
 
-* **Thomas Schultz** - *Initial work* - [ThomasSchultz] (https://github.com/ThomasSchultz)
+* **Johannes Grün** - *Fiber tracking with spatial regularization or model averaging* - [JoGruen] (https://github.com/JoGruen)
 
-* **Olivier Morelle** - *Code curation, documentation and test* [Oli4] (https://github.com/Oli4)
+* **Olivier Morelle** - *Code curation, documentation and testing* [Oli4] (https://github.com/Oli4)
 
-* **Johannes Grün** - *Extended work* - [JoGruen] (https://github.com/JoGruen)
+* **Thomas Schultz** - *DKI fitting, supervision and contributions throughout* - [ThomasSchultz] (https://github.com/ThomasSchultz)
