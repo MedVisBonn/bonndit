@@ -59,7 +59,7 @@ def main():
 		formatter_class=argparse.RawTextHelpFormatter)
 	# All files needed
 	parser.add_argument('-i', help='Inputfolder should contain: \n'
-									'	- rank3.nrrd \n'
+									'	- lowrank.nrrd \n'
 									'		Multidirectionfield, where the first dimension defines the length and the \n'
 									'		unit direction of the vector, second dimension defines different directions \n'
 									'		and remaining dimensions diffine the coordinate. \n '
@@ -137,7 +137,7 @@ def main():
 
 	parser.add_argument('--integration', '--integration',
 						help='Decide between Euler integration and Euler integration. '
-						, default='Euler')
+						, default='TrilinearFODF')
 	parser.add_argument('-prob', '--prob',
 						help='Decide between Laplacian, Gaussian, Scalar, ScalarNew, Deterministic and Deterministic2 '
 						, default='ScalarNew')
@@ -205,7 +205,7 @@ def main():
 		logging.error('Path to input folder is not correct.')
 		raise Exception()
 	# Load data
-	vector_field, meta, = load('infile', args, 'rank3.nrrd', args.i, logging, nrrd.read)
+	vector_field, meta, = load('infile', args, 'lowrank.nrrd', args.i, logging, nrrd.read)
 	trafo_data = np.zeros((4,4))
 	trafo_data[:3,:3] = meta['space directions'][-3:]
 	trafo_data[:3,3] = meta['space origin'][-3:]
