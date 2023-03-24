@@ -1,13 +1,14 @@
-{% set name = "bonnndit" %}
-{% set version = "0.2.13" %}
+{% set name = "bonndit" %}
+{% set version = "0.3.0" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: b1a205ba3b95538562cbd769100ad4955fea8fc940deabaa11d9fca1691b9f1a
+  path: ./
+  #url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  #sha256: b1a205ba3b95538562cbd769100ad4955fea8fc940deabaa11d9fca1691b9f1a
 
 build:
   number: 0
