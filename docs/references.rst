@@ -20,11 +20,11 @@ The methods implemented in :code:`peak-modelling` was first introduced in
 
 Extended in:
 
-.. [Gruen22] Johannes Grün, Gemma van der Voort, Thomas Schultz: Model Averaging and Bootstrap Consensus Based Uncertainty Reduction in Diffusion MRI Tractography. In: Computer Graphics Forum, 2022
+.. [Gruen22] Johannes Grün, Gemma van der Voort, Thomas Schultz: Model Averaging and Bootstrap Consensus Based Uncertainty Reduction in Diffusion MRI Tractography. In: Computer Graphics Forum 42(1):217-230, 2023
 
 The regularized tractography methods (joint low-rank and low-rank UKF) were first implemented in :code:`prob-tracking` and introduced in
 
-.. [Gruen23] Johannes Grün, Samuel Gröschel, Thomas Schultz: Spatially Regularized Low-Rank Tensor Approximation for Accurate and Fast Tractography. In NeuroImage, 2023
+.. [Gruen23] Johannes Grün, Samuel Gröschel, Thomas Schultz: Spatially Regularized Low-Rank Tensor Approximation for Accurate and Fast Tractography. In NeuroImage 271:120004, 2023
 
 
 The use of quadratic cone programming to make the kurtosis fit more stable which is implemented in :code:`kurtosis` has been explained in the methods section of
