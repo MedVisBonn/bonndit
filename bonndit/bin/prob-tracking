@@ -25,7 +25,6 @@ path_tree = []
 
 def load(key, args, filename, path, logging, func):
 	if key in args:
-		print(key, getattr(args, key))
 		if os.path.exists(getattr(args, key)):
 			try:
 				data = func(getattr(args, key))
@@ -60,7 +59,7 @@ def main():
 					'Reducing Model Uncertainty in Crossing Fiber Tractography, Gruen et al. (2021)',
 		formatter_class=argparse.RawTextHelpFormatter)
 	# All files needed
-	parser.add_argument('--i', help='Inputfolder should contain: \n'
+	parser.add_argument('-i', help='Inputfolder should contain: \n'
 									'	- rank3.nrrd \n'
 									'		Multidirectionfield, where the first dimension defines the length and the \n'
 									'		unit direction of the vector, second dimension defines different directions \n'
@@ -116,33 +115,33 @@ def main():
 	parser.add_argument('-mtlength', help='Maximum track steps.', default=300)
 	parser.add_argument('--samples', help='Samples per seed.', default=1)
 	parser.add_argument('-max_angle', help='Max angle over the last 30 mm of the streamline', default=130)
-	parser.add_argument('--var', help='Variance for probabilistic direction selection..', default=1)
-	parser.add_argument('--exp', help='Expectation for probabilistic direction selection.', default=0)
+	parser.add_argument('--var', help='Variance for probabilistic direction selection..', default=6)
+	parser.add_argument('--exp', help='Expectation for probabilistic direction selection.', default=3)
 
 	parser.add_argument('--interpolation', '--interpolation',
 						help='decide between FACT interpolation and Trilinear interpolation.',
-						default='Trilinear')
+						default='TrilinearFODF')
 	parser.add_argument('--sigma_1',
 						help='Only useful if interpolation is set to TrilinearFODF and dist>0. Controls sigma1 for low-rank approx',
-						default='1')
+						default='0')
 	parser.add_argument('--data',
 						help='Only useful if interpolation is set to TrilinearFODF and dist>0. Controls sigma1 for low-rank approx',
 						default=argparse.SUPPRESS)
 	parser.add_argument('--sigma_2',
 						help='Only useful if interpolation is set to TrilinearFODF and dist>0. Controls sigma2 for low-rank approx.',
-						default='1')
+						default='0')
 	parser.add_argument('--dist',
 						help='Only useful if interpolation is set to TrilinearFODF. Radius of points to include',
 						default=0)
 	parser.add_argument('--rank', help='Only useful if interpolation is set to TrilinearFODF. Rank of low-rank approx.',
-						default='Trilinear')
+						default='3')
 
 	parser.add_argument('--integration', '--integration',
 						help='Decide between Euler integration and Euler integration. '
 						, default='Euler')
 	parser.add_argument('-prob', '--prob',
 						help='Decide between Laplacian, Gaussian, Scalar, ScalarNew, Deterministic and Deterministic2 '
-						, default='Gaussian')
+						, default='ScalarNew')
 
 	# Arguments for saving each streamline on disk
 	parser.add_argument('--disk', help='Write streamlines to file instead of using ram', action='store_false')
@@ -164,7 +163,6 @@ def main():
 	parser.add_argument('--ukf_bvecs', help='File containg the bvecs ', default=argparse.SUPPRESS)
 	parser.add_argument('--ukf_baseline', help='File containg the baseline', default=argparse.SUPPRESS)
 	parser.add_argument('--ukf_fodf_order', help='order of fODF. Only 4 and 8 are supported. Default is 4', default=4)
-	parser.add_argument('--ukf_dim_model', help='Dimensions of model', default=argparse.SUPPRESS)
 	parser.add_argument('--ukf_pnoise', help='Process noise', nargs='+', default=argparse.SUPPRESS)
 	parser.add_argument('--ukf_mnoise', help='Measurement noise', nargs='+', default=argparse.SUPPRESS)
 	# subsubparser = parser_ukf.add_subparsers(help = 'Decide between low-rank and Multitensor model')
@@ -183,7 +181,6 @@ def main():
 	parser.add_argument('-fsl', default="")
 	parser.add_argument('--features', nargs='+', default="")
 	args = parser.parse_args()
-	print(args)
 	logging.basicConfig(filename=os.path.join("./", 'prob-tracking.log'),
 						format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
 						datefmt='%y-%m-%d %H:%M',
@@ -243,7 +240,7 @@ def main():
 		wm_mask = wm_mask.get_fdata()
 
 	else:
-		logging.error("Wmvolume has wrong format. Only nii.gz and nrrd are accepted.")
+		logging.error("WMvolume has wrong format. Only nii.gz and nrrd are accepted.")
 		raise Exception()
 	if vector_field.shape[-3:] != wm_mask.shape:
 		logging.error("Vectorfield (x,y,z) and wm mask have to have same dimensions.")
@@ -257,16 +254,11 @@ def main():
 		if args.ukf == 'MultiTensor':
 			data, meta2 = load('ukf_data', args, 'data.nrrd', args.i, logging, nrrd.read)
 			data = np.moveaxis(data, 0, -1)
-			print(data.shape)
 			bvals = load('ukf_bvals', args, 'bvals', args.i, logging, np.loadtxt)
 			logging.info("bvals loaded")
 			bvecs = load('ukf_bvecs', args, 'bvecs', args.i, logging, np.loadtxt)
 			# Load bvals and bvecs and initialize a GradientTable object
-
-		#	print(bvecs, bvals.shape)
 			bvecs = fsl_flip_sign(bvecs.T, meta2['space directions'][-3:,-3:]).T
-
-		#	print(bvecs, bvals.shape)
 			logging.info("bvecs loaded")
 			baseline, _ = load('ukf_baseline', args, 'baseline.nrrd', args.i, logging, nrrd.read)
 
@@ -275,7 +267,6 @@ def main():
 			data, _ = load('ukf_data', args, 'fodf.nrrd', args.i, logging, nrrd.read)
 			data = np.moveaxis(data, 0, -1)
 			data = data[:, :, :, 1:]
-			print(data.shape)
 			bvals = None
 			bvecs = None
 			baseline = None
@@ -312,7 +303,7 @@ def main():
 		'max_track_length': int(args.mtlength),
 		'integration': args.integration,
 		'interpolation': args.interpolation,
-		'max_angle': float(args.maxangle),
+		'max_angle': float(args.max_angle),
 		'samples': int(args.samples),
 		'wmmin': float(args.wmmin),
 		'wm_mask': np.float64(wm_mask),
@@ -343,7 +334,7 @@ def main():
 		ukf_parameter = {
 			'trafo_data': trafo_data,
 			'data': np.array(data, dtype=np.float64),
-			'dim_model': int(args.ukf_dim_model),
+			'dim_model': vector_field.shape[1] * 5 if args.ukf == "MultiTensor" else vector_field.shape[1]*4,
 			'model': 'fodf' if args.ukf == "LowRank" else 'MultiTensor',
 			'gradients': bvecs.astype(np.float64).T if bvecs is not None else "",
 			'baseline': baseline,

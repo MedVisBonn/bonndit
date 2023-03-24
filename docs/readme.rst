@@ -102,7 +102,7 @@ via [3]_
 
 .. code-block:: console
 
-    low-rank-k-approx -i "${HCPdir}/T1w/Diffusion/mdtdeconv/fodf.nrrd" -o"${HCPdir}/T1w/Diffusion/mtdeconv/rank3.nrrd" -r 3
+    low-rank-k-approx -i "${HCPdir}/T1w/Diffusion/mtdeconv/fodf.nrrd" -o "${HCPdir}/T1w/Diffusion/mtdeconv/rank3.nrrd" -r 3
 
 As a final step we reconstruct a fiber bundle of the CC. Therefore, we supplied pregenerated seed points with initial directions \
 in the `bonndit/tests/CC.pts` file. For more information about the file format have a look into the tracking section.
