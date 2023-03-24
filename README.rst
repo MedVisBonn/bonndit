@@ -36,7 +36,7 @@ To install bonndit via conda, run
     
 Features
 --------
-An overview of the scripts and functionality included in bonndit is given in `our documentation <https://bonndit.readthedocs.io/en/latest/>`. It also includes `a tutorial for performing fiber tracking with our code<https://bonndit.readthedocs.io/en/latest/gettingstarted.html>`
+An overview of the scripts and functionality included in bonndit is given in `our documentation <https://bonndit.readthedocs.io/en/latest/>`_. It also includes `a tutorial for performing fiber tracking with our code <https://bonndit.readthedocs.io/en/latest/gettingstarted.html>`_.
 
 Reference
 ----------
