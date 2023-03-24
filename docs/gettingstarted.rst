@@ -72,7 +72,7 @@ To run the low-rank UKF, which produced fast and accurate results in [Gruen23]_,
 .. code-block:: console
 
     prob-tracking -i "${HCPdir}/T1w/Diffusion/mtdeconv/" --seedpoints "test_CC" \
-                    -o "cst_ukf.tck" --infile rank2.nrrd --ukf "LowRank"
+                    -o "cc_ukf.tck" --infile rank2.nrrd --ukf "LowRank"
 
 To run tractography based on a joint low-rank approximation, which more fully reconstructed the fiber spread based on a single seed region in [Gruen23]_, we would prefer a rank-3 approximation
 
@@ -86,14 +86,18 @@ and run :ref:`prob-tracking` as
 .. code-block:: console
 
     prob-tracking -i "${HCPdir}/T1w/Diffusion/mtdeconv/" --seedpoints "test_CC" \
-                    -o "cst_joint.tck"
+                    -o "cc_joint.tck" --dist -1
+
+Setting `--dist -1` the algorithm chooses its neighborhood automatically, alternatively it can be set to a value > 0 to include
+a specific neighborhood size. Additional control parameters for the joint low-rank approximation are `\--sigma_1` and `\--sigma_2`, which
+control the weighting of the neighborhood as described in the publication.
 
 For comparison, basic tractography without spatial regularization can be run with the following command:
 
 .. code-block:: console
 
     prob-tracking -i "${HCPdir}/T1w/Diffusion/mtdeconv/" --seedpoints "test_CC" \
-                    -o "cst_unregularized.tck"
+                    -o "cc_unregularized.tck"
 
 All variants use iterative tractography, starting at each seed point and extending into both directions. If no direction is specified in the seed file, \
 the main direction of the low-rank approximation at the closest voxel will be used. Each iteration step \
