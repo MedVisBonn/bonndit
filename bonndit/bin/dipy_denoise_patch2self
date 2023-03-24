@@ -1,0 +1,8 @@
+#!/home/johannes/UniBonn/forschung/bonndit/bonndit/bin/python3.8
+
+from dipy.workflows.flow_runner import run_flow
+from dipy.workflows.denoise import Patch2SelfFlow
+
+
+if __name__ == "__main__":
+    run_flow(Patch2SelfFlow())

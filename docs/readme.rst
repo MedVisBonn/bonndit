@@ -50,12 +50,12 @@ Features
 Getting Started
 ------------------
 
-This introduction will help a new user to reconstruct the right CST tract of a HCP subject. For a more detailed description of all commands we refer to the next sections.
+This introduction will help a new user to reconstruct a part of the CC tract of a HCP subject. For a more detailed description of all commands we refer to the next sections.
 
-**To run the following tutorial it is necessary to have FSL installed**
+**To run the following tutorial it is necessary to have FSL installed. It can be downloaded via https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FslInstallation/ **
 
 First, you need to download HCP diffusion MRI data from the HCP website. This dataset includes high-quality diffusion MRI images and preprocessed data. You can download the data for free after registering on the HCP db website (db.humanconnectome.org/) and agreeing to the licence.
-To follow the tutorial please download patient 904044. Therfore, search for 904044, click download image and select the `Diffusion Preporocessed`.
+To follow the tutorial please download patient 904044. Therfore, search for 904044, click `download image` and select the `Diffusion Preporocessed`.
 
 As an intermediate step we reconstruct fODFs as it was proposed by Ankele et al. [2]_. In this method the single fiber response function (which is then used for deconvolution) is estimated using voxels with an high fractional anisotropy.
 To estimate the FA values we are selecting first high b-values (>1500) and the corresponding b vectors and measurements via:
@@ -94,7 +94,7 @@ The `fodf.nrrd` contians the computed fODFs. It can be transformed into dipy/mrt
 
 .. code-block:: console
 
-    bonndit2mrtrix fodf.nrrd
+    bonndit2mrtrix -i fodf.nrrd -o fodf.nii.gz
 
 command, which will output a `fodf.nii.gz` file readable by MRtrixs' mrview etc. From the fODFs we can extract fiber orientations
 via [3]_
@@ -103,16 +103,16 @@ via [3]_
 
     low-rank-k-approx -i "HCPdir/T1w/Diffusion/mdtdeconv/fodf.nrrd" -o"HCPdir/T1w/Diffusion/mtdeconv/rank3.nrrd" -r 3
 
-As a final step we reconstruct a fiber bundle of the right CST. Therefore, we supplied pregenerated seed points with initial directions \
-in the `bonndit/tests/cst-right.pts` file. For more information about the file format have a look into the tracking section.
+As a final step we reconstruct a fiber bundle of the CC. Therefore, we supplied pregenerated seed points with initial directions \
+in the `bonndit/tests/CC.pts` file. For more information about the file format have a look into the tracking section.
 
 To run the easiest version of the tractography code we run the following command:
 
 .. code-block:: console
 
-    prob-tracking -i "HCPdir/T1w/Diffusion/mtdeconv/" --seedpoints "bonndit/tests/cst-right.pts" -o "cst_unconstrained.tck"
+    prob-tracking -i "HCPdir/T1w/Diffusion/mtdeconv/" --seedpoints "bonndit/tests/CC.pts" -o "cst_unconstrained.tck"
 
-It uses an iterative tractography approach beginning at each seedpoint into both directions. If no direction is specified in the seed file it will \
+It uses an iterative tractography approach beginning at each seed point into both directions. If no direction is specified in the seed file it will \
 use the main direction of low-rank approximation at the closest voxel. Now it will track iteratively into both directions. Each iteration steps \
 contains the following parts. First the fODF at the current point is interpolated trilinearly from its surrounding. From the fODF we are \
 calculating the low-rank approximation [3]_ and choosing the next direction probabilistically. Using a Runge-Kutta integration scheme \
@@ -179,11 +179,11 @@ If you want to see a list of parameters type the following:
 
 low-rank-k-approx
 ~~~~~~~~~~~~~~~~~~~~
-For calculating the low-rank k approximation of a given 4th order fODF run the following command:
+For calculating the low-rank k approximation [3]_ of a given 4th order fODF run the following command:
 
 .. code-block:: console
 
-    $ low-rank-k-approx /path/to/your/fODF.nrrd path/to/output.nrrd
+    $ low-rank-k-approx -i /path/to/your/fODF.nrrd -o path/to/output.nrrd
 
 With additional argument
 
