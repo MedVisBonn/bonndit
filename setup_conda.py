@@ -184,6 +184,7 @@ setup(
     package_dir={'': 'src'},
     scripts=['scripts/mtdeconv',
              'scripts/stdeconv',
+             'scripts/bonndit2mrtrix'
              'scripts/kurtosis',
              'scripts/dtiselectvols',
              'scripts/low-rank-k-approx',
@@ -195,7 +196,7 @@ setup(
     ext_modules=cythonize(ext_modules, compiler_directives={'boundscheck': False, 'wraparound': False,
                                                             'optimize.unpack_method_calls': False}),
     cmdclass = {'build_ext': build_ext_with_blas},
-    package_data={"": ['*.pxd', '*.npz']},
+    package_data={"": ['*.pxd', '*.npz', '*.pts']},
     url='https://github.com/MedVisBonn/bonndit',
     test_suite='tests',
 

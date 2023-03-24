@@ -195,7 +195,7 @@ cdef class TrilinearFODF(Interpolation):
 			self.r = kwargs['r']
 
 
-		if kwargs['sigma_2'] == 0:
+		if kwargs['sigma_2'] == 0 and kwargs['r'] != 0:
 			self.sigma_2 = ((np.linalg.norm(kwargs['trafo'] @ np.array((1, 0, 0))) + np.linalg.norm(kwargs['trafo'] @ np.array((0, 1, 0))) + np.linalg.norm(kwargs['trafo'] @ np.array((0, 0, 1)))) / 3)
 		else:
 			self.sigma_2 = kwargs['sigma_2']
@@ -203,7 +203,7 @@ cdef class TrilinearFODF(Interpolation):
 										  range(-int(kwargs['r']), 1 + int(kwargs['r'])) for k in
 										  range(-int(kwargs['r']), 1 + int(kwargs['r']))],
 										 key=lambda x: np.linalg.norm(kwargs['trafo'] @ x)), dtype=np.int32)
-		if kwargs['sigma_1'] == 0:
+		if kwargs['sigma_1'] == 0 and kwargs['r'] != 0:
 			skip = np.zeros(kwargs['data'].shape[1:])
 			neighbors = np.array([x for x in self.neighbors if np.linalg.norm(kwargs['trafo'] @ x) <= kwargs['r']])
 			var = np.zeros((len(neighbors), ) + kwargs['data'].shape[1:])
