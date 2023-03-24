@@ -22,26 +22,21 @@ Finally, the package includes code for suitably constrained fitting of the Diffu
 
 Installation
 ------------
-To install bonndit, run the following command
+To install bonndit via pip, run the following command
 
 .. code-block:: console
 
     $ pip install bonndit
 
+To install bonndit via conda, run
+
+.. code-block:: console
+
+    $ conda install bonndit -c xderes -c conda-forge
+    
 Features
 --------
-* `stdeconv <https://bonndit.readthedocs.io/en/latest/readme.html#stdeconv>`_: Script to calculate white matter response function and fiber orientation distribution functions (fODFs) from a single shell diffusion signal.
-* `mtdeconv <https://bonndit.readthedocs.io/en/latest/readme.html#mtdeconv>`_: Script to calculate multi tissue response functions and fiber orientation distribution functions (fODFs) from multi shell or DSI signals.
-* `kurtosis <https://bonndit.readthedocs.io/en/latest/readme.html#kurtosis>`_: Script to fit a kurtosis model using quadratic cone programming to guarantee a minimum diffusivity. It also calculates kurtosis measures based on the fitted model.
-* `low-rank-k-approx <https://bonndit.readthedocs.io/en/latest/readme.html#low-rank-k-approx>`_: Script to calculate the low rank approx of a symmetric 4th order tensor.
-* `csd-peaks <https://bonndit.readthedocs.io/en/latest/readme.html#csd-peaks>`_: Script to extract the peaks from a 8th order tensor.
-* `peak-modelling <https://bonndit.readthedocs.io/en/latest/readme.html#peak-modelling>`_: Script to fuse multiple rank k=1,2,3 models into one new model with reduced model uncertainty.
-* `prob-tracking <https://bonndit.readthedocs.io/en/latest/readme.html#prob-tracking>`_: Script for probabilistic tracking.
-* `bundle-filtering <https://bonndit.readthedocs.io/en/latest/readme.html#bundle-filtering>`_: Script to apply various filters to the streamlines.
-* Multiprocessing support implemented in the underlying infrastructure for faster computations
-* Logs written to your output directory
-
-
+An overview of the scripts and functionality included in bonndit is given in `our documentation <https://bonndit.readthedocs.io/en/latest/>`. It also includes `a tutorial for performing fiber tracking with our code<https://bonndit.readthedocs.io/en/latest/gettingstarted.html>`
 
 Reference
 ----------
