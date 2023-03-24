@@ -38,8 +38,8 @@ cdef class WatsonModel(AbstractModel):
 	cdef void constrain(self, double[:,:]) nogil except *
 
 cdef class BinghamModel(WatsonModel):
-	cdef double[:] lookup_table
-	cdef int convert_to_index(self, double, double, double) nogil except *
+	cdef double[:,:,:,:] lookup_table
+#	cdef int convert_to_index(self, double, double, double) nogil except *
 	cdef void sh_bingham_coeffs(self, double, double) nogil except *
 	cdef void predict_new_observation(self, double[:,:], double[:,:]) nogil except *
 	cdef bint kinit(self, double[:], double[:], double[:], double[:,:], double[:])

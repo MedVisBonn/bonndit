@@ -217,17 +217,29 @@ cdef class WatsonModel(AbstractModel):
 cdef class BinghamModel(WatsonModel):
 	def __cinit__(self, **kwargs):
 		super(BinghamModel, self).__init__(**kwargs)
-		self.lookup_table = np.load('bingham_table.npy')
+		lookup_table = np.load('bingham_table.npy')
 		# Convolution with rank 1 kernel:
-		self.lookup_table *= [2.51327412, 1.43615664, 0.31914592] * (len(self.lookup_table)//3)
-
-	cdef int convert_to_index(self, double i, double j, double k) nogil except *:
-		return <int> ((j - 1) * 500 * 3 + (k - 1) * 3 + i // 2 + 1)
+		lookup_table[...,0] *= 2.51327412
+		lookup_table[...,2] *= 1.43615664
+		lookup_table[...,4] *= 0.31914592
+		self.lookup_table = lookup_table
 
 	cdef void sh_bingham_coeffs(self, double kappa, double beta) nogil except *:
-		self.dipy_v[0] = self.lookup_table[self.convert_to_index(0, kappa*10, beta*10)]
-		self.dipy_v[3] = self.lookup_table[self.convert_to_index(2, kappa*10, beta*10)]
-		self.dipy_v[10] = self.lookup_table[self.convert_to_index(4, kappa*10, beta*10)]
+		self.dipy_v[0] = self.lookup_table[<int> kappa*10, <int> beta*10, 0, 0]
+		self.dipy_v[1] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, -2]
+		self.dipy_v[2] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, -1]
+		self.dipy_v[3] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 0]
+		self.dipy_v[4] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 1]
+		self.dipy_v[5] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 2]
+		self.dipy_v[6] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, -4]
+		self.dipy_v[7] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, -3]
+		self.dipy_v[8] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, -2]
+		self.dipy_v[9] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, -1]
+		self.dipy_v[10] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, 0]
+		self.dipy_v[11] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, 1]
+		self.dipy_v[12] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, 2]
+		self.dipy_v[13] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, 3]
+		self.dipy_v[14] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, 4]
 #
 #
 #	cdef void normalize(self, double[:] m, double[:] v, int inc) nogil except *:
