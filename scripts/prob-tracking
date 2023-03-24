@@ -245,7 +245,7 @@ def main():
 		logging.error("Vectorfield (x,y,z) and wm mask have to have same dimensions.")
 		raise Exception()
 	logging.info("WM Mask loaded")
-	if args.seedpoints == "test":
+	if args.seedpoints == "test_CC":
 		dir_path = os.path.dirname(bonndit.__file__)
 		seeds = np.loadtxt(os.path.join(dir_path, "data/CC.pts"))
 	else:
