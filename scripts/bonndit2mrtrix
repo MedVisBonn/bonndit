@@ -28,6 +28,7 @@ def mrtrix2bonndit(input, output, imag):
         img = nib.load(input)
     except:
         raise Exception('%s could not be loaded' % input)
+    assert np.linalg.det(img.affine) > 0, 'Affine matrix is not positive definite, e.g. the orientation is not RAS.'
     fodfs = img.get_fdata()
     order = get_order(fodfs[0,0,0])
     conversion_matrix = esh_to_sym_matrix(order)
