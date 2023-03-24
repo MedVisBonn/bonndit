@@ -55,7 +55,7 @@ author = u"Olivier Morelle, Michael Ankele, Thomas Schultz, Johannes Grün"
 # the built documents.
 #
 
-VERSION = '0.2.0'
+VERSION = '0.3.0'
 # The short X.Y version.
 version = VERSION.rstrip('beta').rstrip('alpha').rstrip('rc')
 # The full version, including alpha/beta/rc tags.
@@ -131,7 +131,7 @@ latex_elements = {
 latex_documents = [
     (master_doc, 'bonndit.tex',
      u'bonndit Documentation',
-     u'Olivier Morelle', 'manual'),
+     u'Johannes Grün', 'manual'),
 ]
 
 
