@@ -109,7 +109,7 @@ Streamlines can be visualized using MRtrix' `mrview`, under tools -> tractograph
 More details about various options can be found below.
 
 .. [1]: ../references/1
-.. [2]: references/2
+.. [2]: ../references/2
 .. [3]: references/3
 .. [4]: references/4
 .. [5]: references/5
