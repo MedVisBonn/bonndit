@@ -48,7 +48,7 @@ master_doc = 'index'
 # General information about the project.
 project = u'bonndit'
 copyright = u"2023, AG Schultz"
-author = u"Olivier Morelle, Michael Ankele, Thomas Schultz, Johannes Grün"
+author = u"Johannes Grün, Olivier Morelle, Michael Ankele, Thomas Schultz, Johannes Grün"
 # The version info for the project you're documenting, acts as replacement
 # for |version| and |release|, also used in various other places throughout
 # the built documents.
