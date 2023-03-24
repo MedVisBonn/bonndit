@@ -1,0 +1,25 @@
+name: Publish
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: publish-to-conda
+      uses: amauryval/publish_conda_package_action@2.0.3
+      with:
+        # CondaDir: locate the directory containing your meta.yml, conda_build_config.yaml (...) files
+        CondaDir: './'
+        # Channels: You can add more channel with a space separator
+        Channels: 'conda-forge xderes'
+        # Platforms: remove one or more of these platforms
+        Platforms: 'osx-64 linux-32 linux-64 win-32 win-64 noarch'
+        CondaUsername: ${{ secrets.CONDA_USERNAME }}
+        CondaPassword: ${{ secrets.CONDA_PASSWORD }}
