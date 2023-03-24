@@ -3,7 +3,7 @@ Scripts
 mtdeconv
 ~~~~~~~~~~~~
 
-For calculating the multi-tissue response functions and the fODFs for given data run the following command:
+For calculating the multi-tissue response functions and the fODFs for given data run the following command [Ankele17]:
 
 .. code-block:: console
 
@@ -40,7 +40,7 @@ If you want to see a list of parameters type the following:
 
 low-rank-k-approx
 ~~~~~~~~~~~~~~~~~~~~
-For calculating the low-rank k approximation [3]_ of a given 4th order fODF run the following command:
+For calculating the low-rank k approximation [Schultz08]_ of a given 4th order fODF run the following command:
 
 .. code-block:: console
 
