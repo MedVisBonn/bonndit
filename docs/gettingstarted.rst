@@ -10,7 +10,7 @@ To follow the tutorial please download patient 904044. Therfore, search for 9040
 After downloading, please extract the files from the zip and set `HCPdir` to the root of the folder.
 
 As an intermediate step we reconstruct fODFs as it was proposed by Ankele et al. [2]_. In this method the single fiber response function (which is then used for deconvolution) is estimated using voxels with an high fractional anisotropy.
-To estimate the FA values we are selecting first high b-values (>1500) and the corresponding b vectors and measurements via:
+To estimate the FA values we are selecting first low b-values (<1500) and the corresponding b vectors and measurements via:
 
 .. code-block:: console
 
