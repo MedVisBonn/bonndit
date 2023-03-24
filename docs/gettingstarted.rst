@@ -84,7 +84,8 @@ To run the low-rank UKF we have to add the "ukf" flag.
 
 .. code-block:: console
 
-    prob-tracking -i "${HCPdir}/T1w/Diffusion/mtdeconv/" --seedpoints "test_CC" -o "cst_ukf.tck" --ukf "LowRank"
+    prob-tracking -i "${HCPdir}/T1w/Diffusion/mtdeconv/" --seedpoints "test_CC" \n
+                    -o "cst_ukf.tck" --ukf "LowRank"
 
 We have replaced the low-rank approximation with an UKF approach which estimated the new low-rank approximation depending on the past and regularize \
 through this. This was introduced in [5]_ as second approach.
