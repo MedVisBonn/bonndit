@@ -1,7 +1,0 @@
-#!/home/johannes/UniBonn/forschung/bonndit/bonndit/bin/python3.8
-
-from dipy.workflows.flow_runner import run_flow
-from dipy.workflows.reconst import ReconstIvimFlow
-
-if __name__ == "__main__":
-    run_flow(ReconstIvimFlow())
