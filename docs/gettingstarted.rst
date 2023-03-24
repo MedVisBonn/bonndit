@@ -56,13 +56,13 @@ via [3]_
     low-rank-k-approx -i "${HCPdir}/T1w/Diffusion/mtdeconv/fodf.nrrd" -o "${HCPdir}/T1w/Diffusion/mtdeconv/rank3.nrrd" -r 3
 
 As a final step we reconstruct a fiber bundle of the CC. Therefore, we supplied pregenerated seed points with initial directions \
-in the `bonndit/tests/CC.pts` file. For more information about the file format have a look into the tracking section.
+in the `bonndit/data/CC.pts` file. For more information about the file format have a look into the tracking section.
 
 To run the easiest version of the tractography code we run the following command:
 
 .. code-block:: console
 
-    prob-tracking -i "${HCPdir}/T1w/Diffusion/mtdeconv/" --seedpoints "bonndit/tests/CC.pts" -o "cst_unconstrained.tck"
+    prob-tracking -i "${HCPdir}/T1w/Diffusion/mtdeconv/" --seedpoints "test_CC" -o "cst_unconstrained.tck"
 
 It uses an iterative tractography approach beginning at each seed point into both directions. If no direction is specified in the seed file it will \
 use the main direction of low-rank approximation at the closest voxel. Now it will track iteratively into both directions. Each iteration steps \
@@ -75,7 +75,7 @@ To run the more advanced joint low-rank approximation we have to specify
 
 .. code-block:: console
 
-    prob-tracking -i "${HCPdir}/T1w/Diffusion/mtdeconv/" --seedpoints "bonndit/tests/cst-right.pts" -o "cst_constrained.tck"
+    prob-tracking -i "${HCPdir}/T1w/Diffusion/mtdeconv/" --seedpoints "test_CC" -o "cst_constrained.tck"
 
 Instead of using the low-rank approximation, we are using a regularised version of it the joint low-rank approximation, which was introduced in [5]_ \
 as first method.
@@ -84,7 +84,7 @@ To run the low-rank UKF we have to add the "ukf" flag.
 
 .. code-block:: console
 
-    prob-tracking -i "${HCPdir}/T1w/Diffusion/mtdeconv/" --seedpoints "bonndit/tests/cst-right.pts" -o "cst_ukf.tck" --ukf "lowrank"
+    prob-tracking -i "${HCPdir}/T1w/Diffusion/mtdeconv/" --seedpoints "test_CC" -o "cst_ukf.tck" --ukf "LowRank"
 
 We have replaced the low-rank approximation with an UKF approach which estimated the new low-rank approximation depending on the past and regularize \
 through this. This was introduced in [5]_ as second approach.
