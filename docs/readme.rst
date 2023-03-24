@@ -28,14 +28,14 @@ these multivectorfields we can apply a probabilistic streamline based tracking a
 
 Features
 --------
-* :code:`stdeconv`: Script to calculate white matter response function and fiber orientation distribution functions (fODFs) from a single shell diffusion signal.
-* :code:`mtdeconv`: Script to calculate multi tissue response functions and fiber orientation distribution functions (fODFs) from multi shell or DSI signals.
-* :code:`kurtosis`: Script to fit a kurtosis model using quadratic cone programming to guarantee a minimum diffusivity. It also calculates kurtosis measures based on the fitted model.
-* :code:`low-rank-k-approx`: Script to calculate the low rank approx of a symmetric 4th order tensor.
-* :code:`csd-peaks`: Script to extract the peaks from a 8th order tensor.
-* :code:`peak-modelling`: Script to fuse multiple rank k=1,2,3 models into one new model with reduced model uncertainty.
-* :code:`prob-tracking`: Script for probabilistic tracking.
-* :code:`bundle-filtering`: Script to apply various filters to the streamlines.
+* :ref:`stdeconv`: Script to calculate white matter response function and fiber orientation distribution functions (fODFs) from a single shell diffusion signal.
+* :ref:`mtdeconv`: Script to calculate multi tissue response functions and fiber orientation distribution functions (fODFs) from multi shell or DSI signals.
+* :ref:`kurtosis`: Script to fit a kurtosis model using quadratic cone programming to guarantee a minimum diffusivity. It also calculates kurtosis measures based on the fitted model.
+* :ref:`low-rank-k-approx`: Script to calculate the low rank approx of a symmetric 4th order tensor.
+* :ref:`csd-peaks`: Script to extract the peaks from a 8th order tensor.
+* :ref:`peak-modelling`: Script to fuse multiple rank k=1,2,3 models into one new model with reduced model uncertainty.
+* :ref:`prob-tracking`: Script for probabilistic tracking.
+* :ref:`bundle-filtering`: Script to apply various filters to the streamlines.
 * Multiprocessing support implemented in the underlying infrastructure for faster computations
 * Logs written to your output directory
 
