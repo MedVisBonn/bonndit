@@ -80,7 +80,7 @@ To run the easiest version of the tractography code we run the following command
 It uses an iterative tractography approach beginning at each seed point into both directions. If no direction is specified in the seed file it will \
 use the main direction of low-rank approximation at the closest voxel. Now it will track iteratively into both directions. Each iteration steps \
 contains the following parts. First the fODF at the current point is interpolated trilinearly from its surrounding. From the fODF we are \
-calculating the low-rank approximation [3]_ and choosing the next direction probabilistically. Using a Runge-Kutta integration scheme \
+calculating the low-rank approximation [Gruen23]_ and choosing the next direction probabilistically. Using a Runge-Kutta integration scheme \
 we are doing a step with half step size and redo the trilinear interpolation and direction choice to use the mean direction with full step size.
 This is done until a stopping criteria is reached, which are set to a minimum wm density of 0.3 and a maximum curvature of 130 degrees over the last 30mm.
 
@@ -102,14 +102,8 @@ To run the low-rank UKF we have to add the "ukf" flag.
                     -o "cst_ukf.tck" --ukf "LowRank"
 
 We have replaced the low-rank approximation with an UKF approach which estimated the new low-rank approximation depending on the past and regularize \
-through this. This was introduced in [5]_ as second approach.
+through this. This was introduced in [Gruen23]_ as second approach.
 
 Streamlines can be visualized using MRtrix' `mrview`, under tools -> tractography the data can be read and will be displayed.
 
 More details about various options can be found below.
-
-.. [1] ./references#1
-.. [2] ./references#2
-.. [3] ./references#3
-.. [4] ./references#4
-.. [5] ./references#5
