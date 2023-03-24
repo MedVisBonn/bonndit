@@ -31,5 +31,5 @@ The use of quadratic cone programming to make the kurtosis fit more stable which
 
 .. [Groeschel16] Samuel Groeschel, G. E. Hagberg, T. Schultz, D. Z. Balla, U. Klose, T.-K. Hauser, T. Nägele, O. Bieri, T. Prasloski, A. MacKay, I. Krägeloh-Mann, K. Scheffler: Assessing white matter microstructure in brain regions with different myelin architecture using MRI. In: PLOS ONE 11(11):e0167274, 2016
 
-PDFs can be obtained from the respective publisher, or the academic homepage of Thomas Schultz: http://cg.cs.uni-bonn.de/en/people/prof-dr-thomas-schultz/
+PDFs can be obtained from the respective publisher, or the academic homepage of Thomas Schultz: https://cg.cs.uni-bonn.de/person/prof-dr-thomas-schultz
 
