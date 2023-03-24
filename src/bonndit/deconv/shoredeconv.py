@@ -878,7 +878,7 @@ def fa_guided_mask(tissue_mask, frac_aniso, brainmask=None,
         tissue_by_lower_fa = fa_lower_thresh < fa
 
     tissue_by_fa = np.logical_and(tissue_by_lower_fa, fa < fa_upper_thresh)
-    fa_mask = np.logical_and(brainmask, tissue_by_fa).astype('int')
+    fa_mask = np.logical_and(brainmask, tissue_by_fa).astype(np.int8)
 
     mask_img = nib.Nifti1Image(fa_mask, frac_aniso.affine)
 
