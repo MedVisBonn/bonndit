@@ -91,7 +91,7 @@ To run the more advanced joint low-rank approximation we have to specify
     prob-tracking -i "${HCPdir}/T1w/Diffusion/mtdeconv/" --seedpoints "test_CC" \
                     -o "cst_constrained.tck"
 
-Instead of using the low-rank approximation, we are using a regularised version of it the joint low-rank approximation, which was introduced in [5]_ \
+Instead of using the low-rank approximation, we are using a regularised version of it the joint low-rank approximation, which was introduced in [Gruen23]_ \
 as first method.
 
 To run the low-rank UKF we have to add the "ukf" flag.

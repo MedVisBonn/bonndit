@@ -3,7 +3,7 @@ Scripts
 mtdeconv
 ~~~~~~~~~~~~
 
-For calculating the multi-tissue response functions and the fODFs for given data run the following command [Ankele17]:
+For calculating the multi-tissue response functions and the fODFs for given data run the following command [Ankele17]_:
 
 .. code-block:: console
 
