@@ -5,9 +5,15 @@ Credits
 Development Lead
 ----------------
 
-* Olivier Morelle <morelle@uni-bonn.de>
+* **Johannes Grün** <gruen@uni-bonn.de>
 
 Contributors
 ------------
 
-None yet. Why not be the first?
+* **Michael Ankele** - *Initial work* - [momentarylapse] (https://github.com/momentarylapse)
+
+* **Thomas Schultz** - *Initial work* - [ThomasSchultz] (https://github.com/ThomasSchultz)
+
+* **Olivier Morelle** - *Code curation, documentation and test* [Oli4] (https://github.com/Oli4)
+
+* **Johannes Grün** - *Extended work* - [JoGruen] (https://github.com/JoGruen)

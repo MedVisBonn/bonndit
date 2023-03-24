@@ -7,10 +7,11 @@ Welcome to bonndit's documentation!
 
    readme
    installation
-   usage
-   modules
+   gettingstarted
+   scripts
    contributing
    authors
+   references
    history
 
 Indices and tables
