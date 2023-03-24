@@ -1,0 +1,107 @@
+#!/bin/bash
+check_files(){
+	if [ ! -f "${infolder}/Diffusion/${1}" ]; then
+		# Check if folder exists
+		echo "Input ${1} is missing!"
+		exit 1
+	fi
+}
+
+check_commands() {
+	if ! command -v "${1}" &> /dev/null
+		then
+		echo "${1} could not be found"
+		exit
+	fi
+}
+
+print_help() {
+  printf "This Skript calculates fODFs from dMRI data (which can be found in the HCP project). The following parameter have to be set:
+    -i  Path to dMRI data folder. The folder has to contain:
+    		bvecs
+    		bvals
+    		data.nii.gz
+    		nodif_brain_mask.nii.gz
+    -o  Path to output folder. If the folder exists -f has to be passed additionally to delete the folder and create a
+    	one. Otherwise specify a non existing folder.
+  These arguments can be passed additionally:
+    -t	If set, the tissues are calculated with fast only. Otherwise 5ttgen from MRtrix3 is used.
+    -f	If set, a existing output folder will be replaced."
+  exit 1;
+}
+
+check_commands "mtdeconv"
+check_commands "dtiselectvols"
+check_commands "dtifit"
+check_commands "fslmaths"
+check_commands "5ttgen"
+check_commands "fsl"
+
+
+while getopts ":fi:o:t" opt; do
+  case $opt in
+  	f) force="1" ;;
+    i) infolder="$OPTARG" ;;
+    o) outfolder="$OPTARG" ;;
+	t) fast="1" ;;
+    *) print_help ;;
+  esac
+done
+if [ -z ${infolder} ]; then echo "Infolder has to be set via -i"; exit 1; fi
+if [ -z ${outfolder} ]; then echo "Outfolder has to be set via -o"; exit 1; fi
+
+infolder="$(realpath "${infolder}")"
+outfolder="$(realpath "${outfolder}")"
+if [ ! -d "${infolder}" ]; then
+  	# Check if folder exists
+	echo "Input directory does not exist!"
+	exit 1
+else
+	# Check that files in folder exists
+	check_files "bvecs"
+	check_files "bvals"
+	check_files "data.nii.gz"
+	check_files "nodif_brain_mask.nii.gz"
+fi
+
+if [ -d "${outfolder}" ]; then
+  # Take action if $DIR exists. #
+  	if [ -n "${force}" ]; then
+  		rm -r "${outfolder}"
+  		echo "Outfolder existed. Has been removed"
+  	else
+  		echo "Outfolder exists. Please select another output folder or set the -f flag to remove the folder."
+  		exit 1
+  	fi
+fi
+
+cp -r "$infolder" "$outfolder"
+mkdir "${outfolder}/mtdeconv"
+mkdir "${outfolder}/mtdeconv/indir"
+ln "${outfolder}/Diffusion/bvecs" "${outfolder}/mtdeconv/indir/"
+ln "${outfolder}/Diffusion/bvals" "${outfolder}/mtdeconv/indir/"
+ln "${outfolder}/Diffusion/data.nii.gz" "${outfolder}/mtdeconv/indir/"
+ln "${outfolder}/Diffusion/nodif_brain_mask.nii.gz" "${outfolder}/mtdeconv/indir/mask.nii.gz"
+indir="${outfolder}/mtdeconv/indir"
+dtiselectvols --outdata "${indir}/dtidata.nii.gz" --outbvecs "${indir}/dtibvecs" --outbvals "${indir}/dtibvals" --indata "${indir}/data.nii.gz" --inbvecs "${indir}/bvecs" --inbvals "${indir}/bvals"
+dtifit -k "${indir}/dtidata.nii.gz" -o "${indir}/dti" -m "${indir}/mask.nii.gz" -r "${indir}/dtibvecs" -b "${indir}/dtibvals" -w
+if [ -n "${fast}" ]; then
+	fslmaths "${outfolder}/T1w_acpc_dc_restore_1.25.nii.gz" -mas "${indir}/mask.nii.gz" "${indir}/T1_masked.nii.gz"
+	fast -o "${indir}/fast" "${indir}/T1_masked.nii.gz"
+else
+	5ttgen fsl "${outfolder}/T1w_acpc_dc_restore_1.25.nii.gz" "${indir}/fast_first.nii.gz" -nocrop
+fi
+
+mtdeconv -o "${outfolder}/mtdeconv/ankele" -v True -k rank1 -r 4 -C hpsd "${indir}"
+
+for i in {5..25}
+do
+  ( if [ -d "/data/directions_test/test${i}" ]; then
+    python test.py -i /data/directions_test/996782/ -s 30 -o /data/directions_test/test${i}
+  else
+    echo "${i} done"
+  fi ) &
+done
+
+
+

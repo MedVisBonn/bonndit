@@ -1,0 +1,49 @@
+#!/home/johannes/UniBonn/forschung/bonndit/bonndit/bin/python3.8
+# -*- coding: utf-8 -*-
+
+import argparse
+
+import numpy as np
+from dipy.io import read_bvals_bvecs
+
+from bonndit.utils import dwmri, fields
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description='Helper script to extract dMRI volumes with b values '
+        'that are suitable for DTI fitting. By default, omits all volumes '
+        'with b>1500.',
+        add_help=False)
+
+    parser.add_argument('--outdata', default='dtidata.nii.gz',
+                        help='Output file for selected dti volumes')
+    parser.add_argument('--outbvecs', default='dtibvecs',
+                        help='Output file for selected b vectors')
+    parser.add_argument('--outbvals', default='dtibvals',
+                        help='Output file for selected b values')
+    parser.add_argument('--indata', default='data.nii.gz',
+                        help='Input dti file')
+    parser.add_argument('--inbvecs', default='bvecs',
+                        help='Input file for b vectors')
+    parser.add_argument('--inbvals', default='bvals',
+                        help='Input file for b values')
+    parser.add_argument('--thresh', default=1500, type=int,
+                        help='Upper bound for selected b values')
+
+    args = parser.parse_args()
+
+    # Load bvals and bvecs
+    bvals, bvecs = read_bvals_bvecs(args.inbvals, args.inbvecs)
+
+    # Make and store selection
+    selection = bvals <= args.thresh
+    np.savetxt(args.outbvals,bvals[selection],fmt='%d')
+    np.savetxt(args.outbvecs,bvecs[selection,:].T,fmt='%1.6f')
+
+    # Load data and save selection
+    data, _, meta = dwmri.load(args.indata)
+    fields.save_basic(args.outdata, data[:, :, :, selection], meta)
+
+if __name__ == "__main__":
+    main()
