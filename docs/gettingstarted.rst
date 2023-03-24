@@ -107,3 +107,9 @@ through this. This was introduced in [5]_ as second approach.
 Streamlines can be visualized using MRtrix' `mrview`, under tools -> tractography the data can be read and will be displayed.
 
 More details about various options can be found below.
+
+.. [1]: ../references/1
+.. [2]: references/2
+.. [3]: references/3
+.. [4]: references/4
+.. [5]: references/5
