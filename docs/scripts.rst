@@ -10,6 +10,7 @@ For calculating the multi-tissue response functions and the fODFs for given data
     $ mtdeconv -i /path/to/your/data
 
 The specified folder should contain the following files:
+
 * :code:`bvecs`: b-vectors
 * :code:`bvals`: b-values
 * :code:`data.nii.gz`: The diffusion weighted data
