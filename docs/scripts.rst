@@ -93,7 +93,7 @@ and in the remaining places :math:`\mathbb{v}` the unit direction.
 
 peak-modelling
 ~~~~~~~~~~~~~~
-Build a new model (Selection or Averaging) from given low rank k = 1,2,3 approximations by running the following command:
+Build a new model (Selection or Averaging) from given low rank k = 1,2,3 approximations [Gruen22]_ by running the following command:
 
 .. code-block:: console
 
@@ -135,8 +135,9 @@ running the following command
 
     $ prob-tracking --i /path/to/inputs -o /path/to/output.ply
 
-generates streamlines for each seed point.
-If not further specified the input folder has to contain the following:
+generates streamlines for each seed point. Depending on the parameters, this script performs a basic form of streamline tractography, uses model averaging over fiber estimates with different numbers of compartments [Gruen22]_, or spatial regularization via joint approximation or an Unscented Kalman Filter [Gruen23]_.
+
+If not further specified, the input folder has to contain the following:
 
 - rank3.nrrd
     Multidirectionfield, where the first dimension defines the length and the
@@ -268,6 +269,7 @@ The generated streamlines can be filtered by running the following command:
 
     $ bundle-filtering -i path/to/trackingResults.ply -m path/to/fODF.nrrd -o path/to/outfile.ply
 
+It has been used for filtering tractography results in [Gruen22]_ and [Gruen23]_.
 If this script is applied to self generated ply data, it is important that this ply file contains the following:
 Firstly, vertices:
 contains spatial information about the streamlines, e.g. coordinates in 3D. Further the seed-coordinate is marked by a 1.
@@ -280,3 +282,30 @@ Further several filter parameters can be set:
 * :code:`--exclusion`: Filters out all streamlines which intersect with a given plane e.g. x<10. Several planes can be seperated with white spaces. Default ""
 * :code:`--exclusionc`: Filters out all streamlines which intersect with a given cube e.g. 10<x<20,5<y90,40<z<100. Several cubes can be seperated by a white space Default ""
 * :code:`--minlen`: Filters out all streamlines which not at least minlen long. Default 0.
+
+kurtosis
+~~~~~~~~
+Fits the diffusional kurtosis (DKI) model using quadratic cone programming to guarantee a minimum diffusivity. This increases robustness of the fit, and is described in the methods section of [Groeschel16]_. The script also computes a number of measures based on the result, including mean, axial, and radial kurtosis.
+
+If not specified otherwise, the input folder has to contain the following files:
+
+* :code:`data.nii.gz`: The diffusion weighted data
+* :code:`mask.nii.gz`: A binary brain mask for the diffusion weighted data
+
+and the output is written to the same folder:
+
+* :code:`da.nii`: Axial diffusivity
+* :code:`dr.nii`: Radial diffusivity
+* :code:`dm.nii`: Mean diffusivity
+* :code:`fa.nii`: Fractional Anisotropy
+* :code:`ka.nii`: Axial kurtosis
+* :code:`kr.nii`: Radial kurtosis
+* :code:`km.nii`: Mean kurtosis
+
+Moreover, the following parameters can be set:
+
+* :code:`-d`: to specify a different filename for the diffusion weighted data
+* :code:`-m`: to specify a different filename for the brain mask
+* :code:`-o`: to specify a different folder for the output files
+* :code:`-t`: to specify a threshold for b-values that should be treated as zero (default: 0)
+* :code:`-R`: to only fit the DKI model, without computing invariants
