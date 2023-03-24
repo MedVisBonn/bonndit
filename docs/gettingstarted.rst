@@ -3,7 +3,7 @@ Getting Started
 
 This introduction will help a new user to reconstruct a part of the CC tract of a HCP subject. For a more detailed description of all commands we refer to the next sections.
 
-**To run the following tutorial it is necessary to have FSL installed. It can be downloaded via https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FslInstallation/ **
+** To run the following tutorial it is necessary to have FSL installed. It can be downloaded via https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FslInstallation/ **
 
 First, you need to download HCP diffusion MRI data from the HCP website. This dataset includes high-quality diffusion MRI images and preprocessed data. You can download the data for free after registering on the HCP db website (db.humanconnectome.org/) and agreeing to the licence.
 To follow the tutorial please download patient 904044. Therfore, search for 904044, click `download image` and select the `Diffusion Preporocessed`.
@@ -18,7 +18,8 @@ To estimate the FA values we are selecting first low b-values (<1500) and the co
                     --outbvecs "${HCPdir}/T1w/Diffusion/dtibvecs" \
                     --outbvals "${HCPdir}/T1w/Diffusion/dtibvals" \
                     --indata "${HCPdir}/T1w/Diffusion/data.nii.gz" \
-                    --inbvecs "${HCPdir}/T1w/Diffusion/bvecs" --inbvals "${HCPdir}/T1w/Diffusion/bvals"
+                    --inbvecs "${HCPdir}/T1w/Diffusion/bvecs"  \
+                    --inbvals "${HCPdir}/T1w/Diffusion/bvals"
 
 Next we are estimating tensors via FSLs'
 
