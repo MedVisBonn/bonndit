@@ -11,11 +11,6 @@ jobs:
 
     - name: Checkout
       uses: actions/checkout@v2
-    - name: Install OpenBLAS by apt
-      run: |
-        apt update
-        apt install -y libopenblas-dev
-
     - name: publish-to-conda
       uses: JoGruen/publish_conda_package_action@1.0.1
       with:

@@ -22,6 +22,7 @@ requirements:
     - pip
     - cython >=0.29.33
     - findblas
+    - openblas-devel
     - numpy >=1.23
   run:
     - python
