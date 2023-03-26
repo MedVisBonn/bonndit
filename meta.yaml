@@ -20,9 +20,9 @@ requirements:
   host:
     - python
     - pip
-    - cython=0.29.33
-    - findblas=1.0.0
-    - numpy=
+    - cython >=0.29.33
+    - findblas >=1.0.0
+    - numpy
   run:
     - python
     - dipy
