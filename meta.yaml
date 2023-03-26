@@ -21,8 +21,8 @@ requirements:
     - python
     - pip
     - cython >=0.29.33
-    - findblas >=1.0.0
-    - numpy
+    - findblas
+    - numpy >=1.23
   run:
     - python
     - dipy
