@@ -183,8 +183,8 @@ setup(
     license="GNU General Public License v3",
     long_description=readme + '\n\n' + history,
     include_package_data=True,
-    keywords='bonnndit',
-    name='bonnndit',
+    keywords='bonndit',
+    name='bonndit',
 
     packages=find_packages('src', exclude=('tests',)),
     package_dir={'': 'src'},
