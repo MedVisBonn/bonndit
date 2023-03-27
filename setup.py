@@ -7,7 +7,7 @@ from setuptools import setup, find_packages
 from distutils.extension import Extension
 from Cython.Build import cythonize
 import numpy
-from findblas.distutils import build_ext_with_blas
+# from findblas.distutils import build_ext_with_blas
 
 
 with open('README.rst') as readme_file:
@@ -205,7 +205,7 @@ setup(
         ext_modules,
         compiler_directives={'boundscheck': False, 'wraparound': False,
                              'optimize.unpack_method_calls': False}),
-    cmdclass={'build_ext': build_ext_with_blas},
+    # cmdclass = {'build_ext': build_ext_with_blas},
     package_data={"": ['*.pxd', '*.npz', '*.pts']},
     url='https://github.com/MedVisBonn/bonndit',
     setup_requires=setup_requirements,
