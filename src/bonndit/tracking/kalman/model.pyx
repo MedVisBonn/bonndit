@@ -2,7 +2,6 @@
 # warn.unused_results=True
 from bonndit.utilc.blas_lapack cimport *
 from bonndit.utilc.hota cimport hota_4o3d_sym_eval, hota_8o3d_sym_eval
-from bonndit.utilc.watsonfitwrapper cimport SHRotateRealCoef, map_dipy_to_pysh_o4, map_pysh_to_dipy_o4, sh_watson_coeffs
 from bonndit.utilc.cython_helpers cimport special_mat_mul, orthonormal_from_sphere, dinit, sphere2world, ddiagonal, world2sphere, sphere2cart
 from scipy.optimize import least_squares
 import numpy as np
@@ -218,7 +217,10 @@ cdef class BinghamModel(WatsonModel):
 	def __cinit__(self, **kwargs):
 		super(BinghamModel, self).__init__(**kwargs)
 		lookup_table = np.load('bingham_table.npy')
+		normalize_const = np.load('normalize_const.npy')
 		# Convolution with rank 1 kernel:
+		for i,j in np.ndindex(lookup_table.shape[:2]):
+			lookup_table[i,j] *= 1/normalize_const[i,j]
 		lookup_table[...,0] *= 2.51327412
 		lookup_table[...,2] *= 1.43615664
 		lookup_table[...,4] *= 0.31914592

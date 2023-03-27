@@ -11,7 +11,7 @@ from bonndit.utilc.cython_helpers cimport add_pointwise, floor_pointwise_matrix,
 import numpy as np
 import time
 from bonndit.utilc.cython_helpers cimport dm2toc
-from bonndit.utilc.hota cimport hota_4o3d_sym_norm, hota_4o3d_sym_eval
+from bonndit.utilc.hota cimport hota_4o3d_sym_norm, hota_4o3d_sym_eval, hota_8o3d_sym_eval
 from bonndit.utilc.lowrank cimport approx_initial
 from .ItoW cimport Trafo
 cdef int[:,:] permute_poss = np.array([[0,1,2],[0,2,1], [1,0,2], [1,2,0], [2,1,0], [2,0,1]], dtype=np.int32)
@@ -590,6 +590,71 @@ cdef class UKF(Interpolation):
 
 	cdef int select_next_dir(self, int info, double[:] old_dir):
 		return info
+
+cdef class UKFFodfAlt(Interpolation):
+	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities prob, **kwargs):
+		dim_model = kwargs['dim_model']
+		kwargs['dim_model'] = 4
+		self.num_kalman = dim_model//4
+		self.mean = np.zeros((dim_model//4,4), dtype=np.float64)
+		self.mlinear  = np.zeros((8,kwargs['data'].shape[3]), dtype=np.float64) ##  Shpuld be always 8. For edges of cube.
+		self.P = np.zeros((dim_model//4, 4, 4), dtype=np.float64)
+		self.y = np.zeros((dim_model//4, kwargs['data'].shape[3],), dtype=np.float64)
+		self.res = np.zeros((kwargs['data'].shape[0],), dtype=np.float64)
+		self._model = [fODFModel(vector_field=vector_field[:, i:i+1], **kwargs) for i in range(dim_model//4)]
+		self._kalman = [Kalman(kwargs['data'].shape[3], kwargs['dim_model'], self._model[i]) for i in range(dim_model//4)]
+
+	cpdef int interpolate(self, double[:] point, double[:] old_dir, int restart) : # : # : # nogil except *:
+		self.point_world[:3] = point
+		self.point_world[3] = 1
+		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4,4,1,&self.inv_trafo[0,0], 4, &self.point_world[0], 1, 0, &self.point_index[0],1)
+		cdef int i, info = 0
+		# Interpolate current point
+		for i in range(self.num_kalman):
+			self._kalman[i].linear(self.point_index[:3], self.y[i], self.mlinear, self.data)
+		# If we are at the seed. Initialize the Kalmanfilter
+		if restart == 0:
+			#with gil:
+			for i in range(len(self.num_kalman)):
+				self._model.kinit(self.mean, self.point_index[:3], old_dir, self.P, self.y[i])
+		#	for i in range(10):
+			#	print(np.array(self.y))
+		#		info = self._kalman.update_kalman_parameters(self.mean, self.P, self.y)
+			#	print(np.array(self.P))
+		# Run Kalmannfilter
+		for i in range(self.num_kalman):
+			for j in range(self.num_kalman):
+				if i == j:
+					continue
+				if self._model[0].order ==4:
+					hota_4o3d_sym_eval(self.res, self.mean[i, 3], self.mean[i, :3])
+				else:
+					hota_8o3d_sym_eval(self.res, self.mean[i, 3], self.mean[i, :3])
+				cblas_daxpy(self.res.shape[0], -1, &self.res[0], 1, &self.y[i,0], 1)
+			self._kalman[i].update_kalman_parameters(self.mean[i], self.P[i], self.y[i])
+
+		for i in range(self.num_kalman):
+			if cblas_dnrm2(3, &self.mean[i,0], 1) != 0:
+				cblas_dscal(3, 1 / cblas_dnrm2(3, &self.mean[i,4], 1), &self.mean[i,4], 1)
+				if cblas_ddot(3, &self.mean[i,4*i], 1, &old_dir[0],1) < 0:
+					cblas_dscal(3, -1, &self.mean[i,4], 1)
+				self.mean[4*i+3] = max(self.mean[i,3],_lambda_min)
+			else:
+				cblas_dscal(3, cblas_dnrm2(3, &self.mean[i,4 * i], 1), &self.mean[i,4], 1)
+				self.mean[4 * i + 3] = max(self.mean[i,3], _lambda_min)
+
+
+		for i in range(self._model[0].num_tensors):
+			dctov(&self.mean[i,4], self.best_dir[i])
+			if self.mean[i,3] > 0.1:
+				#print(self.mean[4 * i + 3])
+				cblas_dscal(3,pow(self.mean[i, 3], 0.25), &self.best_dir[i,0],1)
+			else:
+				cblas_dscal(3,0, &self.best_dir[i,0],1)
+
+		self.prob.calculate_probabilities(self.best_dir, old_dir)
+		self.next_dir = self.prob.best_fit
+		return 0
 
 cdef class UKFFodf(UKF):
 	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities prob, **kwargs):
