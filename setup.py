@@ -30,6 +30,7 @@ watson_libraries = ceres_libs + suite_sparse_libs + \
 ext_modules = [
     Extension("bonndit.utilc.watsonfitwrapper",
               sources=["src/bonndit/utilc/watsonfitwrapper.pyx"],
+              define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
               include_dirs=[".", numpy.get_include(), "/usr/lib"],
               libraries=watson_libraries,
               language="c++",
@@ -109,9 +110,9 @@ ext_modules = [
         "bonndit.tracking.kalman.model",
         ["src/bonndit/tracking/kalman/model.pyx"],
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
-        include_dirs=[numpy.get_include(), "%s/include" % mklroot],
-        libraries=["mkl_rt", "mkl_sequential",
-                   "mkl_core", "pthread", "m", "dl"],
+        include_dirs=[numpy.get_include(), "%s/include" % mklroot, "/usr/lib"],
+        libraries=["mkl_rt", "mkl_sequential", "mkl_core",
+                   "pthread", "m", "dl"] + watson_libraries,
         library_dirs=["%s/lib/intel64" % mklroot],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
         extra_link_args=["-Wl,--no-as-needed"]
@@ -133,7 +134,7 @@ ext_modules = [
         "bonndit.tracking.interpolation",
         ["src/bonndit/tracking/interpolation.pyx"],
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
-        include_dirs=[numpy.get_include(), "%s/include" % mklroot],
+        include_dirs=[numpy.get_include(), "%s/include" % mklroot, "/usr/lib"],
         libraries=["mkl_rt", "mkl_sequential",
                    "mkl_core", "pthread", "m", "dl"],
         library_dirs=["%s/lib/intel64" % mklroot],
@@ -197,7 +198,7 @@ ext_modules = [
 ]
 
 requirements = ['nibabel', 'numpy', 'pandas', 'dipy', 'scipy', 'tqdm',
-                'cvxopt', 'mpmath', 'plyfile', 'Cython', 'pynrrd']
+                'cvxopt', 'mpmath', 'plyfile', 'Cython', 'pynrrd', 'pyshtools']
 
 setup_requirements = ['pytest-runner', 'cython']
 
@@ -232,6 +233,7 @@ setup(
     package_dir={'': 'src'},
     scripts=['scripts/mtdeconv',
              'scripts/stdeconv',
+             'scripts/watson-fitting',
              'scripts/kurtosis',
              'scripts/dtiselectvols',
              'scripts/low-rank-k-approx',
