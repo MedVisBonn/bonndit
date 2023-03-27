@@ -10,7 +10,7 @@ from .ItoW cimport Trafo
 from .stopping cimport Validator
 from .integration cimport Euler, Integration, EulerUKF, RungeKutta
 from .interpolation cimport FACT, Trilinear, Interpolation, UKFFodf, \
-    UKFMultiTensor, TrilinearFODF, UKFBingham, UKFWatson
+    UKFFodfAlt, UKFMultiTensor, TrilinearFODF, UKFBingham, UKFWatson
 from bonndit.utilc.cython_helpers cimport mult_with_scalar, sum_c, \
     sum_c_int, set_zero_vector, sub_vectors, \
     angle_deg, norm
@@ -297,6 +297,10 @@ cpdef tracking_all(
             directionGetter, **ukf_parameters)
     elif tracking_parameters['ukf'] == "LowRank":
         interpolate = UKFFodf(
+            vector_field, dim[2:5], directionGetter,
+            **ukf_parameters)
+    elif tracking_parameters['ukf'] == "LowRankAlt":
+        interpolate = UKFFodfAlt(
             vector_field, dim[2:5], directionGetter,
             **ukf_parameters)
     elif tracking_parameters['ukf'] == "Watson":

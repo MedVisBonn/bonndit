@@ -47,7 +47,7 @@ cdef class Kalman:
 
 
 
-
+    # WAS MACHT DAS HIER?
     cdef void linear(
         self, double[:] point, double[:] y,
         double[:, :] vlinear, double[:, :, :, :] data
