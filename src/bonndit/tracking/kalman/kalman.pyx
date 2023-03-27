@@ -122,7 +122,7 @@ cdef class Kalman:
 
 
 
-	cdef int update_kalman_parameters(self, double[:] mean, double[:,:] P, double[:] y) nogil except *:
+	cdef int update_kalman_parameters(self, double[:] mean, double[:,:] P, double[:] y): # nogil except *:
 		cdef int info, i
 		info = self.compute_sigma_points(self.X, self.P_M, mean, P, self.KAPPA) # eq. 17
 		if info != 0:

@@ -3,6 +3,7 @@
 from bonndit.utilc.blas_lapack cimport *
 from bonndit.utilc.hota cimport hota_4o3d_sym_eval, hota_8o3d_sym_eval
 from bonndit.utilc.cython_helpers cimport special_mat_mul, orthonormal_from_sphere, dinit, sphere2world, ddiagonal, world2sphere, sphere2cart
+from bonndit.utilc.watsonfitwrapper cimport *
 from scipy.optimize import least_squares
 import numpy as np
 from libc.math cimport pow
@@ -53,13 +54,13 @@ cdef class AbstractModel:
 			ddiagonal(&self.MEASUREMENT_NOISE[0, 0], kwargs['measurement noise'], self.MEASUREMENT_NOISE.shape[0],
 					  self.MEASUREMENT_NOISE.shape[1])
 
-	cdef void normalize(self, double[:] m, double[:] v, int incr) nogil except *:
+	cdef void normalize(self, double[:] m, double[:] v, int incr): #nogil except *:
 		pass
-	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points) nogil except *:
+	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points): #nogil except *:
 		pass
 	cdef bint kinit(self, double[:] mean, double[:] point, double[:] init_dir, double[:,:] P, double[:] y):
 		pass
-	cdef void constrain(self, double[:,:] X) nogil except *:
+	cdef void constrain(self, double[:,:] X): #nogil except *:
 		pass
 
 
@@ -81,13 +82,13 @@ cdef class fODFModel(AbstractModel):
 		self.num_tensors = <int> (kwargs['dim_model'] / 4)
 
 
-	cdef void normalize(self, double[:] m, double[:] v, int inc) nogil except *:
+	cdef void normalize(self, double[:] m, double[:] v, int inc): #nogil except *:
 
 		if cblas_dnrm2(3, &v[0], inc) != 0:
 			cblas_dcopy(3, &v[0], inc, &m[0], 1)
 			cblas_dscal(3, 1/cblas_dnrm2(3, &v[0],inc), &m[0], 1)
 
-	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points) nogil except *:
+	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points): #nogil except *:
 		cdef int number_of_tensors = int(sigma_points.shape[0]/4)
 		cdef int i, j
 		cdef double lam
@@ -125,7 +126,7 @@ cdef class fODFModel(AbstractModel):
 					mean[j*4 + 3] = self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]]
 
 
-	cdef void constrain(self, double[:,:] X) nogil except *:
+	cdef void constrain(self, double[:,:] X): #nogil except *:
 		cdef int i, j, n = X.shape[0]//4
 		for i in range(X.shape[1]):
 			for j in range(n):
@@ -163,7 +164,7 @@ cdef class WatsonModel(AbstractModel):
 	#		cblas_dcopy(3, &v[0], inc, &m[0], 1)
 	#		cblas_dscal(3, 1/cblas_dnrm2(3, &v[0],inc), &m[0], 1)
 
-	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points) nogil except *:
+	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points): # nogil except *:
 		cdef int number_of_tensors = int(sigma_points.shape[0]/4)
 		cdef int i, j
 		cdef double lam
@@ -206,7 +207,7 @@ cdef class WatsonModel(AbstractModel):
 
 
 
-	cdef void constrain(self, double[:,:] X) nogil except *:
+	cdef void constrain(self, double[:,:] X): # nogil except *:
 		cdef int i, j, n = X.shape[0]//4
 		for i in range(X.shape[1]):
 			for j in range(n):
@@ -226,7 +227,7 @@ cdef class BinghamModel(WatsonModel):
 		lookup_table[...,4] *= 0.31914592
 		self.lookup_table = lookup_table
 
-	cdef void sh_bingham_coeffs(self, double kappa, double beta) nogil except *:
+	cdef void sh_bingham_coeffs(self, double kappa, double beta): # nogil except *:
 		self.dipy_v[0] = self.lookup_table[<int> kappa*10, <int> beta*10, 0, 0]
 		self.dipy_v[1] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, -2]
 		self.dipy_v[2] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, -1]
@@ -249,7 +250,7 @@ cdef class BinghamModel(WatsonModel):
 #			cblas_dcopy(3, &v[0], inc, &m[0], 1)
 #			cblas_dscal(3, 1/cblas_dnrm2(3, &v[0],inc), &m[0], 1)
 #
-	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points) nogil except *:
+	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points): # nogil except *:
 		cdef int number_of_tensors = int(sigma_points.shape[0]/4)
 		cdef int i, j
 		cdef double lam, kappa, beta
@@ -298,7 +299,7 @@ cdef class BinghamModel(WatsonModel):
 					mean[j*6 + 5] = self.vector_field[3,i, <int> point[0], <int> point[1], <int> point[2]]
 #
 #
-	cdef void constrain(self, double[:,:] X) nogil except *:
+	cdef void constrain(self, double[:,:] X): # nogil except *:
 		cdef int i, j, n = X.shape[0]//4
 		for i in range(X.shape[1]):
 			for j in range(n):
@@ -329,7 +330,7 @@ cdef class MultiTensorModel(AbstractModel):
 			ddiagonal(&self.MEASUREMENT_NOISE[0, 0], np.array([0.02]), self.MEASUREMENT_NOISE.shape[0],
 				  self.MEASUREMENT_NOISE.shape[1])
 
-	cdef void normalize(self, double[:] m, double[:] v, int inc) nogil except *:
+	cdef void normalize(self, double[:] m, double[:] v, int inc): # nogil except *:
 		# Calculates m = v/||v||, by doing matrix operation 1/||v||*v*1 + 0*m
 		#with gil: print(np.array(v))
 		if cblas_dnrm2(3, &v[0],inc) != 0:
@@ -338,7 +339,8 @@ cdef class MultiTensorModel(AbstractModel):
 
 
 
-	cdef void diffusion(self, double[:,:] R, double[:] m, double[:] lambdas, double[:,:] M) nogil except *:
+	cdef void diffusion(self, double[:,:] R, double[:] m, double[:] lambdas, double[:,:] M):
+		#nogil except *:
 		"""
 		Calculates the diffusion Matrix for a given main diffusion direction m.
 
@@ -360,7 +362,7 @@ cdef class MultiTensorModel(AbstractModel):
 		M[2,2] = m[2] * m[2] / (1 + m[0]) - 1
 		special_mat_mul(R, M, lambdas, M, self.GLOBAL_TENSOR_UNPACK_VALUE)
 
-	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points, )  nogil except *:
+	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points, ): #1  nogil except *:
 		r"""
 		Predicts new observation for a given set of sigma points according to the signal model
 		.. math::
@@ -426,7 +428,7 @@ cdef class MultiTensorModel(AbstractModel):
 		#print(res.cost/np.linalg.norm(y))
 		return True
 
-	cdef void constrain(self, double[:,:] X) nogil except *:
+	cdef void constrain(self, double[:,:] X): # nogil except *:
 		cdef int i, j, n = X.shape[0]//5
 		for i in range(X.shape[1]):
 			for j in range(n):
