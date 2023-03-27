@@ -25,7 +25,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v3
       with:
-        python-version: '3.x'
+        python-version: '<=3.10'
     - name: apt install suite
       run: |
         sudo apt-get update -y
@@ -44,3 +44,14 @@ jobs:
       with:
         user: __token__
         password: ${{ secrets.PYPI_API_TOKEN }}
+
+    - name: publish-to-conda
+      uses: JoGruen/publish_conda_package_action@1.0.2
+      with:
+        # CondaDir: locate the directory containing your meta.yml, conda_build_config.yaml (...) files
+        CondaDir: './'
+        # Channels: You can add more channel with a space separator
+        Channels: 'conda-forge xderes'
+        # Platforms: remove one or more of these platforms
+        Platforms: 'linux-64'
+        CondaToken: ${{ secrets.CondaToken }}
