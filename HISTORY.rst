@@ -2,7 +2,7 @@
 History
 =======
 
-0.3.0 (2023-03-15)
+0.3.1 (2023-03-15)
 -------------------
 * Included UKF tractography
 * Included regularized tractography

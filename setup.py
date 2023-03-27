@@ -207,6 +207,6 @@ setup(
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
-    version='0.3.0',
+    version='0.3.1',
     zip_safe=False,
 )

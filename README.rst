@@ -3,8 +3,8 @@ bonndit
 =======
 
 
-.. image:: https://img.shields.io/pypi/v/bonndit.svg
-        :target: https://pypi.python.org/pypi/bonndit
+.. image:: https://badge.fury.io/py/bonndit.svg
+    :target: https://badge.fury.io/py/bonndit
 
 .. image:: https://readthedocs.org/projects/bonndit/badge/?version=latest
         :target: https://bonndit.readthedocs.io/en/latest/?badge=latest

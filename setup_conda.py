@@ -200,6 +200,6 @@ setup(
     url='https://github.com/MedVisBonn/bonndit',
     test_suite='tests',
 
-    version='0.3.0',
+    version='0.3.1',
     zip_safe=False,
 )
