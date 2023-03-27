@@ -83,6 +83,17 @@ cdef class UKF(Interpolation):
 	cpdef int interpolate(self, double[:], double[:], int) # nogil except *
 	cdef int select_next_dir(self, int, double[:])
 
+cdef class UKFFodfAlt(Interpolation):
+	cdef int num_kalman
+	cdef double[:,:] mean
+	cdef double[:,:] mlinear
+	cdef double[:,:,:] P
+	cdef double[:,:] y
+	cdef double[:] res
+	cdef list _model
+	cdef list _kalman
+	cpdef int interpolate(self, double[:] , double[:] , int )
+
 cdef class UKFFodf(UKF):
 	cdef int select_next_dir(self, int, double[:]) # nogil except *
 

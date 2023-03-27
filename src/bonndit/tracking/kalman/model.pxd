@@ -1,3 +1,4 @@
+
 cdef class AbstractModel:
 
 	cdef double[:,:] MEASUREMENT_NOISE
@@ -59,3 +60,13 @@ cdef class MultiTensorModel(AbstractModel):
 	cdef void predict_new_observation(self, double[:,:], double[:,:]) nogil except *
 	cdef bint kinit(self, double[:], double[:], double[:], double[:,:], double[:])
 	cdef void constrain(self, double[:,:]) nogil except *
+
+cdef extern from "watsonfit.h":
+	void minimize_watson_mult_o4(double* parameters, double* signal_p, double* est_signal_p, double* dipy_v_p, double* pysh_v_p, double* rot_pysh_v_p, double* angles_v_p, double* loss_p, int amount, int num_of_dir_p, int no_spread) nogil
+	void minimize_watson_mult_o6(double* parameters, double* signal_p, double* est_signal_p, double* dipy_v_p, double* pysh_v_p, double* rot_pysh_v_p, double* angles_v_p, double* loss_p, int amount, int num_of_dir_p, int no_spread) nogil
+	void minimize_watson_mult_o8(double* parameters, double* signal_p, double* est_signal_p, double* dipy_v_p, double* pysh_v_p, double* rot_pysh_v_p, double* angles_v_p, double* loss_p, int amount, int num_of_dir_p, int no_spread) nogil
+	void SHRotateRealCoef(double *, double *, int, double *, double *)
+	void map_dipy_to_pysh_o4(double *, double *)
+	void map_pysh_to_dipy_o4(double *, double *)
+	void sh_watson_coeffs(double, double *, int)
+
