@@ -5,6 +5,7 @@ from bonndit.utilc.hota cimport hota_4o3d_sym_eval, hota_8o3d_sym_eval
 from bonndit.utilc.cython_helpers cimport special_mat_mul, \
     orthonormal_from_sphere, dinit, sphere2world, ddiagonal, world2sphere, \
     sphere2cart
+from bonndit.utilc.watsonfitwrapper cimport *
 from scipy.optimize import least_squares
 import numpy as np
 from libc.math cimport pow
@@ -69,19 +70,19 @@ cdef class AbstractModel:
     cdef void normalize(
         self, double[:] m, double[:] v,
         int incr
-    ) nogil except *:
+    ):  # nogil except *:
         pass
     cdef void predict_new_observation(
         self, double[:, :] observations,
         double[:, :] sigma_points
-    ) nogil except *:
+    ):  # nogil except *:
         pass
     cdef bint kinit(
         self, double[:] mean, double[:] point,
         double[:] init_dir, double[:, :] P, double[:] y
     ):
         pass
-    cdef void constrain(self, double[:, :] X) nogil except *:
+    cdef void constrain(self, double[:, :] X):  # nogil except *:
         pass
 
 
@@ -111,7 +112,7 @@ cdef class fODFModel(AbstractModel):
     cdef void normalize(
         self, double[:] m, double[:] v,
         int inc
-    ) nogil except *:
+    ):  # nogil except *:
 
         if cblas_dnrm2(3, &v[0], inc) != 0:
             cblas_dcopy(3, &v[0], inc, &m[0], 1)
@@ -120,7 +121,7 @@ cdef class fODFModel(AbstractModel):
     cdef void predict_new_observation(
         self, double[:, :] observations,
         double[:, :] sigma_points
-    ) nogil except *:
+    ):  # nogil except *:
         cdef int number_of_tensors = int(sigma_points.shape[0] / 4)
         cdef int i, j
         cdef double lam
@@ -175,7 +176,7 @@ cdef class fODFModel(AbstractModel):
                         <int> point[0], <int> point[1], <int> point[2]]
 
 
-    cdef void constrain(self, double[:, :] X) nogil except *:
+    cdef void constrain(self, double[:, :] X):  # nogil except *:
         cdef int i, j, n = X.shape[0] // 4
         for i in range(X.shape[1]):
             for j in range(n):
@@ -224,7 +225,7 @@ cdef class WatsonModel(AbstractModel):
     cdef void predict_new_observation(
         self, double[:, :] observations,
         double[:, :] sigma_points
-    ) nogil except *:
+    ):  # nogil except *:
         cdef int number_of_tensors = int(sigma_points.shape[0] / 4)
         cdef int i, j
         cdef double lam
@@ -283,7 +284,7 @@ cdef class WatsonModel(AbstractModel):
 
 
 
-    cdef void constrain(self, double[:, :] X) nogil except *:
+    cdef void constrain(self, double[:, :] X):  # nogil except *:
         cdef int i, j, n = X.shape[0] // 4
         for i in range(X.shape[1]):
             for j in range(n):
@@ -306,7 +307,7 @@ cdef class BinghamModel(WatsonModel):
     cdef void sh_bingham_coeffs(
         self, double kappa,
         double beta
-    ) nogil except *:
+    ):  # nogil except *:
         self.dipy_v[0] = self.lookup_table[
             <int> kappa * 10,
             <int> beta * 10, 0, 0]
@@ -362,7 +363,7 @@ cdef class BinghamModel(WatsonModel):
     cdef void predict_new_observation(
         self, double[:, :] observations,
         double[:, :] sigma_points
-    ) nogil except *:
+    ):  # nogil except *:
         cdef int number_of_tensors = int(sigma_points.shape[0] / 4)
         cdef int i, j
         cdef double lam, kappa, beta
@@ -435,7 +436,7 @@ cdef class BinghamModel(WatsonModel):
                         <int> point[0], <int> point[1], <int> point[2]]
 # 
 # 
-    cdef void constrain(self, double[:, :] X) nogil except *:
+    cdef void constrain(self, double[:, :] X):  # nogil except *:
         cdef int i, j, n = X.shape[0] // 4
         for i in range(X.shape[1]):
             for j in range(n):
@@ -474,7 +475,7 @@ cdef class MultiTensorModel(AbstractModel):
     cdef void normalize(
         self, double[:] m, double[:] v,
         int inc
-    ) nogil except *:
+    ):  # nogil except *:
         # Calculates m = v/||v||, by doing matrix operation 1/||v||*v*1 + 0*m
         # with gil: print(np.array(v))
         if cblas_dnrm2(3, &v[0], inc) != 0:
@@ -486,7 +487,8 @@ cdef class MultiTensorModel(AbstractModel):
     cdef void diffusion(
         self, double[:, :] R, double[:] m,
         double[:] lambdas, double[:, :] M
-    ) nogil except *:
+    ):
+        # nogil except *:
         """
 		Calculates the diffusion Matrix for a given main diffusion direction m.
 
@@ -511,7 +513,7 @@ cdef class MultiTensorModel(AbstractModel):
     cdef void predict_new_observation(
         self, double[:, :] observations,
         double[:, :] sigma_points,
-    ) nogil except *:
+    ):  # 1  nogil except *:
         r"""
 		Predicts new observation for a given set of sigma points according to the signal model
 		.. math::
@@ -602,7 +604,7 @@ cdef class MultiTensorModel(AbstractModel):
         # print(res.cost/np.linalg.norm(y))
         return True
 
-    cdef void constrain(self, double[:, :] X) nogil except *:
+    cdef void constrain(self, double[:, :] X):  # nogil except *:
         cdef int i, j, n = X.shape[0] // 5
         for i in range(X.shape[1]):
             for j in range(n):

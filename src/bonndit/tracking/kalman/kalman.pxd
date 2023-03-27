@@ -26,7 +26,7 @@ cdef class Kalman:
     cdef int update_kalman_parameters(
         self, double[:], double[:, :],
         double[:]
-    ) nogil except *
+    )  # nogil except *
     cdef void linear(
         self, double[:], double[:], double[:, :],
         double[:, :, :, :]
