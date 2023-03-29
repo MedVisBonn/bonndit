@@ -43,3 +43,7 @@ cdef void mw_openmp_mult_o8(
     double[:, :], double[:, :, :, :], double[:, :, :, :], double[:, :],
     double[:], int, int, int
 ) nogil
+cdef void c_sh_rotate_real_coef(double *, double *, int, double *, double *)
+cdef void c_map_dipy_to_pysh_o4(double *, double *)
+cdef void c_map_pysh_to_dipy_o4(double *, double *)
+cdef void c_sh_watson_coeffs(double, double *, int)

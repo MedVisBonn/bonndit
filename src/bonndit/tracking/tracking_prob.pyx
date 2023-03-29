@@ -4,8 +4,8 @@ import sys
 import nrrd
 sys.path.append('.')
 from .alignedDirection cimport Gaussian, Laplacian, ScalarOld, ScalarNew, \
-    Probabilities, Deterministic, Deterministic2, WatsonDirGetter, \
-    BinghamDirGetter
+    Probabilities, Deterministic, Deterministic2, \
+    WatsonDirGetter  # , BinghamDirGetter
 from .ItoW cimport Trafo
 from .stopping cimport Validator
 from .integration cimport Euler, Integration, EulerUKF, RungeKutta
@@ -254,9 +254,12 @@ cpdef tracking_all(
     cdef Validator validator
     # select appropriate model #TODO hier das richtige einfügren
     if tracking_parameters['ukf'] == "Watson":
-        directionGetter = WatsonDirGetter(0, tracking_parameters['variance'])
-    elif tracking_parameters['ukf'] == "Bingham":
-        directionGetter = BinghamDirGetter(0, tracking_parameters['variance'])
+        directionGetter = WatsonDirGetter(**tracking_parameters)
+        # directionGetter.watson_config(vector_field[0],
+        # tracking_parameters['maxsamplingangle'],
+        # tracking_parameters['maxkappa'], tracking_parameters[])
+    # elif tracking_parameters['ukf'] == "Bingham":
+# directionGetter = BinghamDirGetter(0, tracking_parameters['variance'])
     elif tracking_parameters['prob'] == "Gaussian":
         directionGetter = Gaussian(0, tracking_parameters['variance'])
     elif tracking_parameters['prob'] == "Laplacian":

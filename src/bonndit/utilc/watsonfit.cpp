@@ -20,6 +20,7 @@ static double* parameters_v;
 static double* loss_v;
 static int lmax;
 static int num_of_dir;
+using namespace std;
 
 // rotation matrices for sh rotation
 static double dj_o8[9][9][9] = {
@@ -478,7 +479,9 @@ void SHRotateRealCoef(double* cilmrot, double* cilm, int lmax, double* x, double
 
     // all steps of real sh rotation
     SHrtoc(&ccilmd[0][0][0], cilm, lmax);
+
     SHCilmToCindex(&ccilmd[0][0][0], &cindex[0][0], lmax);
+
     SHRotateCoef(x, &cindex[0][0], &cindex[0][0], dj, lmax);
     SHCindexToCilm(&cindex[0][0], &ccilmd[0][0][0], lmax);
     SHctor(&ccilmd[0][0][0], cilmrot, lmax);
