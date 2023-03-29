@@ -1,43 +1,16 @@
-#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True,
+#cython: language_level=3, boundscheck=True, wraparound=True, warn.unused=True, warn.unused_args=True,
 # warn.unused_results=True
 from bonndit.utilc.blas_lapack cimport *
 from bonndit.utilc.hota cimport hota_4o3d_sym_eval, hota_8o3d_sym_eval
-from bonndit.utilc.cython_helpers cimport special_mat_mul, orthonormal_from_sphere, dinit, sphere2world, ddiagonal, world2sphere, sphere2cart
+from bonndit.utilc.cython_helpers cimport special_mat_mul, orthonormal_from_sphere, dinit, sphere2world, ddiagonal, world2sphere, sphere2cart, cart2sphere
 from bonndit.utilc.watsonfitwrapper cimport *
+from bonndit.utilc.structures cimport dj_o4
 from scipy.optimize import least_squares
 import numpy as np
-from libc.math cimport pow
+from libc.math cimport pow, log
+DTYPE=np.float64
 
-cdef double[:,:,:] dj_o4 = np.array([
-    [[1.0,0.0, -0.5, -0.0,0.375],
-    [0.0, -0.70710678, -0.0,0.4330127,0.],
-    [0.0,0.0,0.61237244,0.0, -0.39528471],
-    [0.0,0.0,0.0, -0.55901699, -0.],
-    [0.0,0.0,0.0,0.0,0.52291252]
-    ],
-    [[0.0,0.70710678,0.0, -0.4330127, -0.],
-    [0.0,0.5, -0.5, -0.125,0.375],
-    [0.0,0.0, -0.5,0.39528471,0.1767767],
-    [0.0,0.0,0.0,0.48412292, -0.33071891],
-    [0.0,0.0,0.0,0.0, -0.46770717]
-    ],
-    [[0.0,0.0,0.61237244,0.0, -0.39528471],
-    [0.0,0.0,0.5, -0.39528471, -0.1767767],
-    [0.0,0.0,0.25, -0.5,0.25],
-    [0.0,0.0,0.0, -0.30618622,0.46770717],
-    [0.0,0.0,0.0,0.0,0.33071891]
-    ],
-    [[0.0,0.0,0.0,0.55901699,0.],
-    [0.0,0.0,0.0,0.48412292, -0.33071891],
-    [0.0,0.0,0.0,0.30618622, -0.46770717],
-    [0.0,0.0,0.0,0.125, -0.375],
-    [0.0,0.0,0.0,0.0, -0.1767767]
-    ],
-    [[0.0,0.0,0.0,0.0,0.52291252],
-    [0.0,0.0,0.0,0.0,0.46770717],
-    [0.0,0.0,0.0,0.0,0.33071891],
-    [0.0,0.0,0.0,0.0,0.1767767],
-    [0.0,0.0,0.0,0.0,0.0625]]])
+
 
 
 cdef class AbstractModel:
@@ -115,15 +88,8 @@ cdef class fODFModel(AbstractModel):
 		cdef double[:] Pv = np.array([0.01])
 		ddiagonal(&P[0,0], Pv, P.shape[0], P.shape[1])
 		for i in range(self.vector_field.shape[1]):
-			dot[i] = cblas_ddot(3, &self.vector_field[1,i, <int> point[0], <int> point[1], <int> point[2]], 1, &init_dir[0],1)
-		dot1 = sorted(dot, key=lambda x: abs(x))
-		for i in range(self.vector_field.shape[1]):
-			for j in range(self.vector_field.shape[1]):
-				if dot[i] == dot1[j]:
-					mean[j*4: j*4 +3] = self.vector_field[1:,i, <int> point[0], <int> point[1], <int> point[2]]
-					if dot[i] < 0:
-						cblas_dscal(3, -1, &mean[4*j], 1)
-					mean[j*4 + 3] = self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]]
+			mean[i*4: i*4 +3] = self.vector_field[1:,i, <int> point[0], <int> point[1], <int> point[2]]
+			mean[i*4 + 3] = self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]]
 
 
 	cdef void constrain(self, double[:,:] X): #nogil except *:
@@ -132,7 +98,6 @@ cdef class fODFModel(AbstractModel):
 			for j in range(n):
 				if cblas_dnrm2(3,&X[4*j, i],X.shape[1]) != 0:
 					cblas_dscal(3, 1/cblas_dnrm2(3,&X[4*j, i],X.shape[1]),&X[4*j, i],X.shape[1])
-
 				X[j * 4 + 3, i] = max(X[j * 4 + 3, i], self._lambda_min)
 
 
@@ -143,76 +108,72 @@ cdef class WatsonModel(AbstractModel):
 		self.vector_field = kwargs['vector_field']
 		self.res = np.zeros((15 if kwargs['order'] == 4 else 45,))
 		self.order = kwargs['order']
-		self.rank_1_rh_o4 = np.array([2.51327412, 1.43615664, 0.31914592])
-		self.angles = np.zeros((3))
-		self.rot_pysh_v = np.zeros_like((2 *  5 * 5))
-		self.pysh_v = np.zeros_like((2 *  5 * 5))
-		self.dipy_v = np.zeros((15 if kwargs['order'] == 4 else 45,))
+		self.rank_1_rh_o4 = np.array([2.51327412, 1.43615664, 0.31914592], dtype=DTYPE)
+		self.angles = np.zeros((3,), dtype=DTYPE)
+		self.rot_pysh_v = np.zeros((2 *  5 * 5,), dtype=DTYPE)
+		self.pysh_v = np.zeros((2 *  5 * 5,), dtype=DTYPE)
+		self.dipy_v = np.zeros((15 if kwargs['order'] == 4 else 45,), dtype=DTYPE)
 		if kwargs['process noise'] == "":
-			ddiagonal(&self.PROCESS_NOISE[0, 0], np.array([0.05,0.05,0.1,0.1]), self.PROCESS_NOISE.shape[0],
+			ddiagonal(&self.PROCESS_NOISE[0, 0], np.array([0.05,0.05,0.1,0.1, 0.1]), self.PROCESS_NOISE.shape[0],
 				  self.PROCESS_NOISE.shape[1])
 		if kwargs['measurement noise'] == "":
 			ddiagonal(&self.MEASUREMENT_NOISE[0, 0], np.array([0.006]), self.MEASUREMENT_NOISE.shape[0],
 				  self.MEASUREMENT_NOISE.shape[1])
-		self.num_tensors = <int> (kwargs['dim_model'] / 4)
+		self.num_tensors = <int> (kwargs['dim_model'] / 5)
 
 
-	#cdef void normalize(self, double[:] m, double[:] v, int inc) nogil except *:
+	cdef void normalize(self, double[:] m, double[:] v, int inc): #nogil except *:
 		#no need to normalize since euler angle
 	#	pass
-	#	if cblas_dnrm2(3, &v[0], inc) != 0:
-	#		cblas_dcopy(3, &v[0], inc, &m[0], 1)
-	#		cblas_dscal(3, 1/cblas_dnrm2(3, &v[0],inc), &m[0], 1)
+		if cblas_dnrm2(3, &v[0], inc) != 0:
+			cblas_dcopy(3, &v[0], inc, &m[0], 1)
+			cblas_dscal(3, 1/cblas_dnrm2(3, &v[0],inc), &m[0], 1)
 
 	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points): # nogil except *:
-		cdef int number_of_tensors = int(sigma_points.shape[0]/4)
+		cdef int number_of_tensors = int(sigma_points.shape[0]/5)
 		cdef int i, j
 		cdef double lam
 		cblas_dscal(observations.shape[1] * observations.shape[0], 0, &observations[0, 0], 1)
 		for i in range(number_of_tensors):
 			for j in range(sigma_points.shape[1]):
-				self.normalize(self.m, sigma_points[i * 4: i * 4 + 3, j], sigma_points.shape[1])
-				lam = max(sigma_points[i*4, j], 0.01)
-				kappa = exp(sigma_points[i*4 + 1, j])
-				self.angles[1] = sigma_points[i*4 + 2, j]
-				self.angles[2] = sigma_points[i*4 + 3, j]
-				sh_watson_coeffs(kappa, &self.dipy_v[0], self.order)
+				self.normalize(self.m, sigma_points[i * 5 + 2: i * 5 + 5, j], sigma_points.shape[1])
+				lam = max(sigma_points[i*5 +1, j], 0.01)
+				kappa = exp(sigma_points[i*5, j])
+				cart2sphere(self.angles[1:], self.m)
+
+				c_sh_watson_coeffs(kappa, &self.dipy_v[0], self.order)
 				self.dipy_v[0] *= self.rank_1_rh_o4[0]
 				self.dipy_v[3] *= self.rank_1_rh_o4[1]
 				self.dipy_v[10] *= self.rank_1_rh_o4[2]
-				map_dipy_to_pysh_o4(&self.dipy_v[0], &self.pysh_v[0])
-				SHRotateRealCoef(&self.rot_pysh_v[0], &self.pysh_v[0], self.order, &self.angles[0], &dj_o4[0][0][0])
-				map_pysh_to_dipy_o4(&self.rot_pysh_v[0],&self.dipy_v[0])
-				cblas_daxpy(observations.shape[0],1,&self.rot_pysh_v[0], 1, &observations[0,j], observations.shape[1])
+				c_map_dipy_to_pysh_o4(&self.dipy_v[0], &self.pysh_v[0])
+				c_sh_rotate_real_coef(&self.rot_pysh_v[0], &self.pysh_v[0], self.order, &self.angles[0], &dj_o4[0][0][0])
+				c_map_pysh_to_dipy_o4(&self.rot_pysh_v[0],&self.dipy_v[0])
+				cblas_daxpy(observations.shape[0], sigma_points[i*5+1,j], &self.rot_pysh_v[0], 1, &observations[0,j], observations.shape[1])
 
 
 	cdef bint kinit(self, double[:] mean, double[:] point, double[:] init_dir, double[:,:] P, double[:] y):
 		"""
 		Calculates angle between all possible directions and
 		"""
-		cdef int i
-		cdef double[:] dot = np.zeros(self.vector_field.shape[1])
-		cdef double[:] Pv = np.array([0.01])
-		cdef double[:] dir = np.zeros_like(3)
+		cdef int i, j
+		cdef double[:] Pv = np.array([0.01], dtype=DTYPE)
 		ddiagonal(&P[0,0], Pv, P.shape[0], P.shape[1])
-
 		for i in range(self.vector_field.shape[1]):
-			sphere2cart(self.vector_field[0:2,i, <int> point[0], <int> point[1], <int> point[2]], dir)
-			dot[i] = cblas_ddot(3, &dir[0], 1, &init_dir[0],1)
-		dot1 = sorted(dot, key=lambda x: abs(x))
-		for i in range(self.vector_field.shape[1]):
-			for j in range(self.vector_field.shape[1]):
-				if dot[i] == dot1[j]:
-					mean[j*4: j*4 +4] = self.vector_field[:,i, <int> point[0], <int> point[1], <int> point[2]]
-
+			#print(i)
+			mean[i*5 : i*5+5]= self.vector_field[:,i, <int> point[0], <int> point[1], <int> point[2]]
+			mean[i*5] = log(mean[i*5])
+			mean[i*5+2] *= -1
+			mean[i*5+4] *= -1
 
 
 	cdef void constrain(self, double[:,:] X): # nogil except *:
 		cdef int i, j, n = X.shape[0]//4
 		for i in range(X.shape[1]):
 			for j in range(n):
-				X[j * 4 + 0, i] = max(X[j * 4 + 0, i], self._lambda_min)
-				X[j * 4 + 1, i] = max(X[j * 4 + 1, i], self._lambda_min)
+				if cblas_dnrm2(3,&X[5*j+2, i],X.shape[1]) != 0:
+					cblas_dscal(3, 1/cblas_dnrm2(3,&X[5*j+2, i],X.shape[1]),&X[5*j+2, i],X.shape[1])
+
+				X[j * 5 + 1, i] = max(X[j * 5 + 1, i], self._lambda_min)
 
 cdef class BinghamModel(WatsonModel):
 	def __cinit__(self, **kwargs):
@@ -265,9 +226,9 @@ cdef class BinghamModel(WatsonModel):
 				self.angles[1] = sigma_points[i*6 + 4, j]
 				self.angles[2] = sigma_points[i*6 + 5, j]
 				self.sh_bingham_coeffs(kappa, beta)
-				map_dipy_to_pysh_o4(&self.dipy_v[0], &self.pysh_v[0])
-				SHRotateRealCoef(&self.rot_pysh_v[0], &self.pysh_v[0], self.order, &self.angles[0], &dj_o4[0][0][0])
-				map_pysh_to_dipy_o4(&self.rot_pysh_v[0], &self.dipy_v[0])
+				c_map_dipy_to_pysh_o4(&self.dipy_v[0], &self.pysh_v[0])
+				c_sh_rotate_real_coef(&self.rot_pysh_v[0], &self.pysh_v[0], self.order, &self.angles[0], &dj_o4[0][0][0])
+				c_map_pysh_to_dipy_o4(&self.rot_pysh_v[0], &self.dipy_v[0])
 				cblas_daxpy(observations.shape[0], lam ,&self.dipy_v[0], 1, &observations[0,j], observations.shape[1])
 
 #
@@ -279,24 +240,19 @@ cdef class BinghamModel(WatsonModel):
 		cdef int i
 		cdef double[:] dot = np.zeros(self.vector_field.shape[1])
 		cdef double[:] Pv = np.array([0.01])
-		cdef double[:] dir = np.zeros_like(3)
+		cdef double[:] dir = np.zeros((3,))
 		ddiagonal(&P[0,0], Pv, P.shape[0], P.shape[1])
+		cart2sphere(dir, self.vector_field[0:2,i, <int> point[0], <int> point[1], <int> point[2]])
+		for i in range(self.vector_field.shape[1]):
 
-		for i in range(self.vector_field.shape[1]):
-			sphere2cart(self.vector_field[0:2,i, <int> point[0], <int> point[1], <int> point[2]], dir)
-			dot[i] = cblas_ddot(3, &dir[0], 1, &init_dir[0],1)
-		dot1 = sorted(dot, key=lambda x: abs(x))
-		for i in range(self.vector_field.shape[1]):
-			for j in range(self.vector_field.shape[1]):
-				if dot[i] == dot1[j]:
-					mean[j*6 + 0] = self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]]
-					# set circle by setting kappa and beta equal
-					mean[j*6 + 1] = self.vector_field[1,i, <int> point[0], <int> point[1], <int> point[2]]
-					mean[j*6 + 2] = self.vector_field[1,i, <int> point[0], <int> point[1], <int> point[2]]
-					# set angles: all needed!
-					mean[j*6 + 3] = 0
-					mean[j*6 + 4] = self.vector_field[2,i, <int> point[0], <int> point[1], <int> point[2]]
-					mean[j*6 + 5] = self.vector_field[3,i, <int> point[0], <int> point[1], <int> point[2]]
+			mean[i*6 + 0] = self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]]
+			# set circle by setting kappa and beta equal
+			mean[i*6 + 1] = self.vector_field[1,i, <int> point[0], <int> point[1], <int> point[2]]
+			mean[i*6 + 2] = self.vector_field[1,i, <int> point[0], <int> point[1], <int> point[2]]
+			# set angles: all needed!
+			mean[i*6 + 3] = 0
+			mean[i*6 + 4] = dir[0]
+			mean[i*6 + 5] = dir[1]
 #
 #
 	cdef void constrain(self, double[:,:] X): # nogil except *:

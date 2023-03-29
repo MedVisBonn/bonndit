@@ -1,8 +1,8 @@
 #%%cython --annotate
-#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, warn.unused_results=True
+#cython: language_level=3, boundscheck=True, wraparound=False, warn.unused=True, warn.unused_args=True, warn.unused_results=True
 cimport cython
 import numpy as np
-from libc.math cimport pow, floor, acos, pi, sqrt, atan2, sin, cos
+from libc.math cimport pow, floor, acos, pi, sqrt, atan2, sin, cos, atan, acosh, asinh
 from libc.stdio cimport printf
 from .blas_lapack cimport *
 
@@ -81,6 +81,31 @@ cdef void sphere2cart(double[:] sphere, double[:] cart) nogil:
 	cart[0] = cos(sphere[1]) * sin_theta
 	cart[1] = sin(sphere[1]) * sin_theta
 	cart[2] = cos(sphere[0])
+
+cdef void cart2sphere(double[:] sphere, double[:] cart) nogil except *:
+	if cart[2] > 0:
+		sphere[0] = atan(sqrt(cart[0]**2 + cart[1]**2) / cart[2])
+	elif cart[2] < 0:
+		sphere[0] = atan(sqrt(cart[0]**2 + cart[1]**2) / cart[2]) + pi
+	elif cart[2] == 0 and cart[1] * cart[0] != 0:
+		sphere[0] = pi/2
+	else:
+		with gil:
+			raise Exception(np.array(cart))
+	sphere[1] = atan2(cart[1], cart[0])
+#	if cart[0] > 0:
+#		sphere[1] = atanh(cart[1]/cart[0])
+#	elif cart[0] < 0 <= cart[1]:
+#		sphere[1] = atanh(cart[1]/ cart[0]) + pi
+#	elif cart[0]<0 and cart[1] < 0:
+#		sphere[1] = atanh(cart[1] / cart[0]) - pi
+#	elif cart[1] > 0:
+#		sphere[1] = pi/2
+#	elif cart[1] < 0:
+#		sphere[1] = -pi/2
+#	else:
+#		raise Exception()
+
 
 
 cdef int inverse(double[:,:] A, double[:] WORKER, int [:] IPIV) nogil except *:

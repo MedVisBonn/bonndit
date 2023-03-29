@@ -174,7 +174,7 @@ def main():
 	parser.add_argument('--max_sampling_angle', help='For Watson fitting: max angle to watson peak to randomly sample from.', default=90)
 	parser.add_argument('--max_kappa', help='For Watson fitting: max kappa value to sample from, higher values get clipped', default=80)
 	parser.add_argument('--min_kappa', help='For Watson fitting: min kappa value to sample from, if lower the tracking is stopped', default=1)
-	parser.add_argument('--watson_prob_dir_selection', help='If added, in the Watson direction selection the distribution is chosen as in ScalarNew followed by the sampling.', action='store_true')
+	parser.add_argument('--prob_dir_selection', help='If added, in the Watson direction selection the distribution is chosen as in ScalarNew followed by the sampling.', action='store_true')
 
 	parser.add_argument('-v', '--verbose', default=True)
 	parser.add_argument('-r', '--exclusion', default=argparse.SUPPRESS)
@@ -209,14 +209,18 @@ def main():
 		logging.error('Path to input folder is not correct.')
 		raise Exception()
 	# Load data
+
 	vector_field, meta, = load('infile', args, 'rank3.nrrd', args.i, logging, nrrd.read)
 	trafo_data = np.zeros((4,4))
 	trafo_data[:3,:3] = meta['space directions'][-3:]
 	trafo_data[:3,3] = meta['space origin'][-3:]
 	trafo_data[3,3] = 1
 	# print(meta)
-	if vector_field.shape[0] != 4:
+	if vector_field.shape[0] != 4 and args.ukf != "Watson":
 		logging.error("Wrong dimension on first axis. Has to contain 4 values.")
+		raise Exception()
+	elif vector_field.shape[0] != 5 and args.ukf=="Watson" :
+		logging.error("Wrong dimension on first axis. Has to contain 5 values.")
 		raise Exception()
 	# if vector_field.shape[1] != 3:
 	#	logging.error("Wrong dimension on second axis. Has to contain 3 values.")
@@ -271,10 +275,20 @@ def main():
 			baseline, _ = load('ukf_baseline', args, 'baseline.nrrd', args.i, logging, nrrd.read)
 
 			logging.info("b0 loaded")
-		elif args.ukf in ['LowRank', 'Watson', 'Bingham']:
-			data, _ = load('ukf_data', args, 'fodf.nrrd', args.i, logging, nrrd.read)
-			data = np.moveaxis(data, 0, -1)
-			data = data[:, :, :, 1:]
+		elif args.ukf in ['LowRank', "LowRankAlt", 'Watson', 'Bingham']:
+			### TODO DAS soll anders
+			if 'ukf_data' in args:
+				if args.ukf_data.endswith('nii.gz'):
+					data = load('ukf_data', args, 'fodf.nrrd', args.i, logging, nib.load)
+					data = data.get_fdata()
+				else:
+					data, _ = load('ukf_data', args, 'fodf.nrrd', args.i, logging, nrrd.read)
+					data = np.moveaxis(data, 0, -1)
+					data = data[:, :, :, 1:]
+			else:
+				data, _ = load('ukf_data', args, 'fodf.nrrd', args.i, logging, nrrd.read)
+				data = np.moveaxis(data, 0, -1)
+				data = data[:, :, :, 1:]
 			print(data.shape)
 			bvals = None
 			bvecs = None
@@ -312,14 +326,22 @@ def main():
 		'max_track_length': int(args.mtlength),
 		'integration': args.integration,
 		'interpolation': args.interpolation,
-		'max_angle': float(args.maxangle),
+		'max_angle': float(args.max_angle),
 		'samples': int(args.samples),
 		'wmmin': float(args.wmmin),
 		'wm_mask': np.float64(wm_mask),
 		'act': act.get_fdata() if act else None,
 		'verbose': args.verbose,
-		'sw_save': int(args.sw_save)
+		'sw_save': int(args.sw_save),
 	}
+	if args.ukf == "Watson":
+		tracking_parameters.update(dict(
+			max_sampling_angle=args.max_sampling_angle,
+			max_kappa=args.max_kappa,
+			min_kappa=args.min_kappa,
+			prob_direction=args.prob_dir_selection
+
+		))
 	postprocessing = {
 		'inclusion': np.loadtxt(args.inclusion) if "inclusion" in args else "",
 		'exclusion': np.loadtxt(args.exclusion) if "exclusion" in args else "",
@@ -344,7 +366,7 @@ def main():
 			'trafo_data': trafo_data,
 			'data': np.array(data, dtype=np.float64),
 			'dim_model': int(args.ukf_dim_model),
-			'model': 'fodf' if args.ukf == "LowRank" else 'MultiTensor',
+			'model': args.ukf,
 			'gradients': bvecs.astype(np.float64).T if bvecs is not None else "",
 			'baseline': baseline,
 			'order': int(args.ukf_fodf_order),

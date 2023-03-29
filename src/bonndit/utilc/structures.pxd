@@ -29,4 +29,4 @@ ctypedef struct TijkType:
 cdef TijkRefineRank1 TijkRefineRank1Parm
 cdef TijkRefineRank TijkRefineRankkParm
 cdef int DIM
-
+cdef double[:,:,:] dj_o4

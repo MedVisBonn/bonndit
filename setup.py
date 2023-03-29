@@ -103,11 +103,11 @@ ext_modules = [
         "bonndit.tracking.kalman.model",
         ["src/bonndit/tracking/kalman/model.pyx"],
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
-        include_dirs=[numpy.get_include(), "%s/include" % mklroot,"/usr/lib" ],
-        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"] + watson_libraries,
-        library_dirs=["%s/lib/intel64" % mklroot],
-        extra_compile_args=["-Wall", "-m64", "-Ofast"],
-        extra_link_args=["-Wl,--no-as-needed"]
+        include_dirs=[numpy.get_include(), "%s/include" % mklroot,"/usr/include/" ],
+        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl", "watsonfit"],
+        library_dirs=["%s/lib/intel64" % mklroot, "/usr/bin"],
+        extra_compile_args=["-I.", "-O3", "-ffast-math", "-march=native", "-fopenmp"],
+        extra_link_args=["-L/usr/local/include", "-fopenmp", "-Wl,--no-as-needed"]
 
     ),
     Extension(

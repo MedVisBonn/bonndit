@@ -870,13 +870,16 @@ def fa_guided_mask(tissue_mask, frac_aniso, brainmask=None,
         brainmask = brainmask.get_fdata()
 
     # Create new tissue mask
-    tissue = tissue_mask.get_fdata()
-    tissue_by_lower_fa = np.logical_and(tissue > tissue_threshold,
-                                        fa_lower_thresh < fa)
+    if tissue_mask:
+        tissue = tissue_mask.get_fdata()
+        tissue_by_lower_fa = np.logical_and(tissue > tissue_threshold,
+                                            fa_lower_thresh < fa)
+    else:
+        tissue_by_lower_fa = fa_lower_thresh < fa
 
     tissue_by_fa = np.logical_and(tissue_by_lower_fa, fa < fa_upper_thresh)
-    fa_mask = np.logical_and(brainmask, tissue_by_fa).astype('int')
+    fa_mask = np.logical_and(brainmask, tissue_by_fa).astype(np.int8)
 
-    mask_img = nib.Nifti1Image(fa_mask, tissue_mask.affine)
+    mask_img = nib.Nifti1Image(fa_mask, frac_aniso.affine)
 
     return mask_img

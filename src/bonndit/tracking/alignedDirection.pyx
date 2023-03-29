@@ -17,7 +17,7 @@ cdef class Probabilities:
 
 
 
-	def __cinit__(self, double expectation=0, double sigma=9):
+	def __cinit__(self, double expectation=0, double sigma=9, **kwargs):
 		self.sigma = sigma
 		self.expectation = expectation
 		self.chosen_prob = 0
@@ -98,6 +98,10 @@ cdef class Probabilities:
 
 
 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) : # nogil except *:
+		pass
+
+
+	cdef void calculate_probabilities_sampled(self, double[:,:] vectors, double[:] kappas, double[:] weights, double[:] direction, double[:] point) : # nogil  except *:
 		pass
 
 
@@ -230,12 +234,12 @@ cdef class Deterministic(Probabilities):
 
 
 cdef class WatsonDirGetter(Probabilities):
-	cdef void watson_config(self, double[:,:,:,:] kappa_field, double max_samplingangle, double max_kappa, double min_kappa, bint prob_direction) :#nogil  except *:
-		self.kappa_field = kappa_field
-		self.max_samplingangle = max_samplingangle
-		self.max_kappa = max_kappa
-		self.min_kappa = min_kappa
-		self.prob_direction = prob_direction
+	def __cinit__(self, double expectation=0, double sigma=9, **kwargs):
+		super().__init__(expectation, sigma, kwargs)
+		self.max_samplingangle = kwargs['max_sampling_angle']
+		self.max_kappa = kwargs['max_kappa']
+		self.min_kappa = kwargs['min_kappa']
+		self.prob_direction = False #kwargs['prob_direction']
 
 	cdef double poly_kummer(self, double kappa) :#nogil  except *:
 		return exp(kappa)/sqrt(kappa) * dawsn(sqrt(kappa))
@@ -322,84 +326,85 @@ cdef class WatsonDirGetter(Probabilities):
 		self.chosen_prob = min(self.max_kappa,kappas[min_index])
 		self.chosen_angle = self.angles[min_index]
 
-cdef class BinghamDirGetter(Probabilities):
-	cdef void watson_config(self, double[:,:,:,:] kappa_field, double max_samplingangle, double max_kappa, double min_kappa, bint prob_direction) :#nogil  except *:
-		self.kappa_field = kappa_field
-		self.max_samplingangle = max_samplingangle
-		self.max_kappa = max_kappa
-		self.min_kappa = min_kappa
-		self.prob_direction = prob_direction
-
-	cdef double bingham_scale(self, double k, double b) :#nogil  except *:
-		return 2*np.pi * sum(gamma(r+0.5)/gamma(r+1) * b**(2*r) * (k/2)**(-2*r-0.5) * iv(2*r+0.5,k) for r in range(0, 70))
-
-	cdef double bingham(self, double[:] x, double[:] mu, double kappa, double scale) :#nogil  except *:
-		return 1/scale * exp(kappa * scalar(mu,x)**2)
-
-	# rejection sampling from watson - watson_confidence_interval.ipynb
-	cdef void mc_random_direction(self, double[:] direction, double[:] mu, double kappa, double scale) :#nogil  except *:
-		cdef double max_val = self.bingham(mu, mu, kappa, scale)
-		cdef bint accept = False
-		cdef double val, cutoff
-
-		while not accept:
-			direction[0] = (rand() / RAND_MAX) * 2 - 1
-			direction[1] = (rand() / RAND_MAX) * 2 - 1
-			direction[2] = sqrt(1-direction[0]**2 - direction[1] ** 2)
-			val = self.bingham(direction, mu, kappa, scale)
-			cutoff = (rand() / RAND_MAX) * max_val
-			if val > cutoff:
-				accept = True
-
-	cdef void calculate_probabilities_sampled(self, double[:,:] vectors, double[:] old_dir, double[:,:, :] A, double[:,:] l_k_b) : # nogil  except *:
-		"""
-
-		@param vectors:
-		@param direction:
-		@return:
-		"""
-		cdef int i, min_index=0
-		cdef double s, min_angle=0, norm_of_test, mc_angle = 360
-		cdef double kappa_value
-
-		self.aligned_direction(vectors, old_dir)
-
-
-		for i in range(3):
-			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:
-				if self.angles[i] < min_angle or i==0:
-					min_angle=self.angles[i]
-					min_index=i
-		# if lambda, kappa, beta is too low the tracking is stopped
-		if l_k_b[min_index, 0] < self.min_lam:
-			self.best_fit = np.zeros((3))
-			return
-		if l_k_b[min_index, 1] < self.min_kappa:
-			self.best_fit = np.zeros((3))
-			return
-		if l_k_b[min_index, 2] < self.min_beta:
-			self.best_fit = np.zeros((3))
-			return
-
-		M = 4 * pi * self.bingham_scale(min(self.max_kappa,l_k_b[min_index, 1]), min(self.max_beta,l_k_b[min_index, 2]))
-
-		while mc_angle > self.max_samplingangle:
-			self.mc_random_direction(self.best_fit,
-								 self.test_vectors[min_index],
-								 min(self.max_kappa,kappa_value), M)
-
-			# flip direction if > 90:
-			if scalar(self.best_fit, self.test_vectors[min_index]) < 0:
-				mult_with_scalar(self.best_fit,-1.0,self.best_fit)
-
-			# compute angle between peak direction and sampled one
-			mc_angle = clip(scalar(self.best_fit, self.test_vectors[min_index])/(norm(self.best_fit)*(norm(self.test_vectors[min_index]))), -1,1)
-			# convert to degrees
-			mc_angle = acos(mc_angle)/pi*180
-
-		# reset to original length
-		mult_with_scalar(self.best_fit, l_k_b[min_index, 0], self.best_fit)
-		self.chosen_prob = 1
-		self.chosen_angle = self.angles[min_index]
-
-
+#cdef class BinghamDirGetter(Probabilities):
+#	cdef void watson_config(self, double[:,:,:,:] kappa_field, double max_samplingangle, double max_kappa, double min_kappa, bint prob_direction) :#nogil  except *:
+#		self.kappa_field = kappa_field
+#		self.max_samplingangle = max_samplingangle
+#		self.max_kappa = max_kappa
+#		self.min_kappa = min_kappa
+#		self.prob_direction = prob_direction
+#
+#	cdef double bingham_scale(self, double k, double b) :#nogil  except *:
+#		return 2*np.pi * sum(gamma(r+0.5)/gamma(r+1) * b**(2*r) * (k/2)**(-2*r-0.5) * iv(2*r+0.5,k) for r in range(0, 70))
+#
+#	cdef double bingham(self, double[:] x, double[:] mu, double kappa, double scale) :#nogil  except *:
+#		return 1/scale * exp(kappa * scalar(mu,x)**2)
+#
+#	# rejection sampling from watson - watson_confidence_interval.ipynb
+#	cdef void mc_random_direction(self, double[:] direction, double[:] mu, double kappa, double scale) :#nogil  except *:
+#		cdef double max_val = self.bingham(mu, mu, kappa, scale)
+#		cdef bint accept = False
+#		cdef double val, cutoff
+#
+#		while not accept:
+#			direction[0] = (rand() / RAND_MAX) * 2 - 1
+#			direction[1] = (rand() / RAND_MAX) * 2 - 1
+#			direction[2] = sqrt(1-direction[0]**2 - direction[1] ** 2)
+#			val = self.bingham(direction, mu, kappa, scale)
+#			cutoff = (rand() / RAND_MAX) * max_val
+#			if val > cutoff:
+#				accept = True
+#
+#	cdef void calculate_probabilities_sampled(self, double[:,:] vectors, double[:] old_dir, double[:,:, :] A, double[:,:] l_k_b) : # nogil  except *:
+#		"""
+#
+#		@param vectors:
+#		@param direction:
+#		@return:
+#		"""
+#		cdef int i, min_index=0
+#		cdef double s, min_angle=0, norm_of_test, mc_angle = 360
+#		cdef double kappa_value
+#
+#		self.aligned_direction(vectors, old_dir)
+#
+#
+#		for i in range(3):
+#			if sum_c(vectors[i]) == sum_c(vectors[i]) and sum_c(vectors[i])!=0:
+#				if self.angles[i] < min_angle or i==0:
+#					min_angle=self.angles[i]
+#					min_index=i
+#		# if lambda, kappa, beta is too low the tracking is stopped
+#		if l_k_b[min_index, 0] < self.min_lam:
+#			self.best_fit = np.zeros((3))
+#			return
+#		if l_k_b[min_index, 1] < self.min_kappa:
+#			self.best_fit = np.zeros((3))
+#			return
+#		if l_k_b[min_index, 2] < self.min_beta:
+#			self.best_fit = np.zeros((3))
+#			return
+#
+#		M = 4 * pi * self.bingham_scale(min(self.max_kappa,l_k_b[min_index, 1]), min(self.max_beta,l_k_b[min_index, 2]))
+#
+#		while mc_angle > self.max_samplingangle:
+#			self.mc_random_direction(self.best_fit,
+#								 self.test_vectors[min_index],
+#								 min(self.max_kappa,kappa_value), M)
+#
+#			# flip direction if > 90:
+#			if scalar(self.best_fit, self.test_vectors[min_index]) < 0:
+#				mult_with_scalar(self.best_fit,-1.0,self.best_fit)
+#
+#			# compute angle between peak direction and sampled one
+#			mc_angle = clip(scalar(self.best_fit, self.test_vectors[min_index])/(norm(self.best_fit)*(norm(self.test_vectors[min_index]))), -1,1)
+#			# convert to degrees
+#			mc_angle = acos(mc_angle)/pi*180
+#
+#		# reset to original length
+#		mult_with_scalar(self.best_fit, l_k_b[min_index, 0], self.best_fit)
+#		self.chosen_prob = 1
+#		self.chosen_angle = self.angles[min_index]
+#
+#
+#
