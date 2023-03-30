@@ -409,7 +409,7 @@ cdef class WatsonDirGetter(Probabilities):
                     * (norm(self.test_vectors[min_index]))), -1, 1)
             # convert to degrees
             mc_angle = acos(mc_angle) / pi * 180
-
+    # print(mc_angle)
         # reset to original length
         mult_with_scalar(self.best_fit, norm_of_test, self.best_fit)
 
