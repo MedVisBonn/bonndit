@@ -20,7 +20,7 @@ cdef int[:,:] permute_poss = np.array([[0,1,2],[0,2,1], [1,0,2], [1,2,0], [2,1,0
 from .kalman.model cimport AbstractModel, fODFModel, MultiTensorModel, BinghamModel, WatsonModel
 from .kalman.kalman cimport Kalman
 from .alignedDirection cimport Probabilities
-from libc.math cimport pow, pi, acos, floor, fabs,fmax, exp
+from libc.math cimport pow, pi, acos, floor, fabs,fmax, exp, log
 from libc.stdio cimport printf
 from bonndit.utilc.cython_helpers cimport fa, dctov, sphere2cart, r_z_r_y_r_z
 from bonndit.utilc.blas_lapack cimport *
@@ -587,6 +587,7 @@ cdef class UKF(Interpolation):
 		self._kalman.linear(self.point_index[:3], self.y, self.mlinear, self.data)
 		# If we are at the seed. Initialize the Kalmanfilter
 		if restart == 0:
+		#	print("\n")
 			self._model.kinit(self.mean, self.point_index[:3], old_dir, self.P, self.y)
 		# Run Kalmannfilter
 		info = self._kalman.update_kalman_parameters(self.mean, self.P, self.y)
@@ -624,14 +625,9 @@ cdef class UKFFodfAlt(Interpolation):
 		# If we are at the seed. Initialize the Kalmanfilter
 		if restart == 0:
 			#with gil:
-
 			self._model1.kinit(self.mean[0], self.point_index[:3], old_dir, self.P[0], self.y[0])
-
 			self._model2.kinit(self.mean[1], self.point_index[:3], old_dir, self.P[1], self.y[1])
-		#	for i in range(10):
-			#	print(np.array(self.y))
-		#		info = self._kalman.update_kalman_parameters(self.mean, self.P, self.y)
-			#	print(np.array(self.P))
+
 		# Run Kalmannfilter
 		for i in range(self.num_kalman):
 			for j in range(self.num_kalman):
@@ -657,7 +653,14 @@ cdef class UKFFodfAlt(Interpolation):
 			else:
 				cblas_dscal(3, cblas_dnrm2(3, &self.mean[i,0], 1), &self.mean[i,0], 1)
 				self.mean[i, 3] = max(self.mean[i,3], _lambda_min)
-
+#
+#		if True:
+#			self._kalman1.linear(self.point_index[:3], self.y[0], self.mlinear, self.data)
+#			for i in range(2):
+#				hota_4o3d_sym_eval(self.res, self.mean[i, 3], self.mean[i, :3])
+#				cblas_daxpy(self.res.shape[0], -1, &self.res[0], 1, &self.y[0, 0], 1)
+#		#	print(np.linalg.norm(self.y[0]))
+##
 
 		for i in range(self._model1.num_tensors):
 			dctov(&self.mean[i,0], self.best_dir[i])
@@ -707,27 +710,41 @@ cdef class UKFFodf(UKF):
 cdef class UKFWatson(UKF):
 	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities prob, **kwargs):
 		super(UKFWatson, self).__init__(vector_field, grid, prob, **kwargs)
-		self.kappas = np.zeros(<int> (kwargs['dim_model'] // 5), dtype=DTYPE)
-		self.weights = np.zeros(<int> (kwargs['dim_model'] // 5), dtype=DTYPE)
+		self.kappas = np.zeros(<int> (kwargs['dim_model'] // 4), dtype=DTYPE)
+		self.weights = np.zeros(<int> (kwargs['dim_model'] // 4), dtype=DTYPE)
+		self._model1 = WatsonModel(vector_field=vector_field, **kwargs)
+
 
 	cdef int select_next_dir(self, int info, double[:] old_dir):
 		if info != 0:
 			return info
+		#self._kalman.linear(self.point_index[:3], self.y, self.mlinear, self.data)
 		for i in range(self._model.num_tensors):
-			if cblas_dnrm2(3, &self.mean[5*i + 2], 1) != 0:
-				cblas_dscal(3, 1 / cblas_dnrm2(3, &self.mean[5*i  + 2], 1), &self.mean[5*i + 2], 1)
-				self.mean[5*i+1] = max(self.mean[5*i+1],_lambda_min)
+		#	if cblas_dnrm2(3, &self.mean[5*i + 2], 1) != 0:
+		#		cblas_dscal(3, 1 / cblas_dnrm2(3, &self.mean[5*i  + 2], 1), &self.mean[5*i + 2], 1)
+#
+#
+		#	else:
+		#		cblas_dscal(3, cblas_dnrm2(3, &self.mean[5 * i+2], 1), &self.mean[5 * i+2], 1)
+			self.mean[4 * i + 1] = max(self.mean[4 * i + 1], _lambda_min)
+			self.mean[4 * i] = min(max(self.mean[4 * i], _lambda_min), log(80))
+			self.weights[i] = fabs(self.mean[i * 4 + 1])
+			self.kappas[i] = exp(self.mean[i * 4])
+			sphere2cart(self.mean[i*4+2:i*4+4], self.best_dir[i])
+			#if True:
+			#	cblas_dscal(self._model1.dipy_v.shape[0], 0, &self._model1.dipy_v[0], 1)
+			#	c_sh_watson_coeffs(self.kappas[i], &self._model1.dipy_v[0], self._model1.order)
+			#	self._model1.angles[1:]  = self.mean[i*4+2:i*4+4]
+			#	self._model1.dipy_v[0] *= self._model1.rank_1_rh_o4[0]
+			#	self._model1.dipy_v[3] *= self._model1.rank_1_rh_o4[1]
+			#	self._model1.dipy_v[10] *= self._model1.rank_1_rh_o4[2]
+			#	c_map_dipy_to_pysh_o4(&self._model1.dipy_v[0], &self._model1.pysh_v[0])
+			#	c_sh_rotate_real_coef(&self._model1.rot_pysh_v[0], &self._model1.pysh_v[0], self._model1.order, &self._model1.angles[0], &dj_o4[0][0][0])
+			#	c_map_pysh_to_dipy_o4(&self._model1.rot_pysh_v[0],&self._model1.dipy_v[0])
+			#	cblas_daxpy(self.y.shape[0], -self.weights[i], &self._model1.dipy_v[0], 1, &self.y[0], 1)
 
-			else:
-				cblas_dscal(3, cblas_dnrm2(3, &self.mean[5 * i+2], 1), &self.mean[5 * i+2], 1)
-				self.mean[5 * i + 1] = max(self.mean[5 * i + 1], _lambda_min)
-			self.weights[i] = fabs(self.mean[i * 5 + 1])
-			self.kappas[i] = exp(self.mean[i * 5])
-			print(self.kappas[i])
-			dctov(&self.mean[5*i + 2], self.best_dir[i])
 			self.best_dir[i, 0] *= -1
 			self.best_dir[i, 2] *= -1
-
 		self.prob.calculate_probabilities_sampled(self.best_dir, self.kappas, self.weights, old_dir, self.point_index[:3])
 		cblas_dcopy(3, &self.prob.best_fit[0], 1, &self.next_dir[0], 1)
 		return info

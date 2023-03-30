@@ -336,7 +336,7 @@ def main():
 	}
 	if args.ukf == "Watson":
 		tracking_parameters.update(dict(
-			max_sampling_angle=args.max_sampling_angle,
+			max_sampling_angle=float(args.max_sampling_angle),
 			max_kappa=args.max_kappa,
 			min_kappa=args.min_kappa,
 			prob_direction=args.prob_dir_selection
