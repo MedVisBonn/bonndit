@@ -393,6 +393,7 @@ def main():
 			'prob_others_0': args.features.index('prob_others') if 'prob_others' in args.features else -2,
 			'prob_others_1': args.features.index('prob_others') + 1 if 'prob_others' in args.features else -2,
 			'prob_others_2': args.features.index('prob_others') + 2 if 'prob_others' in args.features else -2,
+			'loss': args.features.index('loss') + 2 if 'loss' in args.features else -2,
 			'len': len(args.features) + 2 if 'prob_others' in args.features else len(args.features)
 		},
 		'file': args.disk_file if args.disk else "",

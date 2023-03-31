@@ -114,33 +114,36 @@ cdef class WatsonModel(AbstractModel):
 		self.pysh_v = np.zeros((2 *  5 * 5,), dtype=DTYPE)
 		self.dipy_v = np.zeros((15 if kwargs['order'] == 4 else 45,), dtype=DTYPE)
 		if kwargs['process noise'] == "":
-			ddiagonal(&self.PROCESS_NOISE[0, 0], np.array([0.5,0.1,0.01, 0.01]), self.PROCESS_NOISE.shape[0],
+			ddiagonal(&self.PROCESS_NOISE[0, 0], np.array([0.5,0.1,0.01, 0.01, 0.01]), self.PROCESS_NOISE.shape[0],
 				  self.PROCESS_NOISE.shape[1])
 		if kwargs['measurement noise'] == "":
 			ddiagonal(&self.MEASUREMENT_NOISE[0, 0], np.array([0.06]), self.MEASUREMENT_NOISE.shape[0],
 				  self.MEASUREMENT_NOISE.shape[1])
-		self.num_tensors = <int> (kwargs['dim_model'] / 4)
+		self.num_tensors = <int> (kwargs['dim_model'] / 5)
 
 
 	cdef void normalize(self, double[:] m, double[:] v, int inc): #nogil except *:
 		#no need to normalize since euler angle
-		pass
 
-	#	if cblas_dnrm2(3, &v[2], inc) != 0:
-	#		cblas_dcopy(3, &v[2], inc, &m[0], 1)
-	#		cblas_dscal(3, 1/cblas_dnrm2(3, &v[2],inc), &m[0], 1)
+
+		if cblas_dnrm2(3, &v[2], inc) != 0:
+			cblas_dcopy(3, &v[2], inc, &m[0], 1)
+			cblas_dscal(3, 1/cblas_dnrm2(3, &v[2],inc), &m[0], 1)
+			self.m[0] *= -1
+			self.m[2] *= -1
+
 
 	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points): # nogil except *:
-		cdef int number_of_tensors = int(sigma_points.shape[0]/4)
+		cdef int number_of_tensors = int(sigma_points.shape[0]/5)
 		cdef int i, j
 		cdef double lam, kappa
 		cblas_dscal(observations.shape[1] * observations.shape[0], 0, &observations[0, 0], 1)
 		for i in range(number_of_tensors):
 			for j in range(sigma_points.shape[1]):
-				#self.normalize(self.m, sigma_points[i * 4: i * 4 + 4, j], sigma_points.shape[1])
-				lam = max(sigma_points[i*4 + 1, j], 0.01)
-				kappa = exp(sigma_points[i*4, j])
-				self.angles[1:]  = sigma_points[i*4+2:i*4+4, j]
+				self.normalize(self.m, sigma_points[i * 5: i * 5 + 5, j], sigma_points.shape[1])
+				lam = max(sigma_points[i*5 + 1, j], 0.01)
+				kappa = exp(sigma_points[i*5, j])
+				cart2sphere(self.angles[1:], self.m)
 				cblas_dscal(self.dipy_v.shape[0], 0, &self.dipy_v[0], 1)
 				c_sh_watson_coeffs(kappa, &self.dipy_v[0], self.order)
 				self.dipy_v[0] *= self.rank_1_rh_o4[0]
@@ -161,26 +164,26 @@ cdef class WatsonModel(AbstractModel):
 		ddiagonal(&P[0,0], Pv, P.shape[0], P.shape[1])
 		for i in range(self.vector_field.shape[1]):
 			#print(i)
-			mean[i*4 : i*4+2]= self.vector_field[:2,i, <int> point[0], <int> point[1], <int> point[2]]
-			mean[i*4] = log(mean[i*4])
-			self.vector_field[2,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
-			self.vector_field[4,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
-			cart2sphere(mean[i*4+2:i*4+4], self.vector_field[2:,i, <int> point[0], <int> point[1], <int> point[2]])
-			self.vector_field[2,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
-			self.vector_field[4,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
+			mean[i*5 : i*5+5]= self.vector_field[:,i, <int> point[0], <int> point[1], <int> point[2]]
+			mean[i*5] = log(mean[i*5])
+			#self.vector_field[2,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
+			#self.vector_field[4,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
+			#cart2sphere(mean[i*4+2:i*4+4], self.vector_field[2:,i, <int> point[0], <int> point[1], <int> point[2]])
+			#self.vector_field[2,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
+			#self.vector_field[4,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
 
 
 
 	cdef void constrain(self, double[:,:] X): # nogil except *:
-		cdef int i, j, n = X.shape[0]//4
+		cdef int i, j, n = X.shape[0]//5
 		for i in range(X.shape[1]):
 			for j in range(n):
 				#if cblas_dnrm2(3,&X[5*j+2, i],X.shape[1]) != 0:
 				#	cblas_dscal(3, 1/cblas_dnrm2(3,&X[5*j+2, i],X.shape[1]),&X[5*j+2, i],X.shape[1])
 				#else:
 				#	cblas_dscal(3, cblas_dnrm2(3,&X[5*j+2, i],X.shape[1]),&X[5*j+2, i],X.shape[1])
-				X[j * 4, i] = min(max(exp(X[j * 4 , i]), self._lambda_min), log(80))
-				X[j * 4 + 1, i] = max(X[j * 4 + 1, i], self._lambda_min)
+				X[j * 5, i] = min(max(exp(X[j * 5 , i]), self._lambda_min), log(80))
+				X[j * 5 + 1, i] = max(X[j * 5 + 1, i], self._lambda_min)
 
 cdef class BinghamModel(WatsonModel):
 	def __cinit__(self, **kwargs):
@@ -197,27 +200,23 @@ cdef class BinghamModel(WatsonModel):
 
 	cdef void sh_bingham_coeffs(self, double kappa, double beta): # nogil except *:
 		self.dipy_v[0] = self.lookup_table[<int> kappa*10, <int> beta*10, 0, 0]
-		self.dipy_v[1] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, -2]
-		self.dipy_v[2] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, -1]
+		self.dipy_v[1] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 2]
+		self.dipy_v[2] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 1]
 		self.dipy_v[3] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 0]
-		self.dipy_v[4] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 1]
-		self.dipy_v[5] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 2]
-		self.dipy_v[6] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, -4]
-		self.dipy_v[7] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, -3]
-		self.dipy_v[8] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, -2]
-		self.dipy_v[9] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, -1]
+		self.dipy_v[4] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, -1]
+		self.dipy_v[5] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, -2]
+		self.dipy_v[6] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, 4]
+		self.dipy_v[7] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, 3]
+		self.dipy_v[8] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, 2]
+		self.dipy_v[9] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, 1]
 		self.dipy_v[10] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, 0]
-		self.dipy_v[11] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, 1]
-		self.dipy_v[12] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, 2]
-		self.dipy_v[13] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, 3]
-		self.dipy_v[14] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, 4]
-#
-#
-#	cdef void normalize(self, double[:] m, double[:] v, int inc) nogil except *:
-#		if cblas_dnrm2(3, &v[0], inc) != 0:
-#			cblas_dcopy(3, &v[0], inc, &m[0], 1)
-#			cblas_dscal(3, 1/cblas_dnrm2(3, &v[0],inc), &m[0], 1)
-#
+		self.dipy_v[11] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, -1]
+		self.dipy_v[12] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, -2]
+		self.dipy_v[13] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, -3]
+		self.dipy_v[14] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, -4]
+
+
+
 	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points): # nogil except *:
 		cdef int number_of_tensors = int(sigma_points.shape[0]/4)
 		cdef int i, j

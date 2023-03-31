@@ -57,6 +57,8 @@ cdef class Interpolation:
 		self.cache = np.zeros((grid[0], grid[1], grid[2], 4 * 8), dtype=np.int32)
 		self.best_ind = 0
 		self.prob = probClass
+		self.loss = 0
+
 
 
 
@@ -710,41 +712,44 @@ cdef class UKFFodf(UKF):
 cdef class UKFWatson(UKF):
 	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities prob, **kwargs):
 		super(UKFWatson, self).__init__(vector_field, grid, prob, **kwargs)
-		self.kappas = np.zeros(<int> (kwargs['dim_model'] // 4), dtype=DTYPE)
-		self.weights = np.zeros(<int> (kwargs['dim_model'] // 4), dtype=DTYPE)
+		self.kappas = np.zeros(<int> (kwargs['dim_model'] // 5), dtype=DTYPE)
+		self.weights = np.zeros(<int> (kwargs['dim_model'] // 5), dtype=DTYPE)
 		self._model1 = WatsonModel(vector_field=vector_field, **kwargs)
+		self.store_loss = kwargs['loss']
 
 
 	cdef int select_next_dir(self, int info, double[:] old_dir):
 		if info != 0:
 			return info
-		#self._kalman.linear(self.point_index[:3], self.y, self.mlinear, self.data)
-		for i in range(self._model.num_tensors):
-		#	if cblas_dnrm2(3, &self.mean[5*i + 2], 1) != 0:
-		#		cblas_dscal(3, 1 / cblas_dnrm2(3, &self.mean[5*i  + 2], 1), &self.mean[5*i + 2], 1)
-#
-#
-		#	else:
-		#		cblas_dscal(3, cblas_dnrm2(3, &self.mean[5 * i+2], 1), &self.mean[5 * i+2], 1)
-			self.mean[4 * i + 1] = max(self.mean[4 * i + 1], _lambda_min)
-			self.mean[4 * i] = min(max(self.mean[4 * i], _lambda_min), log(80))
-			self.weights[i] = fabs(self.mean[i * 4 + 1])
-			self.kappas[i] = exp(self.mean[i * 4])
-			sphere2cart(self.mean[i*4+2:i*4+4], self.best_dir[i])
-			#if True:
-			#	cblas_dscal(self._model1.dipy_v.shape[0], 0, &self._model1.dipy_v[0], 1)
-			#	c_sh_watson_coeffs(self.kappas[i], &self._model1.dipy_v[0], self._model1.order)
-			#	self._model1.angles[1:]  = self.mean[i*4+2:i*4+4]
-			#	self._model1.dipy_v[0] *= self._model1.rank_1_rh_o4[0]
-			#	self._model1.dipy_v[3] *= self._model1.rank_1_rh_o4[1]
-			#	self._model1.dipy_v[10] *= self._model1.rank_1_rh_o4[2]
-			#	c_map_dipy_to_pysh_o4(&self._model1.dipy_v[0], &self._model1.pysh_v[0])
-			#	c_sh_rotate_real_coef(&self._model1.rot_pysh_v[0], &self._model1.pysh_v[0], self._model1.order, &self._model1.angles[0], &dj_o4[0][0][0])
-			#	c_map_pysh_to_dipy_o4(&self._model1.rot_pysh_v[0],&self._model1.dipy_v[0])
-			#	cblas_daxpy(self.y.shape[0], -self.weights[i], &self._model1.dipy_v[0], 1, &self.y[0], 1)
 
-			self.best_dir[i, 0] *= -1
-			self.best_dir[i, 2] *= -1
+		for i in range(self._model.num_tensors):
+			if cblas_dnrm2(3, &self.mean[5*i + 2], 1) != 0:
+				cblas_dscal(3, 1 / cblas_dnrm2(3, &self.mean[5*i  + 2], 1), &self.mean[5*i + 2], 1)
+#
+#
+			else:
+				cblas_dscal(3, cblas_dnrm2(3, &self.mean[5 * i+2], 1), &self.mean[5 * i+2], 1)
+			self.mean[5 * i + 1] = max(self.mean[5 * i + 1], _lambda_min)
+			self.mean[5 * i] = min(max(self.mean[5 * i], _lambda_min), log(80))
+			self.weights[i] = fabs(self.mean[i * 5 + 1])
+			self.kappas[i] = exp(self.mean[i * 5])
+			cblas_dcopy(3, &self.mean[i*5+2], 1,  &self.best_dir[i, 0], 1)
+
+		if self.store_loss:
+			self._kalman.linear(self.point_index[:3], self.y, self.mlinear, self.data)
+			for i in range(self._model.num_tensors):
+				cblas_dscal(self._model1.dipy_v.shape[0], 0, &self._model1.dipy_v[0], 1)
+				c_sh_watson_coeffs(self.kappas[i], &self._model1.dipy_v[0], self._model1.order)
+				self._model1.angles[1:]  = self.mean[i*4+2:i*4+4]
+				self._model1.dipy_v[0] *= self._model1.rank_1_rh_o4[0]
+				self._model1.dipy_v[3] *= self._model1.rank_1_rh_o4[1]
+				self._model1.dipy_v[10] *= self._model1.rank_1_rh_o4[2]
+				c_map_dipy_to_pysh_o4(&self._model1.dipy_v[0], &self._model1.pysh_v[0])
+				c_sh_rotate_real_coef(&self._model1.rot_pysh_v[0], &self._model1.pysh_v[0], self._model1.order, &self._model1.angles[0], &dj_o4[0][0][0])
+				c_map_pysh_to_dipy_o4(&self._model1.rot_pysh_v[0],&self._model1.dipy_v[0])
+				cblas_daxpy(self.y.shape[0], -self.weights[i], &self._model1.dipy_v[0], 1, &self.y[0], 1)
+			self.loss = cblas_dnrm2(self.y.shape[0], &self.y[0], 1)
+
 		self.prob.calculate_probabilities_sampled(self.best_dir, self.kappas, self.weights, old_dir, self.point_index[:3])
 		cblas_dcopy(3, &self.prob.best_fit[0], 1, &self.next_dir[0], 1)
 		return info
