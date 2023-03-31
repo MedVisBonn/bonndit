@@ -537,24 +537,23 @@ def main():
                     ))
                 raise Exception()
     saving = {
-        'features':
-        {'chosen_angle': args.features.index('angle')
-            if 'angle' in args.features else -2,
-            'seedpoint': args.features.index('seedpoint')
-            if 'seedpoint' in args.features else -2,
-            'prob_chosen': args.features.index('prob_chosen')
-            if 'prob_chosen' in args.features else -2,
-            'fa': args.features.index('fa')
-            if 'fa' in args.features else -2,
-            'prob_others_0': args.features.index('prob_others')
-            if 'prob_others' in args.features else -2,
-            'prob_others_1': args.features.index('prob_others') + 1
-            if 'prob_others' in args.features else -2,
-            'prob_others_2': args.features.index('prob_others') + 2
-            if 'prob_others' in args.features else -2,
-            'len': len(args.features) + 2
-            if 'prob_others' in args.features else len(args.features)},
-        'file': args.disk_file if args.disk else "", }
+        'features': {
+            'chosen_angle': args.features.index('angle') if 'angle' in args.features else -2,
+            'seedpoint': args.features.index('seedpoint') if 'seedpoint' in args.features else -2,
+            'prob_chosen': args.features.index('prob_chosen') if 'prob_chosen' in args.features else -2,
+            'fa': args.features.index('fa') if 'fa' in args.features else -2,
+            'prob_others_0': args.features.index('prob_others') if 'prob_others' in args.features else -2,
+            'prob_others_1': args.features.index('prob_others')
+            + 1 if 'prob_others' in args.features else -2,
+            'prob_others_2': args.features.index('prob_others')
+            + 2 if 'prob_others' in args.features else -2,
+            'loss': args.features.index('loss')
+            + 2 if 'loss' in args.features else -2,
+            'len': len(args.features)
+            + 2 if 'prob_others' in args.features else len(args.features)
+        },
+        'file': args.disk_file if args.disk else "",
+    }
 
     paths, paths_len = tracking_all(
         np.float64(vector_field),

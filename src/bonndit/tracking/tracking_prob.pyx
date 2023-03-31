@@ -24,6 +24,7 @@ ctypedef struct possible_features:
     int prob_others_0
     int prob_others_1
     int prob_others_2
+    int loss
     int fa
     int len
 
@@ -198,6 +199,8 @@ cdef forward_tracking(
             features[
                 k // save_steps,
                 feature_save.fa] = interpolate.prob.old_fa
+        if feature_save.loss >= 0:
+            features[k // save_steps, feature_save.loss] = interpolate.loss
         # Check curvature between current point and point 30mm ago
         if validator.Curve.curvature_checker(
             paths[:k // save_steps],
@@ -307,6 +310,10 @@ cpdef tracking_all(
             vector_field, dim[2:5], directionGetter,
             **ukf_parameters)
     elif tracking_parameters['ukf'] == "Watson":
+        if 'loss' in saving['features']:
+            ukf_parameters['store_loss'] = True
+        else:
+            ukf_parameters['store_loss'] = False
         interpolate = UKFWatson(
             vector_field, dim[2:5], directionGetter,
             **ukf_parameters)
