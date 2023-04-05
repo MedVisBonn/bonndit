@@ -98,15 +98,15 @@ cdef void mw_openmp_mult_o8(
         &dipy_v[0, 0], &pysh_v[0, 0, 0, 0], &rot_pysh_v[0, 0, 0, 0],
         &angles_v[0, 0], &loss[0], amount, num_of_dir, no_spread)
 
-cdef void c_sh_rotate_real_coef(
+cpdef void c_sh_rotate_real_coef(
     double * x, double * y, int z, double * a,
     double * b
 ):
     SHRotateRealCoef(x, y, z, a, b)
 
-cdef void c_map_dipy_to_pysh_o4(double * x, double * y):
+cpdef void c_map_dipy_to_pysh_o4(double * x, double * y):
     map_dipy_to_pysh_o4(x, y)
-cdef void c_map_pysh_to_dipy_o4(double * x, double * y):
+cpdef void c_map_pysh_to_dipy_o4(double * x, double * y):
     map_pysh_to_dipy_o4(x, y)
 cdef void c_sh_watson_coeffs(double x, double * y, int z):
     sh_watson_coeffs(x, y, z)
