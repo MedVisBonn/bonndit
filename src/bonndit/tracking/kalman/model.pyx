@@ -1,5 +1,5 @@
 #cython: language_level=3, boundscheck=True, wraparound=True, warn.unused=True, warn.unused_args=True,
-# warn.unused_results=True
+# warn.unused_results=True, profile=True
 from bonndit.utilc.blas_lapack cimport *
 from bonndit.utilc.hota cimport hota_4o3d_sym_eval, hota_8o3d_sym_eval
 from bonndit.utilc.cython_helpers cimport special_mat_mul, orthonormal_from_sphere, dinit, sphere2world, ddiagonal, world2sphere, sphere2cart, cart2sphere
@@ -8,8 +8,9 @@ from bonndit.utilc.structures cimport dj_o4
 from scipy.optimize import least_squares
 import numpy as np
 from libc.math cimport pow, log
+import os
 DTYPE=np.float64
-
+dirname = os.path.dirname(__file__)
 
 
 
@@ -17,7 +18,7 @@ cdef class AbstractModel:
 	def __cinit__(self, **kwargs):
 		self.MEASUREMENT_NOISE =  np.zeros((kwargs['data'].shape[3],kwargs['data'].shape[3]), dtype=np.float64)
 		self.PROCESS_NOISE =  np.zeros((kwargs['dim_model'],kwargs['dim_model']), dtype=np.float64)
-		self._lambda_min = 0
+		self._lambda_min = 0.01
 		self.num_tensors = 0
 		self.GLOBAL_TENSOR_UNPACK_VALUE = 0.000001
 		if kwargs['process noise'] != "":
@@ -185,18 +186,29 @@ cdef class WatsonModel(AbstractModel):
 				X[j * 5, i] = min(max(exp(X[j * 5 , i]), self._lambda_min), log(80))
 				X[j * 5 + 1, i] = max(X[j * 5 + 1, i], self._lambda_min)
 
+
+
 cdef class BinghamModel(WatsonModel):
 	def __cinit__(self, **kwargs):
 		super(BinghamModel, self).__init__(**kwargs)
-		lookup_table = np.load('bingham_table.npy')
-		normalize_const = np.load('normalize_const.npy')
+		lookup_table = np.load(dirname + '/bingham_coefs1.npy')
+		normalize_const = np.load(dirname + '/normalize_const.npy')
 		# Convolution with rank 1 kernel:
 		for i,j in np.ndindex(lookup_table.shape[:2]):
-			lookup_table[i,j] *= 1/normalize_const[i,j]
+			if normalize_const[i,j] != 0:
+				lookup_table[i,j] *= 1/normalize_const[i,j]
+			else:
+				lookup_table[i,j] = 0
 		lookup_table[...,0] *= 2.51327412
 		lookup_table[...,2] *= 1.43615664
 		lookup_table[...,4] *= 0.31914592
 		self.lookup_table = lookup_table
+		if kwargs['process noise'] == "":
+			ddiagonal(&self.PROCESS_NOISE[0, 0], np.array([0.01, 0.5,0.5,0.01, 0.01, 0.01]), self.PROCESS_NOISE.shape[0],
+				  self.PROCESS_NOISE.shape[1])
+		if kwargs['measurement noise'] == "":
+			ddiagonal(&self.MEASUREMENT_NOISE[0, 0], np.array([0.06]), self.MEASUREMENT_NOISE.shape[0],
+				  self.MEASUREMENT_NOISE.shape[1])
 
 	cdef void sh_bingham_coeffs(self, double kappa, double beta): # nogil except *:
 		self.dipy_v[0] = self.lookup_table[<int> kappa*10, <int> beta*10, 0, 0]
@@ -218,7 +230,7 @@ cdef class BinghamModel(WatsonModel):
 
 
 	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points): # nogil except *:
-		cdef int number_of_tensors = int(sigma_points.shape[0]/4)
+		cdef int number_of_tensors = int(sigma_points.shape[0]/6)
 		cdef int i, j
 		cdef double lam, kappa, beta
 		cblas_dscal(observations.shape[1] * observations.shape[0], 0, &observations[0, 0], 1)
@@ -228,10 +240,9 @@ cdef class BinghamModel(WatsonModel):
 				lam = max(sigma_points[i*6, j], 0.01)
 				kappa = exp(sigma_points[i*6 + 1, j])
 				beta = exp(sigma_points[i*6 + 2, j])
-				self.angles[0] = sigma_points[i*6 + 3, j]
-				self.angles[1] = sigma_points[i*6 + 4, j]
-				self.angles[2] = sigma_points[i*6 + 5, j]
+				cblas_dcopy(3, &sigma_points[i*6+3, j], sigma_points.shape[1], &self.angles[0], 1)
 				self.sh_bingham_coeffs(kappa, beta)
+				#print(np.array(self.dipy_v))
 				c_map_dipy_to_pysh_o4(&self.dipy_v[0], &self.pysh_v[0])
 				c_sh_rotate_real_coef(&self.rot_pysh_v[0], &self.pysh_v[0], self.order, &self.angles[0], &dj_o4[0][0][0])
 				c_map_pysh_to_dipy_o4(&self.rot_pysh_v[0], &self.dipy_v[0])
@@ -248,13 +259,16 @@ cdef class BinghamModel(WatsonModel):
 		cdef double[:] Pv = np.array([0.01])
 		cdef double[:] dir = np.zeros((3,))
 		ddiagonal(&P[0,0], Pv, P.shape[0], P.shape[1])
-		cart2sphere(dir, self.vector_field[0:2,i, <int> point[0], <int> point[1], <int> point[2]])
+		self.vector_field[2,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
+		self.vector_field[4,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
+		cart2sphere(dir, self.vector_field[2:,i, <int> point[0], <int> point[1], <int> point[2]])
+		self.vector_field[2,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
+		self.vector_field[4,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
 		for i in range(self.vector_field.shape[1]):
-
-			mean[i*6 + 0] = self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]]
+			mean[i*6 + 0] = self.vector_field[1,i, <int> point[0], <int> point[1], <int> point[2]]
 			# set circle by setting kappa and beta equal
-			mean[i*6 + 1] = self.vector_field[1,i, <int> point[0], <int> point[1], <int> point[2]]
-			mean[i*6 + 2] = self.vector_field[1,i, <int> point[0], <int> point[1], <int> point[2]]
+			mean[i*6 + 1] = log(self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]])
+			mean[i*6 + 2] =  log(0.2) #self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]]) # log(0.2) #log(self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]])
 			# set angles: all needed!
 			mean[i*6 + 3] = 0
 			mean[i*6 + 4] = dir[0]
@@ -262,12 +276,12 @@ cdef class BinghamModel(WatsonModel):
 #
 #
 	cdef void constrain(self, double[:,:] X): # nogil except *:
-		cdef int i, j, n = X.shape[0]//4
+		cdef int i, j, n = X.shape[0]//6
 		for i in range(X.shape[1]):
 			for j in range(n):
+				X[j * 6 + 1, i] = min(max(X[j * 6 + 1, i], log(0.2)), log(50))
+				X[j * 6 + 2, i] = min(max(X[j * 6 + 2, i], log(0.2)), X[j * 6 + 1, i])
 				X[j * 6 + 0, i] = max(X[j * 6 + 0, i], self._lambda_min)
-				X[j * 6 + 1, i] = max(X[j * 6 + 1, i], self._lambda_min)
-				X[j * 6 + 2, i] = max(X[j * 6 + 2, i], self._lambda_min)
 
 
 cdef class MultiTensorModel(AbstractModel):

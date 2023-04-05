@@ -43,12 +43,12 @@ cdef void mw_openmp_mult_o6(double[:,:] x, double[:,:] signal, double[:,:] est_s
 cdef void mw_openmp_mult_o8(double[:,:] x, double[:,:] signal, double[:,:] est_signal, double[:,:] dipy_v, double[:,:,:,:] pysh_v, double[:,:,:,:] rot_pysh_v, double[:,:] angles_v, double[:] loss, int amount, int num_of_dir, int no_spread) nogil:
         minimize_watson_mult_o8(&x[0,0],&signal[0,0],&est_signal[0,0],&dipy_v[0,0],&pysh_v[0,0,0,0],&rot_pysh_v[0,0,0,0],&angles_v[0,0],&loss[0],amount,num_of_dir,no_spread)
 
-cdef void c_sh_rotate_real_coef(double* x, double* y, int z, double* a, double* b):
+cpdef void c_sh_rotate_real_coef(double* x, double* y, int z, double* a, double* b):
         SHRotateRealCoef(x,y,z,a,b)
 
-cdef void c_map_dipy_to_pysh_o4(double* x, double* y):
+cpdef void c_map_dipy_to_pysh_o4(double* x, double* y):
        map_dipy_to_pysh_o4(x, y)
-cdef void c_map_pysh_to_dipy_o4(double* x, double* y):
+cpdef void c_map_pysh_to_dipy_o4(double* x, double* y):
         map_pysh_to_dipy_o4(x,y)
 cdef void c_sh_watson_coeffs(double x, double* y, int z):
         sh_watson_coeffs(x, y, z)

@@ -105,7 +105,8 @@ def main():
 						help='Seedspointfile: Each row denotes a seed point, where the first  3 columns give the \n'
 							 ' seed point in (x,y,z). Further 3 additional columns can specified to define a initial \n'
 							 'direction. Columns should be seperated by whitespace.',
-						default=argparse.SUPPRESS)
+						default="seedpoints.pts")
+	parser.add_argument('--seed_count')
 	# General Tracking Parameters
 	parser.add_argument('--wmmin', help='Minimum WM density before tracking stops', default=0.15)
 	parser.add_argument('--sw_save',
@@ -216,10 +217,10 @@ def main():
 	trafo_data[:3,3] = meta['space origin'][-3:]
 	trafo_data[3,3] = 1
 	# print(meta)
-	if vector_field.shape[0] != 4 and args.ukf != "Watson":
+	if vector_field.shape[0] != 4 and args.ukf!="Watson" and args.ukf!="Bingham" and args.ukf != "WatsonAlt":
 		logging.error("Wrong dimension on first axis. Has to contain 4 values.")
 		raise Exception()
-	elif vector_field.shape[0] != 5 and args.ukf=="Watson" :
+	elif vector_field.shape[0] != 5 and (args.ukf=="Watson" or args.ukf=="Bingham" or args.ukf == 'WatsonAlt'):
 		logging.error("Wrong dimension on first axis. Has to contain 5 values.")
 		raise Exception()
 	# if vector_field.shape[1] != 3:
@@ -253,7 +254,22 @@ def main():
 		logging.error("Vectorfield (x,y,z) and wm mask have to have same dimensions.")
 		raise Exception()
 	logging.info("WM Mask loaded")
-	seeds = load('seedpoints', args, 'seedpoints.pts', args.i, logging, np.loadtxt)
+	if args.seedpoints.endswith('.pts'):
+		seeds = load('seedpoints', args, 'seedpoints.pts', args.i, logging, np.loadtxt)
+		seed_count = 0
+	elif args.seedpoints.endswith('.nrrd'):
+		seeds, meta_seeds = load('seedpoints', args, 'seedpoints.pts', args.i, logging, nrrd.read)
+		seeds = np.array(np.where(seeds > 0.3))
+		seeds = np.vstack((seeds, np.ones(seeds.shape[1])))
+		seed_trafo = np.eye(4)
+		seed_trafo[:3,:3] = meta_seeds['space directions']
+		seed_trafo[:3,3] = meta_seeds['space origin']
+		seeds = seed_trafo @ seeds
+		seeds = seeds[:3].T
+		seed_count = int(args.seed_count)
+		args.samples = 1
+	else:
+		raise Exception("For seedpoints only nrrd and pts files allowed")
 	logging.info("Seedfile loaded")
 	if 'ukf' in args:
 		logging.info("UKF Flag is set. Continue with loading UKF data")
@@ -275,7 +291,7 @@ def main():
 			baseline, _ = load('ukf_baseline', args, 'baseline.nrrd', args.i, logging, nrrd.read)
 
 			logging.info("b0 loaded")
-		elif args.ukf in ['LowRank', "LowRankAlt", 'Watson', 'Bingham']:
+		elif args.ukf in ['LowRank', "LowRankAlt", 'Watson', 'Bingham', 'WatsonAlt']:
 			### TODO DAS soll anders
 			if 'ukf_data' in args:
 				if args.ukf_data.endswith('nii.gz'):
@@ -323,6 +339,8 @@ def main():
 		'expectation': float(args.exp),
 		'trafo_mask': trafo_mask,
 		'stepsize': float(args.sw),
+		'seeds': seeds,
+		'seed_count': seed_count,
 		'max_track_length': int(args.mtlength),
 		'integration': args.integration,
 		'interpolation': args.interpolation,
@@ -334,7 +352,7 @@ def main():
 		'verbose': args.verbose,
 		'sw_save': int(args.sw_save),
 	}
-	if args.ukf == "Watson":
+	if args.ukf == "Watson" or args.ukf == "Bingham" or args.ukf == "WatsonAlt":
 		tracking_parameters.update(dict(
 			max_sampling_angle=float(args.max_sampling_angle),
 			max_kappa=args.max_kappa,
@@ -393,13 +411,13 @@ def main():
 			'prob_others_0': args.features.index('prob_others') if 'prob_others' in args.features else -2,
 			'prob_others_1': args.features.index('prob_others') + 1 if 'prob_others' in args.features else -2,
 			'prob_others_2': args.features.index('prob_others') + 2 if 'prob_others' in args.features else -2,
-			'loss': args.features.index('loss') + 2 if 'loss' in args.features else -2,
+			'loss': args.features.index('loss') if 'loss' in args.features else -2,
 			'len': len(args.features) + 2 if 'prob_others' in args.features else len(args.features)
 		},
 		'file': args.disk_file if args.disk else "",
 	}
 
-	paths, paths_len = tracking_all(np.float64(vector_field), np.float64(wm_mask), np.float64(seeds),
+	paths, paths_len = tracking_all(np.float64(vector_field), np.float64(wm_mask),
 									tracking_parameters, postprocessing, ukf_parameter,trilinear_parameters,  logging, saving)
 	del tracking_parameters, postprocessing, ukf_parameter, trilinear_parameters, vector_field, wm_mask, seeds, act
 	if 'disk' in args:
