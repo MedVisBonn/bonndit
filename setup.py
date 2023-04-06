@@ -56,6 +56,7 @@ ext_modules = [
         libraries=["mkl_rt", "mkl_sequential",
                    "mkl_core", "pthread", "m", "dl"],
         library_dirs=["%s/lib/intel64" % mklroot],
+        define_macros=[('CYTHON_TRACE', '1')],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
         extra_link_args=["-Wl,--no-as-needed"]
     ),
@@ -63,26 +64,31 @@ ext_modules = [
         "bonndit.utilc.hota",
         ["src/bonndit/utilc/hota.pyx"],
         extra_compile_args=["-Ofast"],
+        define_macros=[('CYTHON_TRACE', '1')],
     ),
     Extension(
         "bonndit.utilc.trilinear",
         ["src/bonndit/utilc/trilinear.pyx"],
         extra_compile_args=["-Ofast"],
+        define_macros=[('CYTHON_TRACE', '1')],
     ),
     Extension(
         "bonndit.utilc.structures",
         ["src/bonndit/utilc/structures.pyx"],
         extra_compile_args=["-Ofast"],
+        define_macros=[('CYTHON_TRACE', '1')],
     ),
     Extension(
         "bonndit.utilc.penalty_spherical",
         ["src/bonndit/utilc/penalty_spherical.pyx"],
         extra_compile_args=["-Ofast"],
+        define_macros=[('CYTHON_TRACE', '1')],
     ),
     Extension(
         "bonndit.utilc.lowrank",
         ["src/bonndit/utilc/lowrank.pyx"],
         extra_compile_args=["-Ofast"],
+        define_macros=[('CYTHON_TRACE', '1')],
     ),
     Extension(
         "bonndit.directions.fodfapprox",
@@ -96,6 +102,7 @@ ext_modules = [
         "bonndit.tracking.ItoW",
         ["src/bonndit/tracking/ItoW.pyx"],
         extra_compile_args=["-Ofast"],
+        define_macros=[('CYTHON_TRACE', '1')],
     ),
     Extension(
         "bonndit.tracking.alignedDirection",
@@ -105,11 +112,14 @@ ext_modules = [
                    "mkl_core", "pthread", "m", "dl"],
         library_dirs=["%s/lib/intel64" % mklroot],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
-        extra_link_args=["-Wl,--no-as-needed"]
+        extra_link_args=["-Wl,--no-as-needed"],
+        define_macros=[('CYTHON_TRACE', '1')],
     ), Extension(
         "bonndit.tracking.kalman.model",
         ["src/bonndit/tracking/kalman/model.pyx"],
-        define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
+        define_macros=[
+            ("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"),
+            ('CYTHON_TRACE', '1')],
         include_dirs=[numpy.get_include(), "%s/include" %
                       mklroot, "/usr/include/"],
         libraries=["mkl_rt", "mkl_sequential", "mkl_core",
@@ -124,7 +134,9 @@ ext_modules = [
     Extension(
         "bonndit.tracking.kalman.kalman",
         ["src/bonndit/tracking/kalman/kalman.pyx"],
-        define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
+        define_macros=[
+            ("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"),
+            ('CYTHON_TRACE', '1')],
         include_dirs=[numpy.get_include(), "%s/include" % mklroot],
         libraries=["mkl_rt", "mkl_sequential",
                    "mkl_core", "pthread", "m", "dl"],
@@ -136,7 +148,9 @@ ext_modules = [
     Extension(
         "bonndit.tracking.interpolation",
         ["src/bonndit/tracking/interpolation.pyx"],
-        define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
+        define_macros=[
+            ("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"),
+            ('CYTHON_TRACE', '1')],
         include_dirs=[numpy.get_include(), "%s/include" % mklroot, "/usr/lib"],
         libraries=["mkl_rt", "mkl_sequential",
                    "mkl_core", "pthread", "m", "dl"],
@@ -152,12 +166,17 @@ ext_modules = [
                    "mkl_core", "pthread", "m", "dl"],
         library_dirs=["%s/lib/intel64" % mklroot],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
+        define_macros=[
+            ("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"),
+            ('CYTHON_TRACE', '1')],
         extra_link_args=["-Wl,--no-as-needed"]
     ),
     Extension(
         "bonndit.tracking.stopping",
         ["src/bonndit/tracking/stopping.pyx"],
-        define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
+        define_macros=[
+            ("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"),
+            ('CYTHON_TRACE', '1')],
         include_dirs=[numpy.get_include(), "%s/include" % mklroot],
         libraries=["mkl_rt", "mkl_sequential",
                    "mkl_core", "pthread", "m", "dl"],
@@ -168,12 +187,18 @@ ext_modules = [
     Extension(
         "bonndit.tracking.tracking_prob",
         ["src/bonndit/tracking/tracking_prob.pyx"],
+        define_macros=[
+            ("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"),
+            ('CYTHON_TRACE', '1')],
         extra_compile_args=['-fopenmp', "-Ofast"],
         extra_link_args=['-fopenmp'],
     ),
     Extension(
         "bonndit.pmodels.means",
         ["src/bonndit/pmodels/means.pyx"],
+        define_macros=[
+            ("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"),
+            ('CYTHON_TRACE', '1')],
         extra_compile_args=["-Ofast"],
     ),
     Extension(
