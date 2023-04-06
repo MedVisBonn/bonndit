@@ -95,12 +95,12 @@ cdef class Validator:
 
 cdef class WMChecker:
     def __cinit__(self, kwargs):
-        x = np.linspace(0, kwargs['wm_mask'].shape[0] - 1,
-            kwargs['wm_mask'].shape[0])
-        y = np.linspace(0, kwargs['wm_mask'].shape[1] - 1,
-            kwargs['wm_mask'].shape[1])
-        z = np.linspace(0, kwargs['wm_mask'].shape[2] - 1,
-            kwargs['wm_mask'].shape[2])
+        # x = np.linspace(0, kwargs['wm_mask'].shape[0] - 1,
+        # kwargs['wm_mask'].shape[0])
+        # y = np.linspace(0, kwargs['wm_mask'].shape[1] - 1,
+        # kwargs['wm_mask'].shape[1])
+        # z = np.linspace(0, kwargs['wm_mask'].shape[2] - 1,
+        # kwargs['wm_mask'].shape[2])
         self.inv_trafo = np.linalg.inv(kwargs['trafo_mask'])
         self.point = np.zeros((4,), dtype=DTYPE)
         self.point_world = np.zeros((4,), dtype=DTYPE)
@@ -109,7 +109,7 @@ cdef class WMChecker:
         # self.entered_sgm = 0
         # self.wm_mask = RegularGridInterpolator((x, y, z), kwargs['wm_mask'])
         self.wm_mask = np.array(kwargs['wm_mask'], dtype=DTYPE)
-
+        self.y = np.zeros((8,), dtype=DTYPE)
 
     cdef void reset(self):
         pass
@@ -128,7 +128,7 @@ cdef class WMChecker:
             CblasRowMajor, CblasNoTrans, 4, 4, 1,
             &self.inv_trafo[0, 0], 4, &self.point_world[0], 1, 0,
             &self.point[0], 1)
-        if linear(self.point[:3], y, self.wm_mask) > self.min_wm:
+        if linear(self.point[:3], self.y, self.wm_mask) > self.min_wm:
             return -1
         else:
             return 0
@@ -143,7 +143,7 @@ cdef class WMChecker:
             CblasRowMajor, CblasNoTrans, 4, 4, 1,
             &self.inv_trafo[0, 0], 4, &self.point_world[0], 1, 0,
             &self.point[0], 1)
-        if linear(self.point[:3], y, self.wm_mask) > self.min_wm:
+        if linear(self.point[:3], self.y, self.wm_mask) > self.min_wm:
             return -1
         else:
             return 0

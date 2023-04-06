@@ -55,6 +55,8 @@ cdef class WatsonModel(AbstractModel):
         double[:]
     )
     cdef void constrain(self, double[:, :])  # nogil expcept *
+    cdef double sh_norm(self, double[:])
+
 
 cdef class BinghamModel(WatsonModel):
     cdef double[:, :, :, :] lookup_table
