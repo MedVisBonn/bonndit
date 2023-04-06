@@ -154,6 +154,7 @@ cdef class WatsonModel(AbstractModel):
 				cblas_dscal(self.dipy_v.shape[0], 0, &self.dipy_v[0], 1)
 				c_sh_watson_coeffs(kappa, &self.dipy_v[0], self.order)
 				div = self.sh_norm(self.dipy_v)
+				print(kappa, np.array(self.dipy_v))
 				self.dipy_v[0] *= self.rank_1_rh_o4[0]/div
 				self.dipy_v[3] *= self.rank_1_rh_o4[1]/div
 				self.dipy_v[10] *= self.rank_1_rh_o4[2]/div
