@@ -1106,7 +1106,7 @@ cdef class UKFWatson(UKF):
                     self.y.shape[0], -self.weights[i],
                     &self._model1.dipy_v[0], 1, &self.y[0], 1)
             self.loss = cblas_dnrm2(self.y.shape[0], &self.y[0], 1)
-        # print(self.loss)
+        print(self.loss)
         self.prob.calculate_probabilities_sampled(
             self.best_dir,
             self.kappas, self.weights, old_dir, self.point_index[:3])
@@ -1297,8 +1297,8 @@ cdef class UKFBingham(UKF):
             # print(   np.array(self.mean[6*i +3: 6*(i+1)]), '\n',
             # np.array(self.R),'\n', '2,',
             # np.array(self.R)@(np.array(self.R).T))
-            # cblas_dscal(3, -1, &self.R[0,0], 3)
-            # cblas_dscal(3, -1, &self.R[0,2], 3)
+            cblas_dscal(3, -1, &self.R[0, 0], 3)
+            cblas_dscal(3, -1, &self.R[0, 2], 3)
             cblas_dgemm(
                 CblasRowMajor, CblasNoTrans, CblasTrans, 3, 3, 1, 1,
                 &self.R[0, 0], 3, &self.R[0, 0], 3, 0, &self.A[i, 0, 0], 3)
