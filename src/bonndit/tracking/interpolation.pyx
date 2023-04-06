@@ -754,7 +754,7 @@ cdef class UKFWatson(UKF):
 				c_map_pysh_to_dipy_o4(&self._model1.rot_pysh_v[0],&self._model1.dipy_v[0])
 				cblas_daxpy(self.y.shape[0], -self.weights[i], &self._model1.dipy_v[0], 1, &self.y[0], 1)
 			self.loss = cblas_dnrm2(self.y.shape[0], &self.y[0], 1)
-		#print(self.loss)
+		print(self.loss)
 		self.prob.calculate_probabilities_sampled(self.best_dir, self.kappas, self.weights, old_dir, self.point_index[:3])
 		cblas_dcopy(3, &self.prob.best_fit[0], 1, &self.next_dir[0], 1)
 		return info
@@ -883,8 +883,8 @@ cdef class UKFBingham(UKF):
 			self.mean[6*i + 2] = min(max(self.mean[6 * i + 2], log(0.1)), self.mean[6 * i + 1])
 			r_z_r_y_r_z(self.R, self.mean[6 * i+3:6*(i+1)])
 			#print(   np.array(self.mean[6*i +3: 6*(i+1)]), '\n', np.array(self.R),'\n', '2,', np.array(self.R)@(np.array(self.R).T))
-			#cblas_dscal(3, -1, &self.R[0,0], 3)
-			#cblas_dscal(3, -1, &self.R[0,2], 3)
+			cblas_dscal(3, -1, &self.R[0,0], 3)
+			cblas_dscal(3, -1, &self.R[0,2], 3)
 			cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasTrans, 3, 3, 1, 1, &self.R[0,0], 3, &self.R[0,0], 3, 0, &self.A[i, 0,0], 3)
 			cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasTrans, 3, 3, 1, -1, &self.R[0,1], 3, &self.R[0,1], 3, 1, &self.A[i, 0,0], 3)
 			# enough to reorient just mu
