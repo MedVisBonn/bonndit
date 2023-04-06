@@ -7,7 +7,7 @@ from bonndit.utilc.watsonfitwrapper cimport *
 from bonndit.utilc.structures cimport dj_o4
 from scipy.optimize import least_squares
 import numpy as np
-from libc.math cimport pow, log
+from libc.math cimport pow, log, sqrt, pi
 DTYPE=np.float64
 
 
@@ -129,22 +129,29 @@ cdef class WatsonModel(AbstractModel):
 			cblas_dcopy(3, &v[0], inc, &m[0], 1)
 			cblas_dscal(3, 1/cblas_dnrm2(3, &v[0],inc), &m[0], 1)
 
+	cdef double sh_norm(self):
+
+		return self.dipy_v[0]*sqrt(1/(4*pi)) * self.rank_1_rh_o4[0] + \
+						self.dipy_v[3] * 1/2 * sqrt(5/pi) * self.rank_1_rh_o4[1] + \
+						self.dipy_v[10] * 3/16 * sqrt(1/pi) * (35-30+3) * self.rank_1_rh_o4[2]
+
 	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points): # nogil except *:
 		cdef int number_of_tensors = int(sigma_points.shape[0]/5)
 		cdef int i, j
-		cdef double lam
+		cdef double lam, div
 		cblas_dscal(observations.shape[1] * observations.shape[0], 0, &observations[0, 0], 1)
 		for i in range(number_of_tensors):
 			for j in range(sigma_points.shape[1]):
 				self.normalize(self.m, sigma_points[i * 5 + 2: i * 5 + 5, j], sigma_points.shape[1])
 				lam = max(sigma_points[i*5 +1, j], 0.01)
 				kappa = exp(sigma_points[i*5, j])
-				cart2sphere(self.angles[1:], self.m)
-
+				cart2sphere(self.angles, self.m)
 				c_sh_watson_coeffs(kappa, &self.dipy_v[0], self.order)
-				self.dipy_v[0] *= self.rank_1_rh_o4[0]
-				self.dipy_v[3] *= self.rank_1_rh_o4[1]
-				self.dipy_v[10] *= self.rank_1_rh_o4[2]
+				div = self.sh_norm()
+				self.dipy_v[0] *= self.rank_1_rh_o4[0]/div
+				self.dipy_v[3] *= self.rank_1_rh_o4[1]/div
+				self.dipy_v[10] *= self.rank_1_rh_o4[2]/div
+
 				c_map_dipy_to_pysh_o4(&self.dipy_v[0], &self.pysh_v[0])
 				c_sh_rotate_real_coef(&self.rot_pysh_v[0], &self.pysh_v[0], self.order, &self.angles[0], &dj_o4[0][0][0])
 				c_map_pysh_to_dipy_o4(&self.rot_pysh_v[0],&self.dipy_v[0])
@@ -244,12 +251,10 @@ cdef class BinghamModel(WatsonModel):
 		ddiagonal(&P[0,0], Pv, P.shape[0], P.shape[1])
 		cart2sphere(dir, self.vector_field[0:2,i, <int> point[0], <int> point[1], <int> point[2]])
 		for i in range(self.vector_field.shape[1]):
-
 			mean[i*6 + 0] = self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]]
 			# set circle by setting kappa and beta equal
-			mean[i*6 + 1] = self.vector_field[1,i, <int> point[0], <int> point[1], <int> point[2]]
-			mean[i*6 + 2] = self.vector_field[1,i, <int> point[0], <int> point[1], <int> point[2]]
-			# set angles: all needed!
+			mean[i*6 + 1] = log(self.vector_field[1,i, <int> point[0], <int> point[1], <int> point[2]])
+			mean[i*6 + 2] = 0			# set angles: all needed!
 			mean[i*6 + 3] = 0
 			mean[i*6 + 4] = dir[0]
 			mean[i*6 + 5] = dir[1]
