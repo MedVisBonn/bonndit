@@ -865,7 +865,7 @@ cdef class UKF(Interpolation):
             self.data)
         # If we are at the seed. Initialize the Kalmanfilter
         if restart == 0:
-        # print("\n")
+            print("Restart \n")
             self._model.kinit(
                 self.mean, self.point_index[:3], old_dir,
                 self.P, self.y)
