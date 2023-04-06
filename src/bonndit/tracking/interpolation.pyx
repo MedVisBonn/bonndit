@@ -892,7 +892,7 @@ cdef class UKFBingham(UKF):
 			self.l_k_b[i, 0] = self.mean[6 * i + 0]
 			self.l_k_b[i, 1] = exp(self.mean[6 * i + 1])
 			self.l_k_b[i, 2] = self.mean[6 * i + 2]
-		print(np.array(self.mu), np.array(self.A), np.array(self.l_k_b))
+		print(np.array(self.mu), '\n', np.array(self.A), '\n', np.array(self.l_k_b))
 		if self.store_loss:
 			self._kalman.linear(self.point_index[:3], self.y, self.mlinear, self.data)
 			for i in range(self._model.num_tensors):
