@@ -496,9 +496,6 @@ cdef class BinghamDirGetter(Probabilities):
         if l_k_b[min_index, 1] < self.min_kappa:
             self.best_fit = np.zeros((3))
             return
-        if l_k_b[min_index, 2] < self.min_beta:
-            self.best_fit = np.zeros((3))
-            return
 
         M = 4 * pi * self.bingham_scale(
             min(
