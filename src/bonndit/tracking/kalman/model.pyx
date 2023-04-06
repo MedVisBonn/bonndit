@@ -371,7 +371,7 @@ cdef class BinghamModel(WatsonModel):
             for j in range(sigma_points.shape[1]):
                 lam = max(sigma_points[i * 6, j], 0.01)
                 kappa = exp(sigma_points[i * 6 + 1, j])
-                beta = max(sigma_points[i * 6 + 2, j], 0)
+                beta = exp(sigma_points[i * 6 + 2, j])
                 print(kappa, beta)
                 cblas_dcopy(
                     3, &sigma_points[i * 6 + 3, j],
@@ -427,7 +427,7 @@ cdef class BinghamModel(WatsonModel):
                 self.vector_field[
                     0, i, <int> point[0],
                     <int> point[1], <int> point[2]])
-            mean[i * 6 + 2] = 0  # set angles: all needed!
+            mean[i * 6 + 2] = log(0.1)  # set angles: all needed!
             mean[i * 6 + 3] = 0
             mean[i * 6 + 4] = dir[0]
             mean[i * 6 + 5] = dir[1]
@@ -439,8 +439,8 @@ cdef class BinghamModel(WatsonModel):
             for j in range(n):
                 X[j * 6 + 1, i] = min(max(X[j * 6 + 1, i], log(0.2)), log(50))
                 X[j * 6 + 2, i] = min(
-                    max(X[j * 6 + 2, i], 0),
-                    exp(X[j * 6 + 1, i]))
+                    max(X[j * 6 + 2, i], log(0.1)),
+                    X[j * 6 + 1, i])
                 X[j * 6 + 0, i] = max(X[j * 6 + 0, i], self._lambda_min)
 
 

@@ -1291,25 +1291,25 @@ cdef class UKFBingham(UKF):
                 max(self.mean[6 * i + 1], log(0.2)),
                 log(50))
             self.mean[6 * i + 2] = min(
-                max(self.mean[6 * i + 2], 0),
-                exp(self.mean[6 * i + 1]))
+                max(self.mean[6 * i + 2], log(0.1)),
+                self.mean[6 * i + 1])
             r_z_r_y_r_z(self.R, self.mean[6 * i + 3:6 * (i + 1)])
             # print(   np.array(self.mean[6*i +3: 6*(i+1)]), '\n',
             # np.array(self.R),'\n', '2,',
             # np.array(self.R)@(np.array(self.R).T))
-            cblas_dscal(3, -1, &self.R[0, 0], 1)
-            cblas_dscal(3, -1, &self.R[2, 0], 1)
+            cblas_dscal(3, -1, &self.R[0, 0], 3)
+            cblas_dscal(3, -1, &self.R[0, 2], 3)
             cblas_dgemm(
                 CblasRowMajor, CblasNoTrans, CblasTrans, 3, 3, 1, 1,
-                &self.R[0, 0], 3, &self.R[0, 0], 3, 0, &self.A[i, 0, 0], 3)
+                &self.R[0, 0], 1, &self.R[0, 0], 1, 0, &self.A[i, 0, 0], 3)
             cblas_dgemm(
                 CblasRowMajor, CblasNoTrans, CblasTrans, 3, 3, 1,
-                -1, &self.R[0, 1], 3, &self.R[0, 1], 3, 1, &self.A[i, 0, 0], 3)
+                -1, &self.R[1, 0], 1, &self.R[1, 0], 1, 1, &self.A[i, 0, 0], 3)
             # enough to reorient just mu
-            cblas_dcopy(3, &self.R[0, 2], 3, &self.mu[i, 0], 1)
+            cblas_dcopy(3, &self.R[2, 0], 1, &self.mu[i, 0], 1)
             self.l_k_b[i, 0] = self.mean[6 * i + 0]
             self.l_k_b[i, 1] = exp(self.mean[6 * i + 1])
-            self.l_k_b[i, 2] = self.mean[6 * i + 2]
+            self.l_k_b[i, 2] = exp(self.mean[6 * i + 2])
         # print(np.array(self.mu), '\n', np.array(self.A), '\n',
         # np.array(self.l_k_b))
         if self.store_loss:
@@ -1318,7 +1318,7 @@ cdef class UKFBingham(UKF):
                 self.data)
             for i in range(self._model.num_tensors):
                 kappa = exp(self.mean[i * 6 + 1])
-                beta = self.mean[i * 6 + 2]
+                beta = exp(self.mean[i * 6 + 2])
                 self._model1.sh_bingham_coeffs(kappa, beta)
                 cblas_dcopy(
                     3, &self.mean[i * 6 + 3], 1,
@@ -1423,7 +1423,7 @@ cdef class UKFBinghamAlt(Interpolation):
                 if i == j:
                     continue
                 kappa = exp(self.mean[j, 1])
-                beta = self.mean[j, 2]
+                beta = exp(self.mean[j, 2])
                 self._model1.sh_bingham_coeffs(kappa, beta)
                 cblas_dcopy(3, &self.mean[j, 3], 1, &self._model1.angles[0], 1)
                 c_map_dipy_to_pysh_o4(&self._model1.dipy_v[0], &self.pysh_v[0])
@@ -1447,8 +1447,8 @@ cdef class UKFBinghamAlt(Interpolation):
             self.mean[i, 0] = max(self.mean[i, 0], _lambda_min)
             self.mean[i, 1] = min(max(self.mean[i, 1], log(0.2)), log(50))
             self.mean[i, 2] = min(
-                max(self.mean[i, 2], 0),
-                exp(self.mean[i, 1]))
+                max(self.mean[i, 2], log(0.1)),
+                self.mean[i, 1])
             r_z_r_y_r_z(self.R, self.mean[i, 3:])
             cblas_dscal(3, -1, &self.R[0, 0], 1)
             cblas_dscal(3, -1, &self.R[2, 0], 1)
@@ -1464,7 +1464,7 @@ cdef class UKFBinghamAlt(Interpolation):
             cblas_dcopy(3, &self.R[0, 2], 3, &self.mu[i, 0], 1)
             self.l_k_b[i, 0] = self.mean[i, 0]
             self.l_k_b[i, 1] = exp(self.mean[i, 1])
-            self.l_k_b[i, 2] = self.mean[i, 2]
+            self.l_k_b[i, 2] = exp(self.mean[i, 2])
 
         if self.store_loss:
             self._kalman1.linear(
@@ -1472,7 +1472,7 @@ cdef class UKFBinghamAlt(Interpolation):
                 self.mlinear, self.data)
             for i in range(self._model.num_tensors):
                 kappa = exp(self.mean[i, 1])
-                beta = self.mean[i, 2]
+                beta = exp(self.mean[i, 2])
                 self._model1.sh_bingham_coeffs(kappa, beta)
                 cblas_dcopy(3, &self.mean[i, 3], 1, &self._model1.angles[0], 1)
                 c_map_dipy_to_pysh_o4(
