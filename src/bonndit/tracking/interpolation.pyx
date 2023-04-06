@@ -883,8 +883,8 @@ cdef class UKFBingham(UKF):
 			self.mean[6*i + 2] = min(max(self.mean[6 * i + 2], 0), exp(self.mean[6 * i + 1]))
 			r_z_r_y_r_z(self.R, self.mean[6 * i+3:6*(i+1)])
 			#print(   np.array(self.mean[6*i +3: 6*(i+1)]), '\n', np.array(self.R),'\n', '2,', np.array(self.R)@(np.array(self.R).T))
-			#cblas_dscal(3, -1, &self.R[0,0], 1)
-			#cblas_dscal(3, -1, &self.R[2,0], 1)
+			cblas_dscal(3, -1, &self.R[0,0], 1)
+			cblas_dscal(3, -1, &self.R[2,0], 1)
 			cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasTrans, 3, 3, 1, 1, &self.R[0,0], 3, &self.R[0,0], 3, 0, &self.A[i, 0,0], 3)
 			cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasTrans, 3, 3, 1, -1, &self.R[0,1], 3, &self.R[0,1], 3, 1, &self.A[i, 0,0], 3)
 			# enough to reorient just mu
