@@ -810,7 +810,7 @@ cdef class UKFWatsonAlt(Interpolation):
 #
 				cblas_dscal(self.res.shape[0], 0, &self.res[0], 1)
 				c_sh_watson_coeffs(exp(self.mean[j,0]), &self.res[0], 4)
-				div = self._model1(self.res)
+				div = self._model1.sh_norm(self.res)
 				self.res[0] *= self._model1.rank_1_rh_o4[0]/div
 				self.res[3] *= self._model1.rank_1_rh_o4[1]/div
 				self.res[10] *= self._model1.rank_1_rh_o4[2]/div
