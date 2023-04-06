@@ -220,20 +220,20 @@ cdef class BinghamModel(WatsonModel):
 
 	cdef void sh_bingham_coeffs(self, double kappa, double beta): # nogil except *:
 		self.dipy_v[0] = self.lookup_table[<int> kappa*10, <int> beta*10, 0, 0]
-		self.dipy_v[1] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 2]
-		self.dipy_v[2] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 1]
+		self.dipy_v[1] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, -2]
+		self.dipy_v[2] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, -1]
 		self.dipy_v[3] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 0]
-		self.dipy_v[4] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, -1]
-		self.dipy_v[5] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, -2]
-		self.dipy_v[6] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, 4]
-		self.dipy_v[7] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, 3]
-		self.dipy_v[8] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, 2]
-		self.dipy_v[9] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, 1]
+		self.dipy_v[4] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 1]
+		self.dipy_v[5] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 2]
+		self.dipy_v[6] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, -4]
+		self.dipy_v[7] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, -3]
+		self.dipy_v[8] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, -2]
+		self.dipy_v[9] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, -1]
 		self.dipy_v[10] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, 0]
-		self.dipy_v[11] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, -1]
-		self.dipy_v[12] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, -2]
-		self.dipy_v[13] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, -3]
-		self.dipy_v[14] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, -4]
+		self.dipy_v[11] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, 1]
+		self.dipy_v[12] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, 2]
+		self.dipy_v[13] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, 3]
+		self.dipy_v[14] = self.lookup_table[<int> kappa*10, <int> beta*10, 4, 4]
 
 
 
