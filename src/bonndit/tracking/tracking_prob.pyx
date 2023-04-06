@@ -1,13 +1,13 @@
 #cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True
-# warn.unused_results=True
+# warn.unused_results=True, profile=True
 import sys
 import nrrd
 sys.path.append('.')
-from .alignedDirection cimport  Gaussian, Laplacian, ScalarOld, ScalarNew, Probabilities, Deterministic,Deterministic2, WatsonDirGetter#, BinghamDirGetter
+from .alignedDirection cimport  Gaussian, Laplacian, ScalarOld, ScalarNew, Probabilities, Deterministic,Deterministic2, WatsonDirGetter, BinghamDirGetter
 from .ItoW cimport Trafo
 from .stopping cimport Validator
 from .integration cimport  Euler, Integration, EulerUKF, RungeKutta
-from .interpolation cimport  FACT, Trilinear, Interpolation, UKFFodf, UKFFodfAlt, UKFMultiTensor, TrilinearFODF, UKFBingham, UKFWatson
+from .interpolation cimport  FACT, Trilinear, Interpolation, UKFFodf, UKFFodfAlt, UKFMultiTensor, TrilinearFODF, UKFBingham, UKFWatson, UKFWatsonAlt
 from bonndit.utilc.cython_helpers cimport mult_with_scalar, sum_c, sum_c_int, set_zero_vector, sub_vectors, \
 	angle_deg, norm
 import numpy as np
@@ -20,12 +20,13 @@ ctypedef struct possible_features:
 	int prob_others_0
 	int prob_others_1
 	int prob_others_2
+	int loss
 	int fa
 	int len
 
 
 cdef void tracking(double[:,:,:,:] paths, double[:] seed,
-                   int seed_shape, Interpolation interpolate,
+                   Interpolation interpolate,
               Integration integrate, Trafo trafo, Validator validator, int max_track_length, int save_steps,
 	                   int samples, double[:,:,:,:] features, possible_features features_save, int minlen) : # nogil except *:
 	"""
@@ -50,7 +51,7 @@ cdef void tracking(double[:,:,:,:] paths, double[:] seed,
 			k+=1
 			# set zero inclusion check
 			set_zero_vector(validator.ROIIn.inclusion_check)
-			if seed_shape == 3:
+			if seed.shape[0] == 3:
 				interpolate.main_dir(paths[j, 0, 0])
 				integrate.old_dir = interpolate.next_dir
 			else:
@@ -58,7 +59,7 @@ cdef void tracking(double[:,:,:,:] paths, double[:] seed,
 			status1, m = forward_tracking(paths[j,:,0, :], interpolate, integrate, trafo, validator, max_track_length, save_steps,
 			                 features[j,:,0, :], features_save,)
 
-			if seed_shape == 3:
+			if seed.shape[0] == 3:
 				interpolate.main_dir(paths[j, 0, 1])
 				mult_with_scalar(integrate.old_dir, -1.0 ,interpolate.next_dir)
 			else:
@@ -155,6 +156,9 @@ cdef forward_tracking(double[:,:] paths,  Interpolation interpolate,
 			features[k//save_steps,feature_save.prob_others_2] = interpolate.prob.probability[2]
 		if feature_save.fa >= 0:
 			features[k//save_steps,feature_save.fa] = interpolate.prob.old_fa
+		if feature_save.loss >= 0:
+			print(interpolate.loss)
+			features[k//save_steps,feature_save.loss] = interpolate.loss
 		# Check curvature between current point and point 30mm ago
 		if validator.Curve.curvature_checker(paths[:k//save_steps], features[k//save_steps:k//save_steps + 1,1]):
 
@@ -167,7 +171,7 @@ cdef forward_tracking(double[:,:] paths,  Interpolation interpolate,
 	#	paths[k//save_steps] = trafo.point_itow
 	return True, k
 
-cpdef tracking_all(vector_field, wm_mask, seeds, tracking_parameters, postprocessing, ukf_parameters, trilinear_parameters, logging, saving):
+cpdef tracking_all(vector_field, wm_mask, tracking_parameters, postprocessing, ukf_parameters, trilinear_parameters, logging, saving):
 	"""
 	@param vector_field: Array (4,3,x,y,z)
 		Where the first dimension contains the length and direction, the second
@@ -205,11 +209,11 @@ cpdef tracking_all(vector_field, wm_mask, seeds, tracking_parameters, postproces
 	cdef Probabilities directionGetter
 	cdef Validator validator
 	#select appropriate model #TODO hier das richtige einfügren
-	if tracking_parameters['ukf'] == "Watson":
+	if tracking_parameters['ukf'] == "Watson" or tracking_parameters['ukf'] == "WatsonAlt":
 		directionGetter = WatsonDirGetter(**tracking_parameters)
 		#directionGetter.watson_config(vector_field[0], tracking_parameters['maxsamplingangle'], tracking_parameters['maxkappa'], tracking_parameters[])
-	#elif tracking_parameters['ukf'] == "Bingham":
-#		directionGetter = BinghamDirGetter(0, tracking_parameters['variance'])
+	elif tracking_parameters['ukf'] == "Bingham":
+		directionGetter = BinghamDirGetter(**tracking_parameters)
 	elif tracking_parameters['prob'] == "Gaussian":
 		directionGetter = Gaussian(0, tracking_parameters['variance'])
 	elif tracking_parameters['prob'] == "Laplacian":
@@ -243,9 +247,23 @@ cpdef tracking_all(vector_field, wm_mask, seeds, tracking_parameters, postproces
 		interpolate = UKFFodf(vector_field, dim[2:5], directionGetter, **ukf_parameters)
 	elif tracking_parameters['ukf'] == "LowRankAlt":
 		interpolate = UKFFodfAlt(vector_field, dim[2:5], directionGetter, **ukf_parameters)
+	elif tracking_parameters['ukf'] == "WatsonAlt":
+		if 'loss' in saving['features']:
+			ukf_parameters['store_loss'] = True
+		else:
+			ukf_parameters['store_loss'] = False
+		interpolate = UKFWatsonAlt(vector_field, dim[2:5], directionGetter, **ukf_parameters)
 	elif tracking_parameters['ukf'] == "Watson":
+		if 'loss' in saving['features']:
+			ukf_parameters['store_loss'] = True
+		else:
+			ukf_parameters['store_loss'] = False
 		interpolate = UKFWatson(vector_field, dim[2:5], directionGetter, **ukf_parameters)
 	elif tracking_parameters['ukf'] == "Bingham":
+		if 'loss' in saving['features']:
+			ukf_parameters['store_loss'] = True
+		else:
+			ukf_parameters['store_loss'] = True
 		interpolate = UKFBingham(vector_field, dim[2:5], directionGetter, **ukf_parameters)
 	elif tracking_parameters['interpolation'] == "FACT":
 		interpolate = FACT(vector_field, dim[2:5], directionGetter, **tracking_parameters)
@@ -268,7 +286,11 @@ cpdef tracking_all(vector_field, wm_mask, seeds, tracking_parameters, postproces
 		logging.error('Only Euler is available so far. Hence set Euler as argument.')
 		return 0
 
-	cdef int i, j, k, l, m = seeds.shape[0]
+	cdef int i, j, k, l, m, choice
+	if tracking_parameters['seed_count'] == 0:
+		m = tracking_parameters['seeds'].shape[0]
+	else:
+		m = tracking_parameters['seed_count']
 	# Array to save Polygons
 	cdef double[:,:,:,:,:] paths = np.zeros((1 if saving['file'] else m, tracking_parameters['samples'], tracking_parameters['max_track_length'], 2, 3),dtype=np.float64)
 	# Array to save features belonging to polygons
@@ -288,23 +310,23 @@ cpdef tracking_all(vector_field, wm_mask, seeds, tracking_parameters, postproces
 		for j in range(tracking_parameters['samples']):
 			validator.set_path_zero(paths[k,j, :, 1, :], features[k,j, :, 1, :])
 			validator.set_path_zero(paths[k,j, :, 0, :], features[k,j, :, 0, :])
+			if tracking_parameters['seed_count'] == 0:
+				choice = i
+			else:
+				choice = np.random.randint(0, len(tracking_parameters['seeds']))
 
 			for l in range(3):
-				paths[k,j, 0, 0,l] = seeds[i][l]
-				paths[k,j, 0, 1,l] = seeds[i][l]
-		#	if "Deterministic" in tracking_parameters['prob'] or tracking_parameters['ukf'] == "LowRank":
+				paths[k,j, 0, 0,l] = tracking_parameters['seeds'][choice][l]
+				paths[k,j, 0, 1,l] = tracking_parameters['seeds'][choice][l]
 			for l in range(3):
 				paths[k,j, 0, 0,l] +=  np.random.uniform(-0.5,0.5)
-
 				paths[k,j, 0, 1,l] = paths[k,j, 0, 0,l]
 
 		if saving['features']['seedpoint'] >= 0:
 			features[k,:, 0, 0, saving['features']['seedpoint']] = 1
 			features[k,:, 0, 1, saving['features']['seedpoint']] = 1
-	#	print("1", np.asarray(features[k,j,:,0]))
-	#	print("1", np.asarray(features[k,j,:,1]))
 		#Do the tracking for this seed with the direction
-		tracking(paths[k], seeds[i], seeds[i].shape[0], interpolate, integrate, trafo, validator, tracking_parameters['max_track_length'], tracking_parameters['sw_save'], tracking_parameters['samples'], features[k], saving['features'], tracking_parameters['min_len'])
+		tracking(paths[k], tracking_parameters['seeds'][choice],  interpolate, integrate, trafo, validator, tracking_parameters['max_track_length'], tracking_parameters['sw_save'], tracking_parameters['samples'], features[k], saving['features'], tracking_parameters['min_len'])
 		# delete all zero arrays.
 
 		for j in range(tracking_parameters['samples']):

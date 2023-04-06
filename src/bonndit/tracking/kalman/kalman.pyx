@@ -33,7 +33,7 @@ cdef class Kalman:
 		self.P_M = np.zeros((dim_model,dim_model), dtype=np.float64)
 		self.gamma =  np.zeros((dim_data,2*dim_model+1), dtype=np.float64)
 		self.gamma2 =  np.zeros((dim_data,2*dim_model+1), dtype=np.float64)
-		self.KAPPA = 0 # 3
+		self.KAPPA = 0.3 # 3
 		self.D =  np.zeros((dim_model,dim_model), dtype=np.float64)
 		self.C =  np.zeros((dim_data, dim_model), dtype=np.float64)
 

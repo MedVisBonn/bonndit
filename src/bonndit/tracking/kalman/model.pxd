@@ -37,6 +37,8 @@ cdef class WatsonModel(AbstractModel):
 	cdef void predict_new_observation(self, double[:,:], double[:,:]) #nogil expcept *
 	cdef bint kinit(self, double[:], double[:], double[:], double[:,:], double[:])
 	cdef void constrain(self, double[:,:]) #nogil expcept *
+	cdef double sh_norm(self, double[:])
+
 
 cdef class BinghamModel(WatsonModel):
 	cdef double[:,:,:,:] lookup_table

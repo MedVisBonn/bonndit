@@ -12,6 +12,8 @@ cdef class Probabilities:
 	cdef void aligned_direction(self, double[:,:], double[:]) # nogil  except *
 	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
 	cdef void calculate_probabilities_sampled(self, double[:,:], double[:], double[:], double[:], double[:])
+	cdef void calculate_probabilities_sampled_bingham(self, double[:, :], double[:], double[:, :, :], double[:, :])
+
 
 cdef class Gaussian(Probabilities):
 	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
@@ -32,12 +34,18 @@ cdef class Deterministic2(Probabilities):
 	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
 
 
-#cdef class BinghamDirGetter(Probabilities):
-#	cdef void watson_config(self, double[:,:,:,:], double, double, double, bint) #nogil  except *:
-#	cdef double bingham_scale(self, double, double) #nogil  except *:
-#	cdef double bingham(self, double[:], double[:], double, double) #nogil  except *:
-#	cdef void mc_random_direction(self, double[:], double[:], double, double) #nogil  except *:
-#	cdef void calculate_probabilities_sampled(self, double[:, :], double[:], double[:, :, :], double[:, :])
+cdef class BinghamDirGetter(Probabilities):
+	cdef double max_samplingangle
+	cdef double max_kappa
+	cdef double max_beta
+	cdef double min_beta
+	cdef double min_lambda
+	cdef double min_kappa
+	cdef bint prob_direction
+	cdef double bingham_scale(self, double, double) #nogil  except *:
+	cdef double bingham(self, double[:], double[:], double, double) #nogil  except *:
+	cdef void mc_random_direction(self, double[:], double[:], double, double) #nogil  except *:
+	cdef void calculate_probabilities_sampled_bingham(self, double[:, :], double[:], double[:, :, :], double[:, :])
 
 cdef class WatsonDirGetter(Probabilities):
 	cdef double max_samplingangle

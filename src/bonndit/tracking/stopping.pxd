@@ -26,6 +26,7 @@ cdef class WMChecker:
 #	cdef int entered_sgm
 	cdef double min_wm
 	cdef double[:,:,:] wm_mask
+	cdef double[:] y
 
 
 	cdef void reset(self)

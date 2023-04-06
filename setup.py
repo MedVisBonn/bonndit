@@ -241,7 +241,7 @@ setup(
     ext_modules=cythonize(ext_modules, compiler_directives={'boundscheck': False, 'wraparound': False,
                                                             'optimize.unpack_method_calls': False}),
     # cmdclass={'build_ext': build_ext},
-    package_data={"": ['*.pxd', '*.npz']},
+    package_data={"": ['*.pxd', '*.npz', '*.npy']},
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
