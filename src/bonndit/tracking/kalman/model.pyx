@@ -296,7 +296,7 @@ cdef class BinghamModel(WatsonModel):
         if kwargs['process noise'] == "":
             ddiagonal(
                 &self.PROCESS_NOISE[0, 0],
-                np.array([0.01, 0.5, 0.5, 0.01, 0.01, 0.01]),
+                np.array([0.01, 0.05, 0.05, 0.01, 0.01, 0.01]),
                 self.PROCESS_NOISE.shape[0],
                 self.PROCESS_NOISE.shape[1])
         if kwargs['measurement noise'] == "":
@@ -314,46 +314,46 @@ cdef class BinghamModel(WatsonModel):
             <int> beta * 10, 0, 0]
         self.dipy_v[1] = self.lookup_table[
             <int> kappa * 10,
-            <int> beta * 10, 2, -2]
+            <int> beta * 10, 2, 2]
         self.dipy_v[2] = self.lookup_table[
             <int> kappa * 10,
-            <int> beta * 10, 2, -1]
+            <int> beta * 10, 2, 1]
         self.dipy_v[3] = self.lookup_table[
             <int> kappa * 10,
             <int> beta * 10, 2, 0]
         self.dipy_v[4] = self.lookup_table[
             <int> kappa * 10,
-            <int> beta * 10, 2, 1]
+            <int> beta * 10, 2, -1]
         self.dipy_v[5] = self.lookup_table[
             <int> kappa * 10,
-            <int> beta * 10, 2, 2]
+            <int> beta * 10, 2, -2]
         self.dipy_v[6] = self.lookup_table[
             <int> kappa * 10,
-            <int> beta * 10, 4, -4]
+            <int> beta * 10, 4, 4]
         self.dipy_v[7] = self.lookup_table[
             <int> kappa * 10,
-            <int> beta * 10, 4, -3]
+            <int> beta * 10, 4, 3]
         self.dipy_v[8] = self.lookup_table[
             <int> kappa * 10,
-            <int> beta * 10, 4, -2]
+            <int> beta * 10, 4, 2]
         self.dipy_v[9] = self.lookup_table[
             <int> kappa * 10,
-            <int> beta * 10, 4, -1]
+            <int> beta * 10, 4, 1]
         self.dipy_v[10] = self.lookup_table[
             <int> kappa * 10,
             <int> beta * 10, 4, 0]
         self.dipy_v[11] = self.lookup_table[
             <int> kappa * 10,
-            <int> beta * 10, 4, 1]
+            <int> beta * 10, 4, -1]
         self.dipy_v[12] = self.lookup_table[
             <int> kappa * 10,
-            <int> beta * 10, 4, 2]
+            <int> beta * 10, 4, -2]
         self.dipy_v[13] = self.lookup_table[
             <int> kappa * 10,
-            <int> beta * 10, 4, 3]
+            <int> beta * 10, 4, -3]
         self.dipy_v[14] = self.lookup_table[
             <int> kappa * 10,
-            <int> beta * 10, 4, 4]
+            <int> beta * 10, 4, -4]
 
 
 
@@ -372,6 +372,7 @@ cdef class BinghamModel(WatsonModel):
                 lam = max(sigma_points[i * 6, j], 0.01)
                 kappa = exp(sigma_points[i * 6 + 1, j])
                 beta = max(sigma_points[i * 6 + 2, j], 0)
+                print(kappa, beta)
                 cblas_dcopy(
                     3, &sigma_points[i * 6 + 3, j],
                     sigma_points.shape[1], &self.angles[0], 1)
