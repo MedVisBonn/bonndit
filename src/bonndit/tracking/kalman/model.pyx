@@ -199,7 +199,7 @@ cdef class WatsonModel(AbstractModel):
 cdef class BinghamModel(WatsonModel):
 	def __cinit__(self, **kwargs):
 		super(BinghamModel, self).__init__(**kwargs)
-		lookup_table = np.load(dirname + '/bingham_coefs1.npy')
+		lookup_table = np.load(dirname + '/bingham_coeffs_full.npy')
 		normalize_const = np.load(dirname + '/normalize_const.npy')
 		# Convolution with rank 1 kernel:
 		for i,j in np.ndindex(lookup_table.shape[:2]):
