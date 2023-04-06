@@ -1297,8 +1297,8 @@ cdef class UKFBingham(UKF):
             # print(   np.array(self.mean[6*i +3: 6*(i+1)]), '\n',
             # np.array(self.R),'\n', '2,',
             # np.array(self.R)@(np.array(self.R).T))
-            # cblas_dscal(3, -1, &self.R[0,0], 1)
-            # cblas_dscal(3, -1, &self.R[2,0], 1)
+            cblas_dscal(3, -1, &self.R[0, 0], 1)
+            cblas_dscal(3, -1, &self.R[2, 0], 1)
             cblas_dgemm(
                 CblasRowMajor, CblasNoTrans, CblasTrans, 3, 3, 1, 1,
                 &self.R[0, 0], 3, &self.R[0, 0], 3, 0, &self.A[i, 0, 0], 3)
