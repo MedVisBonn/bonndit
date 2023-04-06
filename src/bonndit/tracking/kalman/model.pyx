@@ -372,7 +372,7 @@ cdef class BinghamModel(WatsonModel):
                 lam = max(sigma_points[i * 6, j], 0.01)
                 kappa = exp(sigma_points[i * 6 + 1, j])
                 beta = exp(sigma_points[i * 6 + 2, j])
-                print(kappa, beta)
+                # print(kappa, beta)
                 cblas_dcopy(
                     3, &sigma_points[i * 6 + 3, j],
                     sigma_points.shape[1], &self.angles[0], 1)
