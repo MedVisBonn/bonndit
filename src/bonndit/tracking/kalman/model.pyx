@@ -266,11 +266,11 @@ cdef class BinghamModel(WatsonModel):
 		cdef double[:] Pv = np.array([0.01])
 		cdef double[:] dir = np.zeros((3,))
 		ddiagonal(&P[0,0], Pv, P.shape[0], P.shape[1])
-		self.vector_field[2,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
-		self.vector_field[4,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
+		#self.vector_field[2,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
+		#self.vector_field[4,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
 		cart2sphere(dir, self.vector_field[2:,i, <int> point[0], <int> point[1], <int> point[2]])
-		self.vector_field[2,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
-		self.vector_field[4,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
+		#self.vector_field[2,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
+		#self.vector_field[4,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
 		for i in range(self.vector_field.shape[1]):
 			mean[i*6 + 0] = self.vector_field[1,i, <int> point[0], <int> point[1], <int> point[2]]
 			# set circle by setting kappa and  beta  = 0
