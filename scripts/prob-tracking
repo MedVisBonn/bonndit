@@ -335,13 +335,13 @@ def main():
     trafo_data[3, 3] = 1
     # print(meta)
     if vector_field.shape[0] != 4 and args.ukf != "Watson" and args.ukf \
-            != "Bingham" and args.ukf != "WatsonAlt":
+            != "Bingham" and args.ukf != "BinghamAlt" and args.ukf != "WatsonAlt":
         logging.error(
             "Wrong dimension on first axis. Has to contain 4 values.")
         raise Exception()
     elif vector_field.shape[0] \
         != 5 and (args.ukf == "Watson" or args.ukf == "Bingham" or args.ukf
-                  == 'WatsonAlt'):
+                  == "BinghamAlt" or args.ukf == 'WatsonAlt'):
         logging.error(
             "Wrong dimension on first axis. Has to contain 5 values.")
         raise Exception()
@@ -426,7 +426,7 @@ def main():
 
             logging.info("b0 loaded")
         elif args.ukf in ['LowRank', "LowRankAlt", 'Watson', 'Bingham',
-                          'WatsonAlt']:
+                          'BinghamAlt', 'WatsonAlt']:
             # TODO DAS soll anders
             if 'ukf_data' in args:
                 if args.ukf_data.endswith('nii.gz'):
@@ -497,8 +497,8 @@ def main():
         'verbose': args.verbose,
         'sw_save': int(args.sw_save),
     }
-    if args.ukf == "Watson" or args.ukf == "Bingham" or args.ukf \
-            == "WatsonAlt":
+    if args.ukf == "Watson" or args.ukf == "BinghamAlt" or args.ukf \
+            == "Bingham" or args.ukf == "WatsonAlt":
         tracking_parameters.update(
             dict(
                 max_sampling_angle=float(args.max_sampling_angle),
