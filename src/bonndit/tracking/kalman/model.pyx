@@ -298,12 +298,12 @@ cdef class BinghamModel(WatsonModel):
         if kwargs['process noise'] == "":
             ddiagonal(
                 &self.PROCESS_NOISE[0, 0],
-                np.array([0.01, 0.05, 0.02, 0.01, 0.01, 0.01]),
+                np.array([0.5, 0.1, 0.1, 0.3, 0.3, 0.3]),
                 self.PROCESS_NOISE.shape[0],
                 self.PROCESS_NOISE.shape[1])
         if kwargs['measurement noise'] == "":
             ddiagonal(
-                &self.MEASUREMENT_NOISE[0, 0], np.array([0.001]),
+                &self.MEASUREMENT_NOISE[0, 0], np.array([0.04]),
                 self.MEASUREMENT_NOISE.shape[0],
                 self.MEASUREMENT_NOISE.shape[1])
 
@@ -425,10 +425,12 @@ cdef class BinghamModel(WatsonModel):
                 1, i, <int> point[0],
                 <int> point[1], <int> point[2]]
             # set circle by setting kappa and  beta  = 0
-            mean[i * 6 + 1] = log(
+            print(
                 self.vector_field[
-                    0, i, <int> point[0],
-                    <int> point[1], <int> point[2]])
+                    0, i, <int> point[0], <int> point[1],
+                    <int> point[2]])
+            mean[i * 6 + 1] \
+                = log(45)  # min(self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]],45))
             mean[i * 6 + 2] = log(0.1)  # set angles: all needed!
             mean[i * 6 + 3] = 0
             mean[i * 6 + 4] = dir[0]
