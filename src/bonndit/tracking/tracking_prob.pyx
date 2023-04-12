@@ -163,7 +163,7 @@ cdef forward_tracking(double[:,:] paths,  Interpolation interpolate,
 			features[k//save_steps,feature_save.fa] = interpolate.prob.old_fa
 		if feature_save.loss >= 0:
 			#print('chosen3', interpolate.prob.chosen_prob)
-			print(interpolate.loss)
+			#print(interpolate.loss)
 			features[k//save_steps,feature_save.loss] = interpolate.loss
 		# Check curvature between current point and point 30mm ago
 		if validator.Curve.curvature_checker(paths[:k//save_steps], features[k//save_steps:k//save_steps + 1,1]):

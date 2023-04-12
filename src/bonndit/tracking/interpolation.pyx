@@ -972,12 +972,14 @@ cdef class UKFBinghamAlt(Interpolation):
 					continue
 				kappa = min(max(self.mean[j, 1], log(0.2)), log(50))
 				beta = min(max(self.mean[j, 2], log(0.1)), self.mean[j, 1])
-				self._model1.sh_bingham_coeffs(kappa, beta)
-				cblas_dcopy(3, &self.mean[j, 3], 1, &self._model1.angles[0], 1)
-				c_map_dipy_to_pysh_o4(&self._model1.dipy_v[0], &self.pysh_v[0])
-				c_sh_rotate_real_coef(&self.rot_pysh_v[0], &self.pysh_v[0], 4, &self.angles[0], &dj_o4[0][0][0])
+				kappa = exp(kappa)
+				beta = exp(beta)
+				self._model.sh_bingham_coeffs(kappa, beta)
+				cblas_dcopy(3, &self.mean[j, 3], 1, &self._model.angles[0], 1)
+				c_map_dipy_to_pysh_o4(&self._model.dipy_v[0], &self.pysh_v[0])
+				c_sh_rotate_real_coef(&self.rot_pysh_v[0], &self.pysh_v[0], 4, &self._model.angles[0], &dj_o4[0][0][0])
 				c_map_pysh_to_dipy_o4(&self.rot_pysh_v[0],&self.res[0])
-				cblas_daxpy(self.res.shape[0], -max(self.mean[i, 0], _lambda_min), &self.res[0], 1, &self.y[i,0], 1)
+				cblas_daxpy(self.res.shape[0], -max(self.mean[j, 0], _lambda_min), &self.res[0], 1, &self.y[i,0], 1)
 			if i == 0:
 				self._kalman1.update_kalman_parameters(self.mean[i], self.P[i], self.y[i])
 			else:
