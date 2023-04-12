@@ -7,6 +7,7 @@ from libc.time cimport time
 from bonndit.utilc.cython_helpers cimport scalar, clip, mult_with_scalar, sum_c, norm
 import numpy as np
 from scipy.special import dawsn, gamma, iv
+from bonndit.utilc.blas_lapack cimport *
 
 
 ###
@@ -339,27 +340,34 @@ cdef class BinghamDirGetter(Probabilities):
 		self.prob_direction = False #kwargs['prob_direction']
 		self.min_beta = kwargs['min_kappa']
 		self.min_lambda = 0.01 #kwargs['min_lambda']
+		self.c = np.zeros((3,), dtype=np.float64)
 
-	cdef double bingham_scale(self, double k, double b) :#nogil  except *:
-		return 2*np.pi * sum(gamma(r+0.5)/gamma(r+1) * b**(2*r) * (k/2)**(-2*r-0.5) * iv(2*r+0.5,k) for r in range(0, 70))
 
-	cdef double bingham(self, double[:] x, double[:] mu, double kappa, double scale) :#nogil  except *:
-		return 1/scale * exp(kappa * scalar(mu,x)**2)
+	cdef double bingham(self, double[:] x, double[:] mu, double kappa, double[:,:] A) :#nogil  except *:
+		cdef double res
+		#print('mu', np.array(x))
+		cblas_dgemm(CblasRowMajor, CblasTrans, CblasNoTrans , 1, 3, 3, 1, &x[0], 1, &A[0,0], 3, 0, &self.c[0], 3)
+		#print('c', np.array(self.c))
+		res = cblas_ddot(3, &self.c[0], 1, &x[0], 1)
+		return  exp(kappa * scalar(mu,x)**2 + res)
 
 	# rejection sampling from watson - watson_confidence_interval.ipynb
-	cdef void mc_random_direction(self, double[:] direction, double[:] mu, double kappa, double scale) :#nogil  except *:
-		cdef double max_val = self.bingham(mu, mu, kappa, scale)
+	cdef void mc_random_direction(self, double[:] direction, double[:] mu, double kappa, double[:,:] A) :#nogil  except *:
+		cdef double max_val = self.bingham(mu, mu, kappa, A)
 		cdef bint accept = False
 		cdef double val, cutoff
-
+		#l = 0
 		while not accept:
+		#	l +=1
 			direction[0] = (rand() / RAND_MAX) * 2 - 1
 			direction[1] = (rand() / RAND_MAX) * 2 - 1
-			direction[2] = sqrt(1-direction[0]**2 - direction[1] ** 2)
-			val = self.bingham(direction, mu, kappa, scale)
+			direction[2] = (rand() / RAND_MAX) * 2 - 1
+			mult_with_scalar(direction,1/norm(direction),direction)
+			val = self.bingham(direction, mu, kappa, A)
 			cutoff = (rand() / RAND_MAX) * max_val
 			if val > cutoff:
 				accept = True
+	#	print(l)
 
 	cdef void calculate_probabilities_sampled_bingham(self, double[:,:] vectors, double[:] old_dir, double[:,:, :] A, double[:,:] l_k_b) : # nogil  except *:
 		"""
@@ -383,18 +391,21 @@ cdef class BinghamDirGetter(Probabilities):
 		# if lambda, kappa, beta is too low the trackin)g is stoppe
 		#print('11', np.array(l_k_b))
 		if l_k_b[min_index, 0] < self.min_lambda:
+			#print('lambda_error')
 			self.best_fit = np.zeros((3))
 			return
 		if l_k_b[min_index, 1] < self.min_kappa:
+			#print('kambda_error')
 			self.best_fit = np.zeros((3))
 			return
+		else:
+			kappa_value = l_k_b[min_index, 1]
 
-		M = 4 * pi * self.bingham_scale(min(self.max_kappa,l_k_b[min_index, 1]), min(self.max_beta,l_k_b[min_index, 2]))
 
 		while mc_angle > self.max_samplingangle:
 			self.mc_random_direction(self.best_fit,
 								 self.test_vectors[min_index],
-								 min(self.max_kappa,kappa_value), M)
+								 min(self.max_kappa,kappa_value), A[min_index])
 
 			# flip direction if > 90:
 			if scalar(self.best_fit, self.test_vectors[min_index]) < 0:
@@ -408,8 +419,9 @@ cdef class BinghamDirGetter(Probabilities):
 
 		# reset to original length
 		mult_with_scalar(self.best_fit, l_k_b[min_index, 0], self.best_fit)
-		self.chosen_prob = 1
-		self.chosen_angle = self.angles[min_index]
+		#print(l_k_b[min_index,2]/l_k_b[min_index,1])
+		self.chosen_prob = l_k_b[min_index,2]/l_k_b[min_index,1]
+		self.chosen_angle = l_k_b[min_index,1]
 
 #
 #

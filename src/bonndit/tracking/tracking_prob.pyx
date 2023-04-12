@@ -7,7 +7,7 @@ from .alignedDirection cimport  Gaussian, Laplacian, ScalarOld, ScalarNew, Proba
 from .ItoW cimport Trafo
 from .stopping cimport Validator
 from .integration cimport  Euler, Integration, EulerUKF, RungeKutta
-from .interpolation cimport  FACT, Trilinear, Interpolation, UKFFodf, UKFFodfAlt, UKFMultiTensor, TrilinearFODF, UKFBingham, UKFWatson, UKFWatsonAlt
+from .interpolation cimport  FACT, Trilinear, Interpolation, UKFFodf, UKFFodfAlt, UKFMultiTensor, UKFBinghamAlt, TrilinearFODF, UKFBingham, UKFWatson, UKFWatsonAlt
 from bonndit.utilc.cython_helpers cimport mult_with_scalar, sum_c, sum_c_int, set_zero_vector, sub_vectors, \
 	angle_deg, norm
 import numpy as np
@@ -147,16 +147,22 @@ cdef forward_tracking(double[:,:] paths,  Interpolation interpolate,
 		if validator.ROIEx.excluded(paths[k//save_steps]):
 			return False, k
 		if feature_save.chosen_angle >= 0:
+			#print('angle', interpolate.prob.chosen_angle)
 			features[k//save_steps,feature_save.chosen_angle] = interpolate.prob.chosen_angle
 		if feature_save.prob_chosen >= 0:
+
 			features[k//save_steps,feature_save.prob_chosen] = interpolate.prob.chosen_prob
+			#print('chosen', interpolate.prob.chosen_prob, features[k//save_steps,feature_save.prob_chosen])
 		if feature_save.prob_others_0 >= 0:
+			#print('chosen1', interpolate.prob.chosen_prob)
 			features[k//save_steps,feature_save.prob_others_0] = interpolate.prob.probability[0]
 			features[k//save_steps,feature_save.prob_others_1] = interpolate.prob.probability[1]
 			features[k//save_steps,feature_save.prob_others_2] = interpolate.prob.probability[2]
 		if feature_save.fa >= 0:
+			#print('chosen2', interpolate.prob.chosen_prob)
 			features[k//save_steps,feature_save.fa] = interpolate.prob.old_fa
 		if feature_save.loss >= 0:
+			#print('chosen3', interpolate.prob.chosen_prob)
 			print(interpolate.loss)
 			features[k//save_steps,feature_save.loss] = interpolate.loss
 		# Check curvature between current point and point 30mm ago
@@ -212,7 +218,7 @@ cpdef tracking_all(vector_field, wm_mask, tracking_parameters, postprocessing, u
 	if tracking_parameters['ukf'] == "Watson" or tracking_parameters['ukf'] == "WatsonAlt":
 		directionGetter = WatsonDirGetter(**tracking_parameters)
 		#directionGetter.watson_config(vector_field[0], tracking_parameters['maxsamplingangle'], tracking_parameters['maxkappa'], tracking_parameters[])
-	elif tracking_parameters['ukf'] == "Bingham":
+	elif tracking_parameters['ukf'] == "Bingham" or tracking_parameters['ukf'] == "BinghamAlt":
 		directionGetter = BinghamDirGetter(**tracking_parameters)
 	elif tracking_parameters['prob'] == "Gaussian":
 		directionGetter = Gaussian(0, tracking_parameters['variance'])
@@ -265,6 +271,12 @@ cpdef tracking_all(vector_field, wm_mask, tracking_parameters, postprocessing, u
 		else:
 			ukf_parameters['store_loss'] = True
 		interpolate = UKFBingham(vector_field, dim[2:5], directionGetter, **ukf_parameters)
+	elif tracking_parameters['ukf'] == "BinghamAlt":
+		if 'loss' in saving['features']:
+			ukf_parameters['store_loss'] = True
+		else:
+			ukf_parameters['store_loss'] = True
+		interpolate = UKFBinghamAlt(vector_field, dim[2:5], directionGetter, **ukf_parameters)
 	elif tracking_parameters['interpolation'] == "FACT":
 		interpolate = FACT(vector_field, dim[2:5], directionGetter, **tracking_parameters)
 	elif tracking_parameters['interpolation'] == "Trilinear":
@@ -333,6 +345,7 @@ cpdef tracking_all(vector_field, wm_mask, tracking_parameters, postprocessing, u
 			path = np.concatenate((np.asarray(paths[k,j]),np.asarray(features[k,j])), axis=-1)
 		# seedpoint would be twice if first index is not skipped.
 			path = np.concatenate((path[1:,0][::-1], path[:,1]))
+
 			try:
 				to_exclude = np.all(path[:,:3] == 0, axis=1)
 

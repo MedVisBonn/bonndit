@@ -65,18 +65,17 @@ cdef world2sphere(double x,double y, double z):
 		raise Exception()
 	return r, sigma, phi
 
+
 cdef void r_z_r_y_r_z(double[:,:] ret, double[:] v):
-	# getestet und für gut befunden!
 	ret[0,0] = -sin(v[0])*sin(v[2]) + cos(v[0])*cos(v[1])*cos(v[2])
-	ret[0,1] = -sin(v[0])*cos(v[2]) - sin(v[2])*cos(v[0])*cos(v[1])
-	ret[0,2] = sin(v[1])*cos(v[0])
-	ret[1,0] = sin(v[0])*cos(v[1])*cos(v[2]) + sin(v[2])*cos(v[0])
+	ret[0,1] = sin(v[0])*cos(v[2]) + sin(v[2])*cos(v[0])*cos(v[1])
+	ret[0,2] = - sin(v[1])*cos(v[0])
+	ret[1,0] = - sin(v[0])*cos(v[1])*cos(v[2]) - sin(v[2])*cos(v[0])
 	ret[1,1] = -sin(v[0])*sin(v[2])*cos(v[1]) + cos(v[0])*cos(v[2])
 	ret[1,2] = sin(v[0])*sin(v[1])
-	ret[2,0] = -sin(v[1])*cos(v[2])
+	ret[2,0] = sin(v[1])*cos(v[2])
 	ret[2,1] = sin(v[1])*sin(v[2])
 	ret[2,2] = cos(v[1])
-
 
 
 cdef orthonormal_from_sphere(double sigma, double phi):

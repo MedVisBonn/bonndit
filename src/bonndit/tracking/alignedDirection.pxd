@@ -42,9 +42,9 @@ cdef class BinghamDirGetter(Probabilities):
 	cdef double min_lambda
 	cdef double min_kappa
 	cdef bint prob_direction
-	cdef double bingham_scale(self, double, double) #nogil  except *:
-	cdef double bingham(self, double[:], double[:], double, double) #nogil  except *:
-	cdef void mc_random_direction(self, double[:], double[:], double, double) #nogil  except *:
+	cdef double[:] c
+	cdef double bingham(self, double[:], double[:], double, double[:,:]) #nogil  except *:
+	cdef void mc_random_direction(self, double[:], double[:], double, double[:,:]) #nogil  except *:
 	cdef void calculate_probabilities_sampled_bingham(self, double[:, :], double[:], double[:, :, :], double[:, :])
 
 cdef class WatsonDirGetter(Probabilities):

@@ -137,10 +137,10 @@ cdef class UKFBinghamAlt(Interpolation):
 	cdef double[:,:,:] P
 	cdef double[:,:] y
 	cdef double[:] res
-	cdef WatsonModel _model1
-	cdef WatsonModel _model
+	cdef BinghamModel _model1
+	cdef BinghamModel _model
 	cdef Kalman _kalman1
-	cdef WatsonModel _model2
+	cdef BinghamModel _model2
 	cdef Kalman _kalman2
 	cdef double[:,:,:,:] data
 	cdef double[:] rot_pysh_v

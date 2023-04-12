@@ -154,7 +154,7 @@ cdef class WatsonModel(AbstractModel):
 				cblas_dscal(self.dipy_v.shape[0], 0, &self.dipy_v[0], 1)
 				c_sh_watson_coeffs(kappa, &self.dipy_v[0], self.order)
 				div = self.sh_norm(self.dipy_v)
-				print(kappa, np.array(self.dipy_v))
+			#	print(kappa, np.array(self.dipy_v))
 				self.dipy_v[0] *= self.rank_1_rh_o4[0]/div
 				self.dipy_v[3] *= self.rank_1_rh_o4[1]/div
 				self.dipy_v[10] *= self.rank_1_rh_o4[2]/div
@@ -200,23 +200,24 @@ cdef class WatsonModel(AbstractModel):
 cdef class BinghamModel(WatsonModel):
 	def __cinit__(self, **kwargs):
 		super(BinghamModel, self).__init__(**kwargs)
-		lookup_table = np.load(dirname + '/bingham_coeffs_full.npy')
-		normalize_const = np.load(dirname + '/normalize_const.npy')
+		lookup_table = np.load(dirname + '/bingham_coefs_versuch1000.npy')
+		normalize_const = np.load(dirname +'/normalize_const_versuch1000.npy')
 		# Convolution with rank 1 kernel:
 		for i,j in np.ndindex(lookup_table.shape[:2]):
 			if normalize_const[i,j] != 0:
 				lookup_table[i,j] *= 1/normalize_const[i,j]
 			else:
 				lookup_table[i,j] = 0
-		lookup_table[...,0] *= 2.51327412
-		lookup_table[...,2] *= 1.43615664
-		lookup_table[...,4] *= 0.31914592
+		lookup_table[...,0,:] *= 2.51327412
+		lookup_table[...,2,:] *= 1.43615664
+		lookup_table[...,4,:] *= 0.31914592
+		self.num_tensors = <int> (kwargs['dim_model'] / 6)
 		self.lookup_table = lookup_table
 		if kwargs['process noise'] == "":
-			ddiagonal(&self.PROCESS_NOISE[0, 0], np.array([0.01, 0.05,0.05,0.01, 0.01, 0.01]), self.PROCESS_NOISE.shape[0],
+			ddiagonal(&self.PROCESS_NOISE[0, 0], np.array([0.01, 0.05,0.02,0.01, 0.01, 0.01]), self.PROCESS_NOISE.shape[0],
 				  self.PROCESS_NOISE.shape[1])
 		if kwargs['measurement noise'] == "":
-			ddiagonal(&self.MEASUREMENT_NOISE[0, 0], np.array([0.06]), self.MEASUREMENT_NOISE.shape[0],
+			ddiagonal(&self.MEASUREMENT_NOISE[0, 0], np.array([0.001]), self.MEASUREMENT_NOISE.shape[0],
 				  self.MEASUREMENT_NOISE.shape[1])
 
 	cdef void sh_bingham_coeffs(self, double kappa, double beta): # nogil except *:

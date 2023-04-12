@@ -589,7 +589,7 @@ cdef class UKF(Interpolation):
 		self._kalman.linear(self.point_index[:3], self.y, self.mlinear, self.data)
 		# If we are at the seed. Initialize the Kalmanfilter
 		if restart == 0:
-			print("Restart \n")
+			#print("Restart \n")
 			self._model.kinit(self.mean, self.point_index[:3], old_dir, self.P, self.y)
 		# Run Kalmannfilter
 		info = self._kalman.update_kalman_parameters(self.mean, self.P, self.y)
@@ -841,6 +841,7 @@ cdef class UKFWatsonAlt(Interpolation):
 
 		if self.store_loss:
 			self._kalman1.linear(self.point_index[:3], self.y[0], self.mlinear, self.data)
+			base = cblas_dnrm2(self.y.shape[0], &self.y[0,0], 1)
 			for i in range(self._model.num_tensors):
 				cblas_dscal(self._model.dipy_v.shape[0], 0, &self._model.dipy_v[0], 1)
 				c_sh_watson_coeffs(self.kappas[i], &self._model.dipy_v[0], self._model.order)
@@ -858,7 +859,7 @@ cdef class UKFWatsonAlt(Interpolation):
 				c_map_pysh_to_dipy_o4(&self._model.rot_pysh_v[0],&self._model.dipy_v[0])
 				cblas_daxpy(self.y.shape[0], -self.weights[i], &self._model.dipy_v[0], 1, &self.y[0,0], 1)
 			self.loss = cblas_dnrm2(self.y.shape[0], &self.y[0,0], 1)
-		#print(self.loss)
+			print(self.loss)
 		self.prob.calculate_probabilities_sampled(self.best_dir, self.kappas, self.weights, old_dir, self.point_index[:3])
 		cblas_dcopy(3, &self.prob.best_fit[0], 1, &self.next_dir[0], 1)
 		return info
@@ -876,7 +877,7 @@ cdef class UKFBingham(UKF):
 	cdef int select_next_dir(self, int info, double[:] old_dir):
 		if info != 0:
 			return info
-		print(np.array(self.mean))
+		#print(np.array(self.mean))
 		for i in range(self._model.num_tensors):
 			self.mean[6*i + 0] = max(self.mean[6 * i + 0], _lambda_min)
 			self.mean[6*i + 1] = min(max(self.mean[6 * i + 1], log(0.2)), log(50))
@@ -885,16 +886,22 @@ cdef class UKFBingham(UKF):
 			#print(   np.array(self.mean[6*i +3: 6*(i+1)]), '\n', np.array(self.R),'\n', '2,', np.array(self.R)@(np.array(self.R).T))
 			cblas_dscal(3, -1, &self.R[0,0], 3)
 			cblas_dscal(3, -1, &self.R[0,2], 3)
-			cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasTrans, 3, 3, 1, 1, &self.R[0,0], 3, &self.R[0,0], 3, 0, &self.A[i, 0,0], 3)
-			cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasTrans, 3, 3, 1, -1, &self.R[0,1], 3, &self.R[0,1], 3, 1, &self.A[i, 0,0], 3)
+			cblas_dgemm(CblasRowMajor, CblasTrans, CblasNoTrans, 3, 3, 1, 1, &self.R[0,0], 3, &self.R[0,0], 3, 0, &self.A[i, 0,0], 3)
+			cblas_dgemm(CblasRowMajor, CblasTrans, CblasNoTrans, 3, 3, 1, -1, &self.R[1,0], 3, &self.R[1,0], 3, 1, &self.A[i, 0,0], 3)
+			#print('A[i]', np.array(self.A[i]))
+			#print('comparison', np.array(self.R[0:1]).T @ np.array(self.R[0:1]) - np.array(self.R[1:2]).T @ np.array(self.R[1:2]))
+			cblas_dscal(9, exp(self.mean[6 * i + 2]), &self.A[i, 0,0], 1)
 			# enough to reorient just mu
-			cblas_dcopy(3, &self.R[0,2], 3, &self.mu[i,0], 1)
+			cblas_dcopy(3, &self.R[2,0], 1, &self.mu[i,0], 1)
+			#print('R', np.array(self.R))
+			#print('c', np.array(self.mu[i]))
 			self.l_k_b[i, 0] = self.mean[6 * i + 0]
 			self.l_k_b[i, 1] = exp(self.mean[6 * i + 1])
 			self.l_k_b[i, 2] = exp(self.mean[6 * i + 2])
 		#print(np.array(self.mu), '\n', np.array(self.A), '\n', np.array(self.l_k_b))
 		if self.store_loss:
 			self._kalman.linear(self.point_index[:3], self.y, self.mlinear, self.data)
+			base = cblas_dnrm2(self.y.shape[0], &self.y[0], 1)
 			for i in range(self._model.num_tensors):
 				kappa = exp(self.mean[i*6 + 1])
 				beta = exp(self.mean[i*6 + 2])
@@ -905,7 +912,7 @@ cdef class UKFBingham(UKF):
 				c_map_pysh_to_dipy_o4(&self._model1.rot_pysh_v[0],&self._model1.dipy_v[0])
 				cblas_daxpy(self.y.shape[0], -self.mean[i*6], &self._model1.dipy_v[0], 1, &self.y[0], 1)
 			self.loss = cblas_dnrm2(self.y.shape[0], &self.y[0], 1)
-		print(self.loss)
+			print(self.loss/base)
 		self.prob.calculate_probabilities_sampled_bingham(self.mu, old_dir, self.A, self.l_k_b)
 		cblas_dcopy(3, &self.prob.best_fit[0], 1, &self.next_dir[0], 1)
 
@@ -933,9 +940,9 @@ cdef class UKFBinghamAlt(Interpolation):
 		self.pysh_v = np.zeros((2 *  5 * 5,), dtype=DTYPE)
 		self.angles  = np.zeros((3,), dtype=DTYPE)
 		self.store_loss = kwargs['store_loss']
-		self.A = np.zeros((self._model.num_tensors, 3, 3))
-		self.mu = np.zeros((self._model.num_tensors, 3))
-		self.l_k_b = np.zeros((self._model.num_tensors, 3))
+		self.A = np.zeros((dim_model//6, 3, 3))
+		self.mu = np.zeros((dim_model//6, 3))
+		self.l_k_b = np.zeros((dim_model//6, 3))
 		self.R = np.zeros((3, 3), dtype=DTYPE)
 		self._model = BinghamModel(vector_field=vector_field, **kwargs)
 
@@ -944,6 +951,7 @@ cdef class UKFBinghamAlt(Interpolation):
 		self.point_world[3] = 1
 		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4,4,1,&self.inv_trafo[0,0], 4, &self.point_world[0], 1, 0, &self.point_index[0],1)
 		cdef int i,j, info = 0
+		cdef double base = 0
 		# Interpolate current point
 
 		self._kalman1.linear(self.point_index[:3], self.y[0], self.mlinear, self.data)
@@ -962,39 +970,40 @@ cdef class UKFBinghamAlt(Interpolation):
 			for j in range(self.num_kalman):
 				if i == j:
 					continue
-				kappa = exp(self.mean[j,1])
-				beta = exp(self.mean[j,2])
+				kappa = min(max(self.mean[j, 1], log(0.2)), log(50))
+				beta = min(max(self.mean[j, 2], log(0.1)), self.mean[j, 1])
 				self._model1.sh_bingham_coeffs(kappa, beta)
 				cblas_dcopy(3, &self.mean[j, 3], 1, &self._model1.angles[0], 1)
 				c_map_dipy_to_pysh_o4(&self._model1.dipy_v[0], &self.pysh_v[0])
 				c_sh_rotate_real_coef(&self.rot_pysh_v[0], &self.pysh_v[0], 4, &self.angles[0], &dj_o4[0][0][0])
 				c_map_pysh_to_dipy_o4(&self.rot_pysh_v[0],&self.res[0])
-				cblas_daxpy(self.res.shape[0], -self.mean[j,0], &self.res[0], 1, &self.y[i,0], 1)
+				cblas_daxpy(self.res.shape[0], -max(self.mean[i, 0], _lambda_min), &self.res[0], 1, &self.y[i,0], 1)
 			if i == 0:
 				self._kalman1.update_kalman_parameters(self.mean[i], self.P[i], self.y[i])
 			else:
 				self._kalman2.update_kalman_parameters(self.mean[i], self.P[i], self.y[i])
-		print(np.array(self.mean))
+		#print(np.array(self.mean))
 		for i in range(self.num_kalman):
 			self.mean[i, 0] = max(self.mean[i, 0], _lambda_min)
 			self.mean[i, 1] = min(max(self.mean[i, 1], log(0.2)), log(50))
 			self.mean[i, 2] = min(max(self.mean[i, 2], log(0.1)), self.mean[i, 1])
 			r_z_r_y_r_z(self.R, self.mean[i,3:])
-			cblas_dscal(3, -1, &self.R[0, 0], 1)
-			cblas_dscal(3, -1, &self.R[2, 0], 1)
+			cblas_dscal(3, -1, &self.R[0, 0], 3)
+			cblas_dscal(3, -1, &self.R[0, 2], 3)
 			cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasTrans, 3, 3, 1, 1, &self.R[0, 0], 3, &self.R[0, 0], 3, 0,
 						&self.A[i, 0, 0], 3)
-			cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasTrans, 3, 3, 1, -1, &self.R[0, 1], 3, &self.R[0, 1], 3, 1,
+			cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasTrans, 3, 3, 1, -1, &self.R[1, 0], 3, &self.R[1, 0], 3, 1,
 						&self.A[i, 0, 0], 3)
-			# enough to reorient just mu
-			cblas_dcopy(3, &self.R[0, 2], 3, &self.mu[i, 0], 1)
+			cblas_dscal(9, exp(self.mean[i,2]), &self.A[i, 0,0], 1)
+			cblas_dcopy(3, &self.R[2, 0], 1, &self.mu[i, 0], 1)
 			self.l_k_b[i, 0] = self.mean[i, 0]
 			self.l_k_b[i, 1] = exp(self.mean[i, 1])
 			self.l_k_b[i, 2] = exp(self.mean[i, 2])
 
-		if self.store_loss:
+		if True: #self.store_loss:
 			self._kalman1.linear(self.point_index[:3], self.y[0], self.mlinear, self.data)
-			for i in range(self._model.num_tensors):
+			base = cblas_dnrm2(self.y.shape[0], &self.y[0,0], 1)
+			for i in range(self.num_kalman):
 				kappa = exp(self.mean[i, 1])
 				beta = exp(self.mean[i, 2])
 				self._model1.sh_bingham_coeffs(kappa, beta)
@@ -1003,9 +1012,10 @@ cdef class UKFBinghamAlt(Interpolation):
 				c_sh_rotate_real_coef(&self._model1.rot_pysh_v[0], &self._model1.pysh_v[0], self._model1.order,
 									  &self._model1.angles[0], &dj_o4[0][0][0])
 				c_map_pysh_to_dipy_o4(&self._model1.rot_pysh_v[0], &self._model1.dipy_v[0])
-				cblas_daxpy(self.y.shape[0], -self.mean[i, 0], &self._model1.dipy_v[0], 1, &self.y[0,0], 1)
-			self.loss = cblas_dnrm2(self.y.shape[0], &self.y[0,0], 1)
-		print(self.loss)
+				cblas_daxpy(self.y.shape[0], -max(self.mean[i, 0], 0.01), &self._model1.dipy_v[0], 1, &self.y[0,0], 1)
+			self.loss = cblas_dnrm2(self.y.shape[0], &self.y[0,0], 1)/base
+			#print(self.loss/base)
+		#print(np.array(self.mu), np.array(self.A), np.array(self.l_k_b))
 		self.prob.calculate_probabilities_sampled_bingham(self.mu, old_dir, self.A, self.l_k_b)
 		cblas_dcopy(3, &self.prob.best_fit[0], 1, &self.next_dir[0], 1)
 		return info
