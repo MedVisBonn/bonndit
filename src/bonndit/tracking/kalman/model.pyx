@@ -277,7 +277,7 @@ cdef class BinghamModel(WatsonModel):
 			self.vector_field[4,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
 			mean[i*6 + 0] = self.vector_field[1,i, <int> point[0], <int> point[1], <int> point[2]]
 			# set circle by setting kappa and  beta  = 0
-			print(self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]])
+			#print(self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]])
 			mean[i*6 + 1] = log(45) #min(self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]],45))
 			mean[i*6 + 2] = log(0.1)			# set angles: all needed!
 			mean[i*6 + 3] = 0

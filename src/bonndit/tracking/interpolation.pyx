@@ -661,7 +661,7 @@ cdef class UKFFodfAlt(Interpolation):
 			for i in range(2):
 				hota_4o3d_sym_eval(self.res, self.mean[i, 3], self.mean[i, :3])
 				cblas_daxpy(self.res.shape[0], -1, &self.res[0], 1, &self.y[0, 0], 1)
-			print(np.linalg.norm(self.y[0]))
+			#print(np.linalg.norm(self.y[0]))
 ##
 
 		for i in range(self._model1.num_tensors):
@@ -754,7 +754,7 @@ cdef class UKFWatson(UKF):
 				c_map_pysh_to_dipy_o4(&self._model1.rot_pysh_v[0],&self._model1.dipy_v[0])
 				cblas_daxpy(self.y.shape[0], -self.weights[i], &self._model1.dipy_v[0], 1, &self.y[0], 1)
 			self.loss = cblas_dnrm2(self.y.shape[0], &self.y[0], 1)
-		print(self.loss)
+		#print(self.loss)
 		self.prob.calculate_probabilities_sampled(self.best_dir, self.kappas, self.weights, old_dir, self.point_index[:3])
 		cblas_dcopy(3, &self.prob.best_fit[0], 1, &self.next_dir[0], 1)
 		return info
@@ -859,7 +859,7 @@ cdef class UKFWatsonAlt(Interpolation):
 				c_map_pysh_to_dipy_o4(&self._model.rot_pysh_v[0],&self._model.dipy_v[0])
 				cblas_daxpy(self.y.shape[0], -self.weights[i], &self._model.dipy_v[0], 1, &self.y[0,0], 1)
 			self.loss = cblas_dnrm2(self.y.shape[0], &self.y[0,0], 1)
-			print(self.loss)
+			#print(self.loss)
 		self.prob.calculate_probabilities_sampled(self.best_dir, self.kappas, self.weights, old_dir, self.point_index[:3])
 		cblas_dcopy(3, &self.prob.best_fit[0], 1, &self.next_dir[0], 1)
 		return info
@@ -912,7 +912,7 @@ cdef class UKFBingham(UKF):
 				c_map_pysh_to_dipy_o4(&self._model1.rot_pysh_v[0],&self._model1.dipy_v[0])
 				cblas_daxpy(self.y.shape[0], -self.mean[i*6], &self._model1.dipy_v[0], 1, &self.y[0], 1)
 			self.loss = cblas_dnrm2(self.y.shape[0], &self.y[0], 1)
-			print(self.loss/base)
+			#print(self.loss/base)
 		self.prob.calculate_probabilities_sampled_bingham(self.mu, old_dir, self.A, self.l_k_b)
 		cblas_dcopy(3, &self.prob.best_fit[0], 1, &self.next_dir[0], 1)
 
