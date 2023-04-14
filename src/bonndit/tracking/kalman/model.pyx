@@ -298,7 +298,7 @@ cdef class BinghamModel(WatsonModel):
         if kwargs['process noise'] == "":
             ddiagonal(
                 &self.PROCESS_NOISE[0, 0],
-                np.array([0.5, 0.1, 0.1, 0.3, 0.3, 0.3]),
+                np.array([0.01, 0.01, 0.01, 0.001, 0.001, 0.001]),
                 self.PROCESS_NOISE.shape[0],
                 self.PROCESS_NOISE.shape[1])
         if kwargs['measurement noise'] == "":
