@@ -1,5 +1,5 @@
 #%%cython --annotate
-#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, profile=False,
+#cython: language_level=3, boundscheck=True, wraparound=False, warn.unused=True, warn.unused_args=True, profile=False,
 # warn.unused_results=True, cython: profile=True
 
 import Cython

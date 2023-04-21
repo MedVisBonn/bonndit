@@ -1,5 +1,5 @@
 #%%cython --annotate
-#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True,
+#cython: language_level=3, boundscheck=True, wraparound=False, warn.unused=True, warn.unused_args=True,
 # warn.unused_results=True
 import ctypes
 from bonndit.utilc.cython_helpers cimport ddiagonal,  dm2toc, dinit, sub_pointwise, special_mat_mul,inverse
