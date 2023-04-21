@@ -14,7 +14,6 @@ __pycache__/
 env/
 test_envv/
 test_env/
-bonndit/
 build/
 develop-eggs/
 dist/
