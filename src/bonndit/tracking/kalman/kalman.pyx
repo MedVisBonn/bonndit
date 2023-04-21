@@ -4,6 +4,7 @@
 import ctypes
 from bonndit.utilc.cython_helpers cimport ddiagonal,  dm2toc, dinit, sub_pointwise, special_mat_mul,inverse
 from bonndit.utilc.blas_lapack cimport *
+from bonndit.utilc.quaternions cimport *
 import numpy as np
 
 from libc.math cimport fabs, floor, pow
@@ -33,7 +34,7 @@ cdef class Kalman:
 		self.P_M = np.zeros((dim_model,dim_model), dtype=np.float64)
 		self.gamma =  np.zeros((dim_data,2*dim_model+1), dtype=np.float64)
 		self.gamma2 =  np.zeros((dim_data,2*dim_model+1), dtype=np.float64)
-		self.KAPPA = 0.3 # 3
+		self.KAPPA = -3 # 3
 		self.D =  np.zeros((dim_model,dim_model), dtype=np.float64)
 		self.C =  np.zeros((dim_data, dim_model), dtype=np.float64)
 
@@ -156,3 +157,54 @@ cdef class Kalman:
 		sub_pointwise(&P[0,0], &self.P_xx[0,0], &self.D[0,0], P.shape[0]*P.shape[1])
 		return 0
 
+cdef class MKalmann(Kalman):
+	def __cinit__(self, **kwargs):
+		super(MKalmann, self).__init__(**kwargs)
+		self.c_mean = np.array((6,))
+		self.X_s = np.array(())
+
+	cdef int update_kalman_parameters(self, double[:] mean, double[:,:] P, double[:] y): # nogil except *:
+		cdef int info, i
+		cblas_dcopy(3, &mean[0], 1, &self.c_mean[0], 1)
+		##map to R3 -- simply 0s?
+		info = self.compute_sigma_points(self.X, self.P_M, self.c_mean, P, self.KAPPA) # eq. 17
+		if info != 0:
+			return info
+		## map_back
+		for i in range(self.X.shape[1]):
+			MPR_R2H_q(self.X_s[3:], self.X[3:, i], mean[3:])
+		self._model.constrain(self.X)
+		#
+		cblas_dgemv(CblasRowMajor, CblasNoTrans, self.X_s.shape[0], self.X_s.shape[1], 1, &self.X_s[0, 0], self.X_s.shape[1], &self.weights[0], 1, 0, &self.pred_X_mean[0], 1)
+		# normalize and create new mapping. ## X2 == Y_i look different. no diff
+		cblas_dscal(4, 1/cblas_dnrm2(4, &self.pred_X_mean[3], 1) &self.pred_X_mean[3])
+
+		for i in range(self.X2.shape[1]):
+			cblas_dcopy(3, &self.pred_X_mean[0], 1, &self.X2[0,i], self.X2.shape[1])
+			# map back to R
+			MPR_H2R_q(self.X[3:, i], self.X_s[3:,i], self.pred_X_mean[3:])
+		sub_pointwise(&self.X2[0,0], &self.X[0,0], &self.X2[0,0], self.X.shape[0]* self.X.shape[1])
+		# 64
+		special_mat_mul(self.P_xx, self.X2, self.weights, self.X2, 1)
+		cblas_daxpy(self.P_xx.shape[0] * self.P_xx.shape[1], 1, &self._model.PROCESS_NOISE[0,0], 1, &self.P_xx[0, 0], 1)
+		# use the mapped back to create gamma:
+		self._model.predict_new_observation(self.gamma, self.X) # eq. 23
+		cblas_dgemv(CblasRowMajor, CblasNoTrans, self.gamma.shape[0], self.gamma.shape[1], 1, &self.gamma[0, 0],self.gamma.shape[1], &self.weights[0], 1, 0, &self.pred_Y_mean[0], 1)
+		for i in range(self.gamma2.shape[1]):
+			cblas_dcopy(self.pred_Y_mean.shape[0], &self.pred_Y_mean[0], 1, &self.gamma2[0,i], self.gamma2.shape[1])
+		sub_pointwise(&self.gamma2[0,0],&self.gamma[0,0], &self.gamma2[0,0], self.gamma2.shape[0]*self.gamma2.shape[1])
+		special_mat_mul(self.P_yy, self.gamma2, self.weights, self.gamma2, 1)
+		cblas_daxpy(self.P_yy.shape[0] * self.P_yy.shape[1], 1, &self._model.MEASUREMENT_NOISE[0, 0], 1, &self.P_yy[0, 0], 1)
+		# das sollte dann auch mit dem anderen Y_i sein
+		special_mat_mul(self.P_xy, self.X2, self.weights, self.gamma2, 1)
+		# compute Kalman GAIN
+		cblas_dcopy(self.P_yy.shape[0]*self.P_yy.shape[1], &self.P_yy[0,0], 1, &self.P_yy_copy[0,0], 1)
+		inverse(self.P_yy_copy, self.P_yy_copy_worker, self.P_yy_copy_IPIV)
+		cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, self.P_xy.shape[0], self.P_yy_copy.shape[1], self.P_xy.shape[1], 1, &self.P_xy[0,0], self.P_xy.shape[1], &self.P_yy_copy[0,0], self.P_yy_copy.shape[1], 0, &self.K[0,0], self.P_yy_copy.shape[1])
+		sub_pointwise(&self.y_diff[0], &y[0], &self.pred_Y_mean[0], self.pred_Y_mean.shape[0])
+		cblas_dgemv(CblasRowMajor, CblasNoTrans, self.K.shape[0], self.K.shape[1], 1, &self.K[0,0], self.K.shape[1], &self.y_diff[0], 1, 1, &self.pred_X_mean[0], 1)
+		cblas_dcopy(self.pred_X_mean.shape[0], &self.pred_X_mean[0],1, &mean[0], 1)
+		cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasTrans, self.P_yy.shape[0], self.K.shape[0], self.P_yy.shape[1], 1, &self.P_yy[0,0], self.P_yy.shape[1], &self.K[0,0], self.P_yy.shape[1], 0, &self.C[0,0], self.K.shape[0])
+		cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, self.K.shape[0], self.C.shape[1], self.K.shape[1], 1, &self.K[0,0], self.K.shape[1], &self.C[0,0], self.C.shape[1], 0, &self.D[0,0], self.C.shape[1])
+		sub_pointwise(&P[0,0], &self.P_xx[0,0], &self.D[0,0], P.shape[0]*P.shape[1])
+		return 0

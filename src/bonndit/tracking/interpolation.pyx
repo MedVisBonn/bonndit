@@ -1002,20 +1002,20 @@ cdef class UKFBinghamAlt(Interpolation):
 			self.l_k_b[i, 1] = exp(self.mean[i, 1])
 			self.l_k_b[i, 2] = exp(self.mean[i, 2])
 
-		if True: #self.store_loss:
-			self._kalman1.linear(self.point_index[:3], self.y[0], self.mlinear, self.data)
-			base = cblas_dnrm2(self.y.shape[0], &self.y[0,0], 1)
-			for i in range(self.num_kalman):
-				kappa = exp(self.mean[i, 1])
-				beta = exp(self.mean[i, 2])
-				self._model1.sh_bingham_coeffs(kappa, beta)
-				cblas_dcopy(3, &self.mean[i, 3], 1, &self._model1.angles[0], 1)
-				c_map_dipy_to_pysh_o4(&self._model1.dipy_v[0], &self._model1.pysh_v[0])
-				c_sh_rotate_real_coef(&self._model1.rot_pysh_v[0], &self._model1.pysh_v[0], self._model1.order,
-									  &self._model1.angles[0], &dj_o4[0][0][0])
-				c_map_pysh_to_dipy_o4(&self._model1.rot_pysh_v[0], &self._model1.dipy_v[0])
-				cblas_daxpy(self.y.shape[0], -max(self.mean[i, 0], 0.01), &self._model1.dipy_v[0], 1, &self.y[0,0], 1)
-			self.loss = cblas_dnrm2(self.y.shape[0], &self.y[0,0], 1)/base
+		#if True: #self.store_loss:
+		# 	self._kalman1.linear(self.point_index[:3], self.y[0], self.mlinear, self.data)
+		#	base = cblas_dnrm2(self.y.shape[0], &self.y[0,0], 1)
+		#	for i in range(self.num_kalman):
+		#		kappa = exp(self.mean[i, 1])
+		#		beta = exp(self.mean[i, 2])
+	#			self._model1.sh_bingham_coeffs(kappa, beta)
+		#		cblas_dcopy(3, &self.mean[i, 3], 1, &self._model1.angles[0], 1)
+		#		c_map_dipy_to_pysh_o4(&self._model1.dipy_v[0], &self._model1.pysh_v[0])
+		#		c_sh_rotate_real_coef(&self._model1.rot_pysh_v[0], &self._model1.pysh_v[0], self._model1.order,
+		#							  &self._model1.angles[0], &dj_o4[0][0][0])
+		#		c_map_pysh_to_dipy_o4(&self._model1.rot_pysh_v[0], &self._model1.dipy_v[0])
+		#		cblas_daxpy(self.y.shape[0], -max(self.mean[i, 0], 0.01), &self._model1.dipy_v[0], 1, &self.y[0,0], 1)
+		self.loss = self.mean[0, 4]%np.pi #cblas_dnrm2(self.y.shape[0], &self.y[0,0], 1)/base
 			#print(self.loss/base)
 		#print(np.array(self.mu), np.array(self.A), np.array(self.l_k_b))
 		self.prob.calculate_probabilities_sampled_bingham(self.mu, old_dir, self.A, self.l_k_b)
