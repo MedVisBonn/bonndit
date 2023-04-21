@@ -72,8 +72,7 @@ cdef class BinghamModel(WatsonModel):
     )
     cdef void constrain(self, double[:, :])  # nogil expcept *
 
-cdef class BinghamQuatModel(WatsonModel):
-    cdef double[:, :, :, :] lookup_table
+cdef class BinghamQuatModel(BinghamModel):
 # cdef int convert_to_index(self, double, double, double) #nogil expcept *
     cdef void sh_bingham_coeffs(self, double, double)  # nogil expcept *
     cdef void predict_new_observation(

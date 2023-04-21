@@ -257,7 +257,7 @@ cdef class KalmannQuat(Kalman):
             return info
         # map_back
         for i in range(self.X.shape[1]):
-            MPR_R2H_q(self.X_s[3:], self.X[3:, i], mean[3:])
+            MPR_R2H_q(self.X_s[3:, i], self.X[3:, i], mean[3:])
         self._model.constrain(self.X)
         # 
         cblas_dgemv(
