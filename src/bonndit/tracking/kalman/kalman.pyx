@@ -168,12 +168,14 @@ cdef class KalmannQuat(Kalman):
 		cblas_dcopy(3, &mean[0], 1, &self.c_mean[0], 1)
 		cblas_dscal(3, 0, &self.c_mean[3], 1)
 		##map to R3 -- simply 0s?
+		#print(self.X.shape, self.P_M.shape, self.c_mean.shape, P.shape)
 		info = self.compute_sigma_points(self.X, self.P_M, self.c_mean, P, self.KAPPA) # eq. 17
 		if info != 0:
 			return info
 		## map_back
 		for i in range(self.X.shape[1]):
 			MPR_R2H_q(self.X_s[3:,i], self.X[3:, i], mean[3:])
+
 		self._model.constrain(self.X)
 		#
 		cblas_dgemv(CblasRowMajor, CblasNoTrans, self.X_s.shape[0], self.X_s.shape[1], 1, &self.X_s[0, 0], self.X_s.shape[1], &self.weights[0], 1, 0, &self.pred_X_mean[0], 1)

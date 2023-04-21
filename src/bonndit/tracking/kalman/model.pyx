@@ -381,12 +381,12 @@ cdef class BinghamQuatModel(BinghamModel):
 #
 #
 	cdef void constrain(self, double[:,:] X): # nogil except *:
-		cdef int i, j, n = X.shape[0]//7
+		cdef int i, j, n = X.shape[0]//6
 		for i in range(X.shape[1]):
 			for j in range(n):
-				X[j * 7 + 1, i] = min(max(X[j * 6 + 1, i], log(0.2)), log(50))
-				X[j * 7 + 2, i] = min(max(X[j * 6 + 2, i], log(0.1)), X[j * 6 + 1, i])
-				X[j * 7 + 0, i] = max(X[j * 6 + 0, i], self._lambda_min)
+				X[j * 6 + 1, i] = min(max(X[j * 6 + 1, i], log(0.2)), log(50))
+				X[j * 6 + 2, i] = min(max(X[j * 6 + 2, i], log(0.1)), X[j * 6 + 1, i])
+				X[j * 6 + 0, i] = max(X[j * 6 + 0, i], self._lambda_min)
 
 
 cdef class MultiTensorModel(AbstractModel):
