@@ -186,6 +186,7 @@ cdef class KalmannQuat(Kalman):
 		#cblas_dcopy(4, &self.pred_X_mean[3], 1, &self._model.c_quat[0], 1)
 		for i in range(self.X2.shape[1]):
 			cblas_dcopy(3, &self.pred_X_mean[0], 1, &self.X2[0,i], self.X2.shape[1])
+			cblas_dscal(3, 0, &self.X2[3,i], self.X2.shape[1])
 			# map back to R
 			MPR_H2R_q(self.X[3:, i], self.X_s[3:,i], self.pred_X_mean[3:])
 		sub_pointwise(&self.X2[0,0], &self.X[0,0], &self.X2[0,0], self.X.shape[0]* self.X.shape[1])
