@@ -105,6 +105,14 @@ cdef void ZYZ2XYZ(double[:] ret, double[:] zyz) nogil except *:
 cdef void quat2ZYZ(double[:] ret, double[:] quat) nogil except *:
     """
     Take a quaternion and returns ZYZ euler angles:
+    
+    Parameters
+    ----------
+    
+    ret : array_like
+          return value first:
+    quat : array_like
+            quaternion second
     """
     quat2XYZ(empty_ret, quat)
     XYZ2ZYZ(ret, empty_ret)
@@ -118,3 +126,13 @@ cdef void ZYZ2quat(double[:] ret, double[:] zyz) nogil except *:
 
 
 
+cdef void quat2rot(double[:,:] R, double[:] quat) nogil except *:
+    R[0, 0] = quat[0] ** 2 + quat[1] ** 2 - quat[2] ** 2 - quat[3] ** 2
+    R[0, 1] =  2 * (quat[1] * quat[2] - quat[0] * quat[3])
+    R[0, 2] =  2 * (quat[1] * quat[3] + quat[0] * quat[2])
+    R[1, 0] = 2 * (quat[1] * quat[2] + quat[0] * quat[3])
+    R[1, 1] = quat[0] ** 2 - quat[1] ** 2 + quat[2] ** 2 - quat[3] ** 2
+    R[1, 2] =  2 * (quat[2] * quat[3] - quat[0] * quat[1])
+    R[2, 0] = 2 * (quat[1] * quat[3] - quat[0] * quat[2])
+    R[2, 1] = 2 * (quat[2] * quat[3] + quat[0] * quat[1])
+    R[2, 2] = quat[0] ** 2 - quat[1] ** 2 - quat[2] ** 2 + quat[3] ** 2

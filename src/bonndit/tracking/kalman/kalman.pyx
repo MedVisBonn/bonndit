@@ -157,11 +157,11 @@ cdef class Kalman:
 		sub_pointwise(&P[0,0], &self.P_xx[0,0], &self.D[0,0], P.shape[0]*P.shape[1])
 		return 0
 
-cdef class MKalmann(Kalman):
-	def __cinit__(self, **kwargs):
-		super(MKalmann, self).__init__(**kwargs)
+cdef class KalmannQuat(Kalman):
+	def __cinit__(self, int dim_data, int dim_model, model):
+		super(KalmannQuat, self).__init__(dim_data, dim_model, model)
 		self.c_mean = np.array((6,))
-		self.X_s = np.array(())
+		self.X_s = np.array((7, 2*dim_model+1))
 
 	cdef int update_kalman_parameters(self, double[:] mean, double[:,:] P, double[:] y): # nogil except *:
 		cdef int info, i
@@ -177,8 +177,9 @@ cdef class MKalmann(Kalman):
 		#
 		cblas_dgemv(CblasRowMajor, CblasNoTrans, self.X_s.shape[0], self.X_s.shape[1], 1, &self.X_s[0, 0], self.X_s.shape[1], &self.weights[0], 1, 0, &self.pred_X_mean[0], 1)
 		# normalize and create new mapping. ## X2 == Y_i look different. no diff
-		cblas_dscal(4, 1/cblas_dnrm2(4, &self.pred_X_mean[3], 1) &self.pred_X_mean[3])
-
+		cblas_dscal(4, 1/cblas_dnrm2(4, &self.pred_X_mean[3], 1), &self.pred_X_mean[3], 1)
+		## Update quat
+		#cblas_dcopy(4, &self.pred_X_mean[3], 1, &self._model.c_quat[0], 1)
 		for i in range(self.X2.shape[1]):
 			cblas_dcopy(3, &self.pred_X_mean[0], 1, &self.X2[0,i], self.X2.shape[1])
 			# map back to R
@@ -187,8 +188,8 @@ cdef class MKalmann(Kalman):
 		# 64
 		special_mat_mul(self.P_xx, self.X2, self.weights, self.X2, 1)
 		cblas_daxpy(self.P_xx.shape[0] * self.P_xx.shape[1], 1, &self._model.PROCESS_NOISE[0,0], 1, &self.P_xx[0, 0], 1)
-		# use the mapped back to create gamma:
-		self._model.predict_new_observation(self.gamma, self.X) # eq. 23
+		# use the mapped back to create gamma -> X_s
+		self._model.predict_new_observation(self.gamma, self.X_s) # eq. 23
 		cblas_dgemv(CblasRowMajor, CblasNoTrans, self.gamma.shape[0], self.gamma.shape[1], 1, &self.gamma[0, 0],self.gamma.shape[1], &self.weights[0], 1, 0, &self.pred_Y_mean[0], 1)
 		for i in range(self.gamma2.shape[1]):
 			cblas_dcopy(self.pred_Y_mean.shape[0], &self.pred_Y_mean[0], 1, &self.gamma2[0,i], self.gamma2.shape[1])

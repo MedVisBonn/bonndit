@@ -7,7 +7,7 @@ from .alignedDirection cimport  Gaussian, Laplacian, ScalarOld, ScalarNew, Proba
 from .ItoW cimport Trafo
 from .stopping cimport Validator
 from .integration cimport  Euler, Integration, EulerUKF, RungeKutta
-from .interpolation cimport  FACT, Trilinear, Interpolation, UKFFodf, UKFFodfAlt, UKFMultiTensor, UKFBinghamAlt, TrilinearFODF, UKFBingham, UKFWatson, UKFWatsonAlt
+from .interpolation cimport  FACT, Trilinear, Interpolation, UKFFodf, UKFFodfAlt, UKFMultiTensor, UKFBinghamAlt, TrilinearFODF, UKFBingham, UKFWatson, UKFWatsonAlt, UKFBinghamQuatAlt
 from bonndit.utilc.cython_helpers cimport mult_with_scalar, sum_c, sum_c_int, set_zero_vector, sub_vectors, \
 	angle_deg, norm
 import numpy as np
@@ -218,7 +218,7 @@ cpdef tracking_all(vector_field, wm_mask, tracking_parameters, postprocessing, u
 	if tracking_parameters['ukf'] == "Watson" or tracking_parameters['ukf'] == "WatsonAlt":
 		directionGetter = WatsonDirGetter(**tracking_parameters)
 		#directionGetter.watson_config(vector_field[0], tracking_parameters['maxsamplingangle'], tracking_parameters['maxkappa'], tracking_parameters[])
-	elif tracking_parameters['ukf'] == "Bingham" or tracking_parameters['ukf'] == "BinghamAlt":
+	elif tracking_parameters['ukf'] == "Bingham" or tracking_parameters['ukf'] == "BinghamAlt" or tracking_parameters['ukf'] == "BinghamQuatAlt":
 		directionGetter = BinghamDirGetter(**tracking_parameters)
 	elif tracking_parameters['prob'] == "Gaussian":
 		directionGetter = Gaussian(0, tracking_parameters['variance'])
@@ -277,6 +277,12 @@ cpdef tracking_all(vector_field, wm_mask, tracking_parameters, postprocessing, u
 		else:
 			ukf_parameters['store_loss'] = True
 		interpolate = UKFBinghamAlt(vector_field, dim[2:5], directionGetter, **ukf_parameters)
+	elif tracking_parameters['ukf'] == "BinghamQuatAlt":
+		if 'loss' in saving['features']:
+			ukf_parameters['store_loss'] = True
+		else:
+			ukf_parameters['store_loss'] = True
+		interpolate = UKFBinghamQuatAlt(vector_field, dim[2:5], directionGetter, **ukf_parameters)
 	elif tracking_parameters['interpolation'] == "FACT":
 		interpolate = FACT(vector_field, dim[2:5], directionGetter, **tracking_parameters)
 	elif tracking_parameters['interpolation'] == "Trilinear":

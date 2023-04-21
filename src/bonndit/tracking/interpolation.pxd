@@ -5,8 +5,8 @@
 
 from .ItoW cimport Trafo
 from .alignedDirection cimport Probabilities
-from .kalman.model cimport AbstractModel, fODFModel, WatsonModel, BinghamModel
-from .kalman.kalman cimport Kalman
+from .kalman.model cimport AbstractModel, fODFModel, WatsonModel, BinghamModel, BinghamQuatModel
+from .kalman.kalman cimport Kalman, KalmanQuat
 
 cdef class Interpolation:
 	cdef double[:,:,:,:,:] vector_field
@@ -142,6 +142,30 @@ cdef class UKFBinghamAlt(Interpolation):
 	cdef Kalman _kalman1
 	cdef BinghamModel _model2
 	cdef Kalman _kalman2
+	cdef double[:,:,:,:] data
+	cdef double[:] rot_pysh_v
+	cdef double[:] pysh_v
+	cdef double[:] angles
+	cdef bint store_loss
+	cdef double[:,:,:] A
+	cdef double[:,:] R
+	cdef double[:,:] mu
+	cdef double[:,:] l_k_b
+
+cdef class UKFBinghamQuatAlt(Interpolation):
+	cdef double[:] kappas
+	cdef double[:] weights
+	cdef int num_kalman
+	cdef double[:,:] mean
+	cdef double[:,:] mlinear
+	cdef double[:,:,:] P
+	cdef double[:,:] y
+	cdef double[:] res
+	cdef BinghamQuatModel _model1
+	cdef BinghamQuatModel _model
+	cdef KalmanQuat _kalman1
+	cdef BinghamQuatModel _model2
+	cdef KalmanQuat _kalman2
 	cdef double[:,:,:,:] data
 	cdef double[:] rot_pysh_v
 	cdef double[:] pysh_v

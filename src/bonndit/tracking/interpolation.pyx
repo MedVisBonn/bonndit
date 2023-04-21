@@ -14,11 +14,12 @@ from bonndit.utilc.cython_helpers cimport dm2toc
 from bonndit.utilc.hota cimport hota_4o3d_sym_norm, hota_4o3d_sym_eval, hota_8o3d_sym_eval
 from bonndit.utilc.lowrank cimport approx_initial
 from bonndit.utilc.structures cimport dj_o4
+from bonndit.utilc.quaternions cimport quat2rot, quat2ZYZ
 from bonndit.utilc.watsonfitwrapper cimport *
 from .ItoW cimport Trafo
 cdef int[:,:] permute_poss = np.array([[0,1,2],[0,2,1], [1,0,2], [1,2,0], [2,1,0], [2,0,1]], dtype=np.int32)
-from .kalman.model cimport AbstractModel, fODFModel, MultiTensorModel, BinghamModel, WatsonModel
-from .kalman.kalman cimport Kalman
+from .kalman.model cimport AbstractModel, fODFModel, MultiTensorModel, BinghamModel, WatsonModel, BinghamQuatModel
+from .kalman.kalman cimport Kalman, KalmanQuat
 from .alignedDirection cimport Probabilities
 from libc.math cimport pow, pi, acos, floor, fabs,fmax, exp, log
 from libc.stdio cimport printf
@@ -990,6 +991,109 @@ cdef class UKFBinghamAlt(Interpolation):
 			self.mean[i, 1] = min(max(self.mean[i, 1], log(0.2)), log(50))
 			self.mean[i, 2] = min(max(self.mean[i, 2], log(0.1)), self.mean[i, 1])
 			r_z_r_y_r_z(self.R, self.mean[i,3:])
+			cblas_dscal(3, -1, &self.R[0, 0], 3)
+			cblas_dscal(3, -1, &self.R[0, 2], 3)
+			cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasTrans, 3, 3, 1, 1, &self.R[0, 0], 3, &self.R[0, 0], 3, 0,
+						&self.A[i, 0, 0], 3)
+			cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasTrans, 3, 3, 1, -1, &self.R[1, 0], 3, &self.R[1, 0], 3, 1,
+						&self.A[i, 0, 0], 3)
+			cblas_dscal(9, exp(self.mean[i,2]), &self.A[i, 0,0], 1)
+			cblas_dcopy(3, &self.R[2, 0], 1, &self.mu[i, 0], 1)
+			self.l_k_b[i, 0] = self.mean[i, 0]
+			self.l_k_b[i, 1] = exp(self.mean[i, 1])
+			self.l_k_b[i, 2] = exp(self.mean[i, 2])
+
+		#if True: #self.store_loss:
+		# 	self._kalman1.linear(self.point_index[:3], self.y[0], self.mlinear, self.data)
+		#	base = cblas_dnrm2(self.y.shape[0], &self.y[0,0], 1)
+		#	for i in range(self.num_kalman):
+		#		kappa = exp(self.mean[i, 1])
+		#		beta = exp(self.mean[i, 2])
+	#			self._model1.sh_bingham_coeffs(kappa, beta)
+		#		cblas_dcopy(3, &self.mean[i, 3], 1, &self._model1.angles[0], 1)
+		#		c_map_dipy_to_pysh_o4(&self._model1.dipy_v[0], &self._model1.pysh_v[0])
+		#		c_sh_rotate_real_coef(&self._model1.rot_pysh_v[0], &self._model1.pysh_v[0], self._model1.order,
+		#							  &self._model1.angles[0], &dj_o4[0][0][0])
+		#		c_map_pysh_to_dipy_o4(&self._model1.rot_pysh_v[0], &self._model1.dipy_v[0])
+		#		cblas_daxpy(self.y.shape[0], -max(self.mean[i, 0], 0.01), &self._model1.dipy_v[0], 1, &self.y[0,0], 1)
+		self.loss = self.mean[0, 4]%np.pi #cblas_dnrm2(self.y.shape[0], &self.y[0,0], 1)/base
+			#print(self.loss/base)
+		#print(np.array(self.mu), np.array(self.A), np.array(self.l_k_b))
+		self.prob.calculate_probabilities_sampled_bingham(self.mu, old_dir, self.A, self.l_k_b)
+		cblas_dcopy(3, &self.prob.best_fit[0], 1, &self.next_dir[0], 1)
+		return info
+
+cdef class UKFBinghamQuatAlt(Interpolation):
+	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities prob, **kwargs):
+		self.kappas = np.zeros((kwargs['dim_model'] // 6, ), dtype=DTYPE)
+		self.weights = np.zeros((kwargs['dim_model'] // 6, ), dtype=DTYPE)
+		dim_model = kwargs['dim_model']
+		kwargs['dim_model'] = 6
+		self.num_kalman = dim_model//6
+		self.mean = np.zeros((dim_model//7,7), dtype=np.float64)
+		self.mlinear  = np.zeros((8,kwargs['data'].shape[3]), dtype=np.float64) ##  Shpuld be always 8. For edges of cube.
+		self.P = np.zeros((dim_model//6, 6, 6), dtype=np.float64)
+		self.y = np.zeros((dim_model//6, kwargs['data'].shape[3]), dtype=DTYPE)
+		self.res = np.zeros((kwargs['data'].shape[3]), dtype=np.float64)
+		self._model1 = BinghamQuatModel(vector_field=vector_field[:, 0:1], **kwargs)
+		self._kalman1 = KalmanQuat(kwargs['data'].shape[3], kwargs['dim_model'], self._model1)
+		self._model2 = BinghamQuatModel(vector_field=vector_field[:, 1:2], **kwargs)
+		self._kalman2 = KalmanQuat(kwargs['data'].shape[3], kwargs['dim_model'], self._model2)
+		self.data = kwargs['data']
+		self.rot_pysh_v = np.zeros((2 *  5 * 5,), dtype=DTYPE)
+		self.pysh_v = np.zeros((2 *  5 * 5,), dtype=DTYPE)
+		self.angles  = np.zeros((3,), dtype=DTYPE)
+		self.store_loss = kwargs['store_loss']
+		self.A = np.zeros((dim_model//6, 3, 3))
+		self.mu = np.zeros((dim_model//6, 3))
+		self.l_k_b = np.zeros((dim_model//6, 3))
+		self.R = np.zeros((3, 3), dtype=DTYPE)
+		self._model = BinghamQuatModel(vector_field=vector_field, **kwargs)
+
+	cpdef int interpolate(self, double[:] point, double[:] old_dir, int restart):
+		self.point_world[:3] = point
+		self.point_world[3] = 1
+		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4,4,1,&self.inv_trafo[0,0], 4, &self.point_world[0], 1, 0, &self.point_index[0],1)
+		cdef int i,j, info = 0
+		cdef double base = 0
+		# Interpolate current point
+
+		self._kalman1.linear(self.point_index[:3], self.y[0], self.mlinear, self.data)
+		self._kalman2.linear(self.point_index[:3], self.y[1], self.mlinear, self.data)
+		# If we are at the seed. Initialize the Kalmanfilter
+		if restart == 0:
+			#with gil:
+			self._model1.kinit(self.mean[0], self.point_index[:3], old_dir, self.P[0], self.y[0])
+			self._model2.kinit(self.mean[1], self.point_index[:3], old_dir, self.P[1], self.y[1])
+		#	for i in range(10):
+			#	print(np.array(self.y))
+		#		info = self._kalman.update_kalman_parameters(self.mean, self.P, self.y)
+			#	print(np.array(self.P))
+		# Run Kalmannfilter
+		for i in range(self.num_kalman):
+			for j in range(self.num_kalman):
+				if i == j:
+					continue
+				kappa = min(max(self.mean[j, 1], log(0.2)), log(50))
+				beta = min(max(self.mean[j, 2], log(0.1)), self.mean[j, 1])
+				kappa = exp(kappa)
+				beta = exp(beta)
+				self._model.sh_bingham_coeffs(kappa, beta)
+				quat2ZYZ(self._model.angles, self.mean[j,3:])
+				c_map_dipy_to_pysh_o4(&self._model.dipy_v[0], &self.pysh_v[0])
+				c_sh_rotate_real_coef(&self.rot_pysh_v[0], &self.pysh_v[0], 4, &self._model.angles[0], &dj_o4[0][0][0])
+				c_map_pysh_to_dipy_o4(&self.rot_pysh_v[0],&self.res[0])
+				cblas_daxpy(self.res.shape[0], -max(self.mean[j, 0], _lambda_min), &self.res[0], 1, &self.y[i,0], 1)
+			if i == 0:
+				self._kalman1.update_kalman_parameters(self.mean[i], self.P[i], self.y[i])
+			else:
+				self._kalman2.update_kalman_parameters(self.mean[i], self.P[i], self.y[i])
+		#print(np.array(self.mean))
+		for i in range(self.num_kalman):
+			self.mean[i, 0] = max(self.mean[i, 0], _lambda_min)
+			self.mean[i, 1] = min(max(self.mean[i, 1], log(0.2)), log(50))
+			self.mean[i, 2] = min(max(self.mean[i, 2], log(0.1)), self.mean[i, 1])
+			quat2rot(self.R, self.mean[i, 3:])
 			cblas_dscal(3, -1, &self.R[0, 0], 3)
 			cblas_dscal(3, -1, &self.R[0, 2], 3)
 			cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasTrans, 3, 3, 1, 1, &self.R[0, 0], 3, &self.R[0, 0], 3, 0,

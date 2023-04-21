@@ -48,6 +48,14 @@ cdef class BinghamModel(WatsonModel):
 	cdef bint kinit(self, double[:], double[:], double[:], double[:,:], double[:])
 	cdef void constrain(self, double[:,:]) #nogil expcept *
 
+cdef class BinghamQuatModel(WatsonModel):
+	cdef double[:,:,:,:] lookup_table
+#	cdef int convert_to_index(self, double, double, double) #nogil expcept *
+	cdef void sh_bingham_coeffs(self, double, double) #nogil expcept *
+	cdef void predict_new_observation(self, double[:,:], double[:,:]) #nogil expcept *
+	cdef bint kinit(self, double[:], double[:], double[:], double[:,:], double[:])
+	cdef void constrain(self, double[:,:]) #nogil exp
+
 cdef class MultiTensorModel(AbstractModel):
 	cdef double[:,:] M
 	cdef double[:] q

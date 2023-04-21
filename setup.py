@@ -45,6 +45,15 @@ ext_modules = [
         extra_link_args=["-Wl,--no-as-needed"]
     ),
     Extension(
+        "bonndit.utilc.quaternions",
+        ["src/bonndit/utilc/quaternions.pyx"],
+        include_dirs=[numpy.get_include(), "%s/include" % mklroot],
+        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
+        library_dirs=["%s/lib/intel64" % mklroot],
+        extra_compile_args=["-Wall", "-m64", "-Ofast"],
+        extra_link_args=["-Wl,--no-as-needed"]
+    ),
+    Extension(
         "bonndit.utilc.cython_helpers",
         ["src/bonndit/utilc/cython_helpers.pyx"],
         include_dirs=[numpy.get_include(), "%s/include" % mklroot],
