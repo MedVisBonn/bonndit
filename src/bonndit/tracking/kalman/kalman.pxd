@@ -40,7 +40,7 @@ cdef class Kalman:
         double
     ) nogil except *
 
-cdef class KalmanQuat:
+cdef class KalmanQuat(Kalman):
     cdef double[:, :] X_s
     cdef double[:] c_mean
 
