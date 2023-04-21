@@ -25,6 +25,7 @@ cdef class Kalman:
     cdef double[:, :] X_s
     cdef double[:] c_mean
 
+
     cdef int update_kalman_parameters(
         self, double[:], double[:, :],
         double[:]
@@ -43,6 +44,7 @@ cdef class Kalman:
     ) nogil except *
 
 cdef class KalmanQuat(Kalman):
+    cdef double[:] c_quat
     cdef int update_kalman_parameters(
         self, double[:], double[:, :],
         double[:]
