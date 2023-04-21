@@ -256,5 +256,6 @@ setup(
     tests_require=test_requirements,
     url='https://github.com/MedVisBonn/bonndit',
     version='0.2.0',
+    gdb_debug=True,
     zip_safe=False,
 )
