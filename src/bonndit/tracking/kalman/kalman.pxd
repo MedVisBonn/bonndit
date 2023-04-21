@@ -28,7 +28,7 @@ cdef class Kalman:
 	cdef int compute_sigma_points(self, double[:,:], double[:,:], double[:], double[:,:], double) nogil except *
 	cdef void compute_convex_weights(self, double[:], double, double) nogil except *
 
-cdef class KalmanQuat:
+cdef class KalmanQuat(Kalman):
 	cdef double[:,:] X_s
 	cdef double[:] c_mean
 
