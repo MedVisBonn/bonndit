@@ -1,6 +1,6 @@
 import numpy as np
 from .blas_lapack cimport *
-from libc.math cimport atan2, asin, cos, sin, acos, atan
+from libc.math cimport atan2, asin, cos, sin, acos, atan, fmax, fmin
 DTYPE = np.float64
 cdef double[:] empty_quat = np.zeros((4,), dtype=DTYPE), empty_quat2 = np.zeros((4,), dtype=DTYPE), empty_ret = np.zeros((4,), dtype=DTYPE)
 cdef double[:] empty_quat1 = np.zeros((4, ), dtype=DTYPE)
@@ -11,7 +11,7 @@ cdef void MRP_H2R(double[:] ret, double[:]  quat) nogil except *:
     Modified rotrigues parameters. Maps H to R3 
     """
     cblas_dscal(3, 0, &ret[0], 1)
-    cblas_daxpy(3, 4/(1+quat[0]), &quat[1], 1)
+    cblas_daxpy(3, 4/(1+quat[0]), &quat[1], 1, &ret[0], 1)
 
 cdef void MRP_R2H(double[:] ret, double[:] point) nogil except *:
    """
@@ -58,12 +58,12 @@ cdef void MPR_R2H_q(double[:] ret, double[:] point, double[:] q) nogil except *:
     quatmul(ret, empty_quat, empty_quat2)
 
 cdef void quat2XYZ(double[:] ret, double[:] quat) nogil except *:
-    cdef double t0, t1
+    cdef double t0, t1, t2
     t0 = 2* (quat[0] * quat[1] + quat[2] * quat[3])
     t1 = 1 - 2* (quat[1] * quat[1] + quat[2] * quat[2])
     ret[0] = atan2(t0,t1)
     t2 = 2 * (quat[0] * quat[2] - quat[3]*quat[1])
-    t2 = max(min(t2, 1), -1)
+    t2 = fmax(fmin(t2, 1), -1)
     ret[1] = asin(t2)
     t0 = 2* (quat[0] * quat[3] + quat[2] * quat[1])
     t1 = 1 - 2* (quat[3] * quat[3] + quat[2] * quat[2])

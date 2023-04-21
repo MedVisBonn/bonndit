@@ -1030,7 +1030,7 @@ cdef class UKFBinghamQuatAlt(Interpolation):
 		dim_model = kwargs['dim_model']
 		kwargs['dim_model'] = 6
 		self.num_kalman = dim_model//6
-		self.mean = np.zeros((dim_model//7,7), dtype=np.float64)
+		self.mean = np.zeros((dim_model//6,7), dtype=np.float64)
 		self.mlinear  = np.zeros((8,kwargs['data'].shape[3]), dtype=np.float64) ##  Shpuld be always 8. For edges of cube.
 		self.P = np.zeros((dim_model//6, 6, 6), dtype=np.float64)
 		self.y = np.zeros((dim_model//6, kwargs['data'].shape[3]), dtype=DTYPE)

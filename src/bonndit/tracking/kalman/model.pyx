@@ -347,7 +347,7 @@ cdef class BinghamQuatModel(BinghamModel):
 				kappa = exp(sigma_points[i*7 + 1, j])
 				beta = exp(sigma_points[i*7 + 2, j])
 
-				quat2ZYZ(self.angles, sigma_points[i*7+3:(i+1)*7])
+				quat2ZYZ(self.angles, sigma_points[i*7+3:(i+1)*7,j])
 				self.sh_bingham_coeffs(kappa, beta)
 				#print(np.array(self.dipy_v))
 				c_map_dipy_to_pysh_o4(&self.dipy_v[0], &self.pysh_v[0])
