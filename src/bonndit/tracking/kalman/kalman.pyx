@@ -242,6 +242,7 @@ cdef class KalmannQuat(Kalman):
         super(KalmannQuat, self).__init__(dim_data, dim_model, model)
         self.c_mean = np.zeros((6,), dtype=np.float64)
         self.X_s = np.zeros((7, 2 * dim_model + 1), dtype=np.float64)
+        self.pred_X_mean = np.zeros((7,))
 
     cdef int update_kalman_parameters(
         self, double[:] mean, double[:, :] P,
@@ -249,7 +250,7 @@ cdef class KalmannQuat(Kalman):
     ):  # nogil except *:
         cdef int info, i
         cblas_dcopy(3, &mean[0], 1, &self.c_mean[0], 1)
-        cblas_dscal(3, 0, &self.c_mean[3], 1)
+        MPR_H2R_q(self.c_mean[3:], &mean[3:], self._model.c_quat)
         # map to R3 -- simply 0s?
         # print(self.X.shape, self.P_M.shape, self.c_mean.shape, P.shape)
         info = self.compute_sigma_points(
@@ -276,14 +277,14 @@ cdef class KalmannQuat(Kalman):
             4, 1 / cblas_dnrm2(4, &self.pred_X_mean[3], 1),
             &self.pred_X_mean[3], 1)
         # Update quat
-        # cblas_dcopy(4, &self.pred_X_mean[3], 1, &self._model.c_quat[0], 1)
+        cblas_dcopy(4, &self.pred_X_mean[3], 1, &self._model.c_quat[0], 1)
         for i in range(self.X2.shape[1]):
             cblas_dcopy(
                 3, &self.pred_X_mean[0], 1, &self.X2[0, i],
                 self.X2.shape[1])
             cblas_dscal(3, 0, &self.X2[3, i], self.X2.shape[1])
             # map back to R
-            MPR_H2R_q(self.X[3:, i], self.X_s[3:, i], self.pred_X_mean[3:])
+            MPR_H2R_q(self.X[3:, i], self.X_s[3:, i], self._model.c_quat)
         sub_pointwise(
             &self.X2[0, 0], &self.X[0, 0], &self.X2[0, 0],
             self.X.shape[0] * self.X.shape[1])
@@ -324,13 +325,13 @@ cdef class KalmannQuat(Kalman):
         sub_pointwise(
             &self.y_diff[0], &y[0], &self.pred_Y_mean[0],
             self.pred_Y_mean.shape[0])
+        # TODO das hier ist noch unsauber!
         cblas_dgemv(
             CblasRowMajor, CblasNoTrans, self.K.shape[0],
             self.K.shape[1], 1, &self.K[0, 0], self.K.shape[1],
             &self.y_diff[0], 1, 1, &self.pred_X_mean[0], 1)
-        cblas_dcopy(
-            self.pred_X_mean.shape[0], &self.pred_X_mean[0], 1,
-            &mean[0], 1)
+        cblas_dcopy(3, &self.pred_X_mean[0], 1, &mean[0], 1)
+        MPR_R2H_q(mean[3:], self.pred_X_mean[3:], self._model.c_quat)
         cblas_dgemm(
             CblasRowMajor, CblasNoTrans, CblasTrans,
             self.P_yy.shape[0], self.K.shape[0], self.P_yy.shape[1], 1,
