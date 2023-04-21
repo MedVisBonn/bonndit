@@ -25,12 +25,14 @@ cdef class Kalman:
 	cdef double[:,:] X_s
 	cdef double[:] c_mean
 
+
 	cdef int update_kalman_parameters(self, double[:], double[:,:], double[:])# nogil except *
 	cdef void linear(self, double[:], double[:], double[:,:], double[:, :, :, :]) nogil except *
 	cdef int compute_sigma_points(self, double[:,:], double[:,:], double[:], double[:,:], double) nogil except *
 	cdef void compute_convex_weights(self, double[:], double, double) nogil except *
 
 cdef class KalmanQuat(Kalman):
+	cdef double[:] c_quat
 	cdef int update_kalman_parameters(self, double[:], double[:,:], double[:])# nogil except *
 	cdef void linear(self, double[:], double[:], double[:,:], double[:, :, :, :]) nogil except *
 	cdef int compute_sigma_points(self, double[:,:], double[:,:], double[:], double[:,:], double) nogil except *
