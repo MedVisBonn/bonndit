@@ -166,6 +166,7 @@ cdef class KalmannQuat(Kalman):
 	cdef int update_kalman_parameters(self, double[:] mean, double[:,:] P, double[:] y): # nogil except *:
 		cdef int info, i
 		cblas_dcopy(3, &mean[0], 1, &self.c_mean[0], 1)
+		cblas_dscal(3, 0, &self.c_mean[3], 1)
 		##map to R3 -- simply 0s?
 		info = self.compute_sigma_points(self.X, self.P_M, self.c_mean, P, self.KAPPA) # eq. 17
 		if info != 0:
