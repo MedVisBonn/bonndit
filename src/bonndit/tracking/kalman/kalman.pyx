@@ -156,9 +156,9 @@ cdef class Kalman:
 		sub_pointwise(&P[0,0], &self.P_xx[0,0], &self.D[0,0], P.shape[0]*P.shape[1])
 		return 0
 
-cdef class KalmannQuat(Kalman):
+cdef class KalmanQuat(Kalman):
 	def __cinit__(self, int dim_data, int dim_model, model):
-		super(KalmannQuat, self).__init__(dim_data, dim_model, model)
+		super(KalmanQuat, self).__init__(dim_data, dim_model, model)
 		self.c_mean = np.zeros((6,), dtype=np.float64)
 		self.X_s = np.zeros((7, 2*dim_model+1), dtype=np.float64)
 		self.pred_X_mean = np.zeros((7,))
