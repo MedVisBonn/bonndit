@@ -248,8 +248,8 @@ cdef class BinghamModel(WatsonModel):
 		for i in range(number_of_tensors):
 			for j in range(sigma_points.shape[1]):
 				lam = max(sigma_points[i*6, j], 0.01)
-				kappa = exp(sigma_points[i*6 + 1, j])
-				beta = exp(sigma_points[i*6 + 2, j])
+				kappa = max(min(exp(sigma_points[i*6 + 1, j]), 50), 0.1)
+				beta = max(min(exp(sigma_points[i*6 + 2, j]), kappa), 0.1)
 				#print(kappa, beta)
 				cblas_dcopy(3, &sigma_points[i*6+3, j], sigma_points.shape[1], &self.angles[0], 1)
 				self.sh_bingham_coeffs(kappa, beta)
