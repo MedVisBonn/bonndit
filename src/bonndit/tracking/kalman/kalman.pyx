@@ -251,7 +251,7 @@ cdef class KalmannQuat(Kalman):
     ):  # nogil except *:
         cdef int info, i
         cblas_dcopy(3, &mean[0], 1, &self.c_mean[0], 1)
-        MPR_H2R_q(self.c_mean[3:], &mean[3:], self.c_quat)
+        MPR_H2R_q(self.c_mean[3:], mean[3:], self.c_quat)
         # map to R3 -- simply 0s?
         # print(self.X.shape, self.P_M.shape, self.c_mean.shape, P.shape)
         info = self.compute_sigma_points(
