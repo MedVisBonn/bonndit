@@ -47,7 +47,7 @@ cdef class Validator:
 	#	else:
 	#		return False
 
-	cdef bint index_checker(self, double[:] point) : # nogil except *:
+	cdef bint index_checker(self, double[:] point) except *: # nogil except *:
 		"""
 		Checks if the index is within the array.
 		@param point: 3 dimensional point
