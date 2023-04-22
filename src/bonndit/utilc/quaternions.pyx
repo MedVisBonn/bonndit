@@ -20,13 +20,13 @@ cpdef void MRP_R2H(double[:] ret, double[:] point) nogil except *:
    cblas_dscal(4, 0, &ret[0], 1)
    ret[0] = 16 - cblas_dnrm2(3, &point[0], 1)**2
    cblas_daxpy(3, 8, &point[0], 1, &ret[1], 1)
-   cblas_dscal(4, 1/(16+ ret[0]), &ret[0], 1) ## TODO: check if this is save!!
+   cblas_dscal(4, 1/(16 + cblas_dnrm2(3, &point[0], 1)**2), &ret[0], 1) ## TODO: check if this is save!!
 
 cpdef void quatmul(double[:] ret, double[:] x, double[:] y) nogil except *:
     """
     Quaternions multiplication
     """
-    ret[0] = x[0]*y[0] + x[1]*y[1] + x[2]*y[2] + x[3]*y[3]
+    ret[0] = x[0]*y[0] - x[1]*y[1] - x[2]*y[2] - x[3]*y[3]
     ret[1] = x[0]*y[1] + x[1]*y[0] + x[2]*y[3] - x[3]*y[2]
     ret[2] = x[0]*y[2] - x[1]*y[3] + x[2]*y[0] + x[3]*y[1]
     ret[3] = x[0]*y[3] + x[1]*y[2] - x[2]*y[1] + x[3]*y[0]
