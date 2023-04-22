@@ -1091,7 +1091,7 @@ cdef class UKFBinghamQuatAlt(Interpolation):
 				self._kalman1.update_kalman_parameters(self.mean[i], self.P[i], self.y[i])
 			else:
 				self._kalman2.update_kalman_parameters(self.mean[i], self.P[i], self.y[i])
-		print(np.array(self.mean))
+		#print(np.array(self.mean))
 		for i in range(self.num_kalman):
 			self.mean[i, 0] = max(self.mean[i, 0], _lambda_min)
 			self.mean[i, 1] = min(max(self.mean[i, 1], log(0.2)), log(50))
