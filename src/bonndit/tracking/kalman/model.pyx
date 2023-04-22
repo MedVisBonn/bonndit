@@ -299,7 +299,6 @@ cdef class BinghamQuatModel(BinghamModel):
 		super(BinghamQuatModel, self).__init__(**kwargs)
 		lookup_table = np.load(dirname + '/bingham_coefs_versuch1001.npy')
 		normalize_const = np.load(dirname +'/normalize_const_versuch1000.npy')
-		c_quat = np.zeros((4,), dtype=np.float64)
 		# Convolution with rank 1 kernel:
 		for i,j in np.ndindex(lookup_table.shape[:2]):
 			if normalize_const[i,j] != 0:
