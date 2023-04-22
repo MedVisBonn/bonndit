@@ -27,10 +27,16 @@ cdef class Interpolation:
     cdef void calc_cube(self, double[:])  # nogil
     cdef void nearest_neigh(self, double[:])  # nogil
     cdef void set_vector(self, int, int)  # nogil
-    cpdef int interpolate(self, double[:], double[:], int)  # nogil except *
+    cpdef int interpolate(
+        self, double[:], double[:],
+        int
+    ) except *  # nogil except *
 
 cdef class FACT(Interpolation):
-    cpdef int interpolate(self, double[:], double[:], int)  # nogil except *
+    cpdef int interpolate(
+        self, double[:], double[:],
+        int
+    ) except *  # nogil except *
 
 
 cdef class Trilinear(Interpolation):
@@ -42,7 +48,10 @@ cdef class Trilinear(Interpolation):
     cdef int[:] floor
     cdef int[:] permutation
     cdef void set_array(self, int, int, int)  # nogil
-    cpdef int interpolate(self, double[:], double[:], int)  # nogil except *
+    cpdef int interpolate(
+        self, double[:], double[:],
+        int
+    ) except *  # nogil except *
     cdef void set_new_poss(self)  # nogil except *
     cpdef get_cache(self)
     cpdef set_cache(self, int[:, :, :, :])
@@ -75,7 +84,7 @@ cdef class TrilinearFODF(Interpolation):
     cpdef int interpolate(
         self, double[:] point, double[:] old_dir,
         int r
-    )  # nogil except *
+    ) except *  # nogil except *
 
 cdef class UKF(Interpolation):
     cdef double[:] mean
@@ -85,7 +94,10 @@ cdef class UKF(Interpolation):
     cdef double[:] y
     cdef Kalman _kalman
     cdef AbstractModel _model
-    cpdef int interpolate(self, double[:], double[:], int)  # nogil except *
+    cpdef int interpolate(
+        self, double[:], double[:],
+        int
+    ) except *  # nogil except *
     cdef int select_next_dir(self, int, double[:])
 
 cdef class UKFFodfAlt(Interpolation):
@@ -100,7 +112,7 @@ cdef class UKFFodfAlt(Interpolation):
     cdef fODFModel _model1
     cdef Kalman _kalman2
     cdef fODFModel _model2
-    cpdef int interpolate(self, double[:], double[:], int)
+    cpdef int interpolate(self, double[:], double[:], int) except *
 
 cdef class UKFWatsonAlt(Interpolation):
     cdef double[:] kappas
