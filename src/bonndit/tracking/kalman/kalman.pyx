@@ -15,7 +15,6 @@ from libc.math cimport fabs, floor, pow
 
 
 cdef class Kalman:
-
 	def __cinit__(self, int dim_data, int dim_model, model):
 		self.X = np.zeros((dim_model, 2*dim_model+1), dtype=np.float64)
 		self.X2 = np.zeros((dim_model,2*dim_model+1), dtype=np.float64)
@@ -165,6 +164,8 @@ cdef class KalmannQuat(Kalman):
 		self.pred_X_mean = np.zeros((7,))
 		self.c_quat = np.zeros((4,), dtype=np.float64)
 		self.c_quat[0] = 1
+		print(self.c_quat)
+
 
 	cdef int update_kalman_parameters(self, double[:] mean, double[:,:] P, double[:] y): # nogil except *:
 		cdef int info, i

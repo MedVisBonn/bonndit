@@ -15,7 +15,7 @@ cdef class Validator:
 		ROIExNotValidator ROIEx
 		WMChecker WM
 
-	cdef bint index_checker(self, double[:]) # nogil except *
+	cdef bint index_checker(self, double[:]) except * # nogil except *
 	cdef bint next_point_checker(self, double[:]) # nogil except *
 	cdef void set_path_zero(self, double[:,:], double[:,:]) # nogil except *
 
