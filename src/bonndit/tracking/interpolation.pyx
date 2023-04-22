@@ -127,12 +127,12 @@ cdef class Interpolation:
 			                                                   int(self.floor_point[ self.best_ind, 1]),
 			                                                  int(self.floor_point[self.best_ind, 2])], 0.25), self.vector)
 
-	cpdef int interpolate(self,double[:] point, double[:] old_dir, int r) : # : # : # nogil except *:
+	cpdef int interpolate(self,double[:] point, double[:] old_dir, int r) except *: # : # : # nogil except *:
 		pass
 
 
 cdef class FACT(Interpolation):
-	cpdef int interpolate(self, double[:] point, double[:] old_dir, int r) : # : # : # nogil except *:
+	cpdef int interpolate(self, double[:] point, double[:] old_dir, int r) except *: # : # : # nogil except *:
 		cdef int i
 		cdef double l, max_value
 		self.point_world[:3] = point
@@ -288,7 +288,7 @@ cdef class TrilinearFODF(Interpolation):
 		if scale > 0:
 			mult_with_scalar(self.fodf, 1/scale, self.fodf1)
 
-	cpdef int interpolate(self, double[:] point, double[:] old_dir, int r) : # : # : # nogil except *:
+	cpdef int interpolate(self, double[:] point, double[:] old_dir, int r) except *: # : # : # nogil except *:
 	#	with gil: print(np.array(old_dir))
 		# Initialize with last step. Except we are starting again.
 		self.point_world[:3] = point
@@ -372,7 +372,7 @@ cdef class Trilinear(Interpolation):
 
 
 
-	cpdef int interpolate(self, double[:] point, double[:] old_dir, int r) : # : # : # nogil except *:
+	cpdef int interpolate(self, double[:] point, double[:] old_dir, int r) except *: # : # : # nogil except *:
 		""" This function calculates the interpolation based on https://en.wikipedia.org/wiki/Trilinear_interpolation
 		for each vectorfield. Afterwards the we chose randomly from the 3 vectors.
 
@@ -580,7 +580,7 @@ cdef class UKF(Interpolation):
 			self._model = MultiTensorModel(**kwargs)
 		self._kalman = Kalman(kwargs['data'].shape[3], kwargs['dim_model'], self._model)
 
-	cpdef int interpolate(self, double[:] point, double[:] old_dir, int restart) : # : # : # nogil except *:
+	cpdef int interpolate(self, double[:] point, double[:] old_dir, int restart) except *: # : # : # nogil except *:
 		self.point_world[:3] = point
 		self.point_world[3] = 1
 		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4,4,1,&self.inv_trafo[0,0], 4, &self.point_world[0], 1, 0, &self.point_index[0],1)
@@ -615,7 +615,7 @@ cdef class UKFFodfAlt(Interpolation):
 		self.data = kwargs['data']
 		self.prob = prob
 
-	cpdef int interpolate(self, double[:] point, double[:] old_dir, int restart): # : # : # nogil except *:
+	cpdef int interpolate(self, double[:] point, double[:] old_dir, int restart) except *: # : # : # nogil except *:
 		self.point_world[:3] = point
 		self.point_world[3] = 1
 		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4,4,1,&self.inv_trafo[0,0], 4, &self.point_world[0], 1, 0, &self.point_index[0],1)
@@ -784,7 +784,7 @@ cdef class UKFWatsonAlt(Interpolation):
 
 		self._model = WatsonModel(vector_field=vector_field, **kwargs)
 
-	cpdef int interpolate(self, double[:] point, double[:] old_dir, int restart):
+	cpdef int interpolate(self, double[:] point, double[:] old_dir, int restart) except *:
 		self.point_world[:3] = point
 		self.point_world[3] = 1
 		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4,4,1,&self.inv_trafo[0,0], 4, &self.point_world[0], 1, 0, &self.point_index[0],1)
@@ -946,7 +946,7 @@ cdef class UKFBinghamAlt(Interpolation):
 		self.R = np.zeros((3, 3), dtype=DTYPE)
 		self._model = BinghamModel(vector_field=vector_field, **kwargs)
 
-	cpdef int interpolate(self, double[:] point, double[:] old_dir, int restart):
+	cpdef int interpolate(self, double[:] point, double[:] old_dir, int restart) except *:
 		self.point_world[:3] = point
 		self.point_world[3] = 1
 		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4,4,1,&self.inv_trafo[0,0], 4, &self.point_world[0], 1, 0, &self.point_index[0],1)
@@ -1049,7 +1049,7 @@ cdef class UKFBinghamQuatAlt(Interpolation):
 		self.R = np.zeros((3, 3), dtype=DTYPE)
 		self._model = BinghamQuatModel(vector_field=vector_field, **kwargs)
 
-	cpdef int interpolate(self, double[:] point, double[:] old_dir, int restart):
+	cpdef int interpolate(self, double[:] point, double[:] old_dir, int restart) except *:
 		self.point_world[:3] = point
 		self.point_world[3] = 1
 		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4,4,1,&self.inv_trafo[0,0], 4, &self.point_world[0], 1, 0, &self.point_index[0],1)
