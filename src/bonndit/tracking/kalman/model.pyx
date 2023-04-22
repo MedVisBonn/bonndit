@@ -222,6 +222,7 @@ cdef class BinghamModel(WatsonModel):
 				  self.MEASUREMENT_NOISE.shape[1])
 
 	cdef void sh_bingham_coeffs(self, double kappa, double beta): # nogil except *:
+		print(kappa, beta)
 		self.dipy_v[0] = self.lookup_table[<int> kappa*10, <int> beta*10, 0, 0]
 		self.dipy_v[1] = self.lookup_table[<int> kappa*10, <int> beta*10, 1, 2]
 		self.dipy_v[2] = self.lookup_table[<int> kappa*10, <int> beta*10, 1, 1]
