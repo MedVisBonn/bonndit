@@ -25,10 +25,6 @@ cdef class Kalman:
 	cdef double[:,:] X_s
 	cdef double[:] c_mean
 	cdef double[:] c_quat
-<<<<<<< HEAD
-=======
-
->>>>>>> 7d954ce1915c14c0bf2c7bdde2cd8d97c4a3780b
 
 	cdef int update_kalman_parameters(self, double[:], double[:,:], double[:])# nogil except *
 	cdef void linear(self, double[:], double[:], double[:,:], double[:, :, :, :]) nogil except *
