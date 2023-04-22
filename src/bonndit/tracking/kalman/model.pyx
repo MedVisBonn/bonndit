@@ -312,6 +312,7 @@ cdef class BinghamModel(WatsonModel):
         self, double kappa,
         double beta
     ):  # nogil except *:
+        print(kappa, beta)
         self.dipy_v[0] = self.lookup_table[
             <int> kappa * 10,
             <int> beta * 10, 0, 0]
