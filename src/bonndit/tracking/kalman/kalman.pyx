@@ -244,6 +244,7 @@ cdef class KalmannQuat(Kalman):
         self.X_s = np.zeros((7, 2 * dim_model + 1), dtype=np.float64)
         self.pred_X_mean = np.zeros((7,))
         self.c_quat = np.zeros((4,), dtype=np.float64)
+        self.c_quat[0] = 1
 
     cdef int update_kalman_parameters(
         self, double[:] mean, double[:, :] P,
