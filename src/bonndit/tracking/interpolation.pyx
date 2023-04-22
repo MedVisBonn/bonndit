@@ -1065,9 +1065,9 @@ cdef class UKFBinghamQuatAlt(Interpolation):
 			self._model1.kinit(self.mean[0], self.point_index[:3], old_dir, self.P[0], self.y[0])
 			self._model2.kinit(self.mean[1], self.point_index[:3], old_dir, self.P[1], self.y[1])
 			self._kalman1.c_quat[0] = 1
-			cblas_dscal(3, 0, &self._kalman1[1], 0)
+			cblas_dscal(3, 0, &self._kalman1.c_quat[1], 0)
 			self._kalman2.c_quat[0] = 1
-			cblas_dscal(3, 0, &self._kalman2[1], 0)
+			cblas_dscal(3, 0, &self._kalman2.c_quat[1], 0)
 		#	for i in range(10):
 			#	print(np.array(self.y))
 		#		info = self._kalman.update_kalman_parameters(self.mean, self.P, self.y)
