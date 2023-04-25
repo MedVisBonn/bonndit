@@ -129,12 +129,24 @@ cpdef void ZYZ2quat(double[:] ret, double[:] zyz) nogil except *:
 
 
 cpdef void quat2rot(double[:,:] R, double[:] quat) nogil except *:
+    cdef int i, c = 0
+    for i in range(4):
+        if quat[i] > 0:
+            c += 1
+    if c < 3:
+        x = 1
+    else:
+        x = -1
+
     R[0, 0] = - quat[0] ** 2 - quat[1] ** 2 + quat[2] ** 2 + quat[3] ** 2
     R[0, 1] =  2 * (quat[1] * quat[2] - quat[0] * quat[3])
-    R[0, 2] =  - 2 * (quat[1] * quat[3] + quat[0] * quat[2])
+    R[0, 2] =   2 * (quat[1] * quat[3] + quat[0] * quat[2])
     R[1, 0] = 2 * (quat[1] * quat[2] + quat[0] * quat[3])
     R[1, 1] = - quat[0] ** 2 + quat[1] ** 2 - quat[2] ** 2 + quat[3] ** 2
-    R[1, 2] =  2 * (quat[2] * quat[3] - quat[0] * quat[1])
+    R[1, 2] =  - 2 * (quat[2] * quat[3] - quat[0] * quat[1])
     R[2, 0] = 2 * (quat[1] * quat[3] - quat[0] * quat[2])
     R[2, 1] =  - 2 * (quat[2] * quat[3] + quat[0] * quat[1])
-    R[2, 2] = quat[0] ** 2 - quat[1] ** 2 - quat[2] ** 2 + quat[3] ** 2
+    R[2, 2] = - quat[0] ** 2 + quat[1] ** 2 + quat[2] ** 2 - quat[3] ** 2
+    cblas_dscal(9, x, &R[0,0], 1)
+    if 3 > c > 0:
+        cblas_dscal(3, -1, &R[0, 2], 3)
