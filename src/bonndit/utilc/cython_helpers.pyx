@@ -68,13 +68,13 @@ cdef world2sphere(double x,double y, double z):
 
 cpdef void r_z_r_y_r_z(double[:,:] ret, double[:] v):
 	ret[0,0] = -sin(v[0])*sin(v[2]) + cos(v[0])*cos(v[1])*cos(v[2])
-	ret[0,1] = sin(v[0])*cos(v[2]) + sin(v[2])*cos(v[0])*cos(v[1])
-	ret[0,2] = - sin(v[1])*cos(v[0])
-	ret[1,0] = - sin(v[0])*cos(v[1])*cos(v[2]) - sin(v[2])*cos(v[0])
+	ret[1,0] = sin(v[0])*cos(v[2]) + sin(v[2])*cos(v[0])*cos(v[1])
+	ret[2,0] = - sin(v[1])*cos(v[0])
+	ret[0,1] = - sin(v[0])*cos(v[1])*cos(v[2]) - sin(v[2])*cos(v[0])
 	ret[1,1] = -sin(v[0])*sin(v[2])*cos(v[1]) + cos(v[0])*cos(v[2])
-	ret[1,2] = sin(v[0])*sin(v[1])
-	ret[2,0] = sin(v[1])*cos(v[2])
-	ret[2,1] = sin(v[1])*sin(v[2])
+	ret[2,1] = sin(v[0])*sin(v[1])
+	ret[0,2] = sin(v[1])*cos(v[2])
+	ret[1,2] = sin(v[1])*sin(v[2])
 	ret[2,2] = cos(v[1])
 
 
