@@ -37,7 +37,8 @@ cdef void tracking(
     int max_track_length, int save_steps,
     int samples, double[:, :, :, :] features,
     possible_features features_save, int minlen
-) :  # nogil except *:
+) except *:
+    # nogil except *:
     """
         Initializes the tracking for one seed in both directions.
 	@param paths:
@@ -103,7 +104,8 @@ cdef forward_tracking(
     Integration integrate, Trafo trafo, Validator validator,
     int max_track_length, int save_steps, double[:, :] features,
     possible_features feature_save
-) :  # nogil except *:
+):  # nogil except *:
+
     """
         This function do the tracking into one direction.
 	@param paths: empty path array to save the streamline points.

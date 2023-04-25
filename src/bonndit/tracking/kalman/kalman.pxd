@@ -28,7 +28,7 @@ cdef class Kalman:
     cdef int update_kalman_parameters(
         self, double[:], double[:, :],
         double[:]
-    )  # nogil except *
+    ) except *  # nogil except *
     cdef void linear(
         self, double[:], double[:], double[:, :],
         double[:, :, :, :]
@@ -43,14 +43,16 @@ cdef class Kalman:
     ) nogil except *
 
 cdef class KalmanQuat(Kalman):
+    cdef int dim_model_mean
     cdef double[:, :] X_s
     cdef double[:] c_mean
     cdef double[:] c_quat
+    cdef double[:] pred_X_mean_q
 
     cdef int update_kalman_parameters(
         self, double[:], double[:, :],
         double[:]
-    )  # nogil except *
+    ) except *  # nogil except *
     cdef void linear(
         self, double[:], double[:], double[:, :],
         double[:, :, :, :]

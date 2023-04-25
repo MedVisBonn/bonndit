@@ -65,7 +65,7 @@ cpdef void MPR_R2H_q(
     """
 
     MRP_R2H(empty_quat2, point)
-    quat_inv(empty_quat, q)
+    cblas_dcopy(4, &q[0], 1, &empty_quat[0], 1)
     quatmul(ret, empty_quat, empty_quat2)
 
 cpdef void quat2XYZ(double[:] ret, double[:] quat) nogil except *:
