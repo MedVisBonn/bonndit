@@ -974,6 +974,7 @@ cdef class UKFBinghamAlt(Interpolation):
 				beta = min(max(self.mean[j, 2], log(0.1)), self.mean[j, 1])
 				kappa = exp(kappa)
 				beta = exp(beta)
+				#print(kappa, beta)
 				self._model.sh_bingham_coeffs(kappa, beta)
 				cblas_dcopy(3, &self.mean[j, 3], 1, &self._model.angles[0], 1)
 				c_map_dipy_to_pysh_o4(&self._model.dipy_v[0], &self.pysh_v[0])
@@ -1062,12 +1063,16 @@ cdef class UKFBinghamQuatAlt(Interpolation):
 		# If we are at the seed. Initialize the Kalmanfilter
 		if restart == 0:
 			#with gil:
+			#print("restart")
 			self._model1.kinit(self.mean[0], self.point_index[:3], old_dir, self.P[0], self.y[0])
 			self._model2.kinit(self.mean[1], self.point_index[:3], old_dir, self.P[1], self.y[1])
-			self._kalman1.c_quat[0] = 1
-			cblas_dscal(3, 0, &self._kalman1.c_quat[1], 1)
-			self._kalman2.c_quat[0] = 1
-			cblas_dscal(3, 0, &self._kalman2.c_quat[1], 1)
+
+			cblas_dcopy(4, &self.mean[0,3], 1, &self._kalman1.c_quat[0], 1)
+			cblas_dcopy(4, &self.mean[1,3], 1, &self._kalman2.c_quat[0], 1)
+			cblas_dcopy(3, &self.mean[0,0], 1, &self._kalman1.c_mean[0], 1)
+			cblas_dscal(3, 0, &self._kalman1.c_mean[3], 1)
+			cblas_dcopy(3, &self.mean[1,0], 1, &self._kalman2.c_mean[0], 1)
+			cblas_dscal(3, 0, &self._kalman2.c_mean[3], 1)
 		#	for i in range(10):
 			#	print(np.array(self.y))
 		#		info = self._kalman.update_kalman_parameters(self.mean, self.P, self.y)
@@ -1077,10 +1082,9 @@ cdef class UKFBinghamQuatAlt(Interpolation):
 			for j in range(self.num_kalman):
 				if i == j:
 					continue
-				kappa = min(max(self.mean[j, 1], log(0.2)), log(50))
-				beta = min(max(self.mean[j, 2], log(0.1)), self.mean[j, 1])
-				kappa = exp(kappa)
-				beta = exp(beta)
+				kappa = min(max(exp(self.mean[j, 1]), 0.1), 50)
+				beta = min(max(exp(self.mean[j, 2]), 0.1), kappa)
+				#print(kappa, beta)
 				self._model.sh_bingham_coeffs(kappa, beta)
 				quat2ZYZ(self._model.angles, self.mean[j,3:])
 				c_map_dipy_to_pysh_o4(&self._model.dipy_v[0], &self.pysh_v[0])
@@ -1109,20 +1113,21 @@ cdef class UKFBinghamQuatAlt(Interpolation):
 			self.l_k_b[i, 1] = exp(self.mean[i, 1])
 			self.l_k_b[i, 2] = exp(self.mean[i, 2])
 
-		#if True: #self.store_loss:
-		# 	self._kalman1.linear(self.point_index[:3], self.y[0], self.mlinear, self.data)
-		#	base = cblas_dnrm2(self.y.shape[0], &self.y[0,0], 1)
-		#	for i in range(self.num_kalman):
-		#		kappa = exp(self.mean[i, 1])
-		#		beta = exp(self.mean[i, 2])
+		if True: #self.store_loss:
+			# self._kalman1.linear(self.point_index[:3], self.y[0], self.mlinear, self.data)
+			# base = cblas_dnrm2(self.y.shape[0], &self.y[0,0], 1)
+			for i in range(self.num_kalman):
+				kappa = exp(self.mean[i, 1])
+				beta = exp(self.mean[i, 2])
 	#			self._model1.sh_bingham_coeffs(kappa, beta)
-		#		cblas_dcopy(3, &self.mean[i, 3], 1, &self._model1.angles[0], 1)
-		#		c_map_dipy_to_pysh_o4(&self._model1.dipy_v[0], &self._model1.pysh_v[0])
-		#		c_sh_rotate_real_coef(&self._model1.rot_pysh_v[0], &self._model1.pysh_v[0], self._model1.order,
-		#							  &self._model1.angles[0], &dj_o4[0][0][0])
-		#		c_map_pysh_to_dipy_o4(&self._model1.rot_pysh_v[0], &self._model1.dipy_v[0])
-		#		cblas_daxpy(self.y.shape[0], -max(self.mean[i, 0], 0.01), &self._model1.dipy_v[0], 1, &self.y[0,0], 1)
-		self.loss = self.mean[0, 4]%np.pi #cblas_dnrm2(self.y.shape[0], &self.y[0,0], 1)/base
+				quat2ZYZ(self._model.angles, self.mean[i,3:])
+				c_map_dipy_to_pysh_o4(&self._model1.dipy_v[0], &self._model1.pysh_v[0])
+				c_sh_rotate_real_coef(&self._model1.rot_pysh_v[0], &self._model1.pysh_v[0], self._model1.order,
+									  &self._model1.angles[0], &dj_o4[0][0][0])
+				c_map_pysh_to_dipy_o4(&self._model1.rot_pysh_v[0], &self._model1.dipy_v[0])
+				cblas_daxpy(self.y.shape[0], -max(self.mean[i, 0], 0.01), &self._model1.dipy_v[0], 1, &self.y[0,0], 1)
+		self.loss = cblas_dnrm2(self.y.shape[0], &self.y[0,0], 1)
+		print(self.loss)
 			#print(self.loss/base)
 		#print(np.array(self.mu), np.array(self.A), np.array(self.l_k_b))
 		self.prob.calculate_probabilities_sampled_bingham(self.mu, old_dir, self.A, self.l_k_b)

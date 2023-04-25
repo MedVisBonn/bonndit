@@ -31,11 +31,11 @@ cdef class AbstractModel:
 
 	cdef void normalize(self, double[:] m, double[:] v, int incr): #nogil except *:
 		pass
-	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points): #nogil except *:
+	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points) except *: #nogil except *:
 		pass
-	cdef bint kinit(self, double[:] mean, double[:] point, double[:] init_dir, double[:,:] P, double[:] y):
+	cdef bint kinit(self, double[:] mean, double[:] point, double[:] init_dir, double[:,:] P, double[:] y) except *:
 		pass
-	cdef void constrain(self, double[:,:] X): #nogil except *:
+	cdef void constrain(self, double[:,:] X) except *: #nogil except *:
 		pass
 
 
@@ -63,7 +63,7 @@ cdef class fODFModel(AbstractModel):
 			cblas_dcopy(3, &v[0], inc, &m[0], 1)
 			cblas_dscal(3, 1/cblas_dnrm2(3, &v[0],inc), &m[0], 1)
 
-	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points): #nogil except *:
+	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points) except *: #nogil except *:
 		cdef int number_of_tensors = int(sigma_points.shape[0]/4)
 		cdef int i, j
 		cdef double lam
@@ -81,7 +81,7 @@ cdef class fODFModel(AbstractModel):
 		#	print(np.array(observations))
 
 
-	cdef bint kinit(self, double[:] mean, double[:] point, double[:] init_dir, double[:,:] P, double[:] y):
+	cdef bint kinit(self, double[:] mean, double[:] point, double[:] init_dir, double[:,:] P, double[:] y) except *:
 		"""
 		Calculates angle between all possible directions and
 		"""
@@ -94,7 +94,7 @@ cdef class fODFModel(AbstractModel):
 			mean[i*4 + 3] = self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]]
 
 
-	cdef void constrain(self, double[:,:] X): #nogil except *:
+	cdef void constrain(self, double[:,:] X) except *: #nogil except *:
 		cdef int i, j, n = X.shape[0]//4
 		for i in range(X.shape[1]):
 			for j in range(n):
@@ -141,7 +141,7 @@ cdef class WatsonModel(AbstractModel):
 				v[3] * 1/2 * sqrt(5/pi) * self.rank_1_rh_o4[1] + \
 				v[10] * 3/16 * sqrt(1/pi) * (35-30+3) * self.rank_1_rh_o4[2]
 
-	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points): # nogil except *:
+	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points) except *: # nogil except *:
 		cdef int number_of_tensors = int(sigma_points.shape[0]/5)
 		cdef int i, j
 		cdef double lam, kappa, div
@@ -166,7 +166,7 @@ cdef class WatsonModel(AbstractModel):
 				cblas_daxpy(observations.shape[0], lam, &self.dipy_v[0], 1, &observations[0,j], observations.shape[1])
 
 
-	cdef bint kinit(self, double[:] mean, double[:] point, double[:] init_dir, double[:,:] P, double[:] y):
+	cdef bint kinit(self, double[:] mean, double[:] point, double[:] init_dir, double[:,:] P, double[:] y) except *:
 		"""
 		Calculates angle between all possible directions and
 		"""
@@ -185,7 +185,7 @@ cdef class WatsonModel(AbstractModel):
 
 
 
-	cdef void constrain(self, double[:,:] X): # nogil except *:
+	cdef void constrain(self, double[:,:] X) except *: # nogil except *:
 		cdef int i, j, n = X.shape[0]//5
 		for i in range(X.shape[1]):
 			for j in range(n):
@@ -221,8 +221,8 @@ cdef class BinghamModel(WatsonModel):
 			ddiagonal(&self.MEASUREMENT_NOISE[0, 0], np.array([0.04]), self.MEASUREMENT_NOISE.shape[0],
 				  self.MEASUREMENT_NOISE.shape[1])
 
-	cdef void sh_bingham_coeffs(self, double kappa, double beta): # nogil except *:
-		print(kappa, beta)
+	cdef void sh_bingham_coeffs(self, double kappa, double beta) except *: # nogil except *:
+		#print(kappa, beta)
 		self.dipy_v[0] = self.lookup_table[<int> kappa*10, <int> beta*10, 0, 0]
 		self.dipy_v[1] = self.lookup_table[<int> kappa*10, <int> beta*10, 1, 2]
 		self.dipy_v[2] = self.lookup_table[<int> kappa*10, <int> beta*10, 1, 1]
@@ -241,7 +241,7 @@ cdef class BinghamModel(WatsonModel):
 
 
 
-	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points): # nogil except *:
+	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points) except *: # nogil except *:
 		cdef int number_of_tensors = int(sigma_points.shape[0]/6)
 		cdef int i, j
 		cdef double lam, kappa, beta
@@ -262,7 +262,7 @@ cdef class BinghamModel(WatsonModel):
 
 #
 #
-	cdef bint kinit(self, double[:] mean, double[:] point, double[:] init_dir, double[:,:] P, double[:] y):
+	cdef bint kinit(self, double[:] mean, double[:] point, double[:] init_dir, double[:,:] P, double[:] y) except *:
 		"""
 		Calculates angle between all possible directions and
 		"""
@@ -281,13 +281,13 @@ cdef class BinghamModel(WatsonModel):
 			# set circle by setting kappa and  beta  = 0
 			#print(self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]])
 			mean[i*6 + 1] = log(45) #min(self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]],45))
-			mean[i*6 + 2] = log(0.1)			# set angles: all needed!
+			mean[i*6 + 2] = log(40)			# set angles: all needed!
 			mean[i*6 + 3] = 0
 			mean[i*6 + 4] = dir[0]
 			mean[i*6 + 5] = dir[1]
 #
 #
-	cdef void constrain(self, double[:,:] X): # nogil except *:
+	cdef void constrain(self, double[:,:] X) except *: # nogil except *:
 		cdef int i, j, n = X.shape[0]//6
 		for i in range(X.shape[1]):
 			for j in range(n):
@@ -318,7 +318,8 @@ cdef class BinghamQuatModel(BinghamModel):
 			ddiagonal(&self.MEASUREMENT_NOISE[0, 0], np.array([0.04]), self.MEASUREMENT_NOISE.shape[0],
 				  self.MEASUREMENT_NOISE.shape[1])
 
-	cdef void sh_bingham_coeffs(self, double kappa, double beta): # nogil except *:
+	cdef void sh_bingham_coeffs(self, double kappa, double beta) except *: # nogil except *:
+	#	print(kappa, beta)
 		self.dipy_v[0] = self.lookup_table[<int> kappa*10, <int> beta*10, 0, 0]
 		self.dipy_v[1] = self.lookup_table[<int> kappa*10, <int> beta*10, 1, 2]
 		self.dipy_v[2] = self.lookup_table[<int> kappa*10, <int> beta*10, 1, 1]
@@ -345,8 +346,8 @@ cdef class BinghamQuatModel(BinghamModel):
 		for i in range(number_of_tensors):
 			for j in range(sigma_points.shape[1]):
 				lam = max(sigma_points[i*7, j], 0.01)
-				kappa = exp(sigma_points[i*7 + 1, j])
-				beta = exp(sigma_points[i*7 + 2, j])
+				kappa = max(min(exp(sigma_points[i*7 + 1, j]), 50), 0.1)
+				beta = max(min(exp(sigma_points[i*7 + 2, j]), kappa), 0.1)
 
 				quat2ZYZ(self.angles, sigma_points[i*7+3:(i+1)*7,j])
 				self.sh_bingham_coeffs(kappa, beta)
@@ -379,6 +380,7 @@ cdef class BinghamQuatModel(BinghamModel):
 			mean[i*7 + 1] = log(45) #min(self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]],45))
 			mean[i*7 + 2] = log(0.1)			# set angles: all needed!
 			ZYZ2quat(mean[i*7+3:(i+1)*7], np.array([0, dir[0], dir[1]]))
+
 #
 #
 	cdef void constrain(self, double[:,:] X): # nogil except *:

@@ -7,10 +7,10 @@ cdef class AbstractModel:
 	cdef int num_tensors
 	cdef double[:] m
 	cdef double GLOBAL_TENSOR_UNPACK_VALUE
-	cdef void normalize(self, double[:], double[:], int) #nogil expcept *
-	cdef void predict_new_observation(self, double[:,:], double[:,:]) #nogil expcept *
-	cdef bint kinit(self, double[:], double[:], double[:], double[:,:],double[:])
-	cdef void constrain(self, double[:,:]) #nogil expcept *
+	cdef void normalize(self, double[:], double[:], int)  #nogil expcept *
+	cdef void predict_new_observation(self, double[:,:], double[:,:]) except * #nogil expcept *
+	cdef bint kinit(self, double[:], double[:], double[:], double[:,:],double[:]) except *
+	cdef void constrain(self, double[:,:]) except * #nogil expcept *
 
 
 
@@ -19,9 +19,9 @@ cdef class fODFModel(AbstractModel):
 	cdef int order
 	cdef double[:,:,:,:,:] vector_field
 	cdef void normalize(self, double[:], double[:], int) #nogil expcept *
-	cdef void predict_new_observation(self, double[:,:], double[:,:]) #nogil expcept *
-	cdef bint kinit(self, double[:], double[:], double[:], double[:,:], double[:])
-	cdef void constrain(self, double[:,:]) #nogil expcept *
+	cdef void predict_new_observation(self, double[:,:], double[:,:]) except * #nogil expcept *
+	cdef bint kinit(self, double[:], double[:], double[:], double[:,:], double[:]) except *
+	cdef void constrain(self, double[:,:]) except * #nogil expcept *
 
 
 cdef class WatsonModel(AbstractModel):
@@ -34,26 +34,26 @@ cdef class WatsonModel(AbstractModel):
 	cdef double[:] pysh_v
 	cdef double[:] dipy_v
 	#cdef void normalize(self, double[:], double[:], int) #nogil expcept *
-	cdef void predict_new_observation(self, double[:,:], double[:,:]) #nogil expcept *
-	cdef bint kinit(self, double[:], double[:], double[:], double[:,:], double[:])
-	cdef void constrain(self, double[:,:]) #nogil expcept *
+	cdef void predict_new_observation(self, double[:,:], double[:,:]) except * #nogil expcept *
+	cdef bint kinit(self, double[:], double[:], double[:], double[:,:], double[:]) except *
+	cdef void constrain(self, double[:,:]) except * #nogil expcept *
 	cdef double sh_norm(self, double[:])
 
 
 cdef class BinghamModel(WatsonModel):
 	cdef double[:,:,:,:] lookup_table
 #	cdef int convert_to_index(self, double, double, double) #nogil expcept *
-	cdef void sh_bingham_coeffs(self, double, double) #nogil expcept *
-	cdef void predict_new_observation(self, double[:,:], double[:,:]) #nogil expcept *
-	cdef bint kinit(self, double[:], double[:], double[:], double[:,:], double[:])
-	cdef void constrain(self, double[:,:]) #nogil expcept *
+	cdef void sh_bingham_coeffs(self, double, double) except *#nogil expcept *
+	cdef void predict_new_observation(self, double[:,:], double[:,:]) except * #nogil expcept *
+	cdef bint kinit(self, double[:], double[:], double[:], double[:,:], double[:]) except *
+	cdef void constrain(self, double[:,:]) except * #nogil expcept *
 
 cdef class BinghamQuatModel(BinghamModel):
 #	cdef int convert_to_index(self, double, double, double) #nogil expcept *
-	cdef void sh_bingham_coeffs(self, double, double) #nogil expcept *
-	cdef void predict_new_observation(self, double[:,:], double[:,:]) #nogil expcept *
-	cdef bint kinit(self, double[:], double[:], double[:], double[:,:], double[:])
-	cdef void constrain(self, double[:,:]) #nogil exp
+	cdef void sh_bingham_coeffs(self, double, double) except * #nogil expcept *
+	cdef void predict_new_observation(self, double[:,:], double[:,:]) except * #nogil expcept *
+	cdef bint kinit(self, double[:], double[:], double[:], double[:,:], double[:]) except *
+	cdef void constrain(self, double[:,:]) except * #nogil exp
 
 cdef class MultiTensorModel(AbstractModel):
 	cdef double[:,:] M

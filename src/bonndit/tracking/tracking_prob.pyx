@@ -28,7 +28,8 @@ ctypedef struct possible_features:
 cdef void tracking(double[:,:,:,:] paths, double[:] seed,
                    Interpolation interpolate,
               Integration integrate, Trafo trafo, Validator validator, int max_track_length, int save_steps,
-	                   int samples, double[:,:,:,:] features, possible_features features_save, int minlen) : # nogil except *:
+	                   int samples, double[:,:,:,:] features, possible_features features_save, int minlen) except *:
+	# nogil except *:
 	"""
         Initializes the tracking for one seed in both directions.
 	@param paths:
@@ -82,7 +83,8 @@ cdef void tracking(double[:,:,:,:] paths, double[:] seed,
 				break
 
 cdef forward_tracking(double[:,:] paths,  Interpolation interpolate,
-                       Integration integrate, Trafo trafo, Validator validator, int max_track_length, int save_steps, double[:,:] features, possible_features feature_save) : # nogil except *:
+                       Integration integrate, Trafo trafo, Validator validator, int max_track_length, int save_steps, double[:,:] features, possible_features feature_save): # nogil except *:
+
 	"""
         This function do the tracking into one direction.
 	@param paths: empty path array to save the streamline points.

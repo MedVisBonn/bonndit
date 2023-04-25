@@ -11,7 +11,6 @@ cdef:
 	world2sphere(double, double, double)
 	sphere2world(double, double, double)
 	void sphere2cart(double[:], double[:]) nogil
-	void r_z_r_y_r_z(double[:,:], double[:])
 	orthonormal_from_sphere(double sigma, double phi)
 	void dm2toc(double *, double[:], int) nogil except *
 	void ddiagonal(double *, double[:], int, int)
@@ -45,3 +44,5 @@ cdef:
 	bint bigger(double[:], double[:]) nogil
 	bint smaller(double[:], double[:]) nogil
 	bint point_validator(double , int) nogil
+
+cpdef void r_z_r_y_r_z(double[:,:], double[:])

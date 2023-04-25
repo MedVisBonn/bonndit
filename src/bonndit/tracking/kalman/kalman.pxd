@@ -25,17 +25,19 @@ cdef class Kalman:
 
 
 
-	cdef int update_kalman_parameters(self, double[:], double[:,:], double[:])# nogil except *
+	cdef int update_kalman_parameters(self, double[:], double[:,:], double[:]) except *# nogil except *
 	cdef void linear(self, double[:], double[:], double[:,:], double[:, :, :, :]) nogil except *
 	cdef int compute_sigma_points(self, double[:,:], double[:,:], double[:], double[:,:], double) nogil except *
 	cdef void compute_convex_weights(self, double[:], double, double) nogil except *
 
 cdef class KalmanQuat(Kalman):
+	cdef int dim_model_mean
 	cdef double[:,:] X_s
 	cdef double[:] c_mean
 	cdef double[:] c_quat
+	cdef double[:] pred_X_mean_q
 
-	cdef int update_kalman_parameters(self, double[:], double[:,:], double[:])# nogil except *
+	cdef int update_kalman_parameters(self, double[:], double[:,:], double[:]) except * # nogil except *
 	cdef void linear(self, double[:], double[:], double[:,:], double[:, :, :, :]) nogil except *
 	cdef int compute_sigma_points(self, double[:,:], double[:,:], double[:], double[:,:], double) nogil except *
 	cdef void compute_convex_weights(self, double[:], double, double) nogil except *
