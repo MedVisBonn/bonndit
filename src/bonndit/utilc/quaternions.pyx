@@ -79,8 +79,8 @@ cpdef void XYZ2quat(double[:] ret, double[:] xyz) nogil except *:
     empty_quat2[2] = sin(xyz[1]/2)
     empty_quat3[0] = cos(xyz[2]/2)
     empty_quat3[3] = sin(xyz[2]/2)
-    quatmul(empty_quat, empty_quat2, empty_quat1)
-    quatmul(ret, empty_quat3, empty_quat)
+    quatmul(empty_quat, empty_quat2, empty_quat3)
+    quatmul(ret, empty_quat1, empty_quat)
 
 cpdef void XYZ2ZYZ(double[:] ret, double[:] xyz) nogil except *:
     """ Changes from XYZ to ZYZ angels"""
@@ -130,11 +130,11 @@ cpdef void ZYZ2quat(double[:] ret, double[:] zyz) nogil except *:
 
 cpdef void quat2rot(double[:,:] R, double[:] quat) nogil except *:
     R[0, 0] = quat[0] ** 2 + quat[1] ** 2 - quat[2] ** 2 - quat[3] ** 2
-    R[1, 0] =  2 * (quat[1] * quat[2] - quat[0] * quat[3])
-    R[2, 0] =  2 * (quat[1] * quat[3] + quat[0] * quat[2])
-    R[0, 1] = 2 * (quat[1] * quat[2] + quat[0] * quat[3])
+    R[1, 0] =  - 2 * (quat[1] * quat[2] - quat[0] * quat[3])
+    R[2, 0] =  - 2 * (quat[1] * quat[3] + quat[0] * quat[2])
+    R[0, 1] = - 2 * (quat[1] * quat[2] + quat[0] * quat[3])
     R[1, 1] = quat[0] ** 2 - quat[1] ** 2 + quat[2] ** 2 - quat[3] ** 2
     R[2, 1] =  2 * (quat[2] * quat[3] - quat[0] * quat[1])
-    R[0, 2] = 2 * (quat[1] * quat[3] - quat[0] * quat[2])
+    R[0, 2] = - 2 * (quat[1] * quat[3] - quat[0] * quat[2])
     R[1, 2] = 2 * (quat[2] * quat[3] + quat[0] * quat[1])
     R[2, 2] = quat[0] ** 2 - quat[1] ** 2 - quat[2] ** 2 + quat[3] ** 2
