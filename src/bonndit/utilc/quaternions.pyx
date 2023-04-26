@@ -122,31 +122,28 @@ cpdef void quat2ZYZ(double[:] ret, double[:] quat) nogil except *:
 cpdef void ZYZ2quat(double[:] ret, double[:] zyz) nogil except *:
     """
     Take ZYZ euler angles and convert them into a quaternion 
+    TODO: Das direkt ausschreiben! # Works:
     """
-    ZYZ2XYZ(empty_ret, zyz)
-    XYZ2quat(ret, empty_ret)
-
-
+    cblas_dscal(4, 0, &empty_quat1[0], 1)
+    cblas_dscal(4, 0, &empty_quat2[0], 1)
+    cblas_dscal(4, 0, &empty_quat3[0], 1)
+    empty_quat1[0] = cos(zyz[0] / 2)
+    empty_quat1[3] = sin(zyz[0] / 2)
+    empty_quat2[0] = cos(zyz[1] / 2)
+    empty_quat2[2] = sin(zyz[1] / 2)
+    empty_quat3[0] = cos(zyz[2] / 2)
+    empty_quat3[3] = sin(zyz[2] / 2)
+    quatmul(empty_quat, empty_quat2, empty_quat3)
+    quatmul(ret, empty_quat1, empty_quat)
 
 cpdef void quat2rot(double[:,:] R, double[:] quat) nogil except *:
-    cdef int i, c = 0
-    for i in range(4):
-        if quat[i] > 0:
-            c += 1
-    if c < 3:
-        x = 1
-    else:
-        x = -1
-
-    R[0, 0] = - quat[0] ** 2 - quat[1] ** 2 + quat[2] ** 2 + quat[3] ** 2
-    R[0, 1] =  2 * (quat[1] * quat[2] - quat[0] * quat[3])
-    R[0, 2] =   2 * (quat[1] * quat[3] + quat[0] * quat[2])
-    R[1, 0] = 2 * (quat[1] * quat[2] + quat[0] * quat[3])
-    R[1, 1] = - quat[0] ** 2 + quat[1] ** 2 - quat[2] ** 2 + quat[3] ** 2
-    R[1, 2] =  - 2 * (quat[2] * quat[3] - quat[0] * quat[1])
-    R[2, 0] = 2 * (quat[1] * quat[3] - quat[0] * quat[2])
-    R[2, 1] =  - 2 * (quat[2] * quat[3] + quat[0] * quat[1])
-    R[2, 2] = - quat[0] ** 2 + quat[1] ** 2 + quat[2] ** 2 - quat[3] ** 2
-    cblas_dscal(9, x, &R[0,0], 1)
-    if 3 > c > 0:
-        cblas_dscal(3, -1, &R[0, 2], 3)
+    # Works:
+    R[0, 0] = quat[0] ** 2 + quat[1] ** 2 - quat[2] ** 2 - quat[3] ** 2
+    R[0, 1] = - 2 * (quat[1] * quat[2] - quat[0] * quat[3])
+    R[0, 2] =  - 2 * (quat[1] * quat[3] + quat[0] * quat[2])
+    R[1, 0] = - 2 * (quat[1] * quat[2] + quat[0] * quat[3])
+    R[1, 1] = quat[0] ** 2 - quat[1] ** 2 + quat[2] ** 2 - quat[3] ** 2
+    R[1, 2] =   2 * (quat[2] * quat[3] - quat[0] * quat[1])
+    R[2, 0] =  -2 * (quat[1] * quat[3] - quat[0] * quat[2])
+    R[2, 1] =   2 * (quat[2] * quat[3] + quat[0] * quat[1])
+    R[2, 2] =  quat[0] ** 2 - quat[1] ** 2 - quat[2] ** 2 + quat[3] ** 2
