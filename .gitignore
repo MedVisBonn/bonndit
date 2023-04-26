@@ -119,3 +119,4 @@ ENV/
 # notebook experiments
 notebooks/experiments
 notebooks/experiments/*
+src/bonndit/utilc/watsonfitwrapper.cpp
