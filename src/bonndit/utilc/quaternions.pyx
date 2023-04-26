@@ -117,13 +117,13 @@ cpdef void quat2ZYZ(double[:] ret, double[:] quat) nogil except *:
             quaternion second
     """
     cdef double r32 = 2 * (quat[2] * quat[3] - quat[0] * quat[1])
-    cdef double r31 = -2 * (quat[1] * quat[3] - quat[0] * quat[2])
+    cdef double r31 = 2 * (quat[1] * quat[3] + quat[0] * quat[2])
     cdef double r33 = quat[0] ** 2 - quat[1] ** 2 - quat[2] ** 2 + quat[3] ** 2
-    cdef double r13 = -2 * (quat[1] * quat[3] - quat[0] * quat[2])
-    cdef double r23 =  2 * (quat[2] * quat[3] + quat[0] * quat[1])
-    ret[0] = atan2(r32, r31)
-    ret[1] = atan2(r23, -r13)
-    ret[2] = atan2(r31*cos(ret[0]) + r32*sin(ret[0]), r33)
+    cdef double r13 = 2 * (quat[1] * quat[3] - quat[0] * quat[2])
+    cdef double r23 = 2 * (quat[2] * quat[3] + quat[0] * quat[1])
+    ret[2] = atan2(r32, r31)
+    ret[0] = atan2(r23, -r13)
+    ret[1] = atan2(r31*cos(ret[2]) + r32*sin(ret[2]), r33)
 
 
 cpdef void ZYZ2quat(double[:] ret, double[:] zyz) nogil except *:
@@ -140,8 +140,8 @@ cpdef void ZYZ2quat(double[:] ret, double[:] zyz) nogil except *:
     empty_quat2[2] = sin(zyz[1] / 2)
     empty_quat3[0] = cos(zyz[2] / 2)
     empty_quat3[3] = sin(zyz[2] / 2)
-    quatmul(empty_quat, empty_quat2, empty_quat3)
-    quatmul(ret, empty_quat1, empty_quat)
+    quatmul(empty_quat, empty_quat2, empty_quat1)
+    quatmul(ret, empty_quat3, empty_quat)
 
 cpdef void quat2rot(double[:,:] R, double[:] quat) nogil except *:
     # Works:
