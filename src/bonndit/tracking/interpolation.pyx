@@ -1663,7 +1663,7 @@ cdef class UKFBinghamQuatAlt(Interpolation):
                     self.y.shape[0], -max(self.mean[i, 0], 0.01),
                     &self._model1.dipy_v[0], 1, &self.y[0, 0], 1)
         self.loss = cblas_dnrm2(self.y.shape[0], &self.y[0, 0], 1)
-        print(self.loss)
+        # print(self.loss)
             # print(self.loss/base)
         # print(np.array(self.mu), np.array(self.A), np.array(self.l_k_b))
         self.prob.calculate_probabilities_sampled_bingham(
