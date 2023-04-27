@@ -1432,10 +1432,8 @@ cdef class UKFBinghamAlt(Interpolation):
             for j in range(self.num_kalman):
                 if i == j:
                     continue
-                kappa = min(max(self.mean[j, 1], log(0.2)), log(50))
-                beta = min(max(self.mean[j, 2], log(0.1)), self.mean[j, 1])
-                kappa = exp(kappa)
-                beta = exp(beta)
+                kappa = min(max(exp(self.mean[j, 1]), 0.2), 49.99)
+                beta = min(max(exp(self.mean[j, 2]), 0.2), self.mean[j, 1])
                 # print(kappa, beta)
                 self._model.sh_bingham_coeffs(kappa, beta)
                 cblas_dcopy(3, &self.mean[j, 3], 1, &self._model.angles[0], 1)
@@ -1584,10 +1582,6 @@ cdef class UKFBinghamQuatAlt(Interpolation):
             cblas_dscal(3, 0, &self._kalman1.c_mean[3], 1)
             cblas_dcopy(3, &self.mean[1, 0], 1, &self._kalman2.c_mean[0], 1)
             cblas_dscal(3, 0, &self._kalman2.c_mean[3], 1)
-        # for i in range(10):
-            # print(np.array(self.y))
-        # info = self._kalman.update_kalman_parameters(self.mean, self.P,
-        # self.y)
             # print(np.array(self.P))
         # Run Kalmannfilter
         for i in range(self.num_kalman):
@@ -1616,7 +1610,8 @@ cdef class UKFBinghamQuatAlt(Interpolation):
                 self._kalman2.update_kalman_parameters(
                     self.mean[i],
                     self.P[i], self.y[i])
-        # print(np.array(self.mean))
+
+        print(np.array(self.mean))
         for i in range(self.num_kalman):
             self.mean[i, 0] = max(self.mean[i, 0], _lambda_min)
             self.mean[i, 1] = min(max(self.mean[i, 1], log(0.2)), log(50))
