@@ -268,7 +268,7 @@ cdef class BinghamModel(WatsonModel):
 		"""
 		cdef int i
 		cdef double[:] dot = np.zeros(self.vector_field.shape[1])
-		cdef double[:] Pv = np.array([0.01])
+		cdef double[:] Pv = np.array([0.01,], dtype=DTYPE)
 		cdef double[:] dir = np.zeros((3,))
 		ddiagonal(&P[0,0], Pv, P.shape[0], P.shape[1])
 		for i in range(self.vector_field.shape[1]):
@@ -365,7 +365,7 @@ cdef class BinghamQuatModel(BinghamModel):
 		"""
 		cdef int i
 		cdef double[:] dot = np.zeros(self.vector_field.shape[1])
-		cdef double[:] Pv = np.array([0.01])
+		cdef double[:] Pv = np.array([0.01,], dtype=DTYPE)
 		cdef double[:] dir = np.zeros((3,))
 		ddiagonal(&P[0,0], Pv, P.shape[0], P.shape[1])
 		for i in range(self.vector_field.shape[1]):

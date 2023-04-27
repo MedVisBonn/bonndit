@@ -20,7 +20,7 @@ cpdef void MRP_R2H(double[:] ret, double[:] point) nogil except *:
    cblas_dscal(4, 0, &ret[0], 1)
    ret[0] = 16 - cblas_dnrm2(3, &point[0], 1)**2
    cblas_daxpy(3, 8, &point[0], 1, &ret[1], 1)
-   cblas_dscal(4, 1/(16 + cblas_dnrm2(3, &point[0], 1)**2), &ret[0], 1) ## TODO: check if this is save!!
+   cblas_dscal(4, 1/(16 + cblas_dnrm2(3, &point[0], 1)**2), &ret[0], 1)
 
 cpdef void quatmul(double[:] ret, double[:] x, double[:] y) nogil except *:
     """
@@ -57,17 +57,17 @@ cpdef void MPR_R2H_q(double[:] ret, double[:] point, double[:] q) nogil except *
     cblas_dcopy(4, &q[0], 1, &empty_quat[0], 1)
     quatmul(ret, empty_quat, empty_quat2)
 
-cpdef void quat2XYZ(double[:] ret, double[:] quat) nogil except *:
-    cpdef double t0, t1, t2
-    t0 = 2* (quat[0] * quat[1] + quat[2] * quat[3])
-    t1 = 1 - 2* (quat[1] * quat[1] + quat[2] * quat[2])
-    ret[0] = atan2(t0,t1)
-    t2 = 2 * (quat[0] * quat[2] - quat[3]*quat[1])
-    t2 = fmax(fmin(t2, 1), -1)
-    ret[1] = asin(t2)
-    t0 = 2* (quat[0] * quat[3] + quat[2] * quat[1])
-    t1 = 1 - 2* (quat[3] * quat[3] + quat[2] * quat[2])
-    ret[2] = atan2(t0, t1)
+#cpdef void quat2XYZ(double[:] ret, double[:] quat) nogil except *:
+#    cpdef double t0, t1, t2
+#    t0 = 2* (quat[0] * quat[1] + quat[2] * quat[3])
+#    t1 = 1 - 2* (quat[1] * quat[1] + quat[2] * quat[2])
+#    ret[0] = atan2(t0,t1)
+#    t2 = 2 * (quat[0] * quat[2] - quat[3]*quat[1])
+#    t2 = fmax(fmin(t2, 1), -1)
+#    ret[1] = asin(t2)
+#    t0 = 2* (quat[0] * quat[3] + quat[2] * quat[1])
+#    t1 = 1 - 2* (quat[3] * quat[3] + quat[2] * quat[2])
+#    ret[2] = atan2(t0, t1)
 
 cpdef void XYZ2quat(double[:] ret, double[:] xyz) nogil except *:
     cblas_dscal(4, 0, &empty_quat1[0], 1)
@@ -82,27 +82,27 @@ cpdef void XYZ2quat(double[:] ret, double[:] xyz) nogil except *:
     quatmul(empty_quat, empty_quat2, empty_quat1)
     quatmul(ret, empty_quat3, empty_quat)
 
-cpdef void XYZ2ZYZ(double[:] ret, double[:] xyz) nogil except *:
-    """ Changes from XYZ to ZYZ angels"""
-    # R[2,2] - TODO was eigentlich wenn der Wert 0 ist???
-    if  cos(xyz[0])*cos(xyz[1]) != 0:
-        # arccos(R[2,2])
-        ret[1] = acos(cos(xyz[0])*cos(xyz[1]))
-        # - arctan2(R[2,1], R[2,0]
-        ret[2] = - atan2(sin(xyz[0])*cos(xyz[2]) + sin(xyz[1])*sin(xyz[2])*cos(xyz[0]), sin(xyz[0])*sin(xyz[2]) - sin(xyz[1])*cos(xyz[0])*cos(xyz[2]))
-        # arctan2(R[1,2], R[0,2])
-        ret[0]  = atan2(-sin(xyz[0])*cos(xyz[1]), sin(xyz[1]))
+#cpdef void XYZ2ZYZ(double[:] ret, double[:] xyz) nogil except *:
+#    """ Changes from XYZ to ZYZ angels"""
+#    # R[2,2] - TODO was eigentlich wenn der Wert 0 ist???
+#    if  cos(xyz[0])*cos(xyz[1]) != 0:
+#        # arccos(R[2,2])
+#        ret[1] = acos(cos(xyz[0])*cos(xyz[1]))
+#        # - arctan2(R[2,1], R[2,0]
+#        ret[2] = - atan2(sin(xyz[0])*cos(xyz[2]) + sin(xyz[1])*sin(xyz[2])*cos(xyz[0]), sin(xyz[0])*sin(xyz[2]) - sin(xyz[1])*cos(xyz[0])*cos(xyz[2]))
+#        # arctan2(R[1,2], R[0,2])
+#        ret[0]  = atan2(-sin(xyz[0])*cos(xyz[1]), sin(xyz[1]))
+#
 
 
-
-cpdef void ZYZ2XYZ(double[:] ret, double[:] zyz) nogil except *:
-    """Change from ZYZ angels to XYZ"""
-    # arctan( - R[1,2]/R[2,2])
-    ret[0] = atan(-sin(zyz[0])*sin(zyz[1])/ cos(zyz[1]))
-    # R[0,2]
-    ret[1] = asin(sin(zyz[1])*cos(zyz[0]))
-    # arctan( - R[0,1]/R[0,0])
-    ret[2] = atan((sin(zyz[0])*cos(zyz[2]) + sin(zyz[2])*cos(zyz[0])*cos(zyz[1]))/(-sin(zyz[0])*sin(zyz[2]) + cos(zyz[0])*cos(zyz[1])*cos(zyz[2])))
+#cpdef void ZYZ2XYZ(double[:] ret, double[:] zyz) nogil except *:
+#    """Change from ZYZ angels to XYZ"""
+#    # arctan( - R[1,2]/R[2,2])
+#    ret[0] = atan(-sin(zyz[0])*sin(zyz[1])/ cos(zyz[1]))
+#    # R[0,2]
+#    ret[1] = asin(sin(zyz[1])*cos(zyz[0]))
+#    # arctan( - R[0,1]/R[0,0])
+#    ret[2] = atan((sin(zyz[0])*cos(zyz[2]) + sin(zyz[2])*cos(zyz[0])*cos(zyz[1]))/(-sin(zyz[0])*sin(zyz[2]) + cos(zyz[0])*cos(zyz[1])*cos(zyz[2])))
 
 cpdef void quat2ZYZ(double[:] ret, double[:] quat) nogil except *:
     """

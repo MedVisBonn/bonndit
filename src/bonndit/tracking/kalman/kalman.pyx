@@ -35,7 +35,7 @@ cdef class Kalman:
 		self.P_M = np.zeros((dim_model,dim_model), dtype=np.float64)
 		self.gamma =  np.zeros((dim_data,2*dim_model+1), dtype=np.float64)
 		self.gamma2 =  np.zeros((dim_data,2*dim_model+1), dtype=np.float64)
-		self.KAPPA = 0 # 3
+		self.KAPPA = -3 # 3
 		self.D =  np.zeros((dim_model,dim_model), dtype=np.float64)
 		self.C =  np.zeros((dim_data, dim_model), dtype=np.float64)
 
@@ -199,7 +199,7 @@ cdef class KalmanQuat(Kalman):
 		# normalize and create new mapping. ## X2 == Y_i look different. no diff
 		cblas_dscal(4, 1/cblas_dnrm2(4, &self.pred_X_mean_q[3], 1), &self.pred_X_mean_q[3], 1)
 		## Update quat
-		cblas_dcopy(4, &self.pred_X_mean_q[3], 1, &self.c_quat[0], 1)
+		#cblas_dcopy(4, &self.pred_X_mean_q[3], 1, &self.c_quat[0], 1)
 		# 63
 		for i in range(self.X2.shape[1]):
 			cblas_dcopy(3, &self.pred_X_mean_q[0], 1, &self.X2[0,i], self.X2.shape[1])
