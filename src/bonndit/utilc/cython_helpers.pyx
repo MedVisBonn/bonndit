@@ -88,7 +88,7 @@ cdef void sphere2cart(double[:] sphere, double[:] cart) nogil:
 	cart[1] = sin(sphere[1]) * sin_theta
 	cart[2] = cos(sphere[0])
 
-cdef void cart2sphere(double[:] sphere, double[:] cart) nogil except *:
+cpdef void cart2sphere(double[:] sphere, double[:] cart) nogil except *:
 	if cart[2] > 0:
 		sphere[0] = atan(sqrt(cart[0]**2 + cart[1]**2) / cart[2])
 	elif cart[2] < 0:

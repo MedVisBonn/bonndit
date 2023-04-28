@@ -1,13 +1,9 @@
-#!python
 #cython: language_level=3, boundscheck=False, wraparound=False
 
-cimport cython
-import cython as cython
-from cython.parallel import prange
 
-import numpy as np
-cimport numpy as np
-np.import_array()
+#import numpy as np
+#cimport numpy as np
+#np.import_array()
 
 #cdef extern from "watsonfit.h":
 #        void minimize_watson_mult_o4(double* parameters, double* signal_p, double* est_signal_p, double* dipy_v_p, double* pysh_v_p, double* rot_pysh_v_p, double* angles_v_p, double* loss_p, int amount, int num_of_dir_p, int no_spread) nogil
@@ -52,3 +48,13 @@ cdef void c_map_pysh_to_dipy_o4(double* x, double* y):
         map_pysh_to_dipy_o4(x,y)
 cdef void c_sh_watson_coeffs(double x, double* y, int z):
         sh_watson_coeffs(x, y, z)
+
+cpdef void p_sh_rotate_real_coef(double[:] x, double[:] y, int z, double[:] a, double[:,:,:] b):
+        SHRotateRealCoef(&x[0],&y[0],z,&a[0],&b[0][0][0])
+
+cpdef void p_map_dipy_to_pysh_o4(double[:] x, double[:] y):
+       map_dipy_to_pysh_o4(&x[0], &y[0])
+cpdef void p_map_pysh_to_dipy_o4(double[:] x, double[:] y):
+        map_pysh_to_dipy_o4(&x[0],&y[0])
+cpdef void p_sh_watson_coeffs(double x, double[:] y, int z):
+        sh_watson_coeffs(x, &y[0], z)

@@ -19,3 +19,8 @@ cdef void c_sh_rotate_real_coef(double* , double* , int , double* , double* )
 cdef void c_map_dipy_to_pysh_o4(double* , double* )
 cdef void c_map_pysh_to_dipy_o4(double* , double* )
 cdef void c_sh_watson_coeffs(double , double* , int )
+
+cpdef void p_sh_rotate_real_coef(double[:] , double[:] , int , double[:] , double[:,:,:] )
+cpdef void p_map_dipy_to_pysh_o4(double[:] , double[:] )
+cpdef void p_map_pysh_to_dipy_o4(double[:] , double[:] )
+cpdef void p_sh_watson_coeffs(double , double[:] , int )

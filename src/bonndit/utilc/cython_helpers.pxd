@@ -21,7 +21,6 @@ cdef:
 	double angle_deg(double[:], double[:]) nogil
 	void matrix_mult(double[:], double[:,:], double[:]) nogil
 	double sum_c(double[:]) nogil
-	void cart2sphere(double[:], double[:]) nogil except *
 	void floor_pointwise_matrix(double[:,:], double[:,:]) nogil
 	double norm(double[:]) nogil
 	double scalar(double[:], double[:]) nogil
@@ -46,3 +45,4 @@ cdef:
 	bint point_validator(double , int) nogil
 
 cpdef void r_z_r_y_r_z(double[:,:], double[:])
+cpdef void cart2sphere(double[:], double[:]) nogil except *
