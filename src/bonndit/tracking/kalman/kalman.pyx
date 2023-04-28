@@ -180,40 +180,57 @@ cdef class KalmanQuat(Kalman):
 		#print('mean', np.array(mean), np.array(self.c_quat))
 		#print('c_mean', np.array(self.c_mean))
         #52
+		#print('c_mean', np.round(self.c_mean, 3))
+		#print('P', np.round(P,3))
 		info = self.compute_sigma_points(self.X, self.P_M, self.c_mean, P, self.KAPPA) # eq. 17
+		#print('X', np.round(self.X, 3))
 		#print('X', np.array(self.X))
 		self._model.constrain(self.X)
 		if info != 0:
 			return info
 		## map_back 53
-		for i in range(self.X.shape[1]):
-			MPR_R2H_q(self.X_s[3:,i], self.X[3:, i], self.c_quat)
-			cblas_dcopy(3, &self.X[0,i], self.X.shape[1], &self.X_s[0,i], self.X_s.shape[1])
+	#	for i in range(self.X.shape[1]):
+	#		MPR_R2H_q(self.X_s[3:,i], self.X[3:, i], self.c_quat)
+	#		cblas_dcopy(3, &self.X[0,i], self.X.shape[1], &self.X_s[0,i], self.X_s.shape[1])
 		#print('X_s', np.array(self.X_s), np.array(self.weights).shape)
 		# 58
 		#print(np.array(self.X_s[3:]))
-		for j in range(0, self.X_s.shape[1]):
-			if cblas_ddot(4, &self.X_s[3, self.dim_model_mean], self.X_s.shape[1], &self.X_s[3,j], self.X_s.shape[1]) < 0:
-				cblas_dscal(4, -1, &self.X_s[3,j], self.X_s.shape[1])
-		cblas_dgemv(CblasRowMajor, CblasNoTrans, self.X_s.shape[0], self.X_s.shape[1], 1, &self.X_s[0, 0], self.X_s.shape[1], &self.weights[0], 1, 0, &self.pred_X_mean_q[0], 1)
+	#	for j in range(0, self.X_s.shape[1]):
+	#		if cblas_ddot(4, &self.X_s[3, self.dim_model_mean], self.X_s.shape[1], &self.X_s[3,j], self.X_s.shape[1]) < 0:
+	#			cblas_dscal(4, -1, &self.X_s[3,j], self.X_s.shape[1])
+		# build avg in r6:
+		cblas_dgemv(CblasRowMajor, CblasNoTrans, self.X.shape[0], self.X.shape[1], 1, &self.X[0, 0], self.X.shape[1], &self.weights[0], 1, 0, &self.pred_X_mean[0], 1)
+		#print('avg', np.round(self.pred_X_mean, 4))
+		for i in range(self.X2.shape[1]):
+			MPR_R2H_q(self.X_s[3:,i], self.X[3:,i], self.c_quat)
+			cblas_dcopy(3, &self.X[0,i], self.X.shape[1], &self.X_s[0,i], self.X_s.shape[1])
+		# shouldnt be a problem
+		#print('c_quat before update', np.round(self.c_quat, 4))
+		MPR_R2H_q(self.c_quat, self.pred_X_mean[3:], self.c_quat)
+		#print('c_quat after update', np.round(self.c_quat, 4))
+		# update the quaternion
+		cblas_dscal(3, 0, &self.pred_X_mean[3], 1)
+		for i in range(self.X2.shape[1]):
+			cblas_dcopy(6, &self.pred_X_mean[0], 1, &self.X2[0,i], self.X2.shape[1])
+			#cblas_dscal(3, 0, &self.X2[3,i], 1)
+			MPR_H2R_q(self.X[3:, i], self.X_s[3:,i], self.c_quat)
+		#print('X after chart change', np.round(self.X, 4))
 		# normalize and create new mapping. ## X2 == Y_i look different. no diff
-		cblas_dscal(4, 1/cblas_dnrm2(4, &self.pred_X_mean_q[3], 1), &self.pred_X_mean_q[3], 1)
+		#cblas_dscal(4, 1/cblas_dnrm2(4, &self.pred_X_mean_q[3], 1), &self.pred_X_mean_q[3], 1)
 		## Update quat
 		#cblas_dcopy(4, &self.pred_X_mean_q[3], 1, &self.c_quat[0], 1)
 		# 63
-		for i in range(self.X2.shape[1]):
-			cblas_dcopy(3, &self.pred_X_mean_q[0], 1, &self.X2[0,i], self.X2.shape[1])
-			cblas_dscal(3, 0, &self.X2[3,i], self.X2.shape[1])
-			# map back to R
-			MPR_H2R_q(self.X[3:, i], self.X_s[3:,i], self.c_quat)
+
 		#
-		cblas_dcopy(3, &self.pred_X_mean_q[0], 1, &self.pred_X_mean[0], 1)
-		cblas_dscal(3, 0, &self.pred_X_mean[3], 1)
+		#cblas_dcopy(3, &self.pred_X_mean_q[0], 1, &self.pred_X_mean[0], 1)
+		#cblas_dscal(3, 0, &self.pred_X_mean[3], 1)
 		#print('X -2', np.array(self.X))
 		sub_pointwise(&self.X2[0,0], &self.X[0,0], &self.X2[0,0], self.X.shape[0]* self.X.shape[1])
 		# 64
 		special_mat_mul(self.P_xx, self.X2, self.weights, self.X2, 1)
+		#print('p_xx', np.round(self.P_xx,4), np.linalg.cond(self.P_xx))
 		cblas_daxpy(self.P_xx.shape[0] * self.P_xx.shape[1], 1, &self._model.PROCESS_NOISE[0,0], 1, &self.P_xx[0, 0], 1)
+		#print('p_xx', np.linalg.cond(self.P_xx))
 		# use the mapped back to create gamma -> X_s
 		self._model.predict_new_observation(self.gamma, self.X_s) # eq. 23
 		cblas_dgemv(CblasRowMajor, CblasNoTrans, self.gamma.shape[0], self.gamma.shape[1], 1, &self.gamma[0, 0],self.gamma.shape[1], &self.weights[0], 1, 0, &self.pred_Y_mean[0], 1)
@@ -232,10 +249,12 @@ cdef class KalmanQuat(Kalman):
 		## TODO das hier ist noch unsauber!
 		cblas_dgemv(CblasRowMajor, CblasNoTrans, self.K.shape[0], self.K.shape[1], 1, &self.K[0,0], self.K.shape[1], &self.y_diff[0], 1, 1, &self.pred_X_mean[0], 1)
 		cblas_dcopy(3, &self.pred_X_mean[0],1, &mean[0], 1)
-		MPR_R2H_q(mean[3:], self.pred_X_mean[3:], self.c_quat)
-		cblas_dcopy(3, &self.pred_X_mean[0], 1, &self.c_mean[0], 1)
-		cblas_dscal(3, 0, &self.c_mean[3], 1)
-		cblas_dcopy(3, &mean[3], 1, &self.c_quat[0], 1)
+		cblas_dcopy(4, &self.c_quat[0], 1,  &mean[3], 1)
+		#MPR_R2H_q(mean[3:], self.pred_X_mean[3:], self.c_quat)
+
+		cblas_dcopy(6, &self.pred_X_mean[0], 1, &self.c_mean[0], 1)
+		#cblas_dscal(3, 0, &self.c_mean[3], 1)
+		#cblas_dcopy(3, &mean[3], 1, &self.c_quat[0], 1)
 		cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasTrans, self.P_yy.shape[0], self.K.shape[0], self.P_yy.shape[1], 1, &self.P_yy[0,0], self.P_yy.shape[1], &self.K[0,0], self.P_yy.shape[1], 0, &self.C[0,0], self.K.shape[0])
 		cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, self.K.shape[0], self.C.shape[1], self.K.shape[1], 1, &self.K[0,0], self.K.shape[1], &self.C[0,0], self.C.shape[1], 0, &self.D[0,0], self.C.shape[1])
 		sub_pointwise(&P[0,0], &self.P_xx[0,0], &self.D[0,0], P.shape[0]*P.shape[1])
