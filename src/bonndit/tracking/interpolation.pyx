@@ -1603,11 +1603,11 @@ cdef class UKFBinghamQuatAlt(Interpolation):
                     -max(self.mean[j, 0], _lambda_min), &self.res[0], 1,
                     &self.y[i, 0], 1)
             if i == 0:
-                self._kalman1.update_kalman_parameters(
+                info = self._kalman1.update_kalman_parameters(
                     self.mean[i],
                     self.P[i], self.y[i])
             else:
-                self._kalman2.update_kalman_parameters(
+                info = self._kalman2.update_kalman_parameters(
                     self.mean[i],
                     self.P[i], self.y[i])
 
@@ -1636,9 +1636,10 @@ cdef class UKFBinghamQuatAlt(Interpolation):
             self.l_k_b[i, 2] = exp(self.mean[i, 2])
 
         if True:  # self.store_loss:
-            # self._kalman1.linear(self.point_index[:3], self.y[0],
-            # self.mlinear, self.data)
-            # base = cblas_dnrm2(self.y.shape[0], &self.y[0,0], 1)
+            self._kalman1.linear(
+                self.point_index[:3], self.y[0],
+                self.mlinear, self.data)
+             # base = cblas_dnrm2(self.y.shape[0], &self.y[0,0], 1)
             for i in range(self.num_kalman):
                 kappa = exp(self.mean[i, 1])
                 beta = exp(self.mean[i, 2])
@@ -1658,7 +1659,7 @@ cdef class UKFBinghamQuatAlt(Interpolation):
                     self.y.shape[0], -max(self.mean[i, 0], 0.01),
                     &self._model1.dipy_v[0], 1, &self.y[0, 0], 1)
         self.loss = cblas_dnrm2(self.y.shape[0], &self.y[0, 0], 1)
-        # print(self.loss)
+        print(self.loss)
             # print(self.loss/base)
         # print(np.array(self.mu), np.array(self.A), np.array(self.l_k_b))
         self.prob.calculate_probabilities_sampled_bingham(
