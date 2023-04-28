@@ -1091,7 +1091,7 @@ cdef class UKFBinghamQuatAlt(Interpolation):
 			else:
 				info = self._kalman2.update_kalman_parameters(self.mean[i], self.P[i], self.y[i])
 
-		print(np.array(self.mean))
+		#print(np.array(self.mean))
 		for i in range(self.num_kalman):
 			self.mean[i, 0] = max(self.mean[i, 0], _lambda_min)
 			self.mean[i, 1] = min(max(self.mean[i, 1], log(0.2)), log(50))
@@ -1115,7 +1115,7 @@ cdef class UKFBinghamQuatAlt(Interpolation):
 			for i in range(self.num_kalman):
 				kappa = exp(self.mean[i, 1])
 				beta = exp(self.mean[i, 2])
-	#			self._model1.sh_bingham_coeffs(kappa, beta)
+				self._model1.sh_bingham_coeffs(kappa, beta)
 				quat2ZYZ(self._model.angles, self.mean[i,3:])
 				c_map_dipy_to_pysh_o4(&self._model1.dipy_v[0], &self._model1.pysh_v[0])
 				c_sh_rotate_real_coef(&self._model1.rot_pysh_v[0], &self._model1.pysh_v[0], self._model1.order,
