@@ -251,8 +251,8 @@ cdef class KalmanQuat(Kalman):
 		sub_pointwise(&self.y_diff[0], &y[0], &self.pred_Y_mean[0], self.pred_Y_mean.shape[0])
 		cblas_dgemv(CblasRowMajor, CblasNoTrans, self.K.shape[0], self.K.shape[1], 1, &self.K[0,0], self.K.shape[1], &self.y_diff[0], 1, 1, &self.pred_X_mean[0], 1)
 		cblas_dcopy(3, &self.pred_X_mean[0],1, &mean[0], 1)
-		cblas_dcopy(4, &self.c_quat[0], 1,  &mean[3], 1)
-		#MPR_R2H_q(mean[3:], self.pred_X_mean[3:], self.c_quat)
+		#cblas_dcopy(4, &self.c_quat[0], 1,  &mean[3], 1)
+		MPR_R2H_q(mean[3:], self.pred_X_mean[3:], self.c_quat)
 
 		cblas_dcopy(6, &self.pred_X_mean[0], 1, &self.c_mean[0], 1)
 		#cblas_dscal(3, 0, &self.c_mean[3], 1)
