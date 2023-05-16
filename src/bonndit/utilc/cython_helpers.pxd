@@ -14,7 +14,7 @@ cdef:
 	orthonormal_from_sphere(double sigma, double phi)
 	void dm2toc(double *, double[:], int) nogil except *
 	void ddiagonal(double *, double[:], int, int)
-	void special_mat_mul(double[:,:], double[:,:], double[:], double[:,:], double) nogil except *
+	void special_mat_mul(double[:,:], double[:,:], double[:], double[:,:], double)# nogil except *
 	void sub_pointwise(double *, double *, double *, int) nogil except *
 	double clip(double, double, double) nogil
 	void add_pointwise(double[:,:], double[:,:], double[:]) nogil
@@ -45,4 +45,5 @@ cdef:
 	bint point_validator(double , int) nogil
 
 cpdef void r_z_r_y_r_z(double[:,:], double[:])
-cpdef void cart2sphere(double[:], double[:]) nogil except *
+cdef void cart2sphere(double[:], double[:]) nogil except *
+cdef void cross(double[:] , double[:] , double[:] )

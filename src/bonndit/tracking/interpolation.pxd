@@ -173,8 +173,20 @@ cdef class UKFBinghamQuatAlt(Interpolation):
 	cdef bint store_loss
 	cdef double[:,:,:] A
 	cdef double[:,:] R
+	cdef double[:,:] R2
+	cdef double[:] test
 	cdef double[:,:] mu
 	cdef double[:,:] l_k_b
+	cdef double[:] orth_both
+	cdef double[:] orth_next
+	cdef double[:] orth_old
+	cdef double[:] newframe
+	cdef double[:] oldframe
+	cdef double[:] oldframe_inv
+	cdef double[:] rot
+
+
+
 
 cdef class UKFBingham(UKF):
 	cdef double[:,:,:] A

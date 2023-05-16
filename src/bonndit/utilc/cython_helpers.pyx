@@ -88,7 +88,7 @@ cdef void sphere2cart(double[:] sphere, double[:] cart) nogil:
 	cart[1] = sin(sphere[1]) * sin_theta
 	cart[2] = cos(sphere[0])
 
-cpdef void cart2sphere(double[:] sphere, double[:] cart) nogil except *:
+cdef void cart2sphere(double[:] sphere, double[:] cart) nogil except *:
 	if cart[2] > 0:
 		sphere[0] = atan(sqrt(cart[0]**2 + cart[1]**2) / cart[2])
 	elif cart[2] < 0:
@@ -147,7 +147,7 @@ cdef void ddiagonal(double * M, double[:] v, int columns, int rows):
 				M[i * columns + j] = 0
 
 
-cdef void special_mat_mul(double[:,:] M, double[:,:] A, double[:] B, double[:,:] C, double scale) nogil except *:
+cdef void special_mat_mul(double[:,:] M, double[:,:] A, double[:] B, double[:,:] C, double scale):
 	"""
 	Calc
 		M = A*diag(B)*C
@@ -371,3 +371,7 @@ cdef void set_zero_3d(double[:,:,:] v) nogil:
 			for k in range(o):
 				v[i,j,k] = 0
 
+cdef void cross(double[:] ret, double[:] a, double[:] b):
+	ret[0] = a[1] * b[2] - a[2] * b[1]
+	ret[1] = a[2] * b[0] - a[0] * b[2]
+	ret[2] = a[0] * b[1] - a[1] * b[0]

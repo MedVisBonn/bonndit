@@ -6,9 +6,13 @@
 from setuptools import setup, find_packages
 from distutils.extension import Extension
 from Cython.Build import cythonize
+from Cython.Compiler.Options import get_directive_defaults
 import numpy
 import os
 
+directive_def = get_directive_defaults()
+directive_def['linetrace'] = True
+directive_def['binding'] = True
 if "MKLROOT" not in os.environ:
     raise Exception("""MKLROOT has to be a enviroment Variable. Follow the 
 					https://www.intel.com/content/www/us/en/develop/documentation/oneapi-programming-guide/top/oneapi-development-environment-setup.html description to set them correctly""")
@@ -28,7 +32,7 @@ watson_libraries = ceres_libs + suite_sparse_libs + ['pthread', 'fftw3', 'm', 'w
 ext_modules = [
     Extension("bonndit.utilc.watsonfitwrapper",
               sources=["src/bonndit/utilc/watsonfitwrapper.pyx"],
-              define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
+              define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"), ('CYTHON_TRACE', '1')],
               include_dirs=[".", numpy.get_include(), "/usr/lib"],
               libraries=watson_libraries,
               language="c++",
@@ -42,8 +46,9 @@ ext_modules = [
         libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
         library_dirs=["%s/lib/intel64" % mklroot],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
-        extra_link_args=["-Wl,--no-as-needed"]
-    ),
+        extra_link_args=["-Wl,--no-as-needed"],
+        define_macros = [('CYTHON_TRACE', '1')],
+),
     Extension(
         "bonndit.utilc.quaternions",
         ["src/bonndit/utilc/quaternions.pyx"],
@@ -51,8 +56,9 @@ ext_modules = [
         libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
         library_dirs=["%s/lib/intel64" % mklroot],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
-        extra_link_args=["-Wl,--no-as-needed"]
-    ),
+        extra_link_args=["-Wl,--no-as-needed"],
+        define_macros = [('CYTHON_TRACE', '1')],
+),
     Extension(
         "bonndit.utilc.cython_helpers",
         ["src/bonndit/utilc/cython_helpers.pyx"],

@@ -6,14 +6,14 @@ import cython
 from tqdm import tqdm
 from bonndit.utilc.cython_helpers cimport add_pointwise, floor_pointwise_matrix, norm, mult_with_scalar,\
 	add_vectors, sub_vectors, scalar, clip, set_zero_vector, set_zero_matrix, sum_c, sum_c_int, set_zero_vector_int, \
-	angle_deg, set_zero_matrix_int, point_validator, cart2sphere
+	angle_deg, set_zero_matrix_int, point_validator, cart2sphere, cross
 import numpy as np
 import time
 from bonndit.utilc.cython_helpers cimport dm2toc
 from bonndit.utilc.hota cimport hota_4o3d_sym_norm, hota_4o3d_sym_eval, hota_8o3d_sym_eval
 from bonndit.utilc.lowrank cimport approx_initial
 from bonndit.utilc.structures cimport dj_o4
-from bonndit.utilc.quaternions cimport quat2rot, quat2ZYZ
+from bonndit.utilc.quaternions cimport quat2rot, quat2ZYZ, basis2quat, quatmul, quat_inv
 from bonndit.utilc.watsonfitwrapper cimport *
 from .ItoW cimport Trafo
 cdef int[:,:] permute_poss = np.array([[0,1,2],[0,2,1], [1,0,2], [1,2,0], [2,1,0], [2,0,1]], dtype=np.int32)
@@ -952,6 +952,7 @@ cdef class UKFBinghamAlt(Interpolation):
 		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4,4,1,&self.inv_trafo[0,0], 4, &self.point_world[0], 1, 0, &self.point_index[0],1)
 		cdef int i,j, info = 0
 		cdef double base = 0
+		cdef double kappa, beta
 		# Interpolate current point
 
 		self._kalman1.linear(self.point_index[:3], self.y[0], self.mlinear, self.data)
@@ -970,8 +971,9 @@ cdef class UKFBinghamAlt(Interpolation):
 			for j in range(self.num_kalman):
 				if i == j:
 					continue
+				#print(self.mean[j, 1], self.mean[j, 2])
 				kappa = min(max(exp(self.mean[j, 1]), 0.2), 49.99)
-				beta = min(max(exp(self.mean[j, 2]), 0.2), self.mean[j, 1])
+				beta = min(max(exp(self.mean[j, 2]), 0.2), kappa)
 				#print(kappa, beta)
 				self._model.sh_bingham_coeffs(kappa, beta)
 				cblas_dcopy(3, &self.mean[j, 3], 1, &self._model.angles[0], 1)
@@ -1046,7 +1048,18 @@ cdef class UKFBinghamQuatAlt(Interpolation):
 		self.mu = np.zeros((dim_model//6, 3))
 		self.l_k_b = np.zeros((dim_model//6, 3))
 		self.R = np.zeros((3, 3), dtype=DTYPE)
+		self.test = np.zeros((3,))
+		self.R2 = np.zeros((3,3))
 		self._model = BinghamQuatModel(vector_field=vector_field, **kwargs)
+		self.orth_both = np.zeros((3), dtype=DTYPE)
+		self.orth_next= np.zeros((3), dtype=DTYPE)
+		self.orth_old= np.zeros((3), dtype=DTYPE)
+		self.newframe = np.zeros((4), dtype=DTYPE)
+		self.oldframe= np.zeros((4), dtype=DTYPE)
+		self.oldframe_inv= np.zeros((4), dtype=DTYPE)
+		self.rot = np.zeros((4), dtype=DTYPE)
+
+#	cpdef int rotate_state
 
 	cpdef int interpolate(self, double[:] point, double[:] old_dir, int restart) except *:
 		self.point_world[:3] = point
@@ -1097,6 +1110,10 @@ cdef class UKFBinghamQuatAlt(Interpolation):
 			self.mean[i, 1] = min(max(self.mean[i, 1], log(0.2)), log(50))
 			self.mean[i, 2] = min(max(self.mean[i, 2], log(0.1)), self.mean[i, 1])
 			quat2rot(self.R, self.mean[i, 3:])
+	#		quat2ZYZ(self.test, self.mean[i, 3:])
+	#		r_z_r_y_r_z(self.R2, self.test)
+	#		print(np.linalg.norm(np.array(self.R) - np.array(self.R2)))
+
 			cblas_dscal(3, -1, &self.R[0, 0], 3)
 			cblas_dscal(3, -1, &self.R[0, 2], 3)
 			cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasTrans, 3, 3, 1, 1, &self.R[0, 0], 3, &self.R[0, 0], 3, 0,
@@ -1109,25 +1126,48 @@ cdef class UKFBinghamQuatAlt(Interpolation):
 			self.l_k_b[i, 1] = exp(self.mean[i, 1])
 			self.l_k_b[i, 2] = exp(self.mean[i, 2])
 
-		if True: #self.store_loss:
-			self._kalman1.linear(self.point_index[:3], self.y[0], self.mlinear, self.data)
-			 #base = cblas_dnrm2(self.y.shape[0], &self.y[0,0], 1)
-			for i in range(self.num_kalman):
-				kappa = exp(self.mean[i, 1])
-				beta = exp(self.mean[i, 2])
-				self._model1.sh_bingham_coeffs(kappa, beta)
-				quat2ZYZ(self._model.angles, self.mean[i,3:])
-				c_map_dipy_to_pysh_o4(&self._model1.dipy_v[0], &self._model1.pysh_v[0])
-				c_sh_rotate_real_coef(&self._model1.rot_pysh_v[0], &self._model1.pysh_v[0], self._model1.order,
-									  &self._model1.angles[0], &dj_o4[0][0][0])
-				c_map_pysh_to_dipy_o4(&self._model1.rot_pysh_v[0], &self._model1.dipy_v[0])
-				cblas_daxpy(self.y.shape[0], -max(self.mean[i, 0], 0.01), &self._model1.dipy_v[0], 1, &self.y[0,0], 1)
-		self.loss = cblas_dnrm2(self.y.shape[0], &self.y[0,0], 1)
-		print(self.loss)
+	#	if True: #self.store_loss:
+	#		self._kalman1.linear(self.point_index[:3], self.y[0], self.mlinear, self.data)
+	#		 #base = cblas_dnrm2(self.y.shape[0], &self.y[0,0], 1)
+	#		for i in range(self.num_kalman):
+	#			kappa = exp(self.mean[i, 1])
+	#			beta = exp(self.mean[i, 2])
+	#			self._model1.sh_bingham_coeffs(kappa, beta)
+	#			quat2ZYZ(self._model.angles, self.mean[i,3:])
+	#			c_map_dipy_to_pysh_o4(&self._model1.dipy_v[0], &self._model1.pysh_v[0])
+	#			c_sh_rotate_real_coef(&self._model1.rot_pysh_v[0], &self._model1.pysh_v[0], self._model1.order,
+	#								  &self._model1.angles[0], &dj_o4[0][0][0])
+	#			c_map_pysh_to_dipy_o4(&self._model1.rot_pysh_v[0], &self._model1.dipy_v[0])
+	#			cblas_daxpy(self.y.shape[0], -max(self.mean[i, 0], 0.01), &self._model1.dipy_v[0], 1, &self.y[0,0], 1)
+	#	self.loss = cblas_dnrm2(self.y.shape[0], &self.y[0,0], 1)
+	#	print(self.loss)
 			#print(self.loss/base)
 		#print(np.array(self.mu), np.array(self.A), np.array(self.l_k_b))
 		self.prob.calculate_probabilities_sampled_bingham(self.mu, old_dir, self.A, self.l_k_b)
 		cblas_dcopy(3, &self.prob.best_fit[0], 1, &self.next_dir[0], 1)
+		## correction step
+		# calculate crossproduct between old and new direction
+		cross(self.orth_both, old_dir, self.next_dir)
+		cdef double s = cblas_dnrm2(3, &self.orth_both[0], 1)
+		if s != 0:
+			cblas_dscal(3, 1/s, &self.orth_both[0], 1)
+			cross(self.orth_next, self.orth_both, self.next_dir)
+			s = cblas_dnrm2(3, &self.orth_next[0], 1)
+			cblas_dscal(3, 1/s, &self.orth_next[0], 1)
+			cross(self.orth_old, self.orth_both, old_dir)
+			s = cblas_dnrm2(3, &self.orth_old[0], 1)
+			cblas_dscal(3, 1/s, &self.orth_old[0], 1)
+			basis2quat(self.newframe, self.next_dir, self.orth_both, self.orth_next)
+			basis2quat(self.oldframe, old_dir, self.orth_both, self.orth_old)
+			quat_inv(self.oldframe_inv, self.oldframe, 1, 1)
+			quatmul(self.rot, self.newframe, self.oldframe)
+			quatmul(self._kalman1.c_quat1, self.rot, self._kalman1.c_quat)
+			cblas_dcopy(4, &self._kalman1.c_quat1[0], 1, &self._kalman1.c_quat[0], 1)
+			quatmul(self._kalman2.c_quat1, self.rot, self._kalman2.c_quat)
+			cblas_dcopy(4, &self._kalman2.c_quat1[0], 1, &self._kalman2.c_quat[0], 1)
+
+
+
 		return info
 
 
