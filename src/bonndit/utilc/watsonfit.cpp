@@ -356,6 +356,43 @@ void SHrtoc(double* ccilm, double* rcilm, int lmax) {
     }
 }
 
+
+static double cindex_to_dipy_o4[15] = {
+        1/std::sqrt(4.0*M_PI),
+        -1/std::sqrt(2.0*M_PI),
+        1/std::sqrt(2.0*M_PI),
+        1/std::sqrt(4.0*M_PI),
+        -1/std::sqrt(2.0*M_PI),
+        1/std::sqrt(2.0*M_PI),
+        -1/std::sqrt(2.0*M_PI),
+        1/std::sqrt(2.0*M_PI),
+        -1/std::sqrt(2.0*M_PI),
+        1/std::sqrt(2.0*M_PI),
+        1/std::sqrt(4.0*M_PI),
+        -1/std::sqrt(2.0*M_PI),
+        1/std::sqrt(2.0*M_PI),
+        -1/std::sqrt(2.0*M_PI),
+         1/std::sqrt(2.0*M_PI) };
+
+
+static int cindex_to_dipy_o4_mapping[15] = {
+   0,
+   20,
+   19,
+   3,
+   4,
+   5,
+   29,
+   28,
+   27,
+   26,
+   10,
+   11,
+   12,
+   13,
+   14
+  };
+
 void SHctor(double* ccilm, double* rcilm, int lmax) {
     int max = lmax+1;
 
@@ -383,6 +420,17 @@ void SHCilmToCindex(double* cilm, double* cindex, int lmax) {
     }
 }
 
+void SHDipyToCindex(double* cindex, double* cilm, int lmax, int spacing) {
+    for (int i = 0; i < 15; i++) {
+        cilm[cindex_to_dipy_o4_mapping[i]] = cindex[i * spacing] * 1/cindex_to_dipy_o4[i];
+    }
+    cilm[15] = 0;
+    cilm[18] = 0;
+    cilm[25] = 0;
+
+}
+
+
 void SHCindexToCilm(double* cindex, double* cilm, int lmax) {
     int clmax = lmax+1;
     int cimax = (lmax*(lmax+1))/2+lmax+1;
@@ -396,12 +444,17 @@ void SHCindexToCilm(double* cindex, double* cilm, int lmax) {
     }
 }
 
+void SHCindexToDipy(double* cindex, double* cilm, int lmax, int spacing) {
+    for (int i = 0; i < 15; i++) {
+        cilm[i * spacing] = cindex[cindex_to_dipy_o4_mapping[i]] * cindex_to_dipy_o4[i];
+    }
+}
+
 void SHRotateCoef(double* x, double* cof, double* rcof, double* dj, int lmax) {
     int clmax = lmax+1;
     int cimax = (lmax*(lmax+1))/2+lmax+1;
-    
-    double sum[2], temp[2][lmax+1], temp2[2][lmax+1], cgam[lmax+1], 
-            sgam[lmax+1], calf[lmax+1], salf[lmax+1], cbet[lmax+1], sbet[lmax+1];
+    //cout << "start \n" ;
+    double sum[2], temp[2][lmax+1], temp2[2][lmax+1], cgam[lmax+1], sgam[lmax+1], calf[lmax+1], salf[lmax+1], cbet[lmax+1], sbet[lmax+1];
     
     double pi2 = M_PI_2;
 
@@ -424,11 +477,18 @@ void SHRotateCoef(double* x, double* cof, double* rcof, double* dj, int lmax) {
         sgam[lp1-1] = sin(l*gamma);
         calf[lp1-1] = cos(l*alpha);
         salf[lp1-1] = sin(l*alpha);
-    
-
+    }
+      //  cout << "l";
+      //  cout << lp1;
+      //  cout << "\n";
+    for (int lp1 = 1; lp1 <= lmax+1; lp1+=2) {
         // rotation around alpha angle
         for (int mp1 = 1; mp1 <= lp1; mp1++) {
             int indx = ind+mp1;
+        //    cout << 0 * cimax + indx -1;
+        //    cout << "\n";
+        //    cout << 1 * cimax + indx -1;
+         //   cout << "\n";
             temp[0][mp1-1] = cof[0 * cimax + indx-1] * calf[mp1-1] - cof[1 * cimax + indx-1] * salf[mp1-1];
             temp[1][mp1-1] = cof[1 * cimax + indx-1] * calf[mp1-1] + cof[0 * cimax + indx-1] * salf[mp1-1];
         }
@@ -466,7 +526,7 @@ void SHRotateCoef(double* x, double* cof, double* rcof, double* dj, int lmax) {
             rcof[1 * cimax + indx-1] = sum[1] * cgam[jp1-1] + sum[0] * sgam[jp1-1];
         }
 
-        ind = ind + lp1;
+        ind = ind + lp1 + lp1 +1 ;
     }
 }
 
@@ -487,6 +547,97 @@ void SHRotateRealCoef(double* cilmrot, double* cilm, int lmax, double* x, double
     SHctor(&ccilmd[0][0][0], cilmrot, lmax);
 }
 
+void SHRotateRealCoefFast(double* dipy_out, int space_out, double* dipy_in, int space_in,  int lmax, double* x, double* dj) {
+    int clmax = lmax+1;
+    int cimax = (lmax*(lmax+1))/2+lmax+1;
+
+    double sum_o4[2], temp_o4[2][5], temp2_o4[2][5], cgam_o4[5], sgam_o4[5], calf_o4[5], salf_o4[5], cbet_o4[5], sbet_o4[5];
+    //cout << "start \n" ;
+
+    double pi2 = M_PI_2;
+
+    double alpha = x[0];
+    double beta = x[1];
+    double gamma = x[2];
+
+    alpha = alpha - pi2;
+    gamma = gamma + pi2;
+    beta = -beta;
+
+    int ind = 0;
+    int ind2 = -1;
+    // all degrees
+    for (int lp1 = 1; lp1 <= lmax+1; lp1++) {
+        int l = lp1-1;
+        cbet_o4[lp1-1] = cos(l*beta);
+        sbet_o4[lp1-1] = sin(l*beta);
+        cgam_o4[lp1-1] = cos(l*gamma);
+        sgam_o4[lp1-1] = sin(l*gamma);
+        calf_o4[lp1-1] = cos(l*alpha);
+        salf_o4[lp1-1] = sin(l*alpha);
+    }
+
+    for (int lp1 = 1; lp1 <= lmax+1; lp1+=2) {
+        // rotation around alpha angle
+        int indx = ind2 + lp1  ;
+        for (int mp1 = 1; mp1 <= lp1; mp1++) {
+
+            if (mp1 == 1) {
+                temp_o4[0][0] = dipy_in[indx*space_in] * calf_o4[0] *  1/cindex_to_dipy_o4[indx];
+                temp_o4[1][0] = 0;
+            }
+            else {
+                temp_o4[0][mp1-1] = 1/cindex_to_dipy_o4[indx+(mp1-1)] * dipy_in[(indx + (mp1-1))*space_in] * calf_o4[mp1-1] - 1/cindex_to_dipy_o4[indx-(mp1-1)] *  dipy_in[(indx - (mp1-1))*space_in] * salf_o4[mp1-1];
+                temp_o4[1][mp1-1] = 1/cindex_to_dipy_o4[indx-(mp1-1)] * dipy_in[(indx - (mp1-1))*space_in] * calf_o4[mp1-1] + 1/cindex_to_dipy_o4[indx+(mp1-1)] *  dipy_in[(indx + (mp1-1))*space_in] * salf_o4[mp1-1];
+            }
+        }
+
+        // first step of euler decomposition followed by rotation around beta angle
+        for (int jp1 = 1; jp1 <= lp1; jp1++) {
+            sum_o4[0] = dj[((jp1-1) * clmax + 0) * clmax + (lp1-1)] * temp_o4[0][0];
+            sum_o4[1] = 0.0;
+            int isgn = 1 - 2 * ((lp1-jp1) % 2);
+
+            for (int mp1 = 2; mp1 <= lp1; mp1++) {
+                isgn = -isgn;
+                int ii = (3-isgn) / 2;
+                sum_o4[ii-1] = sum_o4[ii-1] + 2.0 * dj[((jp1-1) * clmax + (mp1-1)) * clmax + (lp1-1)] * temp_o4[ii-1][mp1-1];
+            }
+
+            temp2_o4[0][jp1-1] = sum_o4[0] * cbet_o4[jp1-1] - sum_o4[1] * sbet_o4[jp1-1];
+            temp2_o4[1][jp1-1] = sum_o4[1] * cbet_o4[jp1-1] + sum_o4[0] * sbet_o4[jp1-1];
+        }
+
+        // second step of euler decomposition followed by rotation around gamma angle
+
+        for (int jp1 = 1; jp1 <= lp1; jp1++) {
+            sum_o4[0] = dj[(0 * clmax + (jp1-1)) * clmax + (lp1-1)] * temp2_o4[0][0];
+            sum_o4[1] = 0.0;
+            int isgn = 1 - 2 * ((lp1-jp1) % 2);
+
+            for (int mp1 = 2; mp1 <= lp1; mp1++) {
+                isgn = -isgn;
+                int ii = (3-isgn) / 2;
+                sum_o4[ii-1] = sum_o4[ii-1] + 2.0 * dj[((mp1-1) * clmax + (jp1-1)) * clmax + (lp1-1)] * temp2_o4[ii-1][mp1-1];
+            }
+
+
+            if (jp1 == 1) {
+                dipy_out[indx*space_out] = (sum_o4[0] * cgam_o4[jp1-1] - sum_o4[1] * sgam_o4[jp1-1])*cindex_to_dipy_o4[indx];
+            }
+            else {
+                dipy_out[(indx + jp1 - 1)*space_out] = cindex_to_dipy_o4[indx + (jp1-1)] * (sum_o4[0] * cgam_o4[jp1-1] - sum_o4[1] * sgam_o4[jp1-1]);
+                dipy_out[(indx - jp1 + 1)*space_out] = cindex_to_dipy_o4[indx - (jp1-1)] * (sum_o4[1] * cgam_o4[jp1-1] + sum_o4[0] * sgam_o4[jp1-1]);
+            }
+        }
+
+        ind = ind + lp1 + lp1 +1 ;
+        ind2 += (lp1-1) * 2 + 1;
+    }
+    //SHDipyToCindex(&dipy_in[0], &cindex2[0][0], lmax, space_in);
+    //SHRotateCoef(x, &cindex2[0][0], &cindex2[0][0], dj, lmax);
+    //SHCindexToDipy(&cindex2[0][0], &dipy_out[0], lmax, space_out);
+}
 void map_pysh_to_dipy_o8(double* sh, double* dipy_v) {
     int clmax = 9;
 
@@ -588,6 +739,24 @@ void map_pysh_to_dipy_o4(double* sh, double* dipy_v) {
     dipy_v[12] = sh[(0 * clmax + 4) * clmax + 2];
     dipy_v[13] = sh[(0 * clmax + 4) * clmax + 3];
     dipy_v[14] = sh[(0 * clmax + 4) * clmax + 4];
+}
+void map_pysh_to_dipy_o4_scaled(double scaling, double* sh, double* dipy_v, int spacing) {
+    int clmax = 5;
+    dipy_v[spacing * 0] =  scaling * sh[(0 * clmax + 0) * clmax + 0];
+    dipy_v[spacing * 1] =  scaling * sh[(1 * clmax + 2) * clmax + 2];
+    dipy_v[spacing * 2] =  scaling * sh[(1 * clmax + 2) * clmax + 1];
+    dipy_v[spacing * 3] =  scaling * sh[(0 * clmax + 2) * clmax + 0];
+    dipy_v[spacing * 4] =  scaling * sh[(0 * clmax + 2) * clmax + 1];
+    dipy_v[spacing * 5] =  scaling * sh[(0 * clmax + 2) * clmax + 2];
+    dipy_v[spacing * 6] =  scaling * sh[(1 * clmax + 4) * clmax + 4];
+    dipy_v[spacing * 7] =  scaling * sh[(1 * clmax + 4) * clmax + 3];
+    dipy_v[spacing * 8] =  scaling * sh[(1 * clmax + 4) * clmax + 2];
+    dipy_v[spacing * 9] =  scaling * sh[(1 * clmax + 4) * clmax + 1];
+    dipy_v[spacing * 10] = scaling * sh[(0 * clmax + 4) * clmax + 0];
+    dipy_v[spacing * 11] = scaling * sh[(0 * clmax + 4) * clmax + 1];
+    dipy_v[spacing * 12] = scaling * sh[(0 * clmax + 4) * clmax + 2];
+    dipy_v[spacing * 13] = scaling * sh[(0 * clmax + 4) * clmax + 3];
+    dipy_v[spacing * 14] = scaling * sh[(0 * clmax + 4) * clmax + 4];
 }
 
 void map_dipy_to_pysh_o8(double* dipy_v, double* sh) {
