@@ -13,13 +13,13 @@ cdef class Integration:
 	cdef Trafo trafo
 	cdef double[:] old_dir
 
-	cdef int integrate(self, double[:], double[:]) # nogil except *
+	cdef int integrate(self, double[:], double[:], int) # nogil except *
 
 cdef class Euler(Integration):
-	cdef int integrate(self, double[:], double[:]) # nogil except *
+	cdef int integrate(self, double[:], double[:], int) # nogil except *
 
 cdef class EulerUKF(Integration):
-	cdef int integrate(self, double[:], double[:]) # nogil except *
+	cdef int integrate(self, double[:], double[:], int) # nogil except *
 
 cdef class RungeKutta(Integration):
 	cdef Interpolation interpolate
@@ -27,6 +27,6 @@ cdef class RungeKutta(Integration):
 	cdef double[:] k2
 	cdef double[:] k2_x
 
-	cdef int integrate(self, double[:], double[:]) # nogil except *
+	cdef int integrate(self, double[:], double[:], int) # nogil except *
 
 

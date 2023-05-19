@@ -1040,15 +1040,12 @@ cdef class UKFBinghamQuatAlt(Interpolation):
 		self._model2 = BinghamQuatModel(vector_field=vector_field[:, 1:2], **kwargs)
 		self._kalman2 = KalmanQuat(kwargs['data'].shape[3], kwargs['dim_model'], self._model2)
 		self.data = kwargs['data']
-		self.rot_pysh_v = np.zeros((2 *  5 * 5,), dtype=DTYPE)
-		self.pysh_v = np.zeros((2 *  5 * 5,), dtype=DTYPE)
 		self.angles  = np.zeros((3,), dtype=DTYPE)
 		self.store_loss = kwargs['store_loss']
 		self.A = np.zeros((dim_model//6, 3, 3))
 		self.mu = np.zeros((dim_model//6, 3))
 		self.l_k_b = np.zeros((dim_model//6, 3))
 		self.R = np.zeros((3, 3), dtype=DTYPE)
-		self.test = np.zeros((3,))
 		self.R2 = np.zeros((3,3))
 		self._model = BinghamQuatModel(vector_field=vector_field, **kwargs)
 		self.orth_both = np.zeros((3), dtype=DTYPE)
@@ -1095,9 +1092,11 @@ cdef class UKFBinghamQuatAlt(Interpolation):
 				#print(kappa, beta)
 				self._model.sh_bingham_coeffs(kappa, beta)
 				quat2ZYZ(self._model.angles, self.mean[j,3:])
-				c_map_dipy_to_pysh_o4(&self._model.dipy_v[0], &self.pysh_v[0])
-				c_sh_rotate_real_coef(&self.rot_pysh_v[0], &self.pysh_v[0], 4, &self._model.angles[0], &dj_o4[0][0][0])
-				c_map_pysh_to_dipy_o4(&self.rot_pysh_v[0],&self.res[0])
+				c_sh_rotate_real_coef_fast(&self.res[0], 1, &self._model.lookup_table1[<int> kappa * 10, <int> beta * 10, 0],
+										   1, self._model.order, &self._model.angles[0])
+				#c_map_dipy_to_pysh_o4(&self._model.dipy_v[0], &self.pysh_v[0])
+				#c_sh_rotate_real_coef(&self.rot_pysh_v[0], &self.pysh_v[0], 4, &self._model.angles[0], &dj_o4[0][0][0])
+				#c_map_pysh_to_dipy_o4(&self.rot_pysh_v[0],&self.res[0])
 				cblas_daxpy(self.res.shape[0], -max(self.mean[j, 0], _lambda_min), &self.res[0], 1, &self.y[i,0], 1)
 			if i == 0:
 				info = self._kalman1.update_kalman_parameters(self.mean[i], self.P[i], self.y[i])

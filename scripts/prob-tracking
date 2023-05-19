@@ -135,9 +135,10 @@ def main():
     parser.add_argument('--dist',
                         help='Only useful if interpolation is set to TrilinearFODF. Radius of points to include',
                         default=0)
+    parser.add_argument('--runge_kutta', help='',
+                        default='1')
     parser.add_argument('--rank', help='Only useful if interpolation is set to TrilinearFODF. Rank of low-rank approx.',
                         default='Trilinear')
-
     parser.add_argument('--integration', '--integration',
                         help='Decide between Euler integration and Euler integration. '
                         , default='Euler')
@@ -362,6 +363,7 @@ def main():
         'act': act.get_fdata() if act else None,
         'verbose': args.verbose,
         'sw_save': int(args.sw_save),
+        'runge_kutta': int(args.runge_kutta)
     }
     if args.ukf == "Watson" or args.ukf == "BinghamQuatAlt" or args.ukf == "BinghamAlt" or args.ukf == "Bingham" or args.ukf == "WatsonAlt":
         tracking_parameters.update(dict(

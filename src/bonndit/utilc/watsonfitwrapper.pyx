@@ -42,8 +42,8 @@ cdef void mw_openmp_mult_o8(double[:,:] x, double[:,:] signal, double[:,:] est_s
 cdef void c_sh_rotate_real_coef(double* x, double* y, int z, double* a, double* b):
         SHRotateRealCoef(x,y,z,a,b)
 
-cdef void c_sh_rotate_real_coef_fast(double* x, int x_space, double* y, int y_space, int z, double* a, double* b):
-        SHRotateRealCoefFast(x,x_space, y,y_space, z,a,b)
+cdef void c_sh_rotate_real_coef_fast(double* x, int x_space, double* y, int y_space, int z, double* a):
+        SHRotateRealCoefFast(x,x_space, y,y_space, z,a)
 
 cdef void c_map_dipy_to_pysh_o4(double* x, double* y):
        map_dipy_to_pysh_o4(x, y)

@@ -28,7 +28,7 @@ ctypedef struct possible_features:
 cdef void tracking(double[:,:,:,:] paths, double[:] seed,
                    Interpolation interpolate,
               Integration integrate, Trafo trafo, Validator validator, int max_track_length, int save_steps,
-	                   int samples, double[:,:,:,:] features, possible_features features_save, int minlen) except *:
+	                   int samples, double[:,:,:,:] features, possible_features features_save, int minlen, runge_kutta=1) except *:
 	# nogil except *:
 	"""
         Initializes the tracking for one seed in both directions.
@@ -58,7 +58,7 @@ cdef void tracking(double[:,:,:,:] paths, double[:] seed,
 			else:
 				integrate.old_dir = seed[3:]
 			status1, m = forward_tracking(paths[j,:,0, :], interpolate, integrate, trafo, validator, max_track_length, save_steps,
-			                 features[j,:,0, :], features_save,)
+			                 features[j,:,0, :], features_save, runge_kutta)
 
 			if seed.shape[0] == 3:
 				interpolate.main_dir(paths[j, 0, 1])
@@ -66,7 +66,7 @@ cdef void tracking(double[:,:,:,:] paths, double[:] seed,
 			else:
 				mult_with_scalar(integrate.old_dir, -1.0 ,seed[3:])
 			status2, l = forward_tracking(paths[j,:,1,:], interpolate, integrate, trafo, validator, max_track_length, save_steps,
-			                 features[j,:,1, :], features_save)
+			                 features[j,:,1, :], features_save, runge_kutta)
 			# if not found bot regions of interest delete path.
 			if validator.ROIIn.included_checker() or not status1 or not status2 or (l+m)*integrate.stepsize < minlen:
 				validator.set_path_zero(paths[j,:,1,:], features[j,:,1, :])
@@ -83,7 +83,7 @@ cdef void tracking(double[:,:,:,:] paths, double[:] seed,
 				break
 
 cdef forward_tracking(double[:,:] paths,  Interpolation interpolate,
-                       Integration integrate, Trafo trafo, Validator validator, int max_track_length, int save_steps, double[:,:] features, possible_features feature_save): # nogil except *:
+                       Integration integrate, Trafo trafo, Validator validator, int max_track_length, int save_steps, double[:,:] features, possible_features feature_save, int runge_kutta=1): # nogil except *:
 
 	"""
         This function do the tracking into one direction.
@@ -96,13 +96,14 @@ cdef forward_tracking(double[:,:] paths,  Interpolation interpolate,
     @param features: empty feature array. To save informations to the streamline
 	"""
 	# check wm volume
-	cdef int k, con
+	cdef int k, con, counter=-1
 	# thousand is max length for pathway
 	interpolate.prob.old_fa = 1
 	validator.WM.reset()
+
 	for k in range((max_track_length-1)):
 		# validate index and wm density.
-
+		counter+=1
 		if validator.index_checker(paths[k]):
 			set_zero_vector(paths[k])
 			break
@@ -135,7 +136,7 @@ cdef forward_tracking(double[:,:] paths,  Interpolation interpolate,
 			set_zero_vector(paths[k])
 			break
 
-		if integrate.integrate(interpolate.next_dir, paths[k])!= 0:
+		if integrate.integrate(interpolate.next_dir, paths[k - counter%runge_kutta], 1 + counter%runge_kutta)!= 0:
 			break
 
 		if sum_c(integrate.next_point) == 0:
@@ -346,12 +347,14 @@ cpdef tracking_all(vector_field, wm_mask, tracking_parameters, postprocessing, u
 			features[k,:, 0, 0, saving['features']['seedpoint']] = 1
 			features[k,:, 0, 1, saving['features']['seedpoint']] = 1
 		#Do the tracking for this seed with the direction
-		tracking(paths[k], tracking_parameters['seeds'][choice],  interpolate, integrate, trafo, validator, tracking_parameters['max_track_length'], tracking_parameters['sw_save'], tracking_parameters['samples'], features[k], saving['features'], tracking_parameters['min_len'])
+		tracking(paths[k], tracking_parameters['seeds'][choice],  interpolate, integrate, trafo, validator, tracking_parameters['max_track_length'], tracking_parameters['sw_save'], tracking_parameters['samples'], features[k], saving['features'], tracking_parameters['min_len'], tracking_parameters['runge_kutta'])
 		# delete all zero arrays.
 
 		for j in range(tracking_parameters['samples']):
 			path = np.concatenate((np.asarray(paths[k,j]),np.asarray(features[k,j])), axis=-1)
+			path = path[::tracking_parameters['runge_kutta']]
 		# seedpoint would be twice if first index is not skipped.
+
 			path = np.concatenate((path[1:,0][::-1], path[:,1]))
 
 			try:
