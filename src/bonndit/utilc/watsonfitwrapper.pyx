@@ -102,9 +102,9 @@ cdef void c_sh_rotate_real_coef(
 
 cdef void c_sh_rotate_real_coef_fast(
     double * x, int x_space, double * y,
-    int y_space, int z, double * a, double * b
+    int y_space, int z, double * a
 ):
-    SHRotateRealCoefFast(x, x_space, y, y_space, z, a, b)
+    SHRotateRealCoefFast(x, x_space, y, y_space, z, a)
 
 cdef void c_map_dipy_to_pysh_o4(double * x, double * y):
     map_dipy_to_pysh_o4(x, y)

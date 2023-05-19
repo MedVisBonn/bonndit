@@ -450,21 +450,13 @@ cdef class BinghamModel(WatsonModel):
 cdef class BinghamQuatModel(BinghamModel):
     def __cinit__(self, **kwargs):
         super(BinghamQuatModel, self).__init__(**kwargs)
-        self.lookup_table1 = lookup_table \
-            = np.load(dirname + '/bingham_compressed.npy')
-        # normalize_const = np.load(dirname
-        # +'/normalize_const_versuch1000.npy')
-        # Convolution with rank 1 kernel:
-        # for i,j in np.ndindex(lookup_table.shape[:2]):
-        #	if normalize_const[i,j] != 0:
-        # lookup_table[i,j] *= 1/normalize_const[i,j]
-        #	else:
-        # lookup_table[i,j] = 0
-        # lookup_table[...,0,:] *= 2.51327412
-        # lookup_table[...,1,:] *= 1.43615664
-        # lookup_table[...,2,:] *= 0.31914592
+        if kwargs["order"] == 4:
+            self.lookup_table1 = lookup_table \
+                = np.load(dirname + '/bingham_compressed.npy')
+        else:
+            self.lookup_table1 = lookup_table \
+                = np.load(dirname + '/bingham_normalized_o6.npy')
         self.num_tensors = <int> (kwargs['dim_model'] / 7)
-        # self.lookup_table = lookup_table
         if kwargs['process noise'] == "":
             ddiagonal(
                 &self.PROCESS_NOISE[0, 0],
@@ -518,7 +510,7 @@ cdef class BinghamQuatModel(BinghamModel):
                 c_sh_rotate_real_coef_fast(
                     &observations[0, j], observations.shape[1],
                     &self.lookup_table1[<int> kappa * 10, <int> beta * 10, 0],
-                    1, self.order, &self.angles[0], &dj_o4[0][0][0])
+                    1, self.order, &self.angles[0])
                 cblas_dscal(
                     observations.shape[0], lam, &observations[0, j],
                     observations.shape[1])

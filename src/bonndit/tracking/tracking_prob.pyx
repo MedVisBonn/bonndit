@@ -36,7 +36,7 @@ cdef void tracking(
     Integration integrate, Trafo trafo, Validator validator,
     int max_track_length, int save_steps,
     int samples, double[:, :, :, :] features,
-    possible_features features_save, int minlen
+    possible_features features_save, int minlen, runge_kutta=1
 ) except *:
     # nogil except *:
     """
@@ -69,7 +69,7 @@ cdef void tracking(
             status1, m = forward_tracking(
                 paths[j, :, 0, :], interpolate, integrate, trafo, validator,
                 max_track_length, save_steps,
-                features[j, :, 0, :], features_save,)
+                features[j, :, 0, :], features_save, runge_kutta)
 
             if seed.shape[0] == 3:
                 interpolate.main_dir(paths[j, 0, 1])
@@ -79,7 +79,7 @@ cdef void tracking(
             status2, l = forward_tracking(
                 paths[j, :, 1, :], interpolate, integrate, trafo, validator,
                 max_track_length, save_steps,
-                features[j, :, 1, :], features_save)
+                features[j, :, 1, :], features_save, runge_kutta)
             # if not found bot regions of interest delete path.
             if validator.ROIIn.included_checker() or not status1 or not status2 or (l + m) * integrate.stepsize < minlen:
                 validator.set_path_zero(
@@ -103,7 +103,7 @@ cdef forward_tracking(
     double[:, :] paths, Interpolation interpolate,
     Integration integrate, Trafo trafo, Validator validator,
     int max_track_length, int save_steps, double[:, :] features,
-    possible_features feature_save
+    possible_features feature_save, int runge_kutta=1
 ):  # nogil except *:
 
     """
@@ -117,13 +117,14 @@ cdef forward_tracking(
     @param features: empty feature array. To save informations to the streamline
 	"""
     # check wm volume
-    cdef int k, con
+    cdef int k, con, counter = -1
     # thousand is max length for pathway
     interpolate.prob.old_fa = 1
     validator.WM.reset()
+
     for k in range((max_track_length - 1)):
         # validate index and wm density.
-
+        counter += 1
         if validator.index_checker(paths[k]):
             set_zero_vector(paths[k])
             break
@@ -156,7 +157,9 @@ cdef forward_tracking(
             set_zero_vector(paths[k])
             break
 
-        if integrate.integrate(interpolate.next_dir, paths[k]) != 0:
+        if integrate.integrate(
+            interpolate.next_dir,
+            paths[k - counter % runge_kutta], 1 + counter % runge_kutta) != 0:
             break
 
         if sum_c(integrate.next_point) == 0:
@@ -440,7 +443,8 @@ cpdef tracking_all(
             interpolate, integrate, trafo, validator,
             tracking_parameters['max_track_length'],
             tracking_parameters['sw_save'], tracking_parameters['samples'],
-            features[k], saving['features'], tracking_parameters['min_len'])
+            features[k], saving['features'], tracking_parameters['min_len'],
+            tracking_parameters['runge_kutta'])
         # delete all zero arrays.
 
         for j in range(tracking_parameters['samples']):
@@ -448,7 +452,9 @@ cpdef tracking_all(
                 (
                     np.asarray(paths[k, j]),
                     np.asarray(features[k, j])), axis=-1)
+            path = path[::tracking_parameters['runge_kutta']]
         # seedpoint would be twice if first index is not skipped.
+
             path = np.concatenate((path[1:, 0][::-1], path[:, 1]))
 
             try:

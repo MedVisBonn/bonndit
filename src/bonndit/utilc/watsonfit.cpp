@@ -357,7 +357,7 @@ void SHrtoc(double* ccilm, double* rcilm, int lmax) {
 }
 
 
-static double cindex_to_dipy_o4[15] = {
+static double cindex_to_dipy[28] = {
         1/std::sqrt(4.0*M_PI),
         -1/std::sqrt(2.0*M_PI),
         1/std::sqrt(2.0*M_PI),
@@ -372,7 +372,22 @@ static double cindex_to_dipy_o4[15] = {
         -1/std::sqrt(2.0*M_PI),
         1/std::sqrt(2.0*M_PI),
         -1/std::sqrt(2.0*M_PI),
-         1/std::sqrt(2.0*M_PI) };
+         1/std::sqrt(2.0*M_PI),
+          -1/std::sqrt(2.0*M_PI),
+        1/std::sqrt(2.0*M_PI),
+         -1/std::sqrt(2.0*M_PI),
+        1/std::sqrt(2.0*M_PI),
+        -1/std::sqrt(2.0*M_PI),
+        1/std::sqrt(2.0*M_PI),
+        1/std::sqrt(4.0*M_PI),
+        -1/std::sqrt(2.0*M_PI),
+        1/std::sqrt(2.0*M_PI),
+        -1/std::sqrt(2.0*M_PI),
+         1/std::sqrt(2.0*M_PI),
+         -1/std::sqrt(2.0*M_PI),
+         1/std::sqrt(2.0*M_PI),
+          };
+
 
 
 static int cindex_to_dipy_o4_mapping[15] = {
@@ -422,7 +437,7 @@ void SHCilmToCindex(double* cilm, double* cindex, int lmax) {
 
 void SHDipyToCindex(double* cindex, double* cilm, int lmax, int spacing) {
     for (int i = 0; i < 15; i++) {
-        cilm[cindex_to_dipy_o4_mapping[i]] = cindex[i * spacing] * 1/cindex_to_dipy_o4[i];
+        cilm[cindex_to_dipy_o4_mapping[i]] = cindex[i * spacing] * 1/cindex_to_dipy[i];
     }
     cilm[15] = 0;
     cilm[18] = 0;
@@ -446,7 +461,7 @@ void SHCindexToCilm(double* cindex, double* cilm, int lmax) {
 
 void SHCindexToDipy(double* cindex, double* cilm, int lmax, int spacing) {
     for (int i = 0; i < 15; i++) {
-        cilm[i * spacing] = cindex[cindex_to_dipy_o4_mapping[i]] * cindex_to_dipy_o4[i];
+        cilm[i * spacing] = cindex[cindex_to_dipy_o4_mapping[i]] * cindex_to_dipy[i];
     }
 }
 
@@ -525,7 +540,6 @@ void SHRotateCoef(double* x, double* cof, double* rcof, double* dj, int lmax) {
             rcof[0 * cimax + indx-1] = sum[0] * cgam[jp1-1] - sum[1] * sgam[jp1-1];
             rcof[1 * cimax + indx-1] = sum[1] * cgam[jp1-1] + sum[0] * sgam[jp1-1];
         }
-
         ind = ind + lp1 + lp1 +1 ;
     }
 }
@@ -547,11 +561,21 @@ void SHRotateRealCoef(double* cilmrot, double* cilm, int lmax, double* x, double
     SHctor(&ccilmd[0][0][0], cilmrot, lmax);
 }
 
-void SHRotateRealCoefFast(double* dipy_out, int space_out, double* dipy_in, int space_in,  int lmax, double* x, double* dj) {
+void SHRotateRealCoefFast(double* dipy_out, int space_out, double* dipy_in, int space_in,  int lmax, double* x) {
     int clmax = lmax+1;
     int cimax = (lmax*(lmax+1))/2+lmax+1;
+    double* dj;
+    if (lmax == 4){
+        dj = &dj_o4[0][0][0];
+    }
+    else if (lmax == 6) {
+        dj = &dj_o6[0][0][0];
+    }
+    else {
+        throw std::invalid_argument("This order is currently not supported, only 4 & 6 are supported");
+    }
 
-    double sum_o4[2], temp_o4[2][5], temp2_o4[2][5], cgam_o4[5], sgam_o4[5], calf_o4[5], salf_o4[5], cbet_o4[5], sbet_o4[5];
+    double sum_o4[2], temp_o4[2][lmax + 1], temp2_o4[2][lmax + 1], cgam_o4[lmax +1], sgam_o4[lmax + 1], calf_o4[lmax + 1], salf_o4[lmax + 1], cbet_o4[lmax + 1], sbet_o4[lmax + 1];
     //cout << "start \n" ;
 
     double pi2 = M_PI_2;
@@ -583,12 +607,12 @@ void SHRotateRealCoefFast(double* dipy_out, int space_out, double* dipy_in, int 
         for (int mp1 = 1; mp1 <= lp1; mp1++) {
 
             if (mp1 == 1) {
-                temp_o4[0][0] = dipy_in[indx*space_in] * calf_o4[0] *  1/cindex_to_dipy_o4[indx];
+                temp_o4[0][0] = dipy_in[indx*space_in] * calf_o4[0] *  1/cindex_to_dipy[indx];
                 temp_o4[1][0] = 0;
             }
             else {
-                temp_o4[0][mp1-1] = 1/cindex_to_dipy_o4[indx+(mp1-1)] * dipy_in[(indx + (mp1-1))*space_in] * calf_o4[mp1-1] - 1/cindex_to_dipy_o4[indx-(mp1-1)] *  dipy_in[(indx - (mp1-1))*space_in] * salf_o4[mp1-1];
-                temp_o4[1][mp1-1] = 1/cindex_to_dipy_o4[indx-(mp1-1)] * dipy_in[(indx - (mp1-1))*space_in] * calf_o4[mp1-1] + 1/cindex_to_dipy_o4[indx+(mp1-1)] *  dipy_in[(indx + (mp1-1))*space_in] * salf_o4[mp1-1];
+                temp_o4[0][mp1-1] = 1/cindex_to_dipy[indx+(mp1-1)] * dipy_in[(indx + (mp1-1))*space_in] * calf_o4[mp1-1] - 1/cindex_to_dipy[indx-(mp1-1)] *  dipy_in[(indx - (mp1-1))*space_in] * salf_o4[mp1-1];
+                temp_o4[1][mp1-1] = 1/cindex_to_dipy[indx-(mp1-1)] * dipy_in[(indx - (mp1-1))*space_in] * calf_o4[mp1-1] + 1/cindex_to_dipy[indx+(mp1-1)] *  dipy_in[(indx + (mp1-1))*space_in] * salf_o4[mp1-1];
             }
         }
 
@@ -623,11 +647,11 @@ void SHRotateRealCoefFast(double* dipy_out, int space_out, double* dipy_in, int 
 
 
             if (jp1 == 1) {
-                dipy_out[indx*space_out] = (sum_o4[0] * cgam_o4[jp1-1] - sum_o4[1] * sgam_o4[jp1-1])*cindex_to_dipy_o4[indx];
+                dipy_out[indx*space_out] = (sum_o4[0] * cgam_o4[jp1-1] - sum_o4[1] * sgam_o4[jp1-1])*cindex_to_dipy[indx];
             }
             else {
-                dipy_out[(indx + jp1 - 1)*space_out] = cindex_to_dipy_o4[indx + (jp1-1)] * (sum_o4[0] * cgam_o4[jp1-1] - sum_o4[1] * sgam_o4[jp1-1]);
-                dipy_out[(indx - jp1 + 1)*space_out] = cindex_to_dipy_o4[indx - (jp1-1)] * (sum_o4[1] * cgam_o4[jp1-1] + sum_o4[0] * sgam_o4[jp1-1]);
+                dipy_out[(indx + jp1 - 1)*space_out] = cindex_to_dipy[indx + (jp1-1)] * (sum_o4[0] * cgam_o4[jp1-1] - sum_o4[1] * sgam_o4[jp1-1]);
+                dipy_out[(indx - jp1 + 1)*space_out] = cindex_to_dipy[indx - (jp1-1)] * (sum_o4[1] * cgam_o4[jp1-1] + sum_o4[0] * sgam_o4[jp1-1]);
             }
         }
 

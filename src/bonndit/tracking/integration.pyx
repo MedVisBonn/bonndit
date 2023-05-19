@@ -24,8 +24,8 @@ cdef class Integration:
         self.old_dir = np.ndarray((3,))
 
     cdef int integrate(
-        self, double[:] direction,
-        double[:] coordinate
+        self, double[:] direction, double[:] coordinate,
+        int div
     ) :  # nogil except *:
         pass
 
@@ -48,8 +48,8 @@ cdef class FACT(Integration):
 # Transform back afterwards.
 cdef class Euler(Integration):
     cdef int integrate(
-        self, double[:] direction,
-        double[:] coordinate
+        self, double[:] direction, double[:] coordinate,
+        int div
     ) :  # nogil except *:
         """ Euler Integration
 
@@ -72,8 +72,8 @@ cdef class Euler(Integration):
 
 cdef class EulerUKF(Integration):
     cdef int integrate(
-        self, double[:] direction,
-        double[:] coordinate
+        self, double[:] direction, double[:] coordinate,
+        int div
     ) :  # nogil except *:
         """ Euler Integration
 
@@ -113,8 +113,8 @@ cdef class RungeKutta(Integration):
         self.k2_x = np.zeros((3,))
 
     cdef int integrate(
-        self, double[:] direction,
-        double[:] coordinate
+        self, double[:] direction, double[:] coordinate,
+        int div
     ) :  # nogil except *:
         mult_with_scalar(
             self.three_vector,
