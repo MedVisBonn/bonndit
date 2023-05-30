@@ -36,7 +36,7 @@ cdef void tracking(
     Integration integrate, Trafo trafo, Validator validator,
     int max_track_length, int save_steps,
     int samples, double[:, :, :, :] features,
-    possible_features features_save, int minlen
+    possible_features features_save, int minlen, runge_kutta=1
 ) except *:
     # nogil except *:
     """
@@ -69,7 +69,7 @@ cdef void tracking(
             status1, m = forward_tracking(
                 paths[j, :, 0, :], interpolate, integrate, trafo, validator,
                 max_track_length, save_steps,
-                features[j, :, 0, :], features_save,)
+                features[j, :, 0, :], features_save, runge_kutta)
 
             if seed.shape[0] == 3:
                 interpolate.main_dir(paths[j, 0, 1])
@@ -79,9 +79,9 @@ cdef void tracking(
             status2, l = forward_tracking(
                 paths[j, :, 1, :], interpolate, integrate, trafo, validator,
                 max_track_length, save_steps,
-                features[j, :, 1, :], features_save)
+                features[j, :, 1, :], features_save, runge_kutta)
             # if not found bot regions of interest delete path.
-            if validator.ROIIn.included_checker() or not status1 or not status2 or (l + m) * save_steps * integrate.stepsize < minlen:
+            if validator.ROIIn.included_checker() or not status1 or not status2 or (l + m) * integrate.stepsize < minlen:
                 validator.set_path_zero(
                     paths[j, :, 1, :],
                     features[j, :, 1, :])
@@ -103,7 +103,7 @@ cdef forward_tracking(
     double[:, :] paths, Interpolation interpolate,
     Integration integrate, Trafo trafo, Validator validator,
     int max_track_length, int save_steps, double[:, :] features,
-    possible_features feature_save
+    possible_features feature_save, int runge_kutta=1
 ):  # nogil except *:
 
     """
@@ -117,31 +117,25 @@ cdef forward_tracking(
     @param features: empty feature array. To save informations to the streamline
 	"""
     # check wm volume
-    cdef int k, con
+    cdef int k, con, counter = -1
     # thousand is max length for pathway
     interpolate.prob.old_fa = 1
     validator.WM.reset()
-    for k in range((max_track_length - 1) * save_steps):
-        # validate index and wm density.
 
-        if validator.index_checker(paths[(k - 1) // save_steps + 1]):
-            set_zero_vector(paths[(k - 1) // save_steps + 1])
+    for k in range((max_track_length - 1)):
+        # validate index and wm density.
+        counter += 1
+        if validator.index_checker(paths[k]):
+            set_zero_vector(paths[k])
             break
         # check if neigh is wm.
-        con = validator.WM.wm_checker(paths[(k - 1) // save_steps + 1])
+        con = validator.WM.wm_checker(paths[k])
         if con == 0:
             # If not wm. Set all zero until wm
-            for l in range((k - 1) // save_steps + 1):
-                con = validator.WM.wm_checker_ex(
-                    paths[
-                        (
-                            k
-                            - 1) // save_steps + 1 - save_steps * l])
+            for l in range(k):
+                con = validator.WM.wm_checker_ex(paths[k - l])
                 if con == 0:
-                    set_zero_vector(
-                        paths[
-                            (k - 1) // save_steps + 1
-                            - save_steps * l])
+                    set_zero_vector(paths[k - l])
                 else:
                     break
             break
@@ -150,72 +144,66 @@ cdef forward_tracking(
 
         # find matching directions
         if sum_c(integrate.old_dir) == 0:
-            set_zero_vector(paths[(k - 1) // save_steps + 1])
-            set_zero_vector(features[(k - 1) // save_steps + 1])
+            set_zero_vector(paths[k])
+            set_zero_vector(features[k])
 
             break
 
-        if interpolate.interpolate(
-            paths[(k - 1) // save_steps + 1],
-            integrate.old_dir, (k - 1) // save_steps + 1) != 0:
+        if interpolate.interpolate(paths[k], integrate.old_dir, k) != 0:
             break
 
         # Check next step is valid. If it is: Integrate. else break
         if validator.next_point_checker(interpolate.next_dir):
-            set_zero_vector(paths[(k - 1) // save_steps + 1])
+            set_zero_vector(paths[k])
             break
 
         if integrate.integrate(
             interpolate.next_dir,
-            paths[(k - 1) // save_steps + 1]) != 0:
+            paths[k - counter % runge_kutta], 1 + counter % runge_kutta) != 0:
             break
 
         if sum_c(integrate.next_point) == 0:
             break
 
         # update old dir
-        paths[k // save_steps + 1] = integrate.next_point
+        paths[k + 1] = integrate.next_point
         # check if next dir is near region of interest:
 
-        validator.ROIIn.included(paths[k // save_steps])
-        if validator.ROIEx.excluded(paths[k // save_steps]):
+        validator.ROIIn.included(paths[k])
+        if validator.ROIEx.excluded(paths[k]):
             return False, k
         if feature_save.chosen_angle >= 0:
             # print('angle', interpolate.prob.chosen_angle)
             features[
-                k // save_steps,
+                k,
                 feature_save.chosen_angle] = interpolate.prob.chosen_angle
         if feature_save.prob_chosen >= 0:
 
             features[
-                k // save_steps,
+                k,
                 feature_save.prob_chosen] = interpolate.prob.chosen_prob
             # print('chosen', interpolate.prob.chosen_prob,
             # features[k//save_steps,feature_save.prob_chosen])
         if feature_save.prob_others_0 >= 0:
             # print('chosen1', interpolate.prob.chosen_prob)
             features[
-                k // save_steps,
+                k,
                 feature_save.prob_others_0] = interpolate.prob.probability[0]
             features[
-                k // save_steps,
+                k,
                 feature_save.prob_others_1] = interpolate.prob.probability[1]
             features[
-                k // save_steps,
+                k,
                 feature_save.prob_others_2] = interpolate.prob.probability[2]
         if feature_save.fa >= 0:
             # print('chosen2', interpolate.prob.chosen_prob)
-            features[
-                k // save_steps,
-                feature_save.fa] = interpolate.prob.old_fa
+            features[k, feature_save.fa] = interpolate.prob.old_fa
         if feature_save.loss >= 0:
             # print('chosen3', interpolate.prob.chosen_prob)
             # print(interpolate.loss)
-            features[k // save_steps, feature_save.loss] = interpolate.loss
+            features[k, feature_save.loss] = interpolate.loss
         # Check curvature between current point and point 30mm ago
-        if validator.Curve.curvature_checker(
-            paths[:k // save_steps],
-            features[k // save_steps:k // save_steps + 1, 1]):
+        if validator.Curve.curvature_checker(paths[:k], features[k:k + 1, 1]):
 
             if not validator.WM.sgm_checker(trafo.point_wtoi):
                 return False, k
@@ -455,7 +443,8 @@ cpdef tracking_all(
             interpolate, integrate, trafo, validator,
             tracking_parameters['max_track_length'],
             tracking_parameters['sw_save'], tracking_parameters['samples'],
-            features[k], saving['features'], tracking_parameters['min_len'])
+            features[k], saving['features'], tracking_parameters['min_len'],
+            tracking_parameters['runge_kutta'])
         # delete all zero arrays.
 
         for j in range(tracking_parameters['samples']):
@@ -463,19 +452,24 @@ cpdef tracking_all(
                 (
                     np.asarray(paths[k, j]),
                     np.asarray(features[k, j])), axis=-1)
+            path = path[::tracking_parameters['runge_kutta']]
         # seedpoint would be twice if first index is not skipped.
+
             path = np.concatenate((path[1:, 0][::-1], path[:, 1]))
 
             try:
                 to_exclude = np.all(path[:, :3] == 0, axis=1)
-
                 path = path[~to_exclude]
                 if path.size == 0:
                     continue
-            # print(path)
+        # print(path)
                 if path.shape[0] > 5:
-                    # Work on disk or ram. Ram might be faster but for large
-                    # files disk is preferable.
+                # print(1 , path[::int(tracking_parameters['sw_save'])].shape,
+                # path[len(path)][np.newaxis].shape)
+                    path = np.vstack((path[::int(tracking_parameters['sw_save'])], path[len(path) - 1][np.newaxis]))
+                # print(2, path)
+                # Work on disk or ram. Ram might be faster but for large files
+                # disk is preferable.
                     if saving['file']:
                         with open(saving['file'] + 'len', 'a') as f:
                             f.write(str(path.shape[0]) + '\n')

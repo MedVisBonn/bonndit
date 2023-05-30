@@ -70,40 +70,42 @@ def main():
         'Reducing Model Uncertainty in Crossing Fiber Tractography, Gruen et al. (2021)',
         formatter_class=argparse.RawTextHelpFormatter)
     # All files needed
-    parser.add_argument('--i', help='Inputfolder should contain: \n'
-                        '	- rank3.nrrd \n'
-                        '		Multidirectionfield, where the first dimension defines the length and the \n'
-                        '		unit direction of the vector, second dimension defines different directions \n'
-                        '		and remaining dimensions diffine the coordinate. \n '
-                        '		If the file is named differently, use the --infile argument \n'
-                        '	- wmvolume.nrrd \n'
-                        '		The white matter mask, which is an output of mtdeconv. \n'
-                        '		If the File is named differently, use the --wmmask argument \n'
-                        '	- seedpoint.pts \n '
-                        '		The seed point file in world coordinates. First 3 dimensions of row give \n'
-                        '		world coordinates. Additionally a initial direction can be set by appending \n'
-                        '		3 columns to each row denoting the direction in (x,y,z) space. \n '
-                        '		If the file is named differently, use the --seedpoint argument. \n\n'
-                        'If the -ukf flag is set, the input folder should also contain: \n '
-                        '	- bvals \n'
-                        '		A text file which contains the bvals for each gradient direction. \n '
-                        '		If the file is namend differenty, use the --ukf_bvals argument \n'
-                        '	- bvecs \n'
-                        '		A text file which contains all gradient directions in the format Ax3 \n '
-                        '		If the file is named differently, use the --ukf_bvecs argument \n'
-                        '	- data.nrrd \n'
-                        '		The file with the data. If the ukfmethod flag is set to \n '
-                        '			- MultiTensor it should be the raw data. \n'
-                        '			- LowRank it should be the fodf.nrrd output from mtdeconv \n'
-                        '		If the file is named differently, use the --ukf_data argument. \n'
-                        '	- baseline.nrrd \n'
-                        '		File with b0 measurements.'
-                        '		If the file is named differently, use the --ukf_baseline argument'
-                        'If the -disk flag is set and we want to append to a file, the inputfolder should contain \n'
-                        '	- output.txt \n'
-                        '		A textfile with the streamlines generated so far. \n'
-                        '		If the file is named differently, use the --disk_append argument.',
-                        default=argparse.SUPPRESS)
+    parser.add_argument(
+        '--i',
+        help='Inputfolder should contain: \n'
+        '	- rank3.nrrd \n'
+        '		Multidirectionfield, where the first dimension defines the length and the \n'
+        '		unit direction of the vector, second dimension defines different directions \n'
+        '		and remaining dimensions diffine the coordinate. \n '
+        '		If the file is named differently, use the --infile argument \n'
+        '	- wmvolume.nrrd \n'
+        '		The white matter mask, which is an output of mtdeconv. \n'
+        '		If the File is named differently, use the --wmmask argument \n'
+        '	- seedpoint.pts \n '
+        '		The seed point file in world coordinates. First 3 dimensions of row give \n'
+        '		world coordinates. Additionally a initial direction can be set by appending \n'
+        '		3 columns to each row denoting the direction in (x,y,z) space. \n '
+        '		If the file is named differently, use the --seedpoint argument. \n\n'
+        'If the -ukf flag is set, the input folder should also contain: \n '
+        '	- bvals \n'
+        '		A text file which contains the bvals for each gradient direction. \n '
+        '		If the file is namend differenty, use the --ukf_bvals argument \n'
+        '	- bvecs \n'
+        '		A text file which contains all gradient directions in the format Ax3 \n '
+        '		If the file is named differently, use the --ukf_bvecs argument \n'
+        '	- data.nrrd \n'
+        '		The file with the data. If the ukfmethod flag is set to \n '
+        '			- MultiTensor it should be the raw data. \n'
+        '			- LowRank it should be the fodf.nrrd output from mtdeconv \n'
+        '		If the file is named differently, use the --ukf_data argument. \n'
+        '	- baseline.nrrd \n'
+        '		File with b0 measurements.'
+        '		If the file is named differently, use the --ukf_baseline argument'
+        'If the -disk flag is set and we want to append to a file, the inputfolder should contain \n'
+        '	- output.txt \n'
+        '		A textfile with the streamlines generated so far. \n'
+        '		If the file is named differently, use the --disk_append argument.',
+        default=argparse.SUPPRESS)
 
     parser.add_argument(
         '--infile',
@@ -183,6 +185,8 @@ def main():
             'of points to include'
         ),
         default=0)
+    parser.add_argument('--runge_kutta', help='',
+                        default='1')
     parser.add_argument(
         '--rank',
         help=(
@@ -190,7 +194,6 @@ def main():
             'low-rank approx.'
         ),
         default='Trilinear')
-
     parser.add_argument(
         '--integration', '--integration',
         help='Decide between Euler integration and Euler integration. ',
@@ -334,16 +337,16 @@ def main():
     trafo_data[:3, 3] = meta['space origin'][-3:]
     trafo_data[3, 3] = 1
     # print(meta)
-    if vector_field.shape[0] != 4 and args.ukf != "Watson" and args.ukf \
+    if vector_field.shape[
+        0] != 4 and args.ukf != "Watson" and args.ukf \
         != "BinghamQuatAlt" and args.ukf != "Bingham" and args.ukf \
             != "BinghamAlt" and args.ukf != "WatsonAlt":
         logging.error(
             "Wrong dimension on first axis. Has to contain 4 values.")
         raise Exception()
-    elif vector_field.shape[0] \
-        != 5 and (args.ukf == "Watson" or args.ukf
-                  != "BinghamQuatAlt" or args.ukf == "Bingham" or args.ukf
-                  == "BinghamAlt" or args.ukf == 'WatsonAlt'):
+    elif vector_field.shape[0] != 5 and (
+            args.ukf == "Watson" or args.ukf != "BinghamQuatAlt" or args.ukf
+            == "Bingham" or args.ukf == "BinghamAlt" or args.ukf == 'WatsonAlt'):
         logging.error(
             "Wrong dimension on first axis. Has to contain 5 values.")
         raise Exception()
@@ -417,11 +420,11 @@ def main():
                          args.i, logging, np.loadtxt)
             # Load bvals and bvecs and initialize a GradientTable object
 
-        # print(bvecs, bvals.shape)
+            # print(bvecs, bvals.shape)
             bvecs = fsl_flip_sign(
                 bvecs.T, meta2['space directions'][-3:, -3:]).T
 
-        # print(bvecs, bvals.shape)
+            # print(bvecs, bvals.shape)
             logging.info("bvecs loaded")
             baseline, _ = load('ukf_baseline', args,
                                'baseline.nrrd', args.i, logging, nrrd.read)
@@ -498,6 +501,7 @@ def main():
         'act': act.get_fdata() if act else None,
         'verbose': args.verbose,
         'sw_save': int(args.sw_save),
+        'runge_kutta': int(args.runge_kutta)
     }
     if args.ukf == "Watson" or args.ukf == "BinghamQuatAlt" or args.ukf \
             == "BinghamAlt" or args.ukf == "Bingham" or args.ukf == "WatsonAlt":
