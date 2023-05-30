@@ -19,7 +19,7 @@ cdef class Integration:
 		self.three_vector = np.zeros((3,))
 		self.old_dir = np.ndarray((3,))
 
-	cdef int integrate(self, double[:] direction, double[:] coordinate) : # nogil except *:
+	cdef int integrate(self, double[:] direction, double[:] coordinate, int div) : # nogil except *:
 		pass
 
 
@@ -39,7 +39,7 @@ cdef class FACT(Integration):
 
 # Euler Integration. Transform to world coordinates before integrating. Transform back afterwards.
 cdef class Euler(Integration):
-	cdef int integrate(self, double[:] direction, double[:] coordinate) : # nogil except *:
+	cdef int integrate(self, double[:] direction, double[:] coordinate, int div) : # nogil except *:
 		""" Euler Integration
 
 		Converts itow and adds the current direction to the current position
@@ -57,7 +57,7 @@ cdef class Euler(Integration):
 		return 0
 
 cdef class EulerUKF(Integration):
-	cdef int integrate(self, double[:] direction, double[:] coordinate) : # nogil except *:
+	cdef int integrate(self, double[:] direction, double[:] coordinate, int div) : # nogil except *:
 		""" Euler Integration
 
 		Converts itow and adds the current direction to the current position
@@ -86,7 +86,7 @@ cdef class RungeKutta(Integration):
 		self.k2 =np.zeros((3,))
 		self.k2_x =np.zeros((3,))
 
-	cdef int integrate(self, double[:] direction, double[:] coordinate) : # nogil except *:
+	cdef int integrate(self, double[:] direction, double[:] coordinate, int div) : # nogil except *:
 		mult_with_scalar(self.three_vector, self.stepsize/(2*norm(direction)), direction)
 		add_vectors(self.k2_x, coordinate, self.three_vector)
 		if self.interpolate.interpolate(self.k2_x, direction, 1) != 0:

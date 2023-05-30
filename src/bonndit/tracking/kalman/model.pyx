@@ -298,19 +298,12 @@ cdef class BinghamModel(WatsonModel):
 cdef class BinghamQuatModel(BinghamModel):
 	def __cinit__(self, **kwargs):
 		super(BinghamQuatModel, self).__init__(**kwargs)
-		lookup_table = np.load(dirname + '/bingham_coefs_versuch1001.npy')
-		normalize_const = np.load(dirname +'/normalize_const_versuch1000.npy')
-		# Convolution with rank 1 kernel:
-		for i,j in np.ndindex(lookup_table.shape[:2]):
-			if normalize_const[i,j] != 0:
-				lookup_table[i,j] *= 1/normalize_const[i,j]
-			else:
-				lookup_table[i,j] = 0
-		lookup_table[...,0,:] *= 2.51327412
-		lookup_table[...,1,:] *= 1.43615664
-		lookup_table[...,2,:] *= 0.31914592
+		self.order= kwargs["order"]
+		if kwargs["order"] == 4:
+			self.lookup_table1 = lookup_table = np.load(dirname + '/bingham_compressed.npy')
+		else:
+			self.lookup_table1 = lookup_table = np.load(dirname + '/bingham_normalized_o6.npy')
 		self.num_tensors = <int> (kwargs['dim_model'] / 7)
-		self.lookup_table = lookup_table
 		if kwargs['process noise'] == "":
 			ddiagonal(&self.PROCESS_NOISE[0, 0], np.array([0.01, 0.01,0.01,0.001, 0.001, 0.001]), self.PROCESS_NOISE.shape[0],
 				  self.PROCESS_NOISE.shape[1])
@@ -318,23 +311,23 @@ cdef class BinghamQuatModel(BinghamModel):
 			ddiagonal(&self.MEASUREMENT_NOISE[0, 0], np.array([0.04]), self.MEASUREMENT_NOISE.shape[0],
 				  self.MEASUREMENT_NOISE.shape[1])
 
-	cdef void sh_bingham_coeffs(self, double kappa, double beta) except *: # nogil except *:
-	#	print(kappa, beta)
-		self.dipy_v[0] = self.lookup_table[<int> kappa*10, <int> beta*10, 0, 0]
-		self.dipy_v[1] = self.lookup_table[<int> kappa*10, <int> beta*10, 1, 2]
-		self.dipy_v[2] = self.lookup_table[<int> kappa*10, <int> beta*10, 1, 1]
-		self.dipy_v[3] = self.lookup_table[<int> kappa*10, <int> beta*10, 1, 0]
-		self.dipy_v[4] = self.lookup_table[<int> kappa*10, <int> beta*10, 1, 8]
-		self.dipy_v[5] = self.lookup_table[<int> kappa*10, <int> beta*10, 1, 7]
-		self.dipy_v[6] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 4]
-		self.dipy_v[7] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 3]
-		self.dipy_v[8] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 2]
-		self.dipy_v[9] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 1]
-		self.dipy_v[10] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 0]
-		self.dipy_v[11] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 8]
-		self.dipy_v[12] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 7]
-		self.dipy_v[13] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 6]
-		self.dipy_v[14] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 5]
+	#cdef void sh_bingham_coeffs(self, double kappa, double beta) except *: # nogil except *:
+	##	print(kappa, beta)
+	#	self.dipy_v[0] = self.lookup_table[<int> kappa*10, <int> beta*10, 0, 0]
+	#	self.dipy_v[1] = self.lookup_table[<int> kappa*10, <int> beta*10, 1, 2]
+	#	self.dipy_v[2] = self.lookup_table[<int> kappa*10, <int> beta*10, 1, 1]
+	#	self.dipy_v[3] = self.lookup_table[<int> kappa*10, <int> beta*10, 1, 0]
+	#	self.dipy_v[4] = self.lookup_table[<int> kappa*10, <int> beta*10, 1, 8]
+	#	self.dipy_v[5] = self.lookup_table[<int> kappa*10, <int> beta*10, 1, 7]
+	#	self.dipy_v[6] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 4]
+	#	self.dipy_v[7] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 3]
+	#	self.dipy_v[8] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 2]
+	#	self.dipy_v[9] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 1]
+	#	self.dipy_v[10] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 0]
+	#	self.dipy_v[11] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 8]
+	#	self.dipy_v[12] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 7]
+	#	self.dipy_v[13] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 6]
+	#	self.dipy_v[14] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 5]
 
 
 
@@ -350,12 +343,9 @@ cdef class BinghamQuatModel(BinghamModel):
 				beta = max(min(exp(sigma_points[i*7 + 2, j]), kappa), 0.1)
 
 				quat2ZYZ(self.angles, sigma_points[i*7+3:(i+1)*7,j])
-				self.sh_bingham_coeffs(kappa, beta)
-				#print(np.array(self.dipy_v))
-				c_map_dipy_to_pysh_o4(&self.dipy_v[0], &self.pysh_v[0])
-				c_sh_rotate_real_coef(&self.rot_pysh_v[0], &self.pysh_v[0], self.order, &self.angles[0], &dj_o4[0][0][0])
-				c_map_pysh_to_dipy_o4(&self.rot_pysh_v[0], &self.dipy_v[0])
-				cblas_daxpy(observations.shape[0], lam ,&self.dipy_v[0], 1, &observations[0,j], observations.shape[1])
+				c_sh_rotate_real_coef_fast(&observations[0,j], observations.shape[1], &self.lookup_table1[<int> kappa * 10, <int> beta * 10, 0],
+										   1, self.order, &self.angles[0])
+				cblas_dscal(observations.shape[0], lam , &observations[0,j], observations.shape[1])
 
 #
 #
@@ -377,8 +367,8 @@ cdef class BinghamQuatModel(BinghamModel):
 			mean[i*7 + 0] = self.vector_field[1,i, <int> point[0], <int> point[1], <int> point[2]]
 			# set circle by setting kappa and  beta  = 0
 			#print(self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]])
-			mean[i*7 + 1] = log(45) #min(self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]],45))
-			mean[i*7 + 2] = log(0.1)			# set angles: all needed!
+			mean[i*7 + 1] = log(33) #min(self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]],45))
+			mean[i*7 + 2] = log(15)			# set angles: all needed!
 			ZYZ2quat(mean[i*7+3:(i+1)*7], np.array([0, dir[0], dir[1]]))
 
 #
