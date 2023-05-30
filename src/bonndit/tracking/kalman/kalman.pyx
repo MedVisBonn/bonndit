@@ -136,7 +136,6 @@ cdef class Kalman:
 		cdef int info, i
 		info = self.compute_sigma_points(self.X, self.P_M, mean, P, self.KAPPA) # eq. 17
 
-		print(np.array_repr(np.array(P), max_line_width=300, precision=5, suppress_small=True))
 		if info != 0:
 			return info
 		self._model.constrain(self.X)
@@ -157,7 +156,6 @@ cdef class Kalman:
 			cblas_dcopy(self.pred_Y_mean.shape[0], &self.pred_Y_mean[0], 1, &self.gamma2[0,i], self.gamma2.shape[1])
 		sub_pointwise(&self.gamma2[0,0],&self.gamma[0,0], &self.gamma2[0,0], self.gamma2.shape[0]*self.gamma2.shape[1])
 
-		print('gamma2 \n', np.array_repr(np.array(self.gamma2), max_line_width=300, precision=5, suppress_small=True))
 
 		special_mat_mul(self.P_yy, self.gamma2, self.weights, self.gamma2, 1)
 		cblas_daxpy(self.P_yy.shape[0] * self.P_yy.shape[1], 1, &self._model.MEASUREMENT_NOISE[0, 0], 1, &self.P_yy[0, 0], 1)

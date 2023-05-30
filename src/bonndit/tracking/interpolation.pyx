@@ -10,7 +10,7 @@ from bonndit.utilc.cython_helpers cimport add_pointwise, floor_pointwise_matrix,
 import numpy as np
 import time
 from bonndit.utilc.cython_helpers cimport dm2toc
-from bonndit.utilc.hota cimport hota_4o3d_sym_norm, hota_4o3d_sym_eval, hota_8o3d_sym_eval
+from bonndit.utilc.hota cimport hota_4o3d_sym_norm, hota_4o3d_sym_eval, hota_8o3d_sym_eval, hota_6o3d_sym_eval
 from bonndit.utilc.lowrank cimport approx_initial
 from bonndit.utilc.structures cimport dj_o4
 from bonndit.utilc.quaternions cimport quat2rot, quat2ZYZ, basis2quat, quatmul, quat_inv
@@ -638,7 +638,7 @@ cdef class UKFFodfAlt(Interpolation):
 				if self._model1.order ==4:
 					hota_4o3d_sym_eval(self.res, self.mean[j, 3], self.mean[j, :3])
 				else:
-					hota_8o3d_sym_eval(self.res, self.mean[j, 3], self.mean[j, :3])
+					hota_6o3d_sym_eval(self.res, self.mean[j, 3], self.mean[j, :3])
 				cblas_daxpy(self.res.shape[0], -1, &self.res[0], 1, &self.y[i,0], 1)
 			if i == 0:
 				self._kalman1.update_kalman_parameters(self.mean[i], self.P[i], self.y[i])
@@ -772,6 +772,7 @@ cdef class UKFWatsonAlt(Interpolation):
 		self.P = np.zeros((dim_model//5, 5, 5), dtype=np.float64)
 		self.y = np.zeros((dim_model//5, kwargs['data'].shape[3]), dtype=DTYPE)
 		self.res = np.zeros((kwargs['data'].shape[3]), dtype=np.float64)
+		self.res_copy = np.zeros((kwargs['data'].shape[3]), dtype=np.float64)
 		self._model1 = WatsonModel(vector_field=vector_field[:, 0:1], **kwargs)
 		self._kalman1 = Kalman(kwargs['data'].shape[3], kwargs['dim_model'], self._model1)
 		self._model2 = WatsonModel(vector_field=vector_field[:, 1:2], **kwargs)
@@ -808,21 +809,28 @@ cdef class UKFWatsonAlt(Interpolation):
 				if i == j:
 					continue
 #
-				cblas_dscal(self.res.shape[0], 0, &self.res[0], 1)
-				c_sh_watson_coeffs(exp(self.mean[j,0]), &self.res[0], 4)
-				div = self._model1.sh_norm(self.res)
-				self.res[0] *= self._model1.rank_1_rh_o4[0]/div
-				self.res[3] *= self._model1.rank_1_rh_o4[1]/div
-				self.res[10] *= self._model1.rank_1_rh_o4[2]/div
+				cblas_dscal(self.res.shape[0], 0, &self.res_copy[0], 1)
+				c_sh_watson_coeffs(exp(self.mean[j,0]), &self.res_copy[0], self._model1.order)
+				self.res_copy[0] *= self._model1.rank_1_rh_o4[0]
+				self.res_copy[3] *= self._model1.rank_1_rh_o4[1]
+				self.res_copy[10] *= self._model1.rank_1_rh_o4[2]
+				if self._model1.order == 6:
+					self.res_copy[21] *= self._model1.rank_1_rh_o4[3]
 				self.mean[j,2] *= -1
 				self.mean[j,4] *= -1
 				cart2sphere(self.angles[1:], self.mean[j, 2:])
 				self.mean[j,2] *= -1
 				self.mean[j,4] *= -1
-				c_map_dipy_to_pysh_o4(&self.res[0], &self.pysh_v[0])
-				c_sh_rotate_real_coef(&self.rot_pysh_v[0], &self.pysh_v[0], 4, &self.angles[0], &dj_o4[0][0][0])
-				c_map_pysh_to_dipy_o4(&self.rot_pysh_v[0],&self.res[0])
-				cblas_daxpy(self.res.shape[0], -self.mean[j,1], &self.res[0], 1, &self.y[i,0], 1)
+				## TODOc_
+				c_sh_rotate_real_coef_fast(&self.res[0], 1, &self.res_copy[0], 1, self._model.order, &self.angles[0])
+				#c_map_dipy_to_pysh_o4(&self._model.dipy_v[0], &self.pysh_v[0])
+				#c_sh_rotate_real_coef(&self.rot_pysh_v[0], &self.pysh_v[0], 4, &self._model.angles[0], &dj_o4[0][0][0])
+				#c_map_pysh_to_dipy_o4(&self.rot_pysh_v[0],&self.res[0])
+				cblas_daxpy(self.res.shape[0], -max(self.mean[j, 1], _lambda_min), &self.res[0], 1, &self.y[i,0], 1)
+				#c_map_dipy_to_pysh_o4(&self.res[0], &self.pysh_v[0])
+				#c_sh_rotate_real_coef(&self.rot_pysh_v[0], &self.pysh_v[0], 4, &self.angles[0], &dj_o4[0][0][0])
+				#c_map_pysh_to_dipy_o4(&self.rot_pysh_v[0],&self.res[0])
+				#cblas_daxpy(self.res.shape[0], -self.mean[j,1], &self.res[0], 1, &self.y[i,0], 1)
 			if i == 0:
 				self._kalman1.update_kalman_parameters(self.mean[i], self.P[i], self.y[i])
 			else:
@@ -839,29 +847,41 @@ cdef class UKFWatsonAlt(Interpolation):
 			self.kappas[i] = exp(self.mean[i, 0])
 			cblas_dcopy(3, &self.mean[i, 2], 1, &self.best_dir[i,0], 1)
 
-		if self.store_loss:
-			self._kalman1.linear(self.point_index[:3], self.y[0], self.mlinear, self.data)
-			base = cblas_dnrm2(self.y.shape[0], &self.y[0,0], 1)
-			for i in range(self._model.num_tensors):
-				cblas_dscal(self._model.dipy_v.shape[0], 0, &self._model.dipy_v[0], 1)
-				c_sh_watson_coeffs(self.kappas[i], &self._model.dipy_v[0], self._model.order)
-				div = self._model1.sh_norm(self._model.dipy_v)
-				self.mean[i, 2] *= -1
-				self.mean[i, 4] *= -1
-				cart2sphere(self._model.angles[1:], self.mean[i,2:])
-				self.mean[i, 2] *= -1
-				self.mean[i, 4] *= -1
-				self._model.dipy_v[0] *= self._model.rank_1_rh_o4[0]/div
-				self._model.dipy_v[3] *= self._model.rank_1_rh_o4[1]/div
-				self._model.dipy_v[10] *= self._model.rank_1_rh_o4[2]/div
-				c_map_dipy_to_pysh_o4(&self._model.dipy_v[0], &self._model.pysh_v[0])
-				c_sh_rotate_real_coef(&self._model.rot_pysh_v[0], &self._model.pysh_v[0], self._model.order, &self._model.angles[0], &dj_o4[0][0][0])
-				c_map_pysh_to_dipy_o4(&self._model.rot_pysh_v[0],&self._model.dipy_v[0])
-				cblas_daxpy(self.y.shape[0], -self.weights[i], &self._model.dipy_v[0], 1, &self.y[0,0], 1)
-			self.loss = cblas_dnrm2(self.y.shape[0], &self.y[0,0], 1)
-			#print(self.loss)
+		#if self.store_loss:
+		#	self._kalman1.linear(self.point_index[:3], self.y[0], self.mlinear, self.data)
+		#	base = cblas_dnrm2(self.y.shape[0], &self.y[0,0], 1)
+		#	for i in range(self._model.num_tensors):
+		#		cblas_dscal(self._model.dipy_v.shape[0], 0, &self._model.dipy_v[0], 1)
+		#		c_sh_watson_coeffs(self.kappas[i], &self._model.dipy_v[0], self._model.order)
+		#		div = self._model1.sh_norm(self._model.dipy_v)
+		#		self.mean[i, 2] *= -1
+		#		self.mean[i, 4] *= -1
+		#		cart2sphere(self._model.angles[1:], self.mean[i,2:])
+		#		self.mean[i, 2] *= -1
+		#		self.mean[i, 4] *= -1
+		#		self._model.dipy_v[0] *= self._model.rank_1_rh_o4[0]/div
+		#		self._model.dipy_v[3] *= self._model.rank_1_rh_o4[1]/div
+		#		self._model.dipy_v[10] *= self._model.rank_1_rh_o4[2]/div
+		#		c_map_dipy_to_pysh_o4(&self._model.dipy_v[0], &self._model.pysh_v[0])
+		#		c_sh_rotate_real_coef(&self._model.rot_pysh_v[0], &self._model.pysh_v[0], self._model.order, &self._model.angles[0], &dj_o4[0][0][0])
+		#		c_map_pysh_to_dipy_o4(&self._model.rot_pysh_v[0],&self._model.dipy_v[0])
+		#		cblas_daxpy(self.y.shape[0], -self.weights[i], &self._model.dipy_v[0], 1, &self.y[0,0], 1)
+		#	self.loss = cblas_dnrm2(self.y.shape[0], &self.y[0,0], 1)
+		#	#print(self.loss)
 		self.prob.calculate_probabilities_sampled(self.best_dir, self.kappas, self.weights, old_dir, self.point_index[:3])
 		cblas_dcopy(3, &self.prob.best_fit[0], 1, &self.next_dir[0], 1)
+		#cross(self.orth_both, old_dir, self.next_dir)
+		#cdef double s = cblas_dnrm2(3, &self.orth_both[0], 1)
+		#if s != 0:
+			#cblas_dscal(3, 1/s, &self.orth_both[0], 1)
+			#cross(self.orth_next, self.orth_both, self.next_dir)
+			#s = cblas_dnrm2(3, &self.orth_next[0], 1)
+			#cblas_dscal(3, 1/s, &self.orth_next[0], 1)
+			#cross(self.orth_old, self.orth_both, old_dir)
+			#s = cblas_dnrm2(3, &self.orth_old[0], 1)
+
+
+
 		return info
 
 cdef class UKFBingham(UKF):
@@ -1147,25 +1167,25 @@ cdef class UKFBinghamQuatAlt(Interpolation):
 		cblas_dcopy(3, &self.prob.best_fit[0], 1, &self.next_dir[0], 1)
 		## correction step
 		# calculate crossproduct between old and new direction
-		cross(self.orth_both, old_dir, self.next_dir)
-		cdef double s = cblas_dnrm2(3, &self.orth_both[0], 1)
-		if s != 0:
-			cblas_dscal(3, 1/s, &self.orth_both[0], 1)
-			cross(self.orth_next, self.orth_both, self.next_dir)
-			s = cblas_dnrm2(3, &self.orth_next[0], 1)
-			cblas_dscal(3, 1/s, &self.orth_next[0], 1)
-			cross(self.orth_old, self.orth_both, old_dir)
-			s = cblas_dnrm2(3, &self.orth_old[0], 1)
-			cblas_dscal(3, 1/s, &self.orth_old[0], 1)
-			basis2quat(self.newframe, self.next_dir, self.orth_both, self.orth_next)
-			basis2quat(self.oldframe, old_dir, self.orth_both, self.orth_old)
-			quat_inv(self.oldframe_inv, self.oldframe, 1, 1)
-			quatmul(self.rot, self.newframe, self.oldframe)
-			quatmul(self._kalman1.c_quat1, self.rot, self._kalman1.c_quat)
-			cblas_dcopy(4, &self._kalman1.c_quat1[0], 1, &self._kalman1.c_quat[0], 1)
-			quatmul(self._kalman2.c_quat1, self.rot, self._kalman2.c_quat)
-			cblas_dcopy(4, &self._kalman2.c_quat1[0], 1, &self._kalman2.c_quat[0], 1)
-
+#		cross(self.orth_both, old_dir, self.next_dir)
+#		cdef double s = cblas_dnrm2(3, &self.orth_both[0], 1)
+#		if s != 0:
+#			cblas_dscal(3, 1/s, &self.orth_both[0], 1)
+#			cross(self.orth_next, self.orth_both, self.next_dir)
+#			s = cblas_dnrm2(3, &self.orth_next[0], 1)
+#			cblas_dscal(3, 1/s, &self.orth_next[0], 1)
+#			cross(self.orth_old, self.orth_both, old_dir)
+#			s = cblas_dnrm2(3, &self.orth_old[0], 1)
+#			cblas_dscal(3, 1/s, &self.orth_old[0], 1)
+#			basis2quat(self.newframe, self.next_dir, self.orth_both, self.orth_next)
+#			basis2quat(self.oldframe, old_dir, self.orth_both, self.orth_old)
+#			quat_inv(self.oldframe_inv, self.oldframe, 1, 1)
+#			quatmul(self.rot, self.newframe, self.oldframe)
+#			quatmul(self._kalman1.c_quat1, self.rot, self._kalman1.c_quat)
+#			cblas_dcopy(4, &self._kalman1.c_quat1[0], 1, &self._kalman1.c_quat[0], 1)
+#			quatmul(self._kalman2.c_quat1, self.rot, self._kalman2.c_quat)
+#			cblas_dcopy(4, &self._kalman2.c_quat1[0], 1, &self._kalman2.c_quat[0], 1)
+#
 
 
 		return info

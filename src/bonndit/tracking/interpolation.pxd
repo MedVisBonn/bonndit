@@ -107,6 +107,8 @@ cdef class UKFWatsonAlt(Interpolation):
 	cdef double[:,:,:] P
 	cdef double[:,:] y
 	cdef double[:] res
+
+	cdef double[:] res_copy
 	cdef WatsonModel _model1
 	cdef WatsonModel _model
 	cdef Kalman _kalman1
@@ -124,6 +126,7 @@ cdef class UKFFodf(UKF):
 cdef class UKFWatson(UKF):
 	cdef double[:] kappas
 	cdef double[:] weights
+
 	cdef WatsonModel _model1
 	cdef bint store_loss
 	cdef int select_next_dir(self, int, double[:]) # nogil except *
