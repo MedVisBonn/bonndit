@@ -22,6 +22,7 @@ cdef class Integration:
         self.next_point = np.zeros((3,))
         self.three_vector = np.zeros((3,))
         self.old_dir = np.ndarray((3,))
+        self.first_dir = np.ndarray((3,))
 
     cdef int integrate(
         self, double[:] direction, double[:] coordinate,
