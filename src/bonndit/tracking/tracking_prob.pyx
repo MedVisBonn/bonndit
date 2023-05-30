@@ -57,6 +57,7 @@ cdef void tracking(double[:,:,:,:] paths, double[:] seed,
 				integrate.old_dir = interpolate.next_dir
 			else:
 				integrate.old_dir = seed[3:]
+				integrate.first_dir = seed[3:]
 			status1, m = forward_tracking(paths[j,:,0, :], interpolate, integrate, trafo, validator, max_track_length, save_steps,
 			                 features[j,:,0, :], features_save, runge_kutta)
 
@@ -79,7 +80,7 @@ cdef void tracking(double[:,:,:,:] paths, double[:] seed,
 					features[j, 0, 1, features_save.seedpoint] = 1
 			else:
 				break
-			if k==2:
+			if k==7:
 				break
 
 cdef forward_tracking(double[:,:] paths,  Interpolation interpolate,
@@ -100,13 +101,14 @@ cdef forward_tracking(double[:,:] paths,  Interpolation interpolate,
 	# thousand is max length for pathway
 	interpolate.prob.old_fa = 1
 	validator.WM.reset()
-
+	cdef double c = 0
 	for k in range((max_track_length-1)):
 		# validate index and wm density.
 		counter+=1
 		if validator.index_checker(paths[k]):
 			set_zero_vector(paths[k])
 			break
+
 		# check if neigh is wm.
 		con = validator.WM.wm_checker(paths[k])
 		if con == 0:
@@ -130,6 +132,14 @@ cdef forward_tracking(double[:,:] paths,  Interpolation interpolate,
 
 		if interpolate.interpolate(paths[k], integrate.old_dir, k) != 0:
 			break
+		if k<3:
+			c = angle_deg(integrate.first_dir, interpolate.next_dir)
+			if c >= 90:
+				c=180-c
+			if c > 40:
+				set_zero_vector(paths[k])
+				set_zero_vector(features[k])
+				break
 
 		# Check next step is valid. If it is: Integrate. else break
 		if validator.next_point_checker(interpolate.next_dir):

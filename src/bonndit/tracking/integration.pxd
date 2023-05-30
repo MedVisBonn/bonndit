@@ -9,6 +9,7 @@ cdef class Integration:
 	cdef double stepsize, width
 	cdef double[:] next_point, three_vector
 	cdef double[:,:] ItoW
+	cdef double[:] first_dir
 	cdef double[:] origin
 	cdef Trafo trafo
 	cdef double[:] old_dir

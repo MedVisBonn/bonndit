@@ -160,6 +160,54 @@ cdef void hota_8o3d_sym_eval(double[:] res, double s, double[:] points) nogil:
     res[44] = s * v22 * v22 * v22 * v22
 
 
+cdef void hota_6o3d_sym_eval(double[:] res, double s, double[:] points) nogil:
+    cdef double v00, v01, v02, v11, v12, v22
+    v00 = points[0]* points[0]
+    v01 = points[0]* points[1]
+    v02 = points[0]* points[2]
+
+    v11 = points[1]* points[1]
+    v12 = points[1]* points[2]
+    v22 = points[2]* points[2]
+    res[0] = s * v00 * v00 * v00
+    res[1] = s * v00 * v00 * v01
+    res[2] = s * v00 * v00 * v02
+
+    res[3] = s * v00 * v00 * v11
+    res[4] = s * v00 * v00 * v12
+    res[5] = s * v00 * v00 * v22
+
+    res[6] = s * v00 * v01 * v11
+    res[7] = s * v00 * v01 * v12
+    res[8] = s * v00 * v01 * v22
+
+    res[9] = s * v00 * v02 * v22
+    res[10] = s * v00 * v11 * v11
+    res[11] = s * v00 * v11 * v12
+
+    res[12] = s * v00 * v11 * v22
+    res[13] = s * v00 * v12 * v22
+    res[14] = s * v00 * v22 * v22
+
+    res[15] = s * v01 * v11 * v11
+    res[16] = s * v01 * v11 * v12
+    res[17] = s * v01 * v11 * v22
+
+    res[18] = s * v01 * v12 * v22
+    res[19] = s * v01 * v22 * v22
+    res[20] = s * v02 * v22 * v22
+
+    res[21] = s * v11 * v11 * v11
+    res[22] = s * v11 * v11 * v12
+    res[23] = s * v11 * v11 * v22
+
+    res[24] = s * v11 * v12 * v22
+    res[25] = s * v11 * v22 * v22
+    res[26] = s * v12 * v22 * v22
+
+    res[27] = s * v22 * v22 * v22
+
+
 cdef void hota_4o3d_sym_eval(double[:] res, double s, double[:] v) nogil:
     cdef double v00,v01, v02, v11, v12, v22
 

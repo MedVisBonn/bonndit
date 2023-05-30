@@ -6,6 +6,8 @@ cdef void hota_4o3d_sym_eval(double[:], double, double[:]) nogil
 cdef double hota_4o3d_sym_tsp(double[:], double[:]) nogil
 cdef double hota_4o3d_sym_norm(double[:]) nogil
 cdef hota_8o3d_sym_eval_cons(double[:,:], double[:,:])
+
+cdef void hota_6o3d_sym_eval(double[:] , double , double[:] ) nogil
 cdef void hota_4o3d_sym_make_iso(double[:], double) nogil
 cdef void hota_4o3d_sym_v_form(double[:], double[:], double[:]) nogil
 cdef double hota_4o3d_mean(double[:]) nogil

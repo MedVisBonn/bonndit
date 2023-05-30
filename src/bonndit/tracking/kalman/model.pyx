@@ -1,7 +1,7 @@
 #cython: language_level=3, boundscheck=True, wraparound=True, warn.unused=True, warn.unused_args=True,
 # warn.unused_results=True, profile=True
 from bonndit.utilc.blas_lapack cimport *
-from bonndit.utilc.hota cimport hota_4o3d_sym_eval, hota_8o3d_sym_eval
+from bonndit.utilc.hota cimport hota_4o3d_sym_eval, hota_6o3d_sym_eval
 from bonndit.utilc.quaternions cimport *
 from bonndit.utilc.cython_helpers cimport special_mat_mul, orthonormal_from_sphere, dinit, sphere2world, ddiagonal, world2sphere, sphere2cart, cart2sphere
 from bonndit.utilc.watsonfitwrapper cimport *
@@ -46,7 +46,7 @@ cdef class fODFModel(AbstractModel):
 		super(fODFModel, self).__init__(**kwargs)
 		self.m = np.zeros((3,))
 		self.vector_field = kwargs['vector_field']
-		self.res = np.zeros((15 if kwargs['order'] == 4 else 45,))
+		self.res = np.zeros((15 if kwargs['order'] == 4 else 28,))
 		self.order = kwargs['order']
 		if kwargs['process noise'] == "":
 			ddiagonal(&self.PROCESS_NOISE[0, 0], np.array([0.005,0.005,0.005,0.1]), self.PROCESS_NOISE.shape[0],
@@ -75,7 +75,7 @@ cdef class fODFModel(AbstractModel):
 				if self.order == 4:
 					hota_4o3d_sym_eval(self.res, lam, self.m)
 				else:
-					hota_8o3d_sym_eval(self.res, lam, self.m)
+					hota_6o3d_sym_eval(self.res, lam, self.m)
 				cblas_daxpy(observations.shape[0],1,&self.res[0], 1, &observations[0,j], observations.shape[1])
 		#with gil:
 		#	print(np.array(observations))
@@ -89,7 +89,7 @@ cdef class fODFModel(AbstractModel):
 		cdef double[:] dot = np.zeros(self.vector_field.shape[1])
 		cdef double[:] Pv = np.array([0.01])
 		ddiagonal(&P[0,0], Pv, P.shape[0], P.shape[1])
-		for i in range(self.vector_field.shape[1]):
+		for i in range(self.num_tensors):
 			mean[i*4: i*4 +3] = self.vector_field[1:,i, <int> point[0], <int> point[1], <int> point[2]]
 			mean[i*4 + 3] = self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]]
 
@@ -108,13 +108,17 @@ cdef class WatsonModel(AbstractModel):
 		super(WatsonModel, self).__init__(**kwargs)
 		self.m = np.zeros((3,))
 		self.vector_field = kwargs['vector_field']
-		self.res = np.zeros((15 if kwargs['order'] == 4 else 45,))
+		self.res = np.zeros((15 if kwargs['order'] == 4 else 28,))
 		self.order = kwargs['order']
-		self.rank_1_rh_o4 = np.array([2.51327412, 1.43615664, 0.31914592], dtype=DTYPE)
+		if kwargs['order'] == 4:
+			self.rank_1_rh_o4 = np.array([2.51327412, 1.43615664, 0.31914592], dtype=DTYPE)
+		else:
+			self.rank_1_rh_o4 = np.array([1.7951958 , 1.1967972 , 0.43519898, 0.06695369], dtype=DTYPE)
+
 		self.angles = np.zeros((3,), dtype=DTYPE)
 		self.rot_pysh_v = np.zeros((2 *  5 * 5,), dtype=DTYPE)
 		self.pysh_v = np.zeros((2 *  5 * 5,), dtype=DTYPE)
-		self.dipy_v = np.zeros((15 if kwargs['order'] == 4 else 45,), dtype=DTYPE)
+		self.dipy_v = np.zeros((15 if kwargs['order'] == 4 else 28,), dtype=DTYPE)
 		if kwargs['process noise'] == "":
 			ddiagonal(&self.PROCESS_NOISE[0, 0], np.array([0.5,0.1,0.01, 0.01, 0.01]), self.PROCESS_NOISE.shape[0],
 				  self.PROCESS_NOISE.shape[1])
@@ -154,16 +158,22 @@ cdef class WatsonModel(AbstractModel):
 				cart2sphere(self.angles[1:], self.m)
 				cblas_dscal(self.dipy_v.shape[0], 0, &self.dipy_v[0], 1)
 				c_sh_watson_coeffs(kappa, &self.dipy_v[0], self.order)
-				div = self.sh_norm(self.dipy_v)
+			#	div = self.sh_norm(self.dipy_v)
 			#	print(kappa, np.array(self.dipy_v))
-				self.dipy_v[0] *= self.rank_1_rh_o4[0]/div
-				self.dipy_v[3] *= self.rank_1_rh_o4[1]/div
-				self.dipy_v[10] *= self.rank_1_rh_o4[2]/div
+				self.dipy_v[0] *= self.rank_1_rh_o4[0]
+				self.dipy_v[3] *= self.rank_1_rh_o4[1]
+				self.dipy_v[10] *= self.rank_1_rh_o4[2]
+				if self.order == 6:
+					self.dipy_v[21] *= self.rank_1_rh_o4[3]
 
-				c_map_dipy_to_pysh_o4(&self.dipy_v[0], &self.pysh_v[0])
-				c_sh_rotate_real_coef(&self.rot_pysh_v[0], &self.pysh_v[0], self.order, &self.angles[0], &dj_o4[0][0][0])
-				c_map_pysh_to_dipy_o4(&self.rot_pysh_v[0],&self.dipy_v[0])
-				cblas_daxpy(observations.shape[0], lam, &self.dipy_v[0], 1, &observations[0,j], observations.shape[1])
+				c_sh_rotate_real_coef_fast(&observations[0,j], observations.shape[1], &self.dipy_v[0],
+										   1, self.order, &self.angles[0])
+				cblas_dscal(observations.shape[0], lam , &observations[0,j], observations.shape[1])
+
+				#c_map_dipy_to_pysh_o4(&self.dipy_v[0], &self.pysh_v[0])
+				#c_sh_rotate_real_coef(&self.rot_pysh_v[0], &self.pysh_v[0], self.order, &self.angles[0], &dj_o4[0][0][0])
+				#c_map_pysh_to_dipy_o4(&self.rot_pysh_v[0],&self.dipy_v[0])
+				#cblas_daxpy(observations.shape[0], lam, &self.dipy_v[0], 1, &observations[0,j], observations.shape[1])
 
 
 	cdef bint kinit(self, double[:] mean, double[:] point, double[:] init_dir, double[:,:] P, double[:] y) except *:
