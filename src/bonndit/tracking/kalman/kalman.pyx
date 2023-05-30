@@ -186,10 +186,6 @@ cdef class Kalman:
             self.X, self.P_M, mean, P,
             self.KAPPA)  # eq. 17
 
-        print(
-            np.array_repr(
-                np.array(P), max_line_width=300, precision=5,
-                suppress_small=True))
         if info != 0:
             return info
         self._model.constrain(self.X)
@@ -230,10 +226,6 @@ cdef class Kalman:
             &self.gamma2[0, 0], &self.gamma[0, 0],
             &self.gamma2[0, 0], self.gamma2.shape[0] * self.gamma2.shape[1])
 
-        print('gamma2 \n',
-            np.array_repr(
-                np.array(self.gamma2), max_line_width=300,
-                precision=5, suppress_small=True))
 
         special_mat_mul(self.P_yy, self.gamma2, self.weights, self.gamma2, 1)
         cblas_daxpy(
