@@ -5,7 +5,7 @@
 import numpy as np
 import psutil
 import scipy
-from bonndit.utilc.hota cimport hota_4o3d_sym_eval, order_4_mult
+from bonndit.utilc.hota cimport hota_4o3d_sym_eval, order_4_mult,hota_6o3d_sym_eval, order_6_mult
 from bonndit.utilc.lowrank cimport approx_initial
 from bonndit.utilc.penalty_spherical cimport calc_norm_spherical, refine_average_spherical
 from bonndit.utilc.cython_helpers cimport mult_with_scalar, sub_vectors, \
@@ -69,23 +69,30 @@ cpdef approx_all_spherical(double[:,:,:] output, double[:,:,:,:]  fodf, int near
     cdef int[:,:] coordinates = np.array([[i, j, k] for i in range(fodf.shape[1]) for j in range(fodf.shape[2]) \
                                           for k in range(fodf.shape[3])], dtype=np.intc)
 
-    cdef double[:,:] sum_data = np.zeros((16, thread_num), dtype=DTYPE)
+    cdef double[:,:] sum_data = np.zeros((fodf.shape[0], thread_num), dtype=DTYPE)
    # cdef double[:,:,:] nearest_fodf = np.zeros([16, thread_num], dtype=DTYPE)
     #many helper variables
     cdef double[:, :, :] vs = np.zeros([4, 3, thread_num], dtype=DTYPE)
     cdef double[:,:] valsec = np.empty([1, thread_num], dtype=DTYPE), val= np.empty([1,thread_num], dtype=DTYPE), \
                      der = np.empty([3,thread_num],  dtype=DTYPE),
     cdef double[:,:] testv = np.empty([3,thread_num], dtype=DTYPE), \
-                    anisoten = np.empty([15,thread_num],  dtype=DTYPE), \
-                        isoten = np.empty([15, thread_num],dtype=DTYPE)
+                    anisoten = np.empty([fodf.shape[0] - 1,thread_num],  dtype=DTYPE), \
+                        isoten = np.empty([fodf.shape[0] - 1, thread_num],dtype=DTYPE)
     cdef double[:] norm = np.zeros([thread_num], dtype=DTYPE)
-    cdef double[:,:] res = np.empty([16,thread_num], dtype=DTYPE),
-    cdef double[:, :, :] tens = np.zeros([3, 15, thread_num], dtype=DTYPE)
-    cdef double[:, :, :] tens_average = np.zeros([3, 15, thread_num], dtype=DTYPE)
+    cdef double[:,:] res = np.empty([fodf.shape[0],thread_num], dtype=DTYPE),
+    cdef double[:, :, :] tens = np.zeros([3, fodf.shape[0]-1, thread_num], dtype=DTYPE)
+    cdef double[:, :, :] tens_average = np.zeros([3, fodf.shape[0]-1, thread_num], dtype=DTYPE)
     cdef double[:, :, :] pen_act = np.empty([3, 3, thread_num], dtype=DTYPE), \
         three_matrix = np.empty([3, 3, thread_num], dtype=DTYPE)
     cdef double[:,:] three_vector = np.empty([3, thread_num], dtype=DTYPE) , one_vector = np.empty([1, thread_num], dtype=DTYPE)
     cdef double[:,:,:] three_vector_placeholder = np.empty([3,  5, thread_num], dtype=DTYPE)
+    if fodf.shape[0] == 16:
+        hota_sym_eval = hota_4o3d_sym_eval
+        order_mult = order_4_mult
+    elif fodf.shape[0] == 29:
+        hota_sym_eval = hota_6o3d_sym_eval
+        order_mult = order_6_mult
+
     #print(1)
     for i in tqdm(range(num), disable=not verbose):
         ##get neighbourhood for each coordinate and save in the blocked thread memory.
@@ -99,13 +106,13 @@ cpdef approx_all_spherical(double[:,:,:] output, double[:,:,:,:]  fodf, int near
         # Initialize the tens
         if init:
             for j in range(rank):
-                hota_4o3d_sym_eval(tens[j, :, threadid()], 1, output[1:, j, i])
+                hota_sym_eval(tens[j, :, threadid()], 1, output[1:, j, i])
             # copy to account for weighting
             A = []
             b = []
-            for j in range(15):
-                b = b + [bsingle[j] for k in range(order_4_mult[j])]
-                A = A + [tens[:, j, threadid()] for k in range(order_4_mult[j])]
+            for j in range(fodf.shape[0] -1):
+                b = b + [bsingle[j] for k in range(order_mult[j])]
+                A = A + [tens[:, j, threadid()] for k in range(order_mult[j])]
             b = np.array(b)
             A = np.array(A)
             # least squares
@@ -118,7 +125,7 @@ cpdef approx_all_spherical(double[:,:,:] output, double[:,:,:,:]  fodf, int near
             #print(x)
         # sub from the data. To initialize the iterative process!
         for j in range(rank):
-            hota_4o3d_sym_eval(tens[j, :, threadid()], output[0, j, i], output[1:, j, i])
+            hota_sym_eval(tens[j, :, threadid()], output[0, j, i], output[1:, j, i])
             sub_vectors(sum_data[1:,  threadid()], sum_data[1:,  threadid()], tens[j,:,  threadid()])
 
 

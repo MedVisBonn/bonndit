@@ -7,7 +7,8 @@ from .cython_helpers cimport sub_vectors, mult_with_scalar, add_vectors, scalar
 from .structures cimport TijkRefineRank1Parm, TijkRefineRankkParm, DIM
 from .cython_helpers cimport set_zero_matrix, set_zero_vector
 from .hota cimport hota_4o3d_sym_eval, hota_4o3d_sym_norm, hota_4o3d_sym_make_iso, hota_4o3d_sym_v_form, \
-    hota_4o3d_mean, hota_4o3d_sym_s_form
+    hota_4o3d_mean, hota_4o3d_sym_s_form, hota_6o3d_sym_eval, hota_6o3d_sym_norm, hota_6o3d_sym_make_iso, hota_6o3d_sym_v_form, \
+    hota_6o3d_mean, hota_6o3d_sym_s_form
 
 
 DTYPE = np.float64
@@ -52,11 +53,15 @@ cdef void init_max_3d(double[:] s, double[:] v, double[:] tens) nogil:
     """
     cdef double norm_max, val
     cdef int i
-    s[0] = hota_4o3d_sym_s_form(tens, _candidates_3d_d[:3])
+    if len(tens) == 15:
+        hota_sym_s_form = hota_4o3d_sym_s_form
+    elif len(tens) == 28:
+        hota_sym_s_form = hota_6o3d_sym_s_form
+    s[0] = hota_sym_s_form(tens, _candidates_3d_d[:3])
     norm_max = s[0]
     v[:] = _candidates_3d_d[0: DIM]
     for i in range(1, _max_candidates_3d):
-        val = hota_4o3d_sym_s_form(tens, _candidates_3d_d[DIM*i: DIM*(i+1)])
+        val = hota_sym_s_form(tens, _candidates_3d_d[DIM*i: DIM*(i+1)])
         if val>norm_max:
             norm_max = val
             s[0] = val
@@ -71,6 +76,15 @@ cdef double refine_rankk_3d(double[:] ls, double[:,:] vs, double[:,:] tens, doub
     """
     cdef double newnorm = resnorm
     cdef int i, j
+    if len(res) == 15:
+        hota_sym_s_form = hota_4o3d_sym_s_form
+        hota_sym_norm = hota_4o3d_sym_norm
+        hota_sym_eval = hota_4o3d_sym_eval
+    elif len(res) == 28:
+        hota_sym_s_form = hota_6o3d_sym_s_form
+        hota_sym_norm = hota_6o3d_sym_norm
+        hota_sym_eval = hota_6o3d_sym_eval
+
     while True:
         resnorm = newnorm
         for i in range(k):
@@ -82,9 +96,9 @@ cdef double refine_rankk_3d(double[:] ls, double[:,:] vs, double[:,:] tens, doub
                     init_rank1_3d(ls[i:i+1], vs[:,i], res)
             # refine an existing term
             else:
-                for j in range(15):
+                for j in range(len(res)):
                     res[j] += tens[i,j]
-                ls[i] = hota_4o3d_sym_s_form(res, vs[:,i])
+                ls[i] = hota_sym_s_form(res, vs[:,i])
                 if TijkRefineRankkParm.pos and ls[i] < 0:
                     ls[i] = 0.1
                   #  set_zero_vector(ls)
@@ -102,7 +116,7 @@ cdef double refine_rankk_3d(double[:] ls, double[:,:] vs, double[:,:] tens, doub
                 ls[i] = 0.1
                 hota_4o3d_sym_eval(tens[i, :], ls[i], vs[:,i])
                 sub_vectors(res, res, tens[i,:])
-        newnorm = hota_4o3d_sym_norm(res)
+        newnorm = hota_sym_norm(res)
         if not (newnorm > TijkRefineRankkParm.eps_res and resnorm - newnorm > TijkRefineRankkParm.eps_impr*orignorm):
             #print([x for x in res], resnorm, newnorm, orignorm)
             break
@@ -113,7 +127,11 @@ cdef double approx_initial(double[:] ls, double[:,:] vs, double[:,:] tens, doubl
 double[:] valsec, double[:] val, double[:] der, double[:] testv,double[:] anisoten, double[:] isoten): # nogil:
     cdef double orignorm, newnorm
     cdef double[:] res
-    orignorm = newnorm = hota_4o3d_sym_norm(ten)
+    if len(ten) == 15:
+        hota_sym_norm = hota_4o3d_sym_norm
+    if len(ten) == 28:
+        hota_sym_norm = hota_6o3d_sym_norm
+    orignorm = newnorm = hota_sym_norm(ten)
     res = ten
     if orignorm < TijkRefineRankkParm.eps_res or k == 0:
         pass
@@ -126,13 +144,16 @@ cdef double init_rank1_3d(double[:] s, double[:] v, double[:] tens):#  nogil:
     Find best initial direction on sphere for rank1 approximation of a fourth order tensor. Here the abs value is
     used.
     """
-
+    if len(tens) == 15:
+        hota_sym_s_form = hota_4o3d_sym_s_form
+    if len(tens) == 28:
+        hota_sym_s_form = hota_6o3d_sym_s_form
     cdef int i
     cdef double absval, absmax=-1, val
   #  with gil:
    #     print(*s, *v, DIM)
     for i in range(_max_candidates_3d):
-        val = hota_4o3d_sym_s_form(tens, _candidates_3d_d[DIM*i:DIM*(i+1)])
+        val = hota_sym_s_form(tens, _candidates_3d_d[DIM*i:DIM*(i+1)])
         absval = fabs(val)
         if absval>absmax:
             absmax=absval
@@ -145,22 +166,34 @@ cdef int refine_rank1_3d(double[:] s, double[:] v, double[:] tens, double[:] der
     """
     Gradient descent with armijo stepsize
     """
+    if len(tens) == 15:
+        hota_sym_make_iso = hota_4o3d_sym_make_iso
+        hota_sym_norm = hota_4o3d_sym_norm
+        _sym_grad = _4o3d_sym_grad
+        hota_mean = hota_4o3d_mean
+        hota_sym_s_form = hota_4o3d_sym_s_form
+    if len(tens) == 28:
+        hota_sym_make_iso = hota_6o3d_sym_make_iso
+        hota_sym_norm = hota_6o3d_sym_norm
+        _sym_grad = _6o3d_sym_grad
+        hota_mean = hota_6o3d_mean
+        hota_sym_s_form = hota_6o3d_sym_s_form
 
     cdef int sign = 1 if s[0]>0 else -1
-    cdef double iso = hota_4o3d_mean(tens)
-    hota_4o3d_sym_make_iso(isoten, iso)
+    cdef double iso = hota_mean(tens)
+    hota_sym_make_iso(isoten, iso)
     cdef int i, armijoct,  k=tens.shape[0]
     cdef double anisonorm, anisonorminv, alpha, beta, oldval, val
     for i in range(k):
         anisoten[i] = tens[i] - isoten[i]
-    anisonorm = hota_4o3d_sym_norm(anisoten)
+    anisonorm = hota_sym_norm(anisoten)
     if anisonorm < TijkRefineRank1Parm.eps_start:
         return 1
     else:
         anisonorminv = 1/anisonorm
     alpha = beta = TijkRefineRank1Parm.beta*anisonorminv
     oldval = s[0] - iso
-    _4o3d_sym_grad(der, anisoten, v)
+    _sym_grad(der, anisoten, v)
 
     while True:
         armijoct = 0
@@ -175,11 +208,11 @@ cdef int refine_rank1_3d(double[:] s, double[:] v, double[:] tens, double[:] der
 
             mult_with_scalar(testv, 1/dist,testv) #Vektor
             dist = 1 - sqrt(scalar(v,testv))
-            val = hota_4o3d_sym_s_form(anisoten, testv)
+            val = hota_sym_s_form(anisoten, testv)
             if sign*val >= sign*oldval + TijkRefineRank1Parm.sigma*der_len*dist:
                 v[:] = testv
                 s[0] = val + iso
-                _4o3d_sym_grad(der, anisoten, v)
+                _sym_grad(der, anisoten, v)
                 if alpha < beta:
                     alpha /= TijkRefineRank1Parm.gamma
                 break
@@ -251,6 +284,18 @@ cdef void _4o3d_sym_grad(double[:] res, double[:] a, double[:] v) nogil:
     cdef int i, k = 3
     for i in range(k):
         res[i] *= 4
+    cdef double proj = scalar(res, v)
+    for i in range(k):
+        res[i] -= proj * v[i]
+
+cdef void _6o3d_sym_grad(double[:] res, double[:] a, double[:] v) nogil:
+    """
+    Calculate spherical gradient of symetric 4th order tensor on sphere.
+    """
+    hota_6o3d_sym_v_form(res, a, v)
+    cdef int i, k = 3
+    for i in range(k):
+        res[i] *= 6
     cdef double proj = scalar(res, v)
     for i in range(k):
         res[i] -= proj * v[i]

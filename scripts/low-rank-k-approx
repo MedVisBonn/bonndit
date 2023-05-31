@@ -52,8 +52,8 @@ def main():
         fodfs[i], meta = nrrd.read(f)
     fodfs = np.mean(fodfs, axis=0)
     print(fodfs.shape)
-    if fodfs.shape[0] != 16:
-        logging.error("fodf has to be 4th order tensor.")
+    if fodfs.shape[0] != 16 and fodfs.shape[0] != 29:
+        logging.error("fodf has to be 4th or 6th order tensor.")
         raise Exception()
     if len(fodfs.shape) != 4:
         logging.error("fodf have to be in 3d space. Hence, fodf has to be 4d.")

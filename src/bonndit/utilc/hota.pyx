@@ -6,12 +6,24 @@ import numpy as np
 
 cdef int[:] order_4_mult = np.array([1.0, 4.0, 4.0, 6.0, 12.0, 6.0, 4.0, 12.0, 12.0, 4.0, 1.0, 4.0, 6.0, 4.0, 1.0], dtype=np.int32)
 
+cdef int[:] order_6_mult = np.array([1.0, 6.0, 6.0, 15.0, 30.0, 15.0, 20.0, 60.0, 60.0, 20.0, 15.0, 60.0, 90.0, 60.0, 15.0, 6.0, 30.0, 60.0, 60.0, 30.0, 6.0, 1.0, 6.0, 15.0, 20.0, 15.0, 6.0, 1.0], dtype=np.int32)
+
 cdef double hota_4o3d_sym_tsp(double[:] a, double[:] b) nogil:
     return a[0]*b[0]+a[10]*b[10]+a[14]*b[14]+4*(a[1]*b[1]+a[2]*b[2]+a[6]*b[6]+a[9]*b[9]+a[11]*b[11]+a[13]*b[13])+6*(a[3]*b[3]+a[5]*b[5]+a[12]*b[12])+12*(a[4]*b[4]+a[7]*b[7]+a[8]*b[8])
 
+cdef double hota_6o3d_sym_tsp(double[:] a, double[:] b) nogil:
+    return (a[0]*b[0]+a[21]*b[21]+a[27]*b[27]+ 6*(a[1]*b[1]+a[2]*b[2] + a[15]*b[15]+a[20]*b[20] +
+            a[22]*b[22]+a[26]*b[26])+ 15*(a[3]*b[3]+ a[5]* b[5]+ a[10]*b[10]+ a[14]* b[14]+
+            a[23]*b[23]+a[25]*b[25])+ 30*(a[4]*b[4]+a[16]*b[16]+a[19]*b[19])+
+            20*(a[6]*b[6]+a[9]*b[9]+a[24]*b[24]) + 60*(a[7]*b[7]+a[8]*b[8]+a[11]*b[11]+
+            a[13]*b[13]+a[17]*b[17]+a[18]*b[18])+ 90*a[12]*b[12])
 
 cdef double hota_4o3d_sym_norm(double[:] a) nogil:
     return sqrt(hota_4o3d_sym_tsp(a,a))
+
+
+cdef double hota_6o3d_sym_norm(double[:] a) nogil:
+    return sqrt(hota_6o3d_sym_tsp(a,a))
 
 cdef hota_8o3d_sym_eval_cons(double[:,:] tensors,double[:,:] points):
     multiplicity = np.diag(np.array([1, 8, 8, 28, 56, 28, 56, 168, 168, 56, 70, 280, 420, 280, 70, 56, 280, 560, 560,
@@ -240,6 +252,14 @@ cdef void hota_4o3d_sym_make_iso(double[:] res, double s) nogil:
     res[3]=res[5]=res[12]=s/3.0
     res[1]=res[2]=res[4]=res[6]=res[7]=res[8]=res[9]=res[11]=res[13]=0.0
 
+cdef void hota_6o3d_sym_make_iso(double[:] res, double s) nogil:
+    cdef int i
+    for i in range(28):
+        res[i] = 0
+    res[0]=res[21]=res[27]=s
+    res[3]=res[5]=res[10]=res[14]=res[23]=res[25]=0.2*s
+    res[12]=s/15.0
+
 
 cdef void hota_4o3d_sym_v_form(double[:] res, double[:] a, double[:]  v) nogil:
     cdef double v000, v001, v002, v011, v012, v022, v111, v112, v122, v222
@@ -257,9 +277,47 @@ cdef void hota_4o3d_sym_v_form(double[:] res, double[:] a, double[:]  v) nogil:
     res[0] = a[0]*v000+a[6]*v111+a[9]*v222+6*a[4]*v012+3*(a[1]*v001+a[2]*v002+a[3]*v011+a[5]*v022+a[7]*v112+a[8]*v122)
     res[1] = a[1]*v000+a[10]*v111+a[13]*v222+6*a[7]*v012+3*(a[3]*v001+a[4]*v002+a[6]*v011+a[8]*v022+a[11]*v112+a[12]*v122)
     res[2] = a[2]*v000+a[11]*v111+a[14]*v222+6*a[8]*v012+3*(a[4]*v001+a[5]*v002+a[7]*v011+a[9]*v022+a[12]*v112+a[13]*v122)
+    
+
+cdef void  hota_6o3d_sym_v_form(double[:] res, double[:] A, double[:] v) nogil:
+    cdef double v00, v01, v02, v11 ,v12, v22, v00000, v00001, v00002, v00011, v00012, v00022, v00111, v00112, v00122, \
+                v00222, v01111, v01112, v01122, v01222, v02222, v11111, v11112, v11122, v11222, v12222, v22222
+    v00=v[0]*v[0]
+    v01=v[0]*v[1]
+    v02=v[0]*v[2]
+    v11=v[1]*v[1]
+    v12=v[1]*v[2]
+    v22=v[2]*v[2]
+    v00000=v00*v00*v[0]
+    v00001=v00*v00*v[1]
+    v00002=v00*v00*v[2]
+    v00011=v00*v01*v[1]
+    v00012=v00*v01*v[2]
+    v00022=v00*v02*v[2]
+    v00111=v00*v11*v[1]
+    v00112=v00*v11*v[2]
+    v00122=v00*v12*v[2]
+    v00222=v00*v22*v[2]
+    v01111=v01*v11*v[1]
+    v01112=v01*v11*v[2]
+    v01122=v01*v12*v[2]
+    v01222=v01*v22*v[2]
+    v02222=v02*v22*v[2]
+    v11111=v11*v11*v[1]
+    v11112=v11*v11*v[2]
+    v11122=v11*v12*v[2]
+    v11222=v11*v22*v[2]
+    v12222=v12*v22*v[2]
+    v22222=v22*v22*v[2]
+    res[0] = A[0]*v00000+ 5*A[1]*v00001+ 5*A[2]*v00002+ 10*A[3]*v00011+ 20*A[4]*v00012+ 10*A[5]*v00022+ 10*A[6 ]*v00111+ 30*A[7 ]*v00112+ 30*A[8 ]*v00122+ 10*A[9 ]*v00222+ 5*A[10]*v01111+ 20*A[11]*v01112+ 30*A[12]*v01122+ 20*A[13]*v01222+ 5*A[14]*v02222+ A[15]*v11111+ 5*A[16]*v11112+ 10*A[17]*v11122+ 10*A[18]*v11222+ 5*A[19]*v12222+ A[20]*v22222
+    res[1] = A[1]*v00000+ 5*A[3]*v00001+ 5*A[4]*v00002+ 10*A[6]*v00011+ 20*A[7]*v00012+ 10*A[8]*v00022+ 10*A[10]*v00111+ 30*A[11]*v00112+ 30*A[12]*v00122+ 10*A[13]*v00222+ 5*A[15]*v01111+ 20*A[16]*v01112+ 30*A[17]*v01122+ 20*A[18]*v01222+ 5*A[19]*v02222+ A[21]*v11111+ 5*A[22]*v11112+ 10*A[23]*v11122+ 10*A[24]*v11222+ 5*A[25]*v12222+ A[26]*v22222
+    res[2] = A[2]*v00000+ 5*A[4]*v00001+ 5*A[5]*v00002+ 10*A[7]*v00011+ 20*A[8]*v00012+ 10*A[9]*v00022+ 10*A[11]*v00111+ 30*A[12]*v00112+ 30*A[13]*v00122+ 10*A[14]*v00222+ 5*A[16]*v01111+ 20*A[17]*v01112+ 30*A[18]*v01122+ 20*A[19]*v01222+ 5*A[20]*v02222+ A[22]*v11111+ 5*A[23]*v11112+ 10*A[24]*v11122+ 10*A[25]*v11222+ 5*A[26]*v12222+ A[27]*v22222
 
 cdef double hota_4o3d_mean(double[:] a) nogil:
     return 0.2*(a[0] + a[10] + a[14]) + 2*(a[3] + a[5] + a[12])
+
+cdef double hota_6o3d_mean(double[:] a) nogil:
+    return (a[0] + a[21] + a[27] + 3*(a[3] + a[5] + a[10] + a[14] + a[23] + a[25]) + 6*a[12])/7
 
 cdef double hota_4o3d_sym_s_form(double[:] a, double[:] v) nogil:
     cdef double v00, v01, v02, v11, v12, v22
@@ -270,3 +328,17 @@ cdef double hota_4o3d_sym_s_form(double[:] a, double[:] v) nogil:
     v12=v[1]*v[2]
     v22=v[2]*v[2]
     return a[0]*v00*v00+4*a[1]*v00*v01+4*a[2]*v00*v02+6*a[3]*v00*v11+12*a[4]*v00*v12+6*a[5]*v00*v22+4*a[6]*v01*v11+12*a[7]*v01*v12+12*a[8]*v01*v22+4*a[9]*v02*v22+a[10]*v11*v11+4*a[11]*v11*v12+6*a[12]*v11*v22+4*a[13]*v12*v22+a[14]*v22*v22
+
+cdef double hota_6o3d_sym_s_form(double[:] s, double[:] points) nogil:
+    cdef double v00, v01, v02, v11, v12, v22
+    v00 = points[0]* points[0]
+    v01 = points[0]* points[1]
+    v02 = points[0]* points[2]
+
+    v11 = points[1]* points[1]
+    v12 = points[1]* points[2]
+    v22 = points[2]* points[2]
+    return 1 * s[0] * v00 * v00 * v00 + 6 * s[1] * v00 * v00 * v01 + 6 * s[2] * v00 * v00 * v02 + 15 * s[3] * v00 * v00 * v11 + 30 * s[4] * v00 * v00 * v12 + 15* s[5] * v00 * v00 * v22 + 20 * s[6] * v00 * v01 * v11 + \
+            60 * s[7] * v00 * v01 * v12 + 60 * s[8] * v00 * v01 * v22 + 20 * s[9] * v00 * v02 * v22 + 15 * s[10] * v00 * v11 * v11 +  60 * s[11] * v00 * v11 * v12 + 90 * s[12] * v00 * v11 * v22 +  60 * s[13] * v00 * v12 * v22 + \
+            15 * s[14] * v00 * v22 * v22 +  6 * s[15] * v01 * v11 * v11 +  30 * s[16] * v01 * v11 * v12 +  60 * s[17] * v01 * v11 * v22 +  60 * s[18] * v01 * v12 * v22 +  30* s[19] * v01 * v22 * v22 +  6 * s[20] * v02 * v22 * v22 + \
+            1 * s[21] * v11 * v11 * v11 +  6 * s[22] * v11 * v11 * v12 +  15 * s[23] * v11 * v11 * v22 +  20 *  s[24] * v11 * v12 * v22 +  15* s[25] * v11 * v22 * v22 +  6 * s[26] * v12 * v22 * v22 + 1* s[27] * v22 * v22 * v22
