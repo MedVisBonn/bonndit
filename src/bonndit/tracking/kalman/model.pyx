@@ -1,7 +1,10 @@
 #cython: language_level=3, boundscheck=True, wraparound=True, warn.unused=True, warn.unused_args=True,
 # warn.unused_results=True, profile=True
+from bonndit.directions.fodfapprox import approx_all_spherical
 from bonndit.utilc.blas_lapack cimport *
 from bonndit.utilc.hota cimport hota_4o3d_sym_eval, hota_6o3d_sym_eval
+
+from bonndit.utilc.hota cimport hota_6o3d_hessian
 from bonndit.utilc.quaternions cimport *
 from bonndit.utilc.cython_helpers cimport special_mat_mul, orthonormal_from_sphere, dinit, sphere2world, ddiagonal, world2sphere, sphere2cart, cart2sphere
 from bonndit.utilc.watsonfitwrapper cimport *
@@ -313,6 +316,7 @@ cdef class BinghamQuatModel(BinghamModel):
 			self.lookup_table1 = lookup_table = np.load(dirname + '/bingham_compressed.npy')
 		else:
 			self.lookup_table1 = lookup_table = np.load(dirname + '/bingham_normalized_o6.npy')
+		self.lookup_kappa_beta_table = np.load(dirname + '/kappa_beta_lookup.npy')
 		self.num_tensors = <int> (kwargs['dim_model'] / 7)
 		if kwargs['process noise'] == "":
 			ddiagonal(&self.PROCESS_NOISE[0, 0], np.array([0.01, 0.01,0.01,0.001, 0.001, 0.001]), self.PROCESS_NOISE.shape[0],
@@ -349,13 +353,26 @@ cdef class BinghamQuatModel(BinghamModel):
 		for i in range(number_of_tensors):
 			for j in range(sigma_points.shape[1]):
 				lam = max(sigma_points[i*7, j], 0.01)
-				kappa = max(min(exp(sigma_points[i*7 + 1, j]), 50), 0.1)
+				kappa = max(min(exp(sigma_points[i*7 + 1, j]), 89), 0.1)
 				beta = max(min(exp(sigma_points[i*7 + 2, j]), kappa), 0.1)
 
 				quat2ZYZ(self.angles, sigma_points[i*7+3:(i+1)*7,j])
 				c_sh_rotate_real_coef_fast(&observations[0,j], observations.shape[1], &self.lookup_table1[<int> kappa * 10, <int> beta * 10, 0],
 										   1, self.order, &self.angles[0])
 				cblas_dscal(observations.shape[0], lam , &observations[0,j], observations.shape[1])
+
+
+	cdef void lookup_kappa_beta(self, double[:] ret, double e1, double e2):
+		cdef int min_idx = -1
+		cdef double min_dist = 0
+		for i in range(len(self.lookup_kappa_beta_table)):
+			dist = (self.lookup_kappa_beta_table[i, 0] - e1)**2 + (self.lookup_kappa_beta_table[i, 1] - e2)**2
+			if min_idx == 0 or dist < min_dist:
+				min_idx = i
+				min_dist = dist
+		ret[0] = self.lookup_kappa_beta_table[min_idx, 2]
+		ret[1] = self.lookup_kappa_beta_table[min_idx, 3]
+
 
 #
 #
@@ -367,19 +384,34 @@ cdef class BinghamQuatModel(BinghamModel):
 		cdef double[:] dot = np.zeros(self.vector_field.shape[1])
 		cdef double[:] Pv = np.array([0.01,], dtype=DTYPE)
 		cdef double[:] dir = np.zeros((3,))
+		cdef double[:] out = np.zeros((4, self.vector_field.shape[1], 1,1))
+		cdef double[:] y_copy = np.zeros_like(y)
+		cdef double[:] ten = np.zeros_like(y)
+		cdef double[:,:] hessian = np.zeros((3,3))
 		ddiagonal(&P[0,0], Pv, P.shape[0], P.shape[1])
+		approx_all_spherical(out, y[..., np.newaxis, np.newaxis, np.newaxis], 0, 0, self.vector_field.shape[1], 0, 0)
+
 		for i in range(self.vector_field.shape[1]):
-			self.vector_field[2,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
-			self.vector_field[4,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
-			cart2sphere(dir, self.vector_field[2:, i, <int> point[0], <int> point[1], <int> point[2]])
-			self.vector_field[2,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
-			self.vector_field[4,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
-			mean[i*7 + 0] = self.vector_field[1,i, <int> point[0], <int> point[1], <int> point[2]]
+			# add current fiber and build hessian:
+
+			hota_6o3d_hessian(hessian, y_copy, out[1:,i,0,0])
+			eig, t, _=  np.linalg.svd(hessian)
+			eig[:, 0] *= -1
+			eig[:, 2] *= -1
+			basis2quat(mean[i*7+3:(i+1)*7], eig[0], eig[1], eig[2])
+			self.lookup_kappa_beta(mean[i*7+1: i*7 +3], t[1], t[2])
+
+			#self.vector_field[2,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
+			#self.vector_field[4,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
+			#cart2sphere(dir, self.vector_field[2:, i, <int> point[0], <int> point[1], <int> point[2]])
+			#self.vector_field[2,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
+			#self.vector_field[4,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
+			## mean[i*7 + 0] = self.vector_field[1,i, <int> point[0], <int> point[1], <int> point[2]]
 			# set circle by setting kappa and  beta  = 0
 			#print(self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]])
-			mean[i*7 + 1] = log(33) #min(self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]],45))
-			mean[i*7 + 2] = log(15)			# set angles: all needed!
-			ZYZ2quat(mean[i*7+3:(i+1)*7], np.array([0, dir[0], dir[1]]))
+			#mean[i*7 + 1] = log(33) #min(self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]],45))
+			#mean[i*7 + 2] = log(15)			# set angles: all needed!
+			#ZYZ2quat(mean[i*7+3:(i+1)*7], np.array([0, dir[0], dir[1]]))
 
 #
 #
