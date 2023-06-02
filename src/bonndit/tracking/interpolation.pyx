@@ -3,6 +3,7 @@
 # warn.unused_results=True, cython: profile=True
 import Cython
 import cython
+from bonndit.directions.fodfapprox cimport approx_all_spherical
 from tqdm import tqdm
 from bonndit.utilc.cython_helpers cimport add_pointwise, \
     floor_pointwise_matrix, norm, mult_with_scalar,\
@@ -12,6 +13,8 @@ from bonndit.utilc.cython_helpers cimport add_pointwise, \
 import numpy as np
 import time
 from bonndit.utilc.cython_helpers cimport dm2toc
+from bonndit.utilc.hota cimport hota_6o3d_sym_norm
+from bonndit.utils.esh import esh_to_sym_matrix
 from bonndit.utilc.hota cimport hota_4o3d_sym_norm, hota_4o3d_sym_eval, \
     hota_8o3d_sym_eval, hota_6o3d_sym_eval
 from bonndit.utilc.lowrank cimport approx_initial
@@ -1453,7 +1456,7 @@ cdef class UKFBinghamAlt(Interpolation):
                 if i == j:
                     continue
                 # print(self.mean[j, 1], self.mean[j, 2])
-                kappa = min(max(exp(self.mean[j, 1]), 0.2), 49.99)
+                kappa = min(max(exp(self.mean[j, 1]), 0.2), 89)
                 beta = min(max(exp(self.mean[j, 2]), 0.2), kappa)
                 # print(kappa, beta)
                 self._model.sh_bingham_coeffs(kappa, beta)
@@ -1528,6 +1531,11 @@ cdef class UKFBinghamAlt(Interpolation):
         cblas_dcopy(3, &self.prob.best_fit[0], 1, &self.next_dir[0], 1)
         return info
 
+def approx_all_sperical(
+    best_fit, param, param1, param2, param3, param4,
+    param5
+):
+    pass
 cdef class UKFBinghamQuatAlt(Interpolation):
     def __cinit__(
         self, double[:, :, :, :, :] vector_field, int[:] grid,
@@ -1571,8 +1579,53 @@ cdef class UKFBinghamQuatAlt(Interpolation):
         self.oldframe = np.zeros((4), dtype=DTYPE)
         self.oldframe_inv = np.zeros((4), dtype=DTYPE)
         self.rot = np.zeros((4), dtype=DTYPE)
+        self.conversion_matrix = esh_to_sym_matrix(kwargs['order'])
+        self.y_tensor = np.zeros((dim_model // 6, kwargs['data'].shape[3],
+                1, 1), dtype=DTYPE)
+        self.best_fit = np.zeros((4, 2, 1, 1), dtype=DTYPE)
+        self.fit_matrix = np.zeros((kwargs['order'], 2))
+        self.fit_matrix_rot = np.zeros((2, kwargs['order']))
+
 
 # cpdef int rotate_state
+    cdef fit_weights(self):
+        cdef double[:, :] matrix_mult = np.zeros((2, 2))
+        cdef double[:, :] matrix_mult_inv = np.zeros((2, 2))
+        cdef double[:] res = np.zeros((2,))
+        for i in range(2):
+            kappa = max(min(exp(self.mean[i, 1]), 50), 0.1)
+            beta = max(min(exp(self.mean[i, 2]), kappa), 0.1)
+            quat2ZYZ(self.angles, self.mean[i, 3:8])
+            c_sh_rotate_real_coef_fast(
+                &self.fit_matrix[0, i], self.fit_matrix.shape[1],
+                &self._model.lookup_table1[
+                    <int> kappa * 10,
+                    <int> beta * 10, 0],
+                1, self._model.order, &self.angles[0])
+        cblas_dgemm(
+            CblasRowMajor, CblasTrans, CblasNoTrans, 2, 2,
+            self.fit_matrix.shape[0], 1, &self.fit_matrix[0, 0],
+            2, &self.fit_matrix[0, 0], 2, 0, &matrix_mult[0, 0], 2)
+        matrix_mult_inv[0, 0] = matrix_mult[1, 1]
+        matrix_mult_inv[0, 1] = -matrix_mult[0, 1]
+        matrix_mult_inv[1, 0] = -matrix_mult[1, 0]
+        matrix_mult_inv[1, 1] = matrix_mult[1, 1]
+        cblas_dscal(
+            4,
+            1 / (
+                matrix_mult[0, 0] * matrix_mult[1, 1] - matrix_mult[
+                    0,
+                    1] * matrix_mult[1, 0]), &matrix_mult_inv[0, 0], 1)
+        cblas_dgemm(
+            CblasRowMajor, CblasNoTrans, CblasTrans, 2,
+            self.fit_matrix.shape[0], 2, 1, &matrix_mult_inv[0, 0], 2,
+            &self.fit_matrix[0, 0], 2, 0, &self.fit_matrix_rot[0, 0], 2)
+        cblas_dgemv(
+            CblasRowMajor, CblasNoTrans, self.fit_matrix_rot.shape[0],
+            self.fit_matrix_rot.shape[1], 1, &self.fit_matrix_rot[0, 0,],
+            self.fit_matrix_rot.shape[1], &self.y[0, 0], 1, 0, &res[0], 1)
+        self.mean[0, 0] = res[0]
+        self.mean[1, 0] = res[1]
 
     cpdef int interpolate(
         self, double[:] point, double[:] old_dir,
@@ -1594,17 +1647,57 @@ cdef class UKFBinghamQuatAlt(Interpolation):
         self._kalman2.linear(
             self.point_index[:3], self.y[1], self.mlinear,
             self.data)
+
         # If we are at the seed. Initialize the Kalmanfilter
         if restart == 0:
-            # with gil:
-            # print("restart")
+            # convert to tensor basis
+            cblas_dgemm(
+                CblasRowMajor, CblasNoTrans, CblasNoTrans,
+                self.conversion_matrix.shape[0], 1,
+                self.conversion_matrix[1],
+                1, &self.conversion_matrix[0, 0],
+                self.conversion_matrix.shape[1], &self.y[0, 0], 1, 0,
+                &self.y_tensor[0, 0, 0, 0], 1)
+            cblas_dgemm(
+                CblasRowMajor, CblasNoTrans, CblasNoTrans,
+                self.conversion_matrix.shape[0], 1,
+                self.conversion_matrix[1],
+                1, &self.conversion_matrix[0, 0],
+                self.conversion_matrix.shape[1], &self.y[1, 0], 1, 0,
+                &self.y_tensor[1, 0, 0, 0], 1)
+            # do low-rank approximation
+            cblas_dscal(8, 0, 0 & self.best_fit[0, 0, 0, 0], 1)
+            approx_all_spherical(
+                self.best_fit, self.y_tensor[0:1], 0, 0, 2,
+                0, 0)
+            # create the residual and norm them:
+            hota_6o3d_sym_eval(
+                self.res, self.best_fit[0, 0, 0, 0],
+                self.best_fit[1:, 0, 0, 0])
+            cblas_daxpy(
+                self.res.shape[0], -1, self.res.shape[0], 1, 1,
+                &self.y_tensor[0, 0, 0, 0], 1)
+            scale = hota_6o3d_sym_norm(self.y_tensor[0, :, 0, 0])
+            cblas_dscal(
+                &self.y_tensor.shape[1], 1 / scale,
+                &self.y_tensor[0, 0, 0, 0], 1)
+            hota_6o3d_sym_eval(
+                self.res, self.best_fit[0, 1, 0, 0],
+                self.best_fit[1:, 1, 0, 0])
+            cblas_daxpy(
+                self.res.shape[0], -1, self.res.shape[0], 1, 1,
+                &self.y_tensor[1, 0, 0, 0], 1)
+            scale = hota_6o3d_sym_norm(self.y_tensor[1, :, 0, 0])
+            cblas_dscal(
+                &self.y_tensor.shape[1], 1 / scale,
+                &self.y_tensor[1, 0, 0, 0], 1)
             self._model1.kinit(
                 self.mean[0], self.point_index[:3], old_dir,
-                self.P[0], self.y[0])
+                self.P[0], self.y_tensor[0])
             self._model2.kinit(
                 self.mean[1], self.point_index[:3], old_dir,
-                self.P[1], self.y[1])
-
+                self.P[1], self.y_tensor[1])
+            self.fit_weights()
             cblas_dcopy(4, &self.mean[0, 3], 1, &self._kalman1.c_quat[0], 1)
             cblas_dcopy(4, &self.mean[1, 3], 1, &self._kalman2.c_quat[0], 1)
             cblas_dcopy(3, &self.mean[0, 0], 1, &self._kalman1.c_mean[0], 1)

@@ -389,6 +389,79 @@ cdef double hota_4o3d_sym_s_form(double[:] a, double[:] v) nogil:
         * v11 * v12 + 6 * a[12] * v11 * v22 + 4 * a[13] * v12 * v22 + a[14] \
         * v22 * v22
 
+
+
+cdef void hota_6o3d_hessian(
+    double[:, :] ret, double[:] fodf,
+    double[:] point
+) nogil:
+    # computed by sympy
+    cdef double x = point[0], y = point[1], z = point[2]
+    ret[0, 0] = 30 * fodf[0] * x ** 4 + 30 * fodf[10] * y ** 4 + 120 \
+        * fodf[11] * y ** 3 * z + 180 * fodf[
+        12] * y ** 2 * z ** 2 + 120 * fodf[13] * y * z ** 3 + 30 * fodf[14] \
+        * z ** 4 + 120 * fodf[
+        1] * x ** 3 * y + 120 * fodf[2] * x ** 3 * z + 180 * fodf[3] * x \
+        ** 2 * y ** 2 + 360 * fodf[
+        4] * x ** 2 * y * z + 180 * fodf[5] * x ** 2 * z ** 2 \
+        +120 * fodf[6] * x * y ** 3 + 360 * fodf[7] * x * y ** 2 * z + 360 \
+        * fodf[8] * x * y * z ** 2 + 120 * fodf[
+        9] * x * z ** 3
+    ret[0, 1] = 120 * fodf[10] * x * y ** 3 + 360 * fodf[11] * x * y ** 2 \
+        * z + 360 * fodf[12] * x * y * z ** 2 + 120 * fodf[
+        13] * x * z ** 3 + 30 * fodf[15] * y ** 4 + 120 * fodf[16] * y ** 3 \
+        * z + 180 * fodf[17] * y ** 2 * z ** 2 \
+        +120 * fodf[18] * y * z ** 3 + 30 * fodf[19] * z ** 4 + 30 \
+        * fodf[1] * x ** 4 + 120 * fodf[
+        3] * x ** 3 * y + 120 * fodf[4] * x ** 3 * z + 180 * fodf[6] * x \
+        ** 2 * y ** 2 + 360 * fodf[
+        7] * x ** 2 * y * z + 180 * fodf[8] * x ** 2 * z ** 2
+    ret[0, 2] = 120 * fodf[11] * x * y ** 3 + 360 * fodf[12] * x * y ** 2 \
+        * z + 360 * fodf[13] * x * y * z ** 2 \
+        +120 * fodf[14] * x * z ** 3 + 30 * fodf[16] * y ** 4 + 120 \
+        * fodf[17] * y ** 3 * z + 180 * fodf[
+        18] * y ** 2 * z ** 2 + 120 * fodf[19] * y * z ** 3 + 30 * fodf[20] \
+        * z ** 4 + 30 * fodf[2] * x ** 4 + 120 * \
+        fodf[4] * x ** 3 * y + 120 * fodf[5] * x ** 3 * z + 180 * fodf[7] \
+        * x ** 2 * y ** 2 + 360 * fodf[
+        8] * x ** 2 * y * z \
+        +180 * fodf[9] * x ** 2 * z ** 2
+    ret[1, 0] = ret[0, 1]
+    ret[1, 1] = 180 * fodf[10] * x ** 2 * y ** 2 + 360 * fodf[11] * x ** 2 \
+        * y * z + 180 * fodf[12] * x ** 2 * z ** 2 + 120 * \
+        fodf[15] * x * y ** 3 + 360 * fodf[16] * x * y ** 2 * z \
+        +360 * fodf[17] * x * y * z ** 2 + 120 * fodf[18] * x * z ** 3 + 30 \
+        * fodf[21] * y ** 4 + 120 * fodf[
+        22] * y ** 3 * z + 180 * fodf[23] * y ** 2 * z ** 2 + 120 \
+        * fodf[24] * y * z ** 3 + 30 * fodf[
+        25] * z ** 4 + 30 * fodf[3] * x ** 4 + 120 * fodf[6] * x ** 3 * y \
+        + 120 * fodf[7] * x ** 3 * z
+    ret[1, 2] = 180 * fodf[11] * x ** 2 * y ** 2 \
+        +360 * fodf[12] * x ** 2 * y * z + 180 * fodf[13] * x ** 2 * z ** 2 \
+        + 120 * fodf[16] * x * y ** 3 + 360 * \
+        fodf[17] * x * y ** 2 * z + 360 * fodf[18] * x * y * z ** 2 + 120 \
+        * fodf[19] * x * z ** 3 + 30 * fodf[
+        22] * y ** 4 + 120 * fodf[23] * y ** 3 * z + 180 * fodf[24] * y \
+        ** 2 * z ** 2 + 120 * fodf[
+        25] * y * z ** 3 + 30 * fodf[26] * z ** 4 \
+        +30 * fodf[4] * x ** 4 + 120 * fodf[7] * x ** 3 * y + 120 * fodf[8] \
+        * x ** 3 * z
+    ret[2, 0] = ret[0, 2]
+    ret[2, 1] = ret[1, 2]
+    ret[2, 2] = 180 * fodf[12] * x ** 2 * y ** 2 + 360 * fodf[13] * x ** 2 \
+        * y * z + 180 * fodf[14] * x ** 2 * z ** 2 + 120 *
+        fodf[17] * x * y ** 3 + 360 * fodf[18] * x * y ** 2 * z + 360 \
+            * fodf[19] * x * y * z ** 2 + 120 * fodf[
+            20] * x * z ** 3 + 30 * fodf[23] * y ** 4 + 120 * fodf[24] * y \
+            ** 3 * z + 180 * fodf[25] * y ** 2 * z ** 2 \
+            +120 * fodf[26] * y * z ** 3 + 30 * fodf[27] * z ** 4 + 30 \
+            * fodf[5] * x ** 4 + 120 * fodf[
+            8] * x ** 3 * y + 120 * fodf[9] * x ** 3 * z
+
+
+
+
+
 cdef double hota_6o3d_sym_s_form(double[:] s, double[:] points) nogil:
     cdef double v00, v01, v02, v11, v12, v22
     v00 = points[0] * points[0]
