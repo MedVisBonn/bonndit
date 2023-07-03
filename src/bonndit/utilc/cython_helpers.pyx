@@ -84,6 +84,16 @@ cpdef void r_z_r_y_r_z(double[:, :] ret, double[:] v):
     ret[2, 1] = sin(v[1]) * sin(v[2])
     ret[2, 2] = cos(v[1])
 
+cpdef void rot2zyz(double[:] zyz, double[:, :] rot):
+    if rot[2, 0] != 0 or rot[2, 1] != 0:
+        zyz[2] = atan2(rot[2, 1], rot[2, 0])
+        zyz[0] = atan2(rot[1, 2], -rot[0, 2])
+        zyz[1] = atan2(
+            rot[2, 0] * cos(zyz[2]) + rot[2, 1] * sin(zyz[2]),
+            rot[2, 2])
+    else:
+        cart2sphere(zyz[1:], rot[:, 0])
+
 
 cdef orthonormal_from_sphere(double sigma, double phi):
     return [
