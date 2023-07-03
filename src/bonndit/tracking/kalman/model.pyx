@@ -6,13 +6,16 @@ from bonndit.utilc.hota cimport hota_4o3d_sym_eval, hota_6o3d_sym_eval
 
 from bonndit.utilc.hota cimport hota_6o3d_hessian
 from bonndit.utilc.quaternions cimport *
-from bonndit.utilc.cython_helpers cimport special_mat_mul, orthonormal_from_sphere, dinit, sphere2world, ddiagonal, world2sphere, sphere2cart, cart2sphere
+from bonndit.utilc.cython_helpers cimport rot2zyz, special_mat_mul, orthonormal_from_sphere, dinit, sphere2world, ddiagonal, world2sphere, sphere2cart, cart2sphere
 from bonndit.utilc.watsonfitwrapper cimport *
 from bonndit.utilc.structures cimport dj_o4
 from scipy.optimize import least_squares
 import numpy as np
 import os
 from libc.math cimport pow, log, sqrt, pi
+
+from bonndit.utilc.hota cimport hota_6o3d_sym_norm
+
 DTYPE=np.float64
 dirname = os.path.dirname(__file__)
 
@@ -315,7 +318,7 @@ cdef class BinghamQuatModel(BinghamModel):
 		if kwargs["order"] == 4:
 			self.lookup_table1 = lookup_table = np.load(dirname + '/bingham_compressed.npy')
 		else:
-			self.lookup_table1 = lookup_table = np.load(dirname + '/bingham_normalized_o6.npy')
+			self.lookup_table1 = lookup_table = np.load(dirname + '/bingham_normalized_o6_new.npy')
 		self.lookup_kappa_beta_table = np.load(dirname + '/kappa_beta_lookup.npy')
 		self.num_tensors = <int> (kwargs['dim_model'] / 7)
 		if kwargs['process noise'] == "":
@@ -363,15 +366,15 @@ cdef class BinghamQuatModel(BinghamModel):
 
 
 	cdef void lookup_kappa_beta(self, double[:] ret, double e1, double e2):
-		cdef int min_idx = -1
-		cdef double min_dist = 0
-		for i in range(len(self.lookup_kappa_beta_table)):
+		cdef int i, min_idx = -1
+		cdef double min_dist = 0, dist=0
+		for i in range(self.lookup_kappa_beta_table.shape[0]):
 			dist = (self.lookup_kappa_beta_table[i, 0] - e1)**2 + (self.lookup_kappa_beta_table[i, 1] - e2)**2
-			if min_idx == 0 or dist < min_dist:
+			if min_idx == -1 or dist < min_dist:
 				min_idx = i
 				min_dist = dist
-		ret[0] = self.lookup_kappa_beta_table[min_idx, 2]
-		ret[1] = self.lookup_kappa_beta_table[min_idx, 3]
+		ret[0] = log(min(self.lookup_kappa_beta_table[min_idx, 2], 20))
+		ret[1] = log(self.lookup_kappa_beta_table[min_idx, 3])
 
 
 #
@@ -384,22 +387,32 @@ cdef class BinghamQuatModel(BinghamModel):
 		cdef double[:] dot = np.zeros(self.vector_field.shape[1])
 		cdef double[:] Pv = np.array([0.01,], dtype=DTYPE)
 		cdef double[:] dir = np.zeros((3,))
-		cdef double[:] out = np.zeros((4, self.vector_field.shape[1], 1,1))
+		cdef double[:, : ,: ] out = np.zeros((4, self.vector_field.shape[1], 1))
 		cdef double[:] y_copy = np.zeros_like(y)
 		cdef double[:] ten = np.zeros_like(y)
 		cdef double[:,:] hessian = np.zeros((3,3))
+		cdef double[:] res = np.zeros((29))
 		ddiagonal(&P[0,0], Pv, P.shape[0], P.shape[1])
-		approx_all_spherical(out, y[..., np.newaxis, np.newaxis, np.newaxis], 0, 0, self.vector_field.shape[1], 0, 0)
+		#cblas_dcopy(y.shape[0], &y[0], 1, &y_copy[0], 1)
+		#print(np.array(y), hota_6o3d_sym_norm(y[1:]))
+		#approx_all_spherical(out, np.array(y)[..., np.newaxis, np.newaxis, np.newaxis], 0, 0, 1, 0, 0)
+		#hota_6o3d_sym_eval(res, out[0,0,0], out[1:,0,0])
 
+		#print(np.array(y), hota_6o3d_sym_norm(np.array(y)[1:] - np.array(res)[1:]))
+		#print(np.array(out))
 		for i in range(self.vector_field.shape[1]):
 			# add current fiber and build hessian:
 
-			hota_6o3d_hessian(hessian, y_copy, out[1:,i,0,0])
+			hota_6o3d_hessian(hessian, y[1:], init_dir)
 			eig, t, _=  np.linalg.svd(hessian)
 			eig[:, 0] *= -1
 			eig[:, 2] *= -1
-			basis2quat(mean[i*7+3:(i+1)*7], eig[0], eig[1], eig[2])
-			self.lookup_kappa_beta(mean[i*7+1: i*7 +3], t[1], t[2])
+			cart2sphere(dir[1:], eig[:, 0])
+			#rot2zyz(dir, eig)
+			ZYZ2quat(mean[i*7+3:(i+1)*7], np.array([0,dir[1], dir[2]]))
+			#basis2quat(mean[3:], eig[0], eig[1], eig[2])
+			self.lookup_kappa_beta(mean[1: 3], t[1], t[2])
+			#print(np.array(init_dir))
 
 			#self.vector_field[2,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
 			#self.vector_field[4,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
@@ -411,7 +424,6 @@ cdef class BinghamQuatModel(BinghamModel):
 			#print(self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]])
 			#mean[i*7 + 1] = log(33) #min(self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]],45))
 			#mean[i*7 + 2] = log(15)			# set angles: all needed!
-			#ZYZ2quat(mean[i*7+3:(i+1)*7], np.array([0, dir[0], dir[1]]))
 
 #
 #
@@ -419,7 +431,7 @@ cdef class BinghamQuatModel(BinghamModel):
 		cdef int i, j, n = X.shape[0]//6
 		for i in range(X.shape[1]):
 			for j in range(n):
-				X[j * 6 + 1, i] = min(max(X[j * 6 + 1, i], log(0.2)), log(50))
+				X[j * 6 + 1, i] = min(max(X[j * 6 + 1, i], log(0.2)), log(89))
 				X[j * 6 + 2, i] = min(max(X[j * 6 + 2, i], log(0.1)), X[j * 6 + 1, i])
 				X[j * 6 + 0, i] = max(X[j * 6 + 0, i], self._lambda_min)
 

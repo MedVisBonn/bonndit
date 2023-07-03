@@ -132,8 +132,9 @@ cdef forward_tracking(double[:,:] paths,  Interpolation interpolate,
 
 		if interpolate.interpolate(paths[k], integrate.old_dir, k) != 0:
 			break
-		if k<3:
+		if k<2:
 			c = angle_deg(integrate.first_dir, interpolate.next_dir)
+			#print(c, np.array(integrate.first_dir), np.array(interpolate.next_dir))
 			if c >= 90:
 				c=180-c
 			if c > 40:

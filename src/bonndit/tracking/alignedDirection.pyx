@@ -418,7 +418,7 @@ cdef class BinghamDirGetter(Probabilities):
 		#print(self.angles[min_index])
 
 		# reset to original length
-		mult_with_scalar(self.best_fit, l_k_b[min_index, 0], self.best_fit)
+		mult_with_scalar(self.best_fit, 1, self.best_fit)
 		#print(l_k_b[min_index,2]/l_k_b[min_index,1])
 		self.chosen_prob = l_k_b[min_index,2]/l_k_b[min_index,1]
 		self.chosen_angle = l_k_b[min_index,1]

@@ -47,3 +47,4 @@ cdef:
 cpdef void r_z_r_y_r_z(double[:,:], double[:])
 cdef void cart2sphere(double[:], double[:]) nogil except *
 cdef void cross(double[:] , double[:] , double[:] )
+cpdef void rot2zyz(double[:] , double[:,:] )

@@ -156,6 +156,7 @@ cdef class UKFBinghamAlt(Interpolation):
 	cdef double[:,:] l_k_b
 
 cdef class UKFBinghamQuatAlt(Interpolation):
+	cdef fit_weights(self)
 	cdef double[:] kappas
 	cdef double[:] weights
 	cdef int num_kalman
@@ -187,6 +188,12 @@ cdef class UKFBinghamQuatAlt(Interpolation):
 	cdef double[:] oldframe
 	cdef double[:] oldframe_inv
 	cdef double[:] rot
+	cdef double[:,:] conversion_matrix
+	cdef double[:,:] conversion_matrix_inv
+	cdef double[:,:,:,:, :] y_tensor
+	cdef double[:,:,:] best_fit
+	cdef double[:,:] fit_matrix
+	cdef double[:,:] fit_matrix_rot
 
 
 

@@ -365,7 +365,7 @@ cdef void hota_6o3d_hessian(double[:,:] ret, double[:] fodf, double[:] point) no
          + 30 * fodf[4] * x ** 4 + 120 * fodf[7] * x ** 3 * y + 120 * fodf[8] * x ** 3 * z
     ret[2,0] = ret[0,2]
     ret[2,1] = ret[1,2]
-    ret[2,2] = 180 * fodf[12] * x ** 2 * y ** 2 + 360 * fodf[13] * x ** 2 * y * z + 180 * fodf[14] * x ** 2 * z ** 2 + 120 *
+    ret[2,2] = 180 * fodf[12] * x ** 2 * y ** 2 + 360 * fodf[13] * x ** 2 * y * z + 180 * fodf[14] * x ** 2 * z ** 2 + 120 * \
          fodf[17] * x * y ** 3 + 360 * fodf[18] * x * y ** 2 * z + 360 * fodf[19] * x * y * z ** 2 + 120 * fodf[
              20] * x * z ** 3 + 30 * fodf[23] * y ** 4 + 120 * fodf[24] * y ** 3 * z + 180 * fodf[25] * y ** 2 * z ** 2 \
          + 120 * fodf[26] * y * z ** 3 + 30 * fodf[27] * z ** 4 + 30 * fodf[5] * x ** 4 + 120 * fodf[

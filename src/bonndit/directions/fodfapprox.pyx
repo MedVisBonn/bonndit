@@ -40,7 +40,7 @@ cdef void get_neighbor_for_coor(double[:] nearest_fodf_sum, double[:,:,:,:]  fod
 
 
 
-cpdef approx_all_spherical(double[:,:,:] output, double[:,:,:,:]  fodf, int nearest, double nu, int rank, int init, verbose):
+cpdef approx_all_spherical(double[:,:,:] output, double[:,:,:,:]  fodf, int nearest, double nu, int rank, int init, int verbose):
     """ This function calculates the best tensor approximation with spherical approximation as described in xy.
 
     Parameters
