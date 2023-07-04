@@ -24,3 +24,4 @@ cdef void hota_6o3d_sym_v_form(double[:], double[:], double[:]) nogil
 cdef double hota_6o3d_mean(double[:]) nogil
 cdef double hota_6o3d_sym_s_form(double[:], double[:]) nogil
 cdef int[:] order_6_mult
+cpdef void hota_6o3d_hessian_sh(double[:,:], double[:], double[:])

@@ -1,7 +1,9 @@
 #%%cython --annotate
 #cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, warn.unused_results=True
-from libc.math cimport sqrt
+from libc.math cimport sqrt, cos, sin
 import numpy as np
+from bonndit.utilc.blas_lapack cimport *
+from bonndit.utilc.cython_helpers cimport cart2sphere
 
 
 cdef int[:] order_4_mult = np.array([1.0, 4.0, 4.0, 6.0, 12.0, 6.0, 4.0, 12.0, 12.0, 4.0, 1.0, 4.0, 6.0, 4.0, 1.0], dtype=np.int32)
@@ -328,6 +330,48 @@ cdef double hota_4o3d_sym_s_form(double[:] a, double[:] v) nogil:
     v12=v[1]*v[2]
     v22=v[2]*v[2]
     return a[0]*v00*v00+4*a[1]*v00*v01+4*a[2]*v00*v02+6*a[3]*v00*v11+12*a[4]*v00*v12+6*a[5]*v00*v22+4*a[6]*v01*v11+12*a[7]*v01*v12+12*a[8]*v01*v22+4*a[9]*v02*v22+a[10]*v11*v11+4*a[11]*v11*v12+6*a[12]*v11*v22+4*a[13]*v12*v22+a[14]*v22*v22
+
+cdef double hota_6o3d_sym_s_form(double[:] a, double[:] v) nogil:
+    cdef double v00, v01, v02, v11, v12, v22
+    v00 = v[0] * v[0]
+    v01 = v[0] * v[1]
+    v02 = v[0] * v[2]
+    v11 = v[1] * v[1]
+    v12 = v[1] * v[2]
+    v22 = v[2] * v[2]
+    return 1 * a[0] * v00 * v00 * v00 + 6 * a[1] * v00 * v00 * v01 + 6 * a[2] * v00 * v00 * v02 + 15 * a[
+        3] * v00 * v00 * v11 + 30 * a[4] * v00 * v00 * v12 + 15 * a[5] * v00 * v00 * v22 + 20 * a[6] * v00 * v01 * v11 + \
+    60 * a[7] * v00 * v01 * v12 + 60 * a[8] * v00 * v01 * v22 + 20 * a[9] * v00 * v02 * v22 + 15 * a[
+        10] * v00 * v11 * v11 + 60 * a[11] * v00 * v11 * v12 + 90 * a[12] * v00 * v11 * v22 + 60 * a[
+        13] * v00 * v12 * v22 + \
+    15 * a[14] * v00 * v22 * v22 + 6 * a[15] * v01 * v11 * v11 + 30 * a[16] * v01 * v11 * v12 + 60 * a[
+        17] * v01 * v11 * v22 + 60 * a[18] * v01 * v12 * v22 + 30 * a[19] * v01 * v22 * v22 + 6 * a[
+        20] * v02 * v22 * v22 + \
+    1 * a[21] * v11 * v11 * v11 + 6 * a[22] * v11 * v11 * v12 + 15 * a[23] * v11 * v11 * v22 + 20 * a[
+        24] * v11 * v12 * v22 + 15 * a[25] * v11 * v22 * v22 + 6 * a[26] * v12 * v22 * v22 + 1 * a[27] * v22 * v22 * v22
+
+
+
+
+
+cpdef void hota_6o3d_hessian_sh(double[:,:] ret, double[:] fodf, double[:] point):
+    ## Using T. Schultz formula!
+    cdef double[:,:] proj = np.zeros((3,2)), ret3D = np.zeros((3,3)), ret3D1 = np.zeros((2,3))
+    cdef double[:] sh_coord = np.zeros((2,))
+    #damit x,y berechnen
+    cart2sphere(sh_coord, point)
+    proj[0,0] = cos(sh_coord[0])*cos(sh_coord[1])
+    proj[1,0] = cos(sh_coord[0])*sin(sh_coord[1])
+    proj[2,0] = -sin(sh_coord[0])
+    proj[0,1] = sin(sh_coord[0]) *sin(sh_coord[1])
+    proj[1,1] = sin(sh_coord[0])*cos(sh_coord[1])
+    proj[2,1] = 0
+    hota_6o3d_hessian(ret3D, fodf, point)
+    cblas_dgemm(CblasRowMajor, CblasTrans, CblasNoTrans, 2,3,3,1, &proj[0,0],2, &ret3D[0,0], 3, 0, &ret3D1[0,0],3)
+    cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, 2, 2, 3, 1, &ret3D1[0,0], 3, &proj[0,0], 2, 0, &ret[0,0], 2)
+    cdef double v = hota_6o3d_sym_s_form(fodf, point)
+    ret[0,0] -= v
+    ret[1,1] -= v
 
 
 

@@ -4,7 +4,7 @@ from bonndit.directions.fodfapprox import approx_all_spherical
 from bonndit.utilc.blas_lapack cimport *
 from bonndit.utilc.hota cimport hota_4o3d_sym_eval, hota_6o3d_sym_eval
 
-from bonndit.utilc.hota cimport hota_6o3d_hessian
+from bonndit.utilc.hota cimport hota_6o3d_hessian_sh
 from bonndit.utilc.quaternions cimport *
 from bonndit.utilc.cython_helpers cimport rot2zyz, special_mat_mul, orthonormal_from_sphere, dinit, sphere2world, ddiagonal, world2sphere, sphere2cart, cart2sphere
 from bonndit.utilc.watsonfitwrapper cimport *
@@ -146,7 +146,6 @@ cdef class WatsonModel(AbstractModel):
 
 
 	cdef double sh_norm(self, double[:] v):
-
 		return v[0]*sqrt(1/(4*pi)) * self.rank_1_rh_o4[0] + \
 				v[3] * 1/2 * sqrt(5/pi) * self.rank_1_rh_o4[1] + \
 				v[10] * 3/16 * sqrt(1/pi) * (35-30+3) * self.rank_1_rh_o4[2]
@@ -164,8 +163,6 @@ cdef class WatsonModel(AbstractModel):
 				cart2sphere(self.angles[1:], self.m)
 				cblas_dscal(self.dipy_v.shape[0], 0, &self.dipy_v[0], 1)
 				c_sh_watson_coeffs(kappa, &self.dipy_v[0], self.order)
-			#	div = self.sh_norm(self.dipy_v)
-			#	print(kappa, np.array(self.dipy_v))
 				self.dipy_v[0] *= self.rank_1_rh_o4[0]
 				self.dipy_v[3] *= self.rank_1_rh_o4[1]
 				self.dipy_v[10] *= self.rank_1_rh_o4[2]
@@ -176,11 +173,6 @@ cdef class WatsonModel(AbstractModel):
 										   1, self.order, &self.angles[0])
 				cblas_dscal(observations.shape[0], lam , &observations[0,j], observations.shape[1])
 
-				#c_map_dipy_to_pysh_o4(&self.dipy_v[0], &self.pysh_v[0])
-				#c_sh_rotate_real_coef(&self.rot_pysh_v[0], &self.pysh_v[0], self.order, &self.angles[0], &dj_o4[0][0][0])
-				#c_map_pysh_to_dipy_o4(&self.rot_pysh_v[0],&self.dipy_v[0])
-				#cblas_daxpy(observations.shape[0], lam, &self.dipy_v[0], 1, &observations[0,j], observations.shape[1])
-
 
 	cdef bint kinit(self, double[:] mean, double[:] point, double[:] init_dir, double[:,:] P, double[:] y) except *:
 		"""
@@ -190,14 +182,8 @@ cdef class WatsonModel(AbstractModel):
 		cdef double[:] Pv = np.array([0.01], dtype=DTYPE)
 		ddiagonal(&P[0,0], Pv, P.shape[0], P.shape[1])
 		for i in range(self.vector_field.shape[1]):
-			#print(i)
 			mean[i*5 : i*5+5]= self.vector_field[:,i, <int> point[0], <int> point[1], <int> point[2]]
 			mean[i*5] = log(mean[i*5])
-			#self.vector_field[2,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
-			#self.vector_field[4,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
-			#cart2sphere(mean[i*4+2:i*4+4], self.vector_field[2:,i, <int> point[0], <int> point[1], <int> point[2]])
-			#self.vector_field[2,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
-			#self.vector_field[4,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
 
 
 
@@ -205,10 +191,6 @@ cdef class WatsonModel(AbstractModel):
 		cdef int i, j, n = X.shape[0]//5
 		for i in range(X.shape[1]):
 			for j in range(n):
-				#if cblas_dnrm2(3,&X[5*j+2, i],X.shape[1]) != 0:
-				#	cblas_dscal(3, 1/cblas_dnrm2(3,&X[5*j+2, i],X.shape[1]),&X[5*j+2, i],X.shape[1])
-				#else:
-				#	cblas_dscal(3, cblas_dnrm2(3,&X[5*j+2, i],X.shape[1]),&X[5*j+2, i],X.shape[1])
 				X[j * 5, i] = min(max(exp(X[j * 5 , i]), log(self._lambda_min)), log(80))
 				X[j * 5 + 1, i] = max(X[j * 5 + 1, i], self._lambda_min)
 
@@ -328,23 +310,6 @@ cdef class BinghamQuatModel(BinghamModel):
 			ddiagonal(&self.MEASUREMENT_NOISE[0, 0], np.array([0.04]), self.MEASUREMENT_NOISE.shape[0],
 				  self.MEASUREMENT_NOISE.shape[1])
 
-	#cdef void sh_bingham_coeffs(self, double kappa, double beta) except *: # nogil except *:
-	##	print(kappa, beta)
-	#	self.dipy_v[0] = self.lookup_table[<int> kappa*10, <int> beta*10, 0, 0]
-	#	self.dipy_v[1] = self.lookup_table[<int> kappa*10, <int> beta*10, 1, 2]
-	#	self.dipy_v[2] = self.lookup_table[<int> kappa*10, <int> beta*10, 1, 1]
-	#	self.dipy_v[3] = self.lookup_table[<int> kappa*10, <int> beta*10, 1, 0]
-	#	self.dipy_v[4] = self.lookup_table[<int> kappa*10, <int> beta*10, 1, 8]
-	#	self.dipy_v[5] = self.lookup_table[<int> kappa*10, <int> beta*10, 1, 7]
-	#	self.dipy_v[6] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 4]
-	#	self.dipy_v[7] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 3]
-	#	self.dipy_v[8] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 2]
-	#	self.dipy_v[9] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 1]
-	#	self.dipy_v[10] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 0]
-	#	self.dipy_v[11] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 8]
-	#	self.dipy_v[12] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 7]
-	#	self.dipy_v[13] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 6]
-	#	self.dipy_v[14] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 5]
 
 
 
@@ -393,37 +358,19 @@ cdef class BinghamQuatModel(BinghamModel):
 		cdef double[:,:] hessian = np.zeros((3,3))
 		cdef double[:] res = np.zeros((29))
 		ddiagonal(&P[0,0], Pv, P.shape[0], P.shape[1])
-		#cblas_dcopy(y.shape[0], &y[0], 1, &y_copy[0], 1)
-		#print(np.array(y), hota_6o3d_sym_norm(y[1:]))
-		#approx_all_spherical(out, np.array(y)[..., np.newaxis, np.newaxis, np.newaxis], 0, 0, 1, 0, 0)
-		#hota_6o3d_sym_eval(res, out[0,0,0], out[1:,0,0])
 
-		#print(np.array(y), hota_6o3d_sym_norm(np.array(y)[1:] - np.array(res)[1:]))
-		#print(np.array(out))
 		for i in range(self.vector_field.shape[1]):
 			# add current fiber and build hessian:
 
-			hota_6o3d_hessian(hessian, y[1:], init_dir)
+			hota_6o3d_hessian_sh(hessian, y[1:], init_dir)
 			eig, t, _=  np.linalg.svd(hessian)
 			eig[:, 0] *= -1
 			eig[:, 2] *= -1
 			cart2sphere(dir[1:], eig[:, 0])
 			#rot2zyz(dir, eig)
-			ZYZ2quat(mean[i*7+3:(i+1)*7], np.array([0,dir[1], dir[2]]))
-			#basis2quat(mean[3:], eig[0], eig[1], eig[2])
+			#ZYZ2quat(mean[i*7+3:(i+1)*7], np.array([0,dir[1], dir[2]]))
+			basis2quat(mean[3:], eig[0], eig[2], eig[1])
 			self.lookup_kappa_beta(mean[1: 3], t[1], t[2])
-			#print(np.array(init_dir))
-
-			#self.vector_field[2,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
-			#self.vector_field[4,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
-			#cart2sphere(dir, self.vector_field[2:, i, <int> point[0], <int> point[1], <int> point[2]])
-			#self.vector_field[2,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
-			#self.vector_field[4,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
-			## mean[i*7 + 0] = self.vector_field[1,i, <int> point[0], <int> point[1], <int> point[2]]
-			# set circle by setting kappa and  beta  = 0
-			#print(self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]])
-			#mean[i*7 + 1] = log(33) #min(self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]],45))
-			#mean[i*7 + 2] = log(15)			# set angles: all needed!
 
 #
 #
