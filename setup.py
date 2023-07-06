@@ -72,8 +72,12 @@ ext_modules = [
     Extension(
         "bonndit.utilc.hota",
         ["src/bonndit/utilc/hota.pyx"],
-        extra_compile_args=["-Ofast"],
+        include_dirs=[numpy.get_include(), "%s/include" % mklroot],
+        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
+        library_dirs=["%s/lib/intel64" % mklroot],
         define_macros=[('CYTHON_TRACE', '1')],
+        extra_compile_args=["-Wall", "-m64", "-Ofast"],
+        extra_link_args=["-Wl,--no-as-needed"]
     ),
     Extension(
         "bonndit.utilc.trilinear",
@@ -262,6 +266,5 @@ setup(
     tests_require=test_requirements,
     url='https://github.com/MedVisBonn/bonndit',
     version='0.2.0',
-    gdb_debug=True,
     zip_safe=False,
 )

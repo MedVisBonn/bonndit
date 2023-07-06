@@ -355,21 +355,34 @@ cdef class BinghamQuatModel(BinghamModel):
 		cdef double[:, : ,: ] out = np.zeros((4, self.vector_field.shape[1], 1))
 		cdef double[:] y_copy = np.zeros_like(y)
 		cdef double[:] ten = np.zeros_like(y)
-		cdef double[:,:] hessian = np.zeros((3,3))
+		cdef double[:,:] hessian = np.zeros((2,2)), orth = np.zeros((3,2))
+		cdef double[:,:] ortho_sys = np.zeros((3,3))
+
 		cdef double[:] res = np.zeros((29))
 		ddiagonal(&P[0,0], Pv, P.shape[0], P.shape[1])
 
 		for i in range(self.vector_field.shape[1]):
 			# add current fiber and build hessian:
 
-			hota_6o3d_hessian_sh(hessian, y[1:], init_dir)
-			eig, t, _=  np.linalg.svd(hessian)
-			eig[:, 0] *= -1
-			eig[:, 2] *= -1
-			cart2sphere(dir[1:], eig[:, 0])
+			hota_6o3d_hessian_sh(hessian, orth,  y[1:], init_dir)
+
+			t, eig =  np.linalg.eig(hessian)
+			if t[1] > t[0]:
+				z = 1
+				d = 2
+			else:
+				z = 2
+				d = 1
+			ortho_sys[:, 0] = init_dir
+			ortho_sys[:, z] = eig[0,0]*orth[:, 0] + eig[0,1]*orth[:, 0]
+			ortho_sys[:, d] = eig[1,0]*orth[:, 1] + eig[1,1]*orth[:, 1]
+
+
+
+			#cart2sphere(dir[1:], eig[:, 0])
 			#rot2zyz(dir, eig)
 			#ZYZ2quat(mean[i*7+3:(i+1)*7], np.array([0,dir[1], dir[2]]))
-			basis2quat(mean[3:], eig[0], eig[2], eig[1])
+			basis2quat(mean[3:], ortho_sys[0], ortho_sys[1], ortho_sys[2])
 			self.lookup_kappa_beta(mean[1: 3], t[1], t[2])
 
 #
