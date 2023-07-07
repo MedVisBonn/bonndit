@@ -344,7 +344,7 @@ cpdef void hota_6o3d_hessian_sh(double[:,:] ret, double[:,:] proj, double[:] fod
     proj[0,0] = cos(sh_coord[0])*cos(sh_coord[1])
     proj[1,0] = cos(sh_coord[0])*sin(sh_coord[1])
     proj[2,0] = -sin(sh_coord[0])
-    proj[0,1] = sin(sh_coord[0]) *sin(sh_coord[1])
+    proj[0,1] = -sin(sh_coord[0]) *sin(sh_coord[1])
     proj[1,1] = sin(sh_coord[0])*cos(sh_coord[1])
     proj[2,1] = 0
     hota_6o3d_hessian(ret3D, fodf, point)
