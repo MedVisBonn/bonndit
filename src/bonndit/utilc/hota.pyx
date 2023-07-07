@@ -351,8 +351,8 @@ cpdef void hota_6o3d_hessian_sh(double[:,:] ret, double[:,:] proj, double[:] fod
     cblas_dgemm(CblasRowMajor, CblasTrans, CblasNoTrans, 2,3,3,1, &proj[0,0],2, &ret3D[0,0], 3, 0, &ret3D1[0,0],3)
     cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, 2, 2, 3, 1, &ret3D1[0,0], 3, &proj[0,0], 2, 0, &ret[0,0], 2)
     cdef double v = hota_6o3d_sym_s_form(fodf, point)
-    ret[0,0] -= v
-    ret[1,1] -= v
+    ret[0,0] -= 6*v
+    ret[1,1] -= 6*v
 
 
 

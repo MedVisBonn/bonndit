@@ -368,22 +368,29 @@ cdef class BinghamQuatModel(BinghamModel):
 
 			t, eig =  np.linalg.eig(hessian)
 			if t[1] > t[0]:
-				z = 1
-				d = 2
-			else:
 				z = 2
 				d = 1
+			else:
+				z = 1
+				d = 2
+			cblas_dscal(9, 0, &ortho_sys[0,0], 1)
 			ortho_sys[:, 0] = init_dir
-			ortho_sys[:, z] = eig[0,0]*orth[:, 0] + eig[0,1]*orth[:, 0]
-			ortho_sys[:, d] = eig[1,0]*orth[:, 1] + eig[1,1]*orth[:, 1]
+			print(np.array(orth), eig)
+			cblas_daxpy(3, eig[0,0], &orth[0,0], 3, &ortho_sys[0,z], 3)
+			cblas_daxpy(3, eig[0,1], &orth[0,0], 3, &ortho_sys[0,z], 3)
+			cblas_daxpy(3, eig[1,0], &orth[0,1], 3, &ortho_sys[0,d], 3)
+			cblas_daxpy(3, eig[1,1], &orth[0,1], 3, &ortho_sys[0,d], 3)
 
-
-
+			cblas_dscal(3, -1, &ortho_sys[0,0], 1)
+			cblas_dscal(3, -1, &ortho_sys[2,0], 1)
+			print(np.array(ortho_sys))
 			#cart2sphere(dir[1:], eig[:, 0])
 			#rot2zyz(dir, eig)
 			#ZYZ2quat(mean[i*7+3:(i+1)*7], np.array([0,dir[1], dir[2]]))
-			basis2quat(mean[3:], ortho_sys[0], ortho_sys[1], ortho_sys[2])
-			self.lookup_kappa_beta(mean[1: 3], t[1], t[2])
+                        
+			basis2quat(mean[3:], ortho_sys[:, 0], ortho_sys[:,1], ortho_sys[:, 2])
+			print(t)
+			self.lookup_kappa_beta(mean[1: 3], t[z-1], t[d-1])
 
 #
 #

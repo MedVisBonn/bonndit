@@ -14,7 +14,7 @@ import time
 from bonndit.utilc.cython_helpers cimport dm2toc
 from bonndit.utilc.hota cimport hota_6o3d_sym_norm
 from bonndit.utils.esh import esh_to_sym_matrix, sym_to_esh_matrix
-from bonndit.utilc.hota cimport hota_4o3d_sym_norm, hota_4o3d_sym_eval, hota_8o3d_sym_eval, hota_6o3d_sym_eval
+from bonndit.utilc.hota cimport hota_4o3d_sym_norm, hota_4o3d_sym_eval, hota_8o3d_sym_eval, hota_6o3d_sym_eval,hota_6o3d_sym_s_form
 from bonndit.utilc.lowrank cimport approx_initial
 from bonndit.utilc.structures cimport dj_o4
 from bonndit.utilc.quaternions cimport quat2rot, quat2ZYZ, basis2quat, quatmul, quat_inv
@@ -1156,11 +1156,13 @@ cdef class UKFBinghamQuatAlt(Interpolation):
 			#print(np.array(self.best_fit))
 			# create the residual and norm them:
 			hota_6o3d_sym_eval(self.res, self.best_fit[0,1,0], self.best_fit[1:,1,0])
-			cblas_daxpy(self.res.shape[0], -1, &self.res[0], 1,  &self.y_tensor[0, 0, 0, 0, 0], 1)
-			scale = hota_6o3d_sym_norm(self.y_tensor[0,1:,0,0, 0])
+			cblas_daxpy(self.res.shape[0], -1, &self.res[0], 1,  &self.y_tensor[0, 1, 0, 0, 0], 1)
+			scale = hota_6o3d_sym_s_form(self.y_tensor[0,1:,0,0,0], self.best_fit[1:,0,0])
+			print(scale)
+			cblas_dscal(28, 1/scale, &self.y_tensor[0,1,0,0,0], 1)
 
 			# residual in sh
-			self._model1.kinit(self.mean[0], self.point_index[:3], self.best_fit[1:,1,0], self.P[0], self.y_tensor[0, :, 0, 0, 0])
+			self._model1.kinit(self.mean[0], self.point_index[:3], self.best_fit[1:,0,0], self.P[0], self.y_tensor[0, :, 0, 0, 0])
 			cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, self.conversion_matrix.shape[0], 1,
 						self.conversion_matrix.shape[1],
 						1, &self.conversion_matrix_inv[0, 0], self.conversion_matrix.shape[1], &self.res[0], 1, 0,
@@ -1188,7 +1190,10 @@ cdef class UKFBinghamQuatAlt(Interpolation):
 						1, &self.conversion_matrix[0, 0], self.conversion_matrix.shape[1], &y_holder[0], 1, 0,
 						&self.y_tensor[1, 1, 0, 0, 0], 1)
 
-			self._model2.kinit(self.mean[1], self.point_index[:3], self.best_fit[1:, 0, 0], self.P[1], self.y_tensor[1, :, 0, 0, 0])
+			scale = hota_6o3d_sym_s_form(self.y_tensor[1,1:,0,0,0], self.best_fit[1:,1,0])
+			cblas_dscal(28, 1/scale, &self.y_tensor[1,1,0,0,0], 1)
+
+			self._model2.kinit(self.mean[1], self.point_index[:3], self.best_fit[1:, 1, 0], self.P[1], self.y_tensor[1, :, 0, 0, 0])
 
 			self.fit_weights()
 			#self.mean[0,0] = self.best_fit[0,0,0]
