@@ -357,39 +357,36 @@ cdef class BinghamQuatModel(BinghamModel):
 		cdef double[:] ten = np.zeros_like(y)
 		cdef double[:,:] hessian = np.zeros((2,2)), orth = np.zeros((3,2))
 		cdef double[:,:] ortho_sys = np.zeros((3,3))
-
+		dir1 = np.zeros((3, ))
 		cdef double[:] res = np.zeros((29))
 		ddiagonal(&P[0,0], Pv, P.shape[0], P.shape[1])
 
 		for i in range(self.vector_field.shape[1]):
-			# add current fiber and build hessian:
-
+			# calculate hessian:
 			hota_6o3d_hessian_sh(hessian, orth,  y[1:], init_dir)
 
 			t, eig =  np.linalg.eig(hessian)
+			#sort according eigenvalues:
 			if t[1] > t[0]:
-				z = 2
-				d = 1
-			else:
 				z = 1
-				d = 2
+				d = 0
+			else:
+				z = 0
+				d = 1
 			cblas_dscal(9, 0, &ortho_sys[0,0], 1)
-			ortho_sys[:, 0] = init_dir
-			print(np.array(orth), eig)
-			cblas_daxpy(3, eig[0,0], &orth[0,0], 3, &ortho_sys[0,z], 3)
-			cblas_daxpy(3, eig[0,1], &orth[0,0], 3, &ortho_sys[0,z], 3)
-			cblas_daxpy(3, eig[1,0], &orth[0,1], 3, &ortho_sys[0,d], 3)
-			cblas_daxpy(3, eig[1,1], &orth[0,1], 3, &ortho_sys[0,d], 3)
+			ortho_sys[:, 2] = init_dir
 
+			cblas_daxpy(3, eig[0,0], &orth[0,0], 2, &ortho_sys[0,z], 3)
+			cblas_daxpy(3, eig[0,1], &orth[0,1], 2, &ortho_sys[0,z], 3)
+			cblas_daxpy(3, eig[1,0], &orth[0,0], 2, &ortho_sys[0,d], 3)
+			cblas_daxpy(3, eig[1,1], &orth[0,1], 2, &ortho_sys[0,d], 3)
+			for j in range(3):
+				scale = cblas_dnrm2(3, &ortho_sys[0,j], 3)
+				cblas_dscal(3, 1/scale, &ortho_sys[0,j], 3)
 			cblas_dscal(3, -1, &ortho_sys[0,0], 1)
 			cblas_dscal(3, -1, &ortho_sys[2,0], 1)
-			print(np.array(ortho_sys))
-			#cart2sphere(dir[1:], eig[:, 0])
-			#rot2zyz(dir, eig)
-			#ZYZ2quat(mean[i*7+3:(i+1)*7], np.array([0,dir[1], dir[2]]))
-                        
-			basis2quat(mean[3:], ortho_sys[:, 0], ortho_sys[:,1], ortho_sys[:, 2])
-			print(t)
+			rot2zyz(dir, ortho_sys)
+			ZYZ2quat(mean[i*7+3:(i+1)*7], dir)
 			self.lookup_kappa_beta(mean[1: 3], t[z-1], t[d-1])
 
 #
