@@ -4,17 +4,13 @@
 # warn.unused_results=True
 
 from libc.math cimport fabs, floor, pow
+import numpy as np
 
-#cdef double bilinear(double[:] point, double[:] vlinear, double[:, :, :] data) nogil except *:
-#		cdef int i, j, k, m,n,o
-#		for i in range(4):
-#			j = <int> floor(i / 2) % 2
-#			m = <int> point[0] + i%2
-#			n = <int> point[1] + j
-#			vlinear[i] =  data[m,n]
-#		for i in range(2):
-#			vlinear[i] = (point[1] - floor(point[1]))* vlinear[2 + i] +  (1 + floor(point[1]) - point[1]) * vlinear[i]
-#		return  (point[0] - floor(point[0])) * vlinear[1] +  (1 + floor(point[0]) - point[0]) * vlinear[0]
+cdef void bilinear(double[:] ret, double[:,:,:] data, double kappa, double beta):
+	cdef double[:,:] vlinear = np.zeros((2, data.shape[-1]))
+	for i in range(2):
+		vlinear[i] = (kappa - floor(kappa))* data[0, i] +  (1 + floor(kappa) - kappa) * data[1, i, :]
+	ret = (beta - floor(beta))* vlinear[0] +  (1 + floor(beta) - beta) * vlinear[1]
 
 cdef double linear(double[:] point, double[:] vlinear, double[:, :, :] data) nogil except *:
 		cdef int i, j, k, m,n,o

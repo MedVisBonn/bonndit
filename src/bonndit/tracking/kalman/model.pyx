@@ -3,7 +3,7 @@
 from bonndit.directions.fodfapprox import approx_all_spherical
 from bonndit.utilc.blas_lapack cimport *
 from bonndit.utilc.hota cimport hota_4o3d_sym_eval, hota_6o3d_sym_eval
-
+from bonndit.utilc.trilinear cimport bilinear
 from bonndit.utilc.hota cimport hota_6o3d_hessian_sh
 from bonndit.utilc.quaternions cimport *
 from bonndit.utilc.cython_helpers cimport rot2zyz, special_mat_mul, orthonormal_from_sphere, dinit, sphere2world, ddiagonal, world2sphere, sphere2cart, cart2sphere
@@ -297,11 +297,9 @@ cdef class BinghamQuatModel(BinghamModel):
 	def __cinit__(self, **kwargs):
 		super(BinghamQuatModel, self).__init__(**kwargs)
 		self.order= kwargs["order"]
-		if kwargs["order"] == 4:
-			self.lookup_table1 = lookup_table = np.load(dirname + '/bingham_compressed.npy')
-		else:
-			self.lookup_table1 = lookup_table = np.load(dirname + '/bingham_normalized_o6_new.npy')
+		self.lookup_table1 = lookup_table = np.load(dirname + '/bingham_normalized_o6_new.npy')
 		self.lookup_kappa_beta_table = np.load(dirname + '/kappa_beta_lookup.npy')
+		self.sh = np.zeros((self.lookup_table1.shape[-1], ))
 		self.num_tensors = <int> (kwargs['dim_model'] / 7)
 		if kwargs['process noise'] == "":
 			ddiagonal(&self.PROCESS_NOISE[0, 0], np.array([0.01, 0.01,0.01,0.001, 0.001, 0.001]), self.PROCESS_NOISE.shape[0],
@@ -325,7 +323,8 @@ cdef class BinghamQuatModel(BinghamModel):
 				beta = max(min(exp(sigma_points[i*7 + 2, j]), kappa), 0.1)
 
 				quat2ZYZ(self.angles, sigma_points[i*7+3:(i+1)*7,j])
-				c_sh_rotate_real_coef_fast(&observations[0,j], observations.shape[1], &self.lookup_table1[<int> kappa * 10, <int> beta * 10, 0],
+				bilinear(self.sh, &self.lookup_table1[<int> (kappa * 10) : <int> (kappa * 10) + 2, <int> (beta * 10): <int> (beta * 10) + 2, :], 10*kappa, 10*beta)
+				c_sh_rotate_real_coef_fast(&observations[0,j], observations.shape[1], &self.sh[0],
 										   1, self.order, &self.angles[0])
 				cblas_dscal(observations.shape[0], lam , &observations[0,j], observations.shape[1])
 
@@ -367,19 +366,14 @@ cdef class BinghamQuatModel(BinghamModel):
 
 			t, eig =  np.linalg.eig(hessian)
 			#sort according eigenvalues:
-			if t[1] > t[0]:
-				z = 1
-				d = 0
-			else:
-				z = 0
-				d = 1
+			z = 1 if  t[1] > t[0] else 0
 			cblas_dscal(9, 0, &ortho_sys[0,0], 1)
 			ortho_sys[:, 2] = init_dir
 
 			cblas_daxpy(3, eig[0,0], &orth[0,0], 2, &ortho_sys[0,z], 3)
 			cblas_daxpy(3, eig[0,1], &orth[0,1], 2, &ortho_sys[0,z], 3)
-			cblas_daxpy(3, eig[1,0], &orth[0,0], 2, &ortho_sys[0,d], 3)
-			cblas_daxpy(3, eig[1,1], &orth[0,1], 2, &ortho_sys[0,d], 3)
+			cblas_daxpy(3, eig[1,0], &orth[0,0], 2, &ortho_sys[0,(z+1)%2], 3)
+			cblas_daxpy(3, eig[1,1], &orth[0,1], 2, &ortho_sys[0,(z+1)%2], 3)
 			for j in range(3):
 				scale = cblas_dnrm2(3, &ortho_sys[0,j], 3)
 				cblas_dscal(3, 1/scale, &ortho_sys[0,j], 3)
