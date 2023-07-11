@@ -1691,7 +1691,7 @@ cdef class UKFBinghamQuatAlt(Interpolation):
             scale = hota_6o3d_sym_s_form(
                 self.y_tensor[0, 1:, 0, 0, 0],
                 self.best_fit[1:, 0, 0])
-            print(scale)
+            # print(scale)
             cblas_dscal(28, 1 / scale, &self.y_tensor[0, 1, 0, 0, 0], 1)
 
             # residual in sh
