@@ -239,25 +239,25 @@ cdef class BinghamModel(WatsonModel):
 
 
 
-	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points) except *: # nogil except *:
-		cdef int number_of_tensors = int(sigma_points.shape[0]/6)
-		cdef int i, j
-		cdef double lam, kappa, beta
-		cblas_dscal(observations.shape[1] * observations.shape[0], 0, &observations[0, 0], 1)
-		for i in range(number_of_tensors):
-			for j in range(sigma_points.shape[1]):
-				lam = max(sigma_points[i*6, j], 0.01)
-				kappa = max(min(exp(sigma_points[i*6 + 1, j]), 50), 0.1)
-				beta = max(min(exp(sigma_points[i*6 + 2, j]), kappa), 0.1)
-				#print(kappa, beta)
-				cblas_dcopy(3, &sigma_points[i*6+3, j], sigma_points.shape[1], &self.angles[0], 1)
-				self.sh_bingham_coeffs(kappa, beta)
-				#print(np.array(self.dipy_v))
-				c_map_dipy_to_pysh_o4(&self.dipy_v[0], &self.pysh_v[0])
-				c_sh_rotate_real_coef(&self.rot_pysh_v[0], &self.pysh_v[0], self.order, &self.angles[0], &dj_o4[0][0][0])
-				c_map_pysh_to_dipy_o4(&self.rot_pysh_v[0], &self.dipy_v[0])
-				cblas_daxpy(observations.shape[0], lam ,&self.dipy_v[0], 1, &observations[0,j], observations.shape[1])
-
+#	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points) except *: # nogil except *:
+#		cdef int number_of_tensors = int(sigma_points.shape[0]/6)
+#		cdef int i, j
+#		cdef double lam, kappa, beta
+#		cblas_dscal(observations.shape[1] * observations.shape[0], 0, &observations[0, 0], 1)
+#		for i in range(number_of_tensors):
+#			for j in range(sigma_points.shape[1]):
+#				lam = max(sigma_points[i*6, j], 0.01)
+#				kappa = max(min(exp(sigma_points[i*6 + 1, j]), 50), 0.1)
+#				beta = max(min(exp(sigma_points[i*6 + 2, j]), kappa), 0.1)
+#				#print(kappa, beta)
+#				cblas_dcopy(3, &sigma_points[i*6+3, j], sigma_points.shape[1], &self.angles[0], 1)
+#				self.sh_bingham_coeffs(kappa, beta)
+#				#print(np.array(self.dipy_v))
+#				c_map_dipy_to_pysh_o4(&self.dipy_v[0], &self.pysh_v[0])
+#				c_sh_rotate_real_coef(&self.rot_pysh_v[0], &self.pysh_v[0], self.order, &self.angles[0], &dj_o4[0][0][0])
+#				c_map_pysh_to_dipy_o4(&self.rot_pysh_v[0], &self.dipy_v[0])
+#				cblas_daxpy(observations.shape[0], lam ,&self.dipy_v[0], 1, &observations[0,j], observations.shape[1])
+#
 #
 #
 	cdef bint kinit(self, double[:] mean, double[:] point, double[:] init_dir, double[:,:] P, double[:] y) except *:
@@ -299,7 +299,7 @@ cdef class BinghamQuatModel(BinghamModel):
 		self.order= kwargs["order"]
 		self.lookup_table1 = lookup_table = np.load(dirname + '/bingham_normalized_o6_new.npy')
 		self.lookup_kappa_beta_table = np.load(dirname + '/kappa_beta_lookup.npy')
-		self.sh = np.zeros((self.lookup_table1.shape[-1], ))
+		self.sh = np.zeros((28, ))
 		self.num_tensors = <int> (kwargs['dim_model'] / 7)
 		if kwargs['process noise'] == "":
 			ddiagonal(&self.PROCESS_NOISE[0, 0], np.array([0.01, 0.01,0.01,0.001, 0.001, 0.001]), self.PROCESS_NOISE.shape[0],
@@ -323,9 +323,8 @@ cdef class BinghamQuatModel(BinghamModel):
 				beta = max(min(exp(sigma_points[i*7 + 2, j]), kappa), 0.1)
 
 				quat2ZYZ(self.angles, sigma_points[i*7+3:(i+1)*7,j])
-				bilinear(self.sh, &self.lookup_table1[<int> (kappa * 10) : <int> (kappa * 10) + 2, <int> (beta * 10): <int> (beta * 10) + 2, :], 10*kappa, 10*beta)
-				c_sh_rotate_real_coef_fast(&observations[0,j], observations.shape[1], &self.sh[0],
-										   1, self.order, &self.angles[0])
+				bilinear(self.sh, self.lookup_table1[<int> (kappa * 10) : <int> (kappa * 10) + 2, <int> (beta * 10): <int> (beta * 10) + 2, :], 10*kappa, 10*beta)
+				c_sh_rotate_real_coef_fast(&observations[0,j], observations.shape[1], &self.sh[0], 1, self.order, &self.angles[0])
 				cblas_dscal(observations.shape[0], lam , &observations[0,j], observations.shape[1])
 
 
@@ -381,7 +380,7 @@ cdef class BinghamQuatModel(BinghamModel):
 			cblas_dscal(3, -1, &ortho_sys[2,0], 1)
 			rot2zyz(dir, ortho_sys)
 			ZYZ2quat(mean[i*7+3:(i+1)*7], dir)
-			self.lookup_kappa_beta(mean[1: 3], t[z-1], t[d-1])
+			self.lookup_kappa_beta(mean[1: 3], t[z], t[(z+1) % 2])
 
 #
 #

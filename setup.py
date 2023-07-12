@@ -27,11 +27,17 @@ with open('HISTORY.rst') as history_file:
 
 suite_sparse_libs = ['lapack', 'ccolamd', 'spqr', 'cholmod', 'colamd', 'camd', 'amd', 'suitesparseconfig']
 ceres_libs = ['glog', 'gflags']
-watson_libraries = ceres_libs + suite_sparse_libs + ['pthread', 'fftw3', 'm', 'watsonfit']
+watson_libraries = ['m', 'watsonfit']
 
 ext_modules = [
+   Extension("bonndit.utilc.watsonfit",
+            sources=['src/bonndit/utilc/watsonfit.cpp'],
+            include_dirs=["/usr/lib"],
+            language="c++",
+            extra_compile_args=["-shared"],
+            ),
     Extension("bonndit.utilc.watsonfitwrapper",
-              sources=["src/bonndit/utilc/watsonfitwrapper.pyx"],
+              sources=["src/bonndit/utilc/watsonfitwrapper.pyx", 'src/bonndit/utilc/watsonfit.cpp'],
               define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"), ('CYTHON_TRACE', '1')],
               include_dirs=[".", numpy.get_include(), "/usr/lib"],
               libraries=watson_libraries,
@@ -82,8 +88,11 @@ ext_modules = [
     Extension(
         "bonndit.utilc.trilinear",
         ["src/bonndit/utilc/trilinear.pyx"],
-        extra_compile_args=["-Ofast"],
+        include_dirs=[numpy.get_include(), "%s/include" % mklroot],
+        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
+        library_dirs=["%s/lib/intel64" % mklroot],
         define_macros=[('CYTHON_TRACE', '1')],
+        extra_compile_args=["-Wall", "-m64", "-Ofast"],
     ),
     Extension(
         "bonndit.utilc.structures",
@@ -128,11 +137,12 @@ ext_modules = [
         define_macros = [('CYTHON_TRACE', '1')],
 ), Extension(
         "bonndit.tracking.kalman.model",
-        ["src/bonndit/tracking/kalman/model.pyx"],
+        ["src/bonndit/tracking/kalman/model.pyx",'src/bonndit/utilc/watsonfit.cpp' ],
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"),('CYTHON_TRACE', '1')],
-        include_dirs=[numpy.get_include(), "%s/include" % mklroot,"/usr/include/" ],
+        include_dirs=[".", numpy.get_include(), "%s/include" % mklroot,"/usr/include/" ],
         libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl", "watsonfit"],
         library_dirs=["%s/lib/intel64" % mklroot, "/usr/bin"],
+        language='c++',
         extra_compile_args=["-I.", "-O3", "-ffast-math", "-march=native", "-fopenmp"],
         extra_link_args=["-L/usr/local/include", "-fopenmp", "-Wl,--no-as-needed"]
 
@@ -260,7 +270,7 @@ setup(
     ext_modules=cythonize(ext_modules, compiler_directives={'boundscheck': False, 'wraparound': False,
                                                             'optimize.unpack_method_calls': False}),
     # cmdclass={'build_ext': build_ext},
-    package_data={"": ['*.pxd', '*.npz', '*.npy']},
+    package_data={"": ['*.pxd', '*.npz', '*.npy', '*.so']},
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,

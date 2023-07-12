@@ -1,13 +1,13 @@
 #include "watsonfit.h"
-#include <ceres/ceres.h>
-#include <glog/logging.h>
-#include <omp.h>
+//#include <ceres/ceres.h>
+//#include <glog/logging.h>
+//#include <omp.h>
 #include "cerf.h"
-#include <iostream>
-#include <chrono>
-#include <thread>
-#include <iomanip>
-#include <stdexcept>
+//#include <iostream>
+//#include <chrono>
+//#include <thread>
+//#include <iomanip>
+//#include <stdexcept>
 
 static double* signal;
 static double* est_signal;
@@ -211,152 +211,152 @@ static double rank1_rh_o8[8] = {1.3962634 , 1.01546429, 0.46867583, 0.12498022, 
 
 /// helper class for showing the progressbar
 /// adapted on the basis of https://stackoverflow.com/a/44555438
-class Timer{
- private:
-  typedef std::chrono::high_resolution_clock clock;
-  typedef std::chrono::duration<double, std::ratio<1> > second;
-
-  std::chrono::time_point<clock> start_time;
-  double accumulated_time;
-  bool running;
-
- public:
-  Timer(){
-    accumulated_time = 0;
-    running          = false;
-  }
-
-  void start(){
-    if(running)
-      throw std::runtime_error("Timer was already started!");
-    running=true;
-    start_time = clock::now();
-  }
-
-  double stop(){
-    if(!running)
-      throw std::runtime_error("Timer was already stopped!");
-
-    accumulated_time += lap();
-    running           = false;
-
-    return accumulated_time;
-  }
-
-  double accumulated(){
-    if(running)
-      throw std::runtime_error("Timer is still running!");
-    return accumulated_time;
-  }
-
-  double lap(){
-    if(!running)
-      throw std::runtime_error("Timer was not started!");
-    return std::chrono::duration_cast<second> (clock::now() - start_time).count();
-  }
-
-  void reset(){
-    accumulated_time = 0;
-    running          = false;
-  }
-};
-
-/// helper class for showing the progressbar
-/// adapted on the basis of https://stackoverflow.com/a/44555438
-class ProgressBar{
- private:
-  uint32_t total_work;
-  uint32_t next_update;
-  uint32_t call_diff;
-  uint32_t work_done;
-  uint16_t old_percent;
-  Timer    timer;
-
-  void clearConsoleLine() const {
-    std::cerr<<"\r\033[2K"<<std::flush;
-  }
-
- public:
-  void start(uint32_t total_work){
-    timer = Timer();
-    timer.start();
-    this->total_work = total_work;
-    next_update      = 0;
-    call_diff        = (total_work > 800) ? total_work/800 : 5;
-    old_percent      = 0;
-    work_done        = 0;
-    clearConsoleLine();
-  }
-
-  void update(uint32_t work_done0){
-    #ifdef NOPROGRESS
-      return;
-    #endif
-
-    if(omp_get_thread_num()!=0)
-      return;
-    work_done = work_done0;
-    if(work_done<next_update)
-      return;
-    next_update += call_diff;
-    uint16_t percent = (uint8_t)(work_done*omp_get_num_threads()*100/total_work);
-    if(percent>100)
-      percent=100;
-
-    if(percent==old_percent)
-      return;
-
-    old_percent=percent;
-    int remaining_time = int(timer.lap()/percent*(100-percent));
-    std::cerr<<"\r\033[2K|"
-             <<std::string(percent/2, '=')<<std::string(50-percent/2, ' ')
-             <<"| "
-             <<percent<<"% ~ "
-             <<std::fixed<<std::setprecision(1)<<((remaining_time > 120) ? remaining_time / 60 : remaining_time)
-             <<((remaining_time > 120) ? "m" : "s")<<" remaining - "
-             <<omp_get_num_threads()<< " threads   "<<std::flush;
-  }
-
-  ProgressBar& operator++(){
-    if(omp_get_thread_num()!=0)
-      return *this;
-
-    work_done++;
-    update(work_done);
-    return *this;
-  }
-
-  double stop(){
-    clearConsoleLine();
-
-    timer.stop();
-    return timer.accumulated();
-  }
-
-  double time_it_took(){
-    return timer.accumulated();
-  }
-
-  uint32_t cellsProcessed() const {
-    return work_done;
-  }
-};
-
-void SHrtoc(double* ccilm, double* rcilm, int lmax) {
-    int max = lmax+1;
-
-    for (int l = -1; l < lmax; l++) {
-        ccilm[(0 * max + (l+1)) * max + 0] = std::sqrt(4.0*M_PI) * rcilm[(0 * max + (l+1)) * max + 0];
-        ccilm[(1 * max + (l+1)) * max + 0] = 0.0;
-
-        for (int m = 0; m < l+1; m++) {
-            ccilm[(0 * max + (l+1)) * max + (m+1)] = std::sqrt(2.0*M_PI) * rcilm[(0 * max + (l+1)) * max + (m+1)] * pow(-1,m+1);
-            ccilm[(1 * max + (l+1)) * max + (m+1)] = -std::sqrt(2.0*M_PI) * rcilm[(1 * max + (l+1)) * max + (m+1)] * pow(-1,m+1);
-        }
-    }
-}
-
-
+//class Timer{
+// private:
+//  typedef std::chrono::high_resolution_clock clock;
+//  typedef std::chrono::duration<double, std::ratio<1> > second;
+//
+//  std::chrono::time_point<clock> start_time;
+//  double accumulated_time;
+//  bool running;
+//
+// public:
+//  Timer(){
+//    accumulated_time = 0;
+//    running          = false;
+//  }
+//
+//  void start(){
+//    if(running)
+//      throw std::runtime_error("Timer was already started!");
+//    running=true;
+//    start_time = clock::now();
+//  }
+//
+//  double stop(){
+//    if(!running)
+//      throw std::runtime_error("Timer was already stopped!");
+//
+//    accumulated_time += lap();
+//    running           = false;
+//
+//    return accumulated_time;
+//  }
+//
+//  double accumulated(){
+//    if(running)
+//      throw std::runtime_error("Timer is still running!");
+//    return accumulated_time;
+//  }
+//
+//  double lap(){
+//    if(!running)
+//      throw std::runtime_error("Timer was not started!");
+//    return std::chrono::duration_cast<second> (clock::now() - start_time).count();
+//  }
+//
+//  void reset(){
+//    accumulated_time = 0;
+//    running          = false;
+//  }
+//};
+//
+///// helper class for showing the progressbar
+///// adapted on the basis of https://stackoverflow.com/a/44555438
+//class ProgressBar{
+// private:
+//  uint32_t total_work;
+//  uint32_t next_update;
+//  uint32_t call_diff;
+//  uint32_t work_done;
+//  uint16_t old_percent;
+//  Timer    timer;
+//
+//  void clearConsoleLine() const {
+//    std::cerr<<"\r\033[2K"<<std::flush;
+//  }
+//
+// public:
+//  void start(uint32_t total_work){
+//    timer = Timer();
+//    timer.start();
+//    this->total_work = total_work;
+//    next_update      = 0;
+//    call_diff        = (total_work > 800) ? total_work/800 : 5;
+//    old_percent      = 0;
+//    work_done        = 0;
+//    clearConsoleLine();
+//  }
+//
+//  void update(uint32_t work_done0){
+//    #ifdef NOPROGRESS
+//      return;
+//    #endif
+//
+//    if(omp_get_thread_num()!=0)
+//      return;
+//    work_done = work_done0;
+//    if(work_done<next_update)
+//      return;
+//    next_update += call_diff;
+//    uint16_t percent = (uint8_t)(work_done*omp_get_num_threads()*100/total_work);
+//    if(percent>100)
+//      percent=100;
+//
+//    if(percent==old_percent)
+//      return;
+//
+//    old_percent=percent;
+//    int remaining_time = int(timer.lap()/percent*(100-percent));
+//    std::cerr<<"\r\033[2K|"
+//             <<std::string(percent/2, '=')<<std::string(50-percent/2, ' ')
+//             <<"| "
+//             <<percent<<"% ~ "
+//             <<std::fixed<<std::setprecision(1)<<((remaining_time > 120) ? remaining_time / 60 : remaining_time)
+//             <<((remaining_time > 120) ? "m" : "s")<<" remaining - "
+//             <<omp_get_num_threads()<< " threads   "<<std::flush;
+//  }
+//
+//  ProgressBar& operator++(){
+//    if(omp_get_thread_num()!=0)
+//      return *this;
+//
+//    work_done++;
+//    update(work_done);
+//    return *this;
+//  }
+//
+//  double stop(){
+//    clearConsoleLine();
+//
+//    timer.stop();
+//    return timer.accumulated();
+//  }
+//
+//  double time_it_took(){
+//    return timer.accumulated();
+//  }
+//
+//  uint32_t cellsProcessed() const {
+//    return work_done;
+//  }
+//};
+//
+//void SHrtoc(double* ccilm, double* rcilm, int lmax) {
+//    int max = lmax+1;
+//
+//    for (int l = -1; l < lmax; l++) {
+//        ccilm[(0 * max + (l+1)) * max + 0] = std::sqrt(4.0*M_PI) * rcilm[(0 * max + (l+1)) * max + 0];
+//        ccilm[(1 * max + (l+1)) * max + 0] = 0.0;
+//
+//        for (int m = 0; m < l+1; m++) {
+//            ccilm[(0 * max + (l+1)) * max + (m+1)] = std::sqrt(2.0*M_PI) * rcilm[(0 * max + (l+1)) * max + (m+1)] * pow(-1,m+1);
+//            ccilm[(1 * max + (l+1)) * max + (m+1)] = -std::sqrt(2.0*M_PI) * rcilm[(1 * max + (l+1)) * max + (m+1)] * pow(-1,m+1);
+//        }
+//    }
+//}
+//
+//
 static double cindex_to_dipy[28] = {
         1/std::sqrt(4.0*M_PI),
         -1/std::sqrt(2.0*M_PI),
@@ -407,161 +407,162 @@ static int cindex_to_dipy_o4_mapping[15] = {
    13,
    14
   };
-
-void SHctor(double* ccilm, double* rcilm, int lmax) {
-    int max = lmax+1;
-
-    for (int l = -1; l < lmax; l++) {
-        rcilm[(0 * max + (l+1)) * max + 0] = ccilm[(0 * max + (l+1)) * max + 0] / std::sqrt(4.0*M_PI);
-        rcilm[(1 * max + (l+1)) * max + 0] = 0.0;
-
-        for (int m = 0; m < l+1; m++) {
-            rcilm[(0 * max + (l+1)) * max + (m+1)] = ccilm[(0 * max + (l+1)) * max + (m+1)] / std::sqrt(2.0*M_PI) * pow(-1,m+1);
-            rcilm[(1 * max + (l+1)) * max + (m+1)] = -ccilm[(1 * max + (l+1)) * max + (m+1)] / std::sqrt(2.0*M_PI) * pow(-1,m+1);
-        }
-    }
-}
-
-void SHCilmToCindex(double* cilm, double* cindex, int lmax) {
-    int clmax = lmax+1;
-    int cimax = (lmax*(lmax+1))/2+lmax+1;
-
-    for (int l = -1; l < lmax; l++) {
-        for (int m = -1; m < l+1; m++) {
-            int index = ((l+1)*(l+2))/2+m+1;
-            cindex[0 * cimax + index] = cilm[(0 * clmax + (l+1)) * clmax + (m+1)];
-            cindex[1 * cimax + index] = cilm[(1 * clmax + (l+1)) * clmax + (m+1)];
-        }
-    }
-}
-
-void SHDipyToCindex(double* cindex, double* cilm, int lmax, int spacing) {
-    for (int i = 0; i < 15; i++) {
-        cilm[cindex_to_dipy_o4_mapping[i]] = cindex[i * spacing] * 1/cindex_to_dipy[i];
-    }
-    cilm[15] = 0;
-    cilm[18] = 0;
-    cilm[25] = 0;
-
-}
-
-
-void SHCindexToCilm(double* cindex, double* cilm, int lmax) {
-    int clmax = lmax+1;
-    int cimax = (lmax*(lmax+1))/2+lmax+1;
-
-    for (int l = -1; l < lmax; l++) {
-        for (int m = -1; m < l+1; m++) {
-            int index = ((l+1)*(l+2))/2 +m+1;
-            cilm[(0 * clmax + (l+1)) * clmax + (m+1)] = cindex[0 * cimax + index];
-            cilm[(1 * clmax + (l+1)) * clmax + (m+1)] = cindex[1 * cimax + index];
-        }
-    }
-}
-
-void SHCindexToDipy(double* cindex, double* cilm, int lmax, int spacing) {
-    for (int i = 0; i < 15; i++) {
-        cilm[i * spacing] = cindex[cindex_to_dipy_o4_mapping[i]] * cindex_to_dipy[i];
-    }
-}
-
-void SHRotateCoef(double* x, double* cof, double* rcof, double* dj, int lmax) {
-    int clmax = lmax+1;
-    int cimax = (lmax*(lmax+1))/2+lmax+1;
-    //cout << "start \n" ;
-    double sum[2], temp[2][lmax+1], temp2[2][lmax+1], cgam[lmax+1], sgam[lmax+1], calf[lmax+1], salf[lmax+1], cbet[lmax+1], sbet[lmax+1];
-    
-    double pi2 = M_PI_2;
-
-    double alpha = x[0];
-    double beta = x[1];
-    double gamma = x[2];
-
-    alpha = alpha - pi2;
-    gamma = gamma + pi2;
-    beta = -beta;
-
-    int ind = 0;
-
-    // all degrees
-    for (int lp1 = 1; lp1 <= lmax+1; lp1++) {
-        int l = lp1-1;
-        cbet[lp1-1] = cos(l*beta);
-        sbet[lp1-1] = sin(l*beta);
-        cgam[lp1-1] = cos(l*gamma);
-        sgam[lp1-1] = sin(l*gamma);
-        calf[lp1-1] = cos(l*alpha);
-        salf[lp1-1] = sin(l*alpha);
-    }
-      //  cout << "l";
-      //  cout << lp1;
-      //  cout << "\n";
-    for (int lp1 = 1; lp1 <= lmax+1; lp1+=2) {
-        // rotation around alpha angle
-        for (int mp1 = 1; mp1 <= lp1; mp1++) {
-            int indx = ind+mp1;
-        //    cout << 0 * cimax + indx -1;
-        //    cout << "\n";
-        //    cout << 1 * cimax + indx -1;
-         //   cout << "\n";
-            temp[0][mp1-1] = cof[0 * cimax + indx-1] * calf[mp1-1] - cof[1 * cimax + indx-1] * salf[mp1-1];
-            temp[1][mp1-1] = cof[1 * cimax + indx-1] * calf[mp1-1] + cof[0 * cimax + indx-1] * salf[mp1-1];
-        }
-
-        // first step of euler decomposition followed by rotation around beta angle
-        for (int jp1 = 1; jp1 <= lp1; jp1++) {
-            sum[0] = dj[((jp1-1) * clmax + 0) * clmax + (lp1-1)] * temp[0][0];
-            sum[1] = 0.0;
-            int isgn = 1 - 2 * ((lp1-jp1) % 2);
-
-            for (int mp1 = 2; mp1 <= lp1; mp1++) {
-                isgn = -isgn;
-                int ii = (3-isgn) / 2;
-                sum[ii-1] = sum[ii-1] + 2.0 * dj[((jp1-1) * clmax + (mp1-1)) * clmax + (lp1-1)] * temp[ii-1][mp1-1];
-            }
-
-            temp2[0][jp1-1] = sum[0] * cbet[jp1-1] - sum[1] * sbet[jp1-1];
-            temp2[1][jp1-1] = sum[1] * cbet[jp1-1] + sum[0] * sbet[jp1-1];
-        }
-
-        // second step of euler decomposition followed by rotation around gamma angle
-        for (int jp1 = 1; jp1 <= lp1; jp1++) {
-            sum[0] = dj[(0 * clmax + (jp1-1)) * clmax + (lp1-1)] * temp2[0][0];
-            sum[1] = 0.0;
-            int isgn = 1 - 2 * ((lp1-jp1) % 2);
-
-            for (int mp1 = 2; mp1 <= lp1; mp1++) {
-                isgn = -isgn;
-                int ii = (3-isgn) / 2;
-                sum[ii-1] = sum[ii-1] + 2.0 * dj[((mp1-1) * clmax + (jp1-1)) * clmax + (lp1-1)] * temp2[ii-1][mp1-1];
-            }
-            
-            int indx = ind + jp1;
-            rcof[0 * cimax + indx-1] = sum[0] * cgam[jp1-1] - sum[1] * sgam[jp1-1];
-            rcof[1 * cimax + indx-1] = sum[1] * cgam[jp1-1] + sum[0] * sgam[jp1-1];
-        }
-        ind = ind + lp1 + lp1 +1 ;
-    }
-}
-
-void SHRotateRealCoef(double* cilmrot, double* cilm, int lmax, double* x, double* dj) {
-    int clmax = lmax+1;
-    int cimax = (lmax*(lmax+1))/2+lmax+1;
-
-    double ccilmd[2][clmax][clmax];
-    double cindex[2][cimax];
-
-    // all steps of real sh rotation
-    SHrtoc(&ccilmd[0][0][0], cilm, lmax);
-
-    SHCilmToCindex(&ccilmd[0][0][0], &cindex[0][0], lmax);
-
-    SHRotateCoef(x, &cindex[0][0], &cindex[0][0], dj, lmax);
-    SHCindexToCilm(&cindex[0][0], &ccilmd[0][0][0], lmax);
-    SHctor(&ccilmd[0][0][0], cilmrot, lmax);
-}
+//
+//void SHctor(double* ccilm, double* rcilm, int lmax) {
+//    int max = lmax+1;
+//
+//    for (int l = -1; l < lmax; l++) {
+//        rcilm[(0 * max + (l+1)) * max + 0] = ccilm[(0 * max + (l+1)) * max + 0] / std::sqrt(4.0*M_PI);
+//        rcilm[(1 * max + (l+1)) * max + 0] = 0.0;
+//
+//        for (int m = 0; m < l+1; m++) {
+//            rcilm[(0 * max + (l+1)) * max + (m+1)] = ccilm[(0 * max + (l+1)) * max + (m+1)] / std::sqrt(2.0*M_PI) * pow(-1,m+1);
+//            rcilm[(1 * max + (l+1)) * max + (m+1)] = -ccilm[(1 * max + (l+1)) * max + (m+1)] / std::sqrt(2.0*M_PI) * pow(-1,m+1);
+//        }
+//    }
+//}
+//
+//void SHCilmToCindex(double* cilm, double* cindex, int lmax) {
+//    int clmax = lmax+1;
+//    int cimax = (lmax*(lmax+1))/2+lmax+1;
+//
+//    for (int l = -1; l < lmax; l++) {
+//        for (int m = -1; m < l+1; m++) {
+//            int index = ((l+1)*(l+2))/2+m+1;
+//            cindex[0 * cimax + index] = cilm[(0 * clmax + (l+1)) * clmax + (m+1)];
+//            cindex[1 * cimax + index] = cilm[(1 * clmax + (l+1)) * clmax + (m+1)];
+//        }
+//    }
+//}
+//
+//void SHDipyToCindex(double* cindex, double* cilm, int lmax, int spacing) {
+//    for (int i = 0; i < 15; i++) {
+//        cilm[cindex_to_dipy_o4_mapping[i]] = cindex[i * spacing] * 1/cindex_to_dipy[i];
+//    }
+//    cilm[15] = 0;
+//    cilm[18] = 0;
+//    cilm[25] = 0;
+//
+//}
+//
+//
+//void SHCindexToCilm(double* cindex, double* cilm, int lmax) {
+//    int clmax = lmax+1;
+//    int cimax = (lmax*(lmax+1))/2+lmax+1;
+//
+//    for (int l = -1; l < lmax; l++) {
+//        for (int m = -1; m < l+1; m++) {
+//            int index = ((l+1)*(l+2))/2 +m+1;
+//            cilm[(0 * clmax + (l+1)) * clmax + (m+1)] = cindex[0 * cimax + index];
+//            cilm[(1 * clmax + (l+1)) * clmax + (m+1)] = cindex[1 * cimax + index];
+//        }
+//    }
+//}
+//
+//void SHCindexToDipy(double* cindex, double* cilm, int lmax, int spacing) {
+//    for (int i = 0; i < 15; i++) {
+//        cilm[i * spacing] = cindex[cindex_to_dipy_o4_mapping[i]] * cindex_to_dipy[i];
+//    }
+//}
+//
+//void SHRotateCoef(double* x, double* cof, double* rcof, double* dj, int lmax) {
+//    int clmax = lmax+1;
+//    int cimax = (lmax*(lmax+1))/2+lmax+1;
+//    //cout << "start \n" ;
+//    double sum[2], temp[2][lmax+1], temp2[2][lmax+1], cgam[lmax+1], sgam[lmax+1], calf[lmax+1], salf[lmax+1], cbet[lmax+1], sbet[lmax+1];
+//
+//    double pi2 = M_PI_2;
+//
+//    double alpha = x[0];
+//    double beta = x[1];
+//    double gamma = x[2];
+//
+//    alpha = alpha - pi2;
+//    gamma = gamma + pi2;
+//    beta = -beta;
+//
+//    int ind = 0;
+//
+//    // all degrees
+//    for (int lp1 = 1; lp1 <= lmax+1; lp1++) {
+//        int l = lp1-1;
+//        cbet[lp1-1] = cos(l*beta);
+//        sbet[lp1-1] = sin(l*beta);
+//        cgam[lp1-1] = cos(l*gamma);
+//        sgam[lp1-1] = sin(l*gamma);
+//        calf[lp1-1] = cos(l*alpha);
+//        salf[lp1-1] = sin(l*alpha);
+//    }
+//      //  cout << "l";
+//      //  cout << lp1;
+//      //  cout << "\n";
+//    for (int lp1 = 1; lp1 <= lmax+1; lp1+=2) {
+//        // rotation around alpha angle
+//        for (int mp1 = 1; mp1 <= lp1; mp1++) {
+//            int indx = ind+mp1;
+//        //    cout << 0 * cimax + indx -1;
+//        //    cout << "\n";
+//        //    cout << 1 * cimax + indx -1;
+//         //   cout << "\n";
+//            temp[0][mp1-1] = cof[0 * cimax + indx-1] * calf[mp1-1] - cof[1 * cimax + indx-1] * salf[mp1-1];
+//            temp[1][mp1-1] = cof[1 * cimax + indx-1] * calf[mp1-1] + cof[0 * cimax + indx-1] * salf[mp1-1];
+//        }
+//
+//        // first step of euler decomposition followed by rotation around beta angle
+//        for (int jp1 = 1; jp1 <= lp1; jp1++) {
+//            sum[0] = dj[((jp1-1) * clmax + 0) * clmax + (lp1-1)] * temp[0][0];
+//            sum[1] = 0.0;
+//            int isgn = 1 - 2 * ((lp1-jp1) % 2);
+//
+//            for (int mp1 = 2; mp1 <= lp1; mp1++) {
+//                isgn = -isgn;
+//                int ii = (3-isgn) / 2;
+//                sum[ii-1] = sum[ii-1] + 2.0 * dj[((jp1-1) * clmax + (mp1-1)) * clmax + (lp1-1)] * temp[ii-1][mp1-1];
+//            }
+//
+//            temp2[0][jp1-1] = sum[0] * cbet[jp1-1] - sum[1] * sbet[jp1-1];
+//            temp2[1][jp1-1] = sum[1] * cbet[jp1-1] + sum[0] * sbet[jp1-1];
+//        }
+//
+//        // second step of euler decomposition followed by rotation around gamma angle
+//        for (int jp1 = 1; jp1 <= lp1; jp1++) {
+//            sum[0] = dj[(0 * clmax + (jp1-1)) * clmax + (lp1-1)] * temp2[0][0];
+//            sum[1] = 0.0;
+//            int isgn = 1 - 2 * ((lp1-jp1) % 2);
+//
+//            for (int mp1 = 2; mp1 <= lp1; mp1++) {
+//                isgn = -isgn;
+//                int ii = (3-isgn) / 2;
+//                sum[ii-1] = sum[ii-1] + 2.0 * dj[((mp1-1) * clmax + (jp1-1)) * clmax + (lp1-1)] * temp2[ii-1][mp1-1];
+//            }
+//
+//            int indx = ind + jp1;
+//            rcof[0 * cimax + indx-1] = sum[0] * cgam[jp1-1] - sum[1] * sgam[jp1-1];
+//            rcof[1 * cimax + indx-1] = sum[1] * cgam[jp1-1] + sum[0] * sgam[jp1-1];
+//        }
+//        ind = ind + lp1 + lp1 +1 ;
+//    }
+//}
+//
+//void SHRotateRealCoef(double* cilmrot, double* cilm, int lmax, double* x, double* dj) {
+//    int clmax = lmax+1;
+//    int cimax = (lmax*(lmax+1))/2+lmax+1;
+//
+//    double ccilmd[2][clmax][clmax];
+//    double cindex[2][cimax];
+//
+//    // all steps of real sh rotation
+//    SHrtoc(&ccilmd[0][0][0], cilm, lmax);
+//
+//    SHCilmToCindex(&ccilmd[0][0][0], &cindex[0][0], lmax);
+//
+//    SHRotateCoef(x, &cindex[0][0], &cindex[0][0], dj, lmax);
+//    SHCindexToCilm(&cindex[0][0], &ccilmd[0][0][0], lmax);
+//    SHctor(&ccilmd[0][0][0], cilmrot, lmax);
+//}
 
 void SHRotateRealCoefFast(double* dipy_out, int space_out, double* dipy_in, int space_in,  int lmax, double* x) {
+    // Combines all the steps from SHRotateRealCoefs into one script and removes unnecessary copying of data
     int clmax = lmax+1;
     int cimax = (lmax*(lmax+1))/2+lmax+1;
     double* dj;
@@ -662,230 +663,230 @@ void SHRotateRealCoefFast(double* dipy_out, int space_out, double* dipy_in, int 
     //SHRotateCoef(x, &cindex2[0][0], &cindex2[0][0], dj, lmax);
     //SHCindexToDipy(&cindex2[0][0], &dipy_out[0], lmax, space_out);
 }
-void map_pysh_to_dipy_o8(double* sh, double* dipy_v) {
-    int clmax = 9;
-
-    dipy_v[0] =  sh[(0 * clmax + 0) * clmax + 0];
-    dipy_v[1] =  sh[(1 * clmax + 2) * clmax + 2];
-    dipy_v[2] =  sh[(1 * clmax + 2) * clmax + 1];
-    dipy_v[3] =  sh[(0 * clmax + 2) * clmax + 0];
-    dipy_v[4] =  sh[(0 * clmax + 2) * clmax + 1];
-    dipy_v[5] =  sh[(0 * clmax + 2) * clmax + 2];
-    dipy_v[6] =  sh[(1 * clmax + 4) * clmax + 4];
-    dipy_v[7] =  sh[(1 * clmax + 4) * clmax + 3];
-    dipy_v[8] =  sh[(1 * clmax + 4) * clmax + 2];
-    dipy_v[9] =  sh[(1 * clmax + 4) * clmax + 1];
-    dipy_v[10] = sh[(0 * clmax + 4) * clmax + 0];
-    dipy_v[11] = sh[(0 * clmax + 4) * clmax + 1];
-    dipy_v[12] = sh[(0 * clmax + 4) * clmax + 2];
-    dipy_v[13] = sh[(0 * clmax + 4) * clmax + 3];
-    dipy_v[14] = sh[(0 * clmax + 4) * clmax + 4];
-    dipy_v[15] = sh[(1 * clmax + 6) * clmax + 6];
-    dipy_v[16] = sh[(1 * clmax + 6) * clmax + 5];
-    dipy_v[17] = sh[(1 * clmax + 6) * clmax + 4];
-    dipy_v[18] = sh[(1 * clmax + 6) * clmax + 3];
-    dipy_v[19] = sh[(1 * clmax + 6) * clmax + 2];
-    dipy_v[20] = sh[(1 * clmax + 6) * clmax + 1];
-    dipy_v[21] = sh[(0 * clmax + 6) * clmax + 0];
-    dipy_v[22] = sh[(0 * clmax + 6) * clmax + 1];
-    dipy_v[23] = sh[(0 * clmax + 6) * clmax + 2];
-    dipy_v[24] = sh[(0 * clmax + 6) * clmax + 3];
-    dipy_v[25] = sh[(0 * clmax + 6) * clmax + 4];
-    dipy_v[26] = sh[(0 * clmax + 6) * clmax + 5];
-    dipy_v[27] = sh[(0 * clmax + 6) * clmax + 6];
-    dipy_v[28] = sh[(1 * clmax + 8) * clmax + 8];
-    dipy_v[29] = sh[(1 * clmax + 8) * clmax + 7];
-    dipy_v[30] = sh[(1 * clmax + 8) * clmax + 6];
-    dipy_v[31] = sh[(1 * clmax + 8) * clmax + 5];
-    dipy_v[32] = sh[(1 * clmax + 8) * clmax + 4];
-    dipy_v[33] = sh[(1 * clmax + 8) * clmax + 3];
-    dipy_v[34] = sh[(1 * clmax + 8) * clmax + 2];
-    dipy_v[35] = sh[(1 * clmax + 8) * clmax + 1];
-    dipy_v[36] = sh[(0 * clmax + 8) * clmax + 0];
-    dipy_v[37] = sh[(0 * clmax + 8) * clmax + 1];
-    dipy_v[38] = sh[(0 * clmax + 8) * clmax + 2];
-    dipy_v[39] = sh[(0 * clmax + 8) * clmax + 3];
-    dipy_v[40] = sh[(0 * clmax + 8) * clmax + 4];
-    dipy_v[41] = sh[(0 * clmax + 8) * clmax + 5];
-    dipy_v[42] = sh[(0 * clmax + 8) * clmax + 6];
-    dipy_v[43] = sh[(0 * clmax + 8) * clmax + 7];
-    dipy_v[44] = sh[(0 * clmax + 8) * clmax + 8];
-}
- 
-void map_pysh_to_dipy_o6(double* sh, double* dipy_v) {
-    int clmax = 7;
-
-    dipy_v[0] =  sh[(0 * clmax + 0) * clmax + 0];
-    dipy_v[1] =  sh[(1 * clmax + 2) * clmax + 2];
-    dipy_v[2] =  sh[(1 * clmax + 2) * clmax + 1];
-    dipy_v[3] =  sh[(0 * clmax + 2) * clmax + 0];
-    dipy_v[4] =  sh[(0 * clmax + 2) * clmax + 1];
-    dipy_v[5] =  sh[(0 * clmax + 2) * clmax + 2];
-    dipy_v[6] =  sh[(1 * clmax + 4) * clmax + 4];
-    dipy_v[7] =  sh[(1 * clmax + 4) * clmax + 3];
-    dipy_v[8] =  sh[(1 * clmax + 4) * clmax + 2];
-    dipy_v[9] =  sh[(1 * clmax + 4) * clmax + 1];
-    dipy_v[10] = sh[(0 * clmax + 4) * clmax + 0];
-    dipy_v[11] = sh[(0 * clmax + 4) * clmax + 1];
-    dipy_v[12] = sh[(0 * clmax + 4) * clmax + 2];
-    dipy_v[13] = sh[(0 * clmax + 4) * clmax + 3];
-    dipy_v[14] = sh[(0 * clmax + 4) * clmax + 4];
-    dipy_v[15] = sh[(1 * clmax + 6) * clmax + 6];
-    dipy_v[16] = sh[(1 * clmax + 6) * clmax + 5];
-    dipy_v[17] = sh[(1 * clmax + 6) * clmax + 4];
-    dipy_v[18] = sh[(1 * clmax + 6) * clmax + 3];
-    dipy_v[19] = sh[(1 * clmax + 6) * clmax + 2];
-    dipy_v[20] = sh[(1 * clmax + 6) * clmax + 1];
-    dipy_v[21] = sh[(0 * clmax + 6) * clmax + 0];
-    dipy_v[22] = sh[(0 * clmax + 6) * clmax + 1];
-    dipy_v[23] = sh[(0 * clmax + 6) * clmax + 2];
-    dipy_v[24] = sh[(0 * clmax + 6) * clmax + 3];
-    dipy_v[25] = sh[(0 * clmax + 6) * clmax + 4];
-    dipy_v[26] = sh[(0 * clmax + 6) * clmax + 5];
-    dipy_v[27] = sh[(0 * clmax + 6) * clmax + 6];
-}
-
-void map_pysh_to_dipy_o4(double* sh, double* dipy_v) {
-    int clmax = 5;
-
-    dipy_v[0] =  sh[(0 * clmax + 0) * clmax + 0];
-    dipy_v[1] =  sh[(1 * clmax + 2) * clmax + 2];
-    dipy_v[2] =  sh[(1 * clmax + 2) * clmax + 1];
-    dipy_v[3] =  sh[(0 * clmax + 2) * clmax + 0];
-    dipy_v[4] =  sh[(0 * clmax + 2) * clmax + 1];
-    dipy_v[5] =  sh[(0 * clmax + 2) * clmax + 2];
-    dipy_v[6] =  sh[(1 * clmax + 4) * clmax + 4];
-    dipy_v[7] =  sh[(1 * clmax + 4) * clmax + 3];
-    dipy_v[8] =  sh[(1 * clmax + 4) * clmax + 2];
-    dipy_v[9] =  sh[(1 * clmax + 4) * clmax + 1];
-    dipy_v[10] = sh[(0 * clmax + 4) * clmax + 0];
-    dipy_v[11] = sh[(0 * clmax + 4) * clmax + 1];
-    dipy_v[12] = sh[(0 * clmax + 4) * clmax + 2];
-    dipy_v[13] = sh[(0 * clmax + 4) * clmax + 3];
-    dipy_v[14] = sh[(0 * clmax + 4) * clmax + 4];
-}
-void map_pysh_to_dipy_o4_scaled(double scaling, double* sh, double* dipy_v, int spacing) {
-    int clmax = 5;
-    dipy_v[spacing * 0] =  scaling * sh[(0 * clmax + 0) * clmax + 0];
-    dipy_v[spacing * 1] =  scaling * sh[(1 * clmax + 2) * clmax + 2];
-    dipy_v[spacing * 2] =  scaling * sh[(1 * clmax + 2) * clmax + 1];
-    dipy_v[spacing * 3] =  scaling * sh[(0 * clmax + 2) * clmax + 0];
-    dipy_v[spacing * 4] =  scaling * sh[(0 * clmax + 2) * clmax + 1];
-    dipy_v[spacing * 5] =  scaling * sh[(0 * clmax + 2) * clmax + 2];
-    dipy_v[spacing * 6] =  scaling * sh[(1 * clmax + 4) * clmax + 4];
-    dipy_v[spacing * 7] =  scaling * sh[(1 * clmax + 4) * clmax + 3];
-    dipy_v[spacing * 8] =  scaling * sh[(1 * clmax + 4) * clmax + 2];
-    dipy_v[spacing * 9] =  scaling * sh[(1 * clmax + 4) * clmax + 1];
-    dipy_v[spacing * 10] = scaling * sh[(0 * clmax + 4) * clmax + 0];
-    dipy_v[spacing * 11] = scaling * sh[(0 * clmax + 4) * clmax + 1];
-    dipy_v[spacing * 12] = scaling * sh[(0 * clmax + 4) * clmax + 2];
-    dipy_v[spacing * 13] = scaling * sh[(0 * clmax + 4) * clmax + 3];
-    dipy_v[spacing * 14] = scaling * sh[(0 * clmax + 4) * clmax + 4];
-}
-
-void map_dipy_to_pysh_o8(double* dipy_v, double* sh) {
-    int clmax = 9;
-
-    sh[(0 * clmax + 0) * clmax + 0] = dipy_v[0];
-    sh[(1 * clmax + 2) * clmax + 2] = dipy_v[1];
-    sh[(1 * clmax + 2) * clmax + 1] = dipy_v[2];
-    sh[(0 * clmax + 2) * clmax + 0] = dipy_v[3];
-    sh[(0 * clmax + 2) * clmax + 1] = dipy_v[4];
-    sh[(0 * clmax + 2) * clmax + 2] = dipy_v[5];
-    sh[(1 * clmax + 4) * clmax + 4] = dipy_v[6];
-    sh[(1 * clmax + 4) * clmax + 3] = dipy_v[7];
-    sh[(1 * clmax + 4) * clmax + 2] = dipy_v[8];
-    sh[(1 * clmax + 4) * clmax + 1] = dipy_v[9];
-    sh[(0 * clmax + 4) * clmax + 0] = dipy_v[10];
-    sh[(0 * clmax + 4) * clmax + 1] = dipy_v[11];
-    sh[(0 * clmax + 4) * clmax + 2] = dipy_v[12];
-    sh[(0 * clmax + 4) * clmax + 3] = dipy_v[13];
-    sh[(0 * clmax + 4) * clmax + 4] = dipy_v[14];
-    sh[(1 * clmax + 6) * clmax + 6] = dipy_v[15];
-    sh[(1 * clmax + 6) * clmax + 5] = dipy_v[16];
-    sh[(1 * clmax + 6) * clmax + 4] = dipy_v[17];
-    sh[(1 * clmax + 6) * clmax + 3] = dipy_v[18];
-    sh[(1 * clmax + 6) * clmax + 2] = dipy_v[19];
-    sh[(1 * clmax + 6) * clmax + 1] = dipy_v[20];
-    sh[(0 * clmax + 6) * clmax + 0] = dipy_v[21];
-    sh[(0 * clmax + 6) * clmax + 1] = dipy_v[22];
-    sh[(0 * clmax + 6) * clmax + 2] = dipy_v[23];
-    sh[(0 * clmax + 6) * clmax + 3] = dipy_v[24];
-    sh[(0 * clmax + 6) * clmax + 4] = dipy_v[25];
-    sh[(0 * clmax + 6) * clmax + 5] = dipy_v[26];
-    sh[(0 * clmax + 6) * clmax + 6] = dipy_v[27];
-    sh[(1 * clmax + 8) * clmax + 8] = dipy_v[28];
-    sh[(1 * clmax + 8) * clmax + 7] = dipy_v[29];
-    sh[(1 * clmax + 8) * clmax + 6] = dipy_v[30];
-    sh[(1 * clmax + 8) * clmax + 5] = dipy_v[31];
-    sh[(1 * clmax + 8) * clmax + 4] = dipy_v[32];
-    sh[(1 * clmax + 8) * clmax + 3] = dipy_v[33];
-    sh[(1 * clmax + 8) * clmax + 2] = dipy_v[34];
-    sh[(1 * clmax + 8) * clmax + 1] = dipy_v[35];
-    sh[(0 * clmax + 8) * clmax + 0] = dipy_v[36];
-    sh[(0 * clmax + 8) * clmax + 1] = dipy_v[37];
-    sh[(0 * clmax + 8) * clmax + 2] = dipy_v[38];
-    sh[(0 * clmax + 8) * clmax + 3] = dipy_v[39];
-    sh[(0 * clmax + 8) * clmax + 4] = dipy_v[40];
-    sh[(0 * clmax + 8) * clmax + 5] = dipy_v[41];
-    sh[(0 * clmax + 8) * clmax + 6] = dipy_v[42];
-    sh[(0 * clmax + 8) * clmax + 7] = dipy_v[43];
-    sh[(0 * clmax + 8) * clmax + 8] = dipy_v[44];
-}
-
-void map_dipy_to_pysh_o6(double* dipy_v, double* sh) {
-    int clmax = 7;
-
-    sh[(0 * clmax + 0) * clmax + 0] = dipy_v[0];
-    sh[(1 * clmax + 2) * clmax + 2] = dipy_v[1];
-    sh[(1 * clmax + 2) * clmax + 1] = dipy_v[2];
-    sh[(0 * clmax + 2) * clmax + 0] = dipy_v[3];
-    sh[(0 * clmax + 2) * clmax + 1] = dipy_v[4];
-    sh[(0 * clmax + 2) * clmax + 2] = dipy_v[5];
-    sh[(1 * clmax + 4) * clmax + 4] = dipy_v[6];
-    sh[(1 * clmax + 4) * clmax + 3] = dipy_v[7];
-    sh[(1 * clmax + 4) * clmax + 2] = dipy_v[8];
-    sh[(1 * clmax + 4) * clmax + 1] = dipy_v[9];
-    sh[(0 * clmax + 4) * clmax + 0] = dipy_v[10];
-    sh[(0 * clmax + 4) * clmax + 1] = dipy_v[11];
-    sh[(0 * clmax + 4) * clmax + 2] = dipy_v[12];
-    sh[(0 * clmax + 4) * clmax + 3] = dipy_v[13];
-    sh[(0 * clmax + 4) * clmax + 4] = dipy_v[14];
-    sh[(1 * clmax + 6) * clmax + 6] = dipy_v[15];
-    sh[(1 * clmax + 6) * clmax + 5] = dipy_v[16];
-    sh[(1 * clmax + 6) * clmax + 4] = dipy_v[17];
-    sh[(1 * clmax + 6) * clmax + 3] = dipy_v[18];
-    sh[(1 * clmax + 6) * clmax + 2] = dipy_v[19];
-    sh[(1 * clmax + 6) * clmax + 1] = dipy_v[20];
-    sh[(0 * clmax + 6) * clmax + 0] = dipy_v[21];
-    sh[(0 * clmax + 6) * clmax + 1] = dipy_v[22];
-    sh[(0 * clmax + 6) * clmax + 2] = dipy_v[23];
-    sh[(0 * clmax + 6) * clmax + 3] = dipy_v[24];
-    sh[(0 * clmax + 6) * clmax + 4] = dipy_v[25];
-    sh[(0 * clmax + 6) * clmax + 5] = dipy_v[26];
-    sh[(0 * clmax + 6) * clmax + 6] = dipy_v[27];
-}
-
-void map_dipy_to_pysh_o4(double* dipy_v, double* sh) {
-    int clmax = 5;
-
-    sh[(0 * clmax + 0) * clmax + 0] = dipy_v[0];
-    sh[(1 * clmax + 2) * clmax + 2] = dipy_v[1];
-    sh[(1 * clmax + 2) * clmax + 1] = dipy_v[2];
-    sh[(0 * clmax + 2) * clmax + 0] = dipy_v[3];
-    sh[(0 * clmax + 2) * clmax + 1] = dipy_v[4];
-    sh[(0 * clmax + 2) * clmax + 2] = dipy_v[5];
-    sh[(1 * clmax + 4) * clmax + 4] = dipy_v[6];
-    sh[(1 * clmax + 4) * clmax + 3] = dipy_v[7];
-    sh[(1 * clmax + 4) * clmax + 2] = dipy_v[8];
-    sh[(1 * clmax + 4) * clmax + 1] = dipy_v[9];
-    sh[(0 * clmax + 4) * clmax + 0] = dipy_v[10];
-    sh[(0 * clmax + 4) * clmax + 1] = dipy_v[11];
-    sh[(0 * clmax + 4) * clmax + 2] = dipy_v[12];
-    sh[(0 * clmax + 4) * clmax + 3] = dipy_v[13];
-    sh[(0 * clmax + 4) * clmax + 4] = dipy_v[14];
-}
-
+//void map_pysh_to_dipy_o8(double* sh, double* dipy_v) {
+//    int clmax = 9;
+//
+//    dipy_v[0] =  sh[(0 * clmax + 0) * clmax + 0];
+//    dipy_v[1] =  sh[(1 * clmax + 2) * clmax + 2];
+//    dipy_v[2] =  sh[(1 * clmax + 2) * clmax + 1];
+//    dipy_v[3] =  sh[(0 * clmax + 2) * clmax + 0];
+//    dipy_v[4] =  sh[(0 * clmax + 2) * clmax + 1];
+//    dipy_v[5] =  sh[(0 * clmax + 2) * clmax + 2];
+//    dipy_v[6] =  sh[(1 * clmax + 4) * clmax + 4];
+//    dipy_v[7] =  sh[(1 * clmax + 4) * clmax + 3];
+//    dipy_v[8] =  sh[(1 * clmax + 4) * clmax + 2];
+//    dipy_v[9] =  sh[(1 * clmax + 4) * clmax + 1];
+//    dipy_v[10] = sh[(0 * clmax + 4) * clmax + 0];
+//    dipy_v[11] = sh[(0 * clmax + 4) * clmax + 1];
+//    dipy_v[12] = sh[(0 * clmax + 4) * clmax + 2];
+//    dipy_v[13] = sh[(0 * clmax + 4) * clmax + 3];
+//    dipy_v[14] = sh[(0 * clmax + 4) * clmax + 4];
+//    dipy_v[15] = sh[(1 * clmax + 6) * clmax + 6];
+//    dipy_v[16] = sh[(1 * clmax + 6) * clmax + 5];
+//    dipy_v[17] = sh[(1 * clmax + 6) * clmax + 4];
+//    dipy_v[18] = sh[(1 * clmax + 6) * clmax + 3];
+//    dipy_v[19] = sh[(1 * clmax + 6) * clmax + 2];
+//    dipy_v[20] = sh[(1 * clmax + 6) * clmax + 1];
+//    dipy_v[21] = sh[(0 * clmax + 6) * clmax + 0];
+//    dipy_v[22] = sh[(0 * clmax + 6) * clmax + 1];
+//    dipy_v[23] = sh[(0 * clmax + 6) * clmax + 2];
+//    dipy_v[24] = sh[(0 * clmax + 6) * clmax + 3];
+//    dipy_v[25] = sh[(0 * clmax + 6) * clmax + 4];
+//    dipy_v[26] = sh[(0 * clmax + 6) * clmax + 5];
+//    dipy_v[27] = sh[(0 * clmax + 6) * clmax + 6];
+//    dipy_v[28] = sh[(1 * clmax + 8) * clmax + 8];
+//    dipy_v[29] = sh[(1 * clmax + 8) * clmax + 7];
+//    dipy_v[30] = sh[(1 * clmax + 8) * clmax + 6];
+//    dipy_v[31] = sh[(1 * clmax + 8) * clmax + 5];
+//    dipy_v[32] = sh[(1 * clmax + 8) * clmax + 4];
+//    dipy_v[33] = sh[(1 * clmax + 8) * clmax + 3];
+//    dipy_v[34] = sh[(1 * clmax + 8) * clmax + 2];
+//    dipy_v[35] = sh[(1 * clmax + 8) * clmax + 1];
+//    dipy_v[36] = sh[(0 * clmax + 8) * clmax + 0];
+//    dipy_v[37] = sh[(0 * clmax + 8) * clmax + 1];
+//    dipy_v[38] = sh[(0 * clmax + 8) * clmax + 2];
+//    dipy_v[39] = sh[(0 * clmax + 8) * clmax + 3];
+//    dipy_v[40] = sh[(0 * clmax + 8) * clmax + 4];
+//    dipy_v[41] = sh[(0 * clmax + 8) * clmax + 5];
+//    dipy_v[42] = sh[(0 * clmax + 8) * clmax + 6];
+//    dipy_v[43] = sh[(0 * clmax + 8) * clmax + 7];
+//    dipy_v[44] = sh[(0 * clmax + 8) * clmax + 8];
+//}
+//
+//void map_pysh_to_dipy_o6(double* sh, double* dipy_v) {
+//    int clmax = 7;
+//
+//    dipy_v[0] =  sh[(0 * clmax + 0) * clmax + 0];
+//    dipy_v[1] =  sh[(1 * clmax + 2) * clmax + 2];
+//    dipy_v[2] =  sh[(1 * clmax + 2) * clmax + 1];
+//    dipy_v[3] =  sh[(0 * clmax + 2) * clmax + 0];
+//    dipy_v[4] =  sh[(0 * clmax + 2) * clmax + 1];
+//    dipy_v[5] =  sh[(0 * clmax + 2) * clmax + 2];
+//    dipy_v[6] =  sh[(1 * clmax + 4) * clmax + 4];
+//    dipy_v[7] =  sh[(1 * clmax + 4) * clmax + 3];
+//    dipy_v[8] =  sh[(1 * clmax + 4) * clmax + 2];
+//    dipy_v[9] =  sh[(1 * clmax + 4) * clmax + 1];
+//    dipy_v[10] = sh[(0 * clmax + 4) * clmax + 0];
+//    dipy_v[11] = sh[(0 * clmax + 4) * clmax + 1];
+//    dipy_v[12] = sh[(0 * clmax + 4) * clmax + 2];
+//    dipy_v[13] = sh[(0 * clmax + 4) * clmax + 3];
+//    dipy_v[14] = sh[(0 * clmax + 4) * clmax + 4];
+//    dipy_v[15] = sh[(1 * clmax + 6) * clmax + 6];
+//    dipy_v[16] = sh[(1 * clmax + 6) * clmax + 5];
+//    dipy_v[17] = sh[(1 * clmax + 6) * clmax + 4];
+//    dipy_v[18] = sh[(1 * clmax + 6) * clmax + 3];
+//    dipy_v[19] = sh[(1 * clmax + 6) * clmax + 2];
+//    dipy_v[20] = sh[(1 * clmax + 6) * clmax + 1];
+//    dipy_v[21] = sh[(0 * clmax + 6) * clmax + 0];
+//    dipy_v[22] = sh[(0 * clmax + 6) * clmax + 1];
+//    dipy_v[23] = sh[(0 * clmax + 6) * clmax + 2];
+//    dipy_v[24] = sh[(0 * clmax + 6) * clmax + 3];
+//    dipy_v[25] = sh[(0 * clmax + 6) * clmax + 4];
+//    dipy_v[26] = sh[(0 * clmax + 6) * clmax + 5];
+//    dipy_v[27] = sh[(0 * clmax + 6) * clmax + 6];
+//}
+//
+//void map_pysh_to_dipy_o4(double* sh, double* dipy_v) {
+//    int clmax = 5;
+//
+//    dipy_v[0] =  sh[(0 * clmax + 0) * clmax + 0];
+//    dipy_v[1] =  sh[(1 * clmax + 2) * clmax + 2];
+//    dipy_v[2] =  sh[(1 * clmax + 2) * clmax + 1];
+//    dipy_v[3] =  sh[(0 * clmax + 2) * clmax + 0];
+//    dipy_v[4] =  sh[(0 * clmax + 2) * clmax + 1];
+//    dipy_v[5] =  sh[(0 * clmax + 2) * clmax + 2];
+//    dipy_v[6] =  sh[(1 * clmax + 4) * clmax + 4];
+//    dipy_v[7] =  sh[(1 * clmax + 4) * clmax + 3];
+//    dipy_v[8] =  sh[(1 * clmax + 4) * clmax + 2];
+//    dipy_v[9] =  sh[(1 * clmax + 4) * clmax + 1];
+//    dipy_v[10] = sh[(0 * clmax + 4) * clmax + 0];
+//    dipy_v[11] = sh[(0 * clmax + 4) * clmax + 1];
+//    dipy_v[12] = sh[(0 * clmax + 4) * clmax + 2];
+//    dipy_v[13] = sh[(0 * clmax + 4) * clmax + 3];
+//    dipy_v[14] = sh[(0 * clmax + 4) * clmax + 4];
+//}
+//void map_pysh_to_dipy_o4_scaled(double scaling, double* sh, double* dipy_v, int spacing) {
+//    int clmax = 5;
+//    dipy_v[spacing * 0] =  scaling * sh[(0 * clmax + 0) * clmax + 0];
+//    dipy_v[spacing * 1] =  scaling * sh[(1 * clmax + 2) * clmax + 2];
+//    dipy_v[spacing * 2] =  scaling * sh[(1 * clmax + 2) * clmax + 1];
+//    dipy_v[spacing * 3] =  scaling * sh[(0 * clmax + 2) * clmax + 0];
+//    dipy_v[spacing * 4] =  scaling * sh[(0 * clmax + 2) * clmax + 1];
+//    dipy_v[spacing * 5] =  scaling * sh[(0 * clmax + 2) * clmax + 2];
+//    dipy_v[spacing * 6] =  scaling * sh[(1 * clmax + 4) * clmax + 4];
+//    dipy_v[spacing * 7] =  scaling * sh[(1 * clmax + 4) * clmax + 3];
+//    dipy_v[spacing * 8] =  scaling * sh[(1 * clmax + 4) * clmax + 2];
+//    dipy_v[spacing * 9] =  scaling * sh[(1 * clmax + 4) * clmax + 1];
+//    dipy_v[spacing * 10] = scaling * sh[(0 * clmax + 4) * clmax + 0];
+//    dipy_v[spacing * 11] = scaling * sh[(0 * clmax + 4) * clmax + 1];
+//    dipy_v[spacing * 12] = scaling * sh[(0 * clmax + 4) * clmax + 2];
+//    dipy_v[spacing * 13] = scaling * sh[(0 * clmax + 4) * clmax + 3];
+//    dipy_v[spacing * 14] = scaling * sh[(0 * clmax + 4) * clmax + 4];
+//}
+//
+//void map_dipy_to_pysh_o8(double* dipy_v, double* sh) {
+//    int clmax = 9;
+//
+//    sh[(0 * clmax + 0) * clmax + 0] = dipy_v[0];
+//    sh[(1 * clmax + 2) * clmax + 2] = dipy_v[1];
+//    sh[(1 * clmax + 2) * clmax + 1] = dipy_v[2];
+//    sh[(0 * clmax + 2) * clmax + 0] = dipy_v[3];
+//    sh[(0 * clmax + 2) * clmax + 1] = dipy_v[4];
+//    sh[(0 * clmax + 2) * clmax + 2] = dipy_v[5];
+//    sh[(1 * clmax + 4) * clmax + 4] = dipy_v[6];
+//    sh[(1 * clmax + 4) * clmax + 3] = dipy_v[7];
+//    sh[(1 * clmax + 4) * clmax + 2] = dipy_v[8];
+//    sh[(1 * clmax + 4) * clmax + 1] = dipy_v[9];
+//    sh[(0 * clmax + 4) * clmax + 0] = dipy_v[10];
+//    sh[(0 * clmax + 4) * clmax + 1] = dipy_v[11];
+//    sh[(0 * clmax + 4) * clmax + 2] = dipy_v[12];
+//    sh[(0 * clmax + 4) * clmax + 3] = dipy_v[13];
+//    sh[(0 * clmax + 4) * clmax + 4] = dipy_v[14];
+//    sh[(1 * clmax + 6) * clmax + 6] = dipy_v[15];
+//    sh[(1 * clmax + 6) * clmax + 5] = dipy_v[16];
+//    sh[(1 * clmax + 6) * clmax + 4] = dipy_v[17];
+//    sh[(1 * clmax + 6) * clmax + 3] = dipy_v[18];
+//    sh[(1 * clmax + 6) * clmax + 2] = dipy_v[19];
+//    sh[(1 * clmax + 6) * clmax + 1] = dipy_v[20];
+//    sh[(0 * clmax + 6) * clmax + 0] = dipy_v[21];
+//    sh[(0 * clmax + 6) * clmax + 1] = dipy_v[22];
+//    sh[(0 * clmax + 6) * clmax + 2] = dipy_v[23];
+//    sh[(0 * clmax + 6) * clmax + 3] = dipy_v[24];
+//    sh[(0 * clmax + 6) * clmax + 4] = dipy_v[25];
+//    sh[(0 * clmax + 6) * clmax + 5] = dipy_v[26];
+//    sh[(0 * clmax + 6) * clmax + 6] = dipy_v[27];
+//    sh[(1 * clmax + 8) * clmax + 8] = dipy_v[28];
+//    sh[(1 * clmax + 8) * clmax + 7] = dipy_v[29];
+//    sh[(1 * clmax + 8) * clmax + 6] = dipy_v[30];
+//    sh[(1 * clmax + 8) * clmax + 5] = dipy_v[31];
+//    sh[(1 * clmax + 8) * clmax + 4] = dipy_v[32];
+//    sh[(1 * clmax + 8) * clmax + 3] = dipy_v[33];
+//    sh[(1 * clmax + 8) * clmax + 2] = dipy_v[34];
+//    sh[(1 * clmax + 8) * clmax + 1] = dipy_v[35];
+//    sh[(0 * clmax + 8) * clmax + 0] = dipy_v[36];
+//    sh[(0 * clmax + 8) * clmax + 1] = dipy_v[37];
+//    sh[(0 * clmax + 8) * clmax + 2] = dipy_v[38];
+//    sh[(0 * clmax + 8) * clmax + 3] = dipy_v[39];
+//    sh[(0 * clmax + 8) * clmax + 4] = dipy_v[40];
+//    sh[(0 * clmax + 8) * clmax + 5] = dipy_v[41];
+//    sh[(0 * clmax + 8) * clmax + 6] = dipy_v[42];
+//    sh[(0 * clmax + 8) * clmax + 7] = dipy_v[43];
+//    sh[(0 * clmax + 8) * clmax + 8] = dipy_v[44];
+//}
+//
+//void map_dipy_to_pysh_o6(double* dipy_v, double* sh) {
+//    int clmax = 7;
+//
+//    sh[(0 * clmax + 0) * clmax + 0] = dipy_v[0];
+//    sh[(1 * clmax + 2) * clmax + 2] = dipy_v[1];
+//    sh[(1 * clmax + 2) * clmax + 1] = dipy_v[2];
+//    sh[(0 * clmax + 2) * clmax + 0] = dipy_v[3];
+//    sh[(0 * clmax + 2) * clmax + 1] = dipy_v[4];
+//    sh[(0 * clmax + 2) * clmax + 2] = dipy_v[5];
+//    sh[(1 * clmax + 4) * clmax + 4] = dipy_v[6];
+//    sh[(1 * clmax + 4) * clmax + 3] = dipy_v[7];
+//    sh[(1 * clmax + 4) * clmax + 2] = dipy_v[8];
+//    sh[(1 * clmax + 4) * clmax + 1] = dipy_v[9];
+//    sh[(0 * clmax + 4) * clmax + 0] = dipy_v[10];
+//    sh[(0 * clmax + 4) * clmax + 1] = dipy_v[11];
+//    sh[(0 * clmax + 4) * clmax + 2] = dipy_v[12];
+//    sh[(0 * clmax + 4) * clmax + 3] = dipy_v[13];
+//    sh[(0 * clmax + 4) * clmax + 4] = dipy_v[14];
+//    sh[(1 * clmax + 6) * clmax + 6] = dipy_v[15];
+//    sh[(1 * clmax + 6) * clmax + 5] = dipy_v[16];
+//    sh[(1 * clmax + 6) * clmax + 4] = dipy_v[17];
+//    sh[(1 * clmax + 6) * clmax + 3] = dipy_v[18];
+//    sh[(1 * clmax + 6) * clmax + 2] = dipy_v[19];
+//    sh[(1 * clmax + 6) * clmax + 1] = dipy_v[20];
+//    sh[(0 * clmax + 6) * clmax + 0] = dipy_v[21];
+//    sh[(0 * clmax + 6) * clmax + 1] = dipy_v[22];
+//    sh[(0 * clmax + 6) * clmax + 2] = dipy_v[23];
+//    sh[(0 * clmax + 6) * clmax + 3] = dipy_v[24];
+//    sh[(0 * clmax + 6) * clmax + 4] = dipy_v[25];
+//    sh[(0 * clmax + 6) * clmax + 5] = dipy_v[26];
+//    sh[(0 * clmax + 6) * clmax + 6] = dipy_v[27];
+//}
+//
+//void map_dipy_to_pysh_o4(double* dipy_v, double* sh) {
+//    int clmax = 5;
+//
+//    sh[(0 * clmax + 0) * clmax + 0] = dipy_v[0];
+//    sh[(1 * clmax + 2) * clmax + 2] = dipy_v[1];
+//    sh[(1 * clmax + 2) * clmax + 1] = dipy_v[2];
+//    sh[(0 * clmax + 2) * clmax + 0] = dipy_v[3];
+//    sh[(0 * clmax + 2) * clmax + 1] = dipy_v[4];
+//    sh[(0 * clmax + 2) * clmax + 2] = dipy_v[5];
+//    sh[(1 * clmax + 4) * clmax + 4] = dipy_v[6];
+//    sh[(1 * clmax + 4) * clmax + 3] = dipy_v[7];
+//    sh[(1 * clmax + 4) * clmax + 2] = dipy_v[8];
+//    sh[(1 * clmax + 4) * clmax + 1] = dipy_v[9];
+//    sh[(0 * clmax + 4) * clmax + 0] = dipy_v[10];
+//    sh[(0 * clmax + 4) * clmax + 1] = dipy_v[11];
+//    sh[(0 * clmax + 4) * clmax + 2] = dipy_v[12];
+//    sh[(0 * clmax + 4) * clmax + 3] = dipy_v[13];
+//    sh[(0 * clmax + 4) * clmax + 4] = dipy_v[14];
+//}
+//
 void sh_watson_coeffs(double kappa, double* dipy_v, int lmax) {
     double Fk = dawson(sqrt(kappa));
     dipy_v[0] = 0.28209479177387814;// = 1 / (4*pi) * 2 * sqrt(M_PI)
@@ -898,664 +899,665 @@ void sh_watson_coeffs(double kappa, double* dipy_v, int lmax) {
         dipy_v[36] = 1 / (4*M_PI) * M_PI / (512.0 * pow(kappa,4)) * ((3*sqrt(kappa)*(2*kappa*(2*kappa*(62*kappa-1925)+15015)-225225.0)) / Fk + 35*(8*kappa*(kappa*(2*kappa*(kappa + 18)+297)+1287)+19305)) * sqrt(19 / (4*M_PI));
     }
 }
-
-double watson_minimizer(const double* x, double* signal, double* est_signal, double* dipy_v, double* pysh_v, double* rot_pysh_v, double* angles, double* dj, int num_of_dir, int lmax, int no_spread) {
-    double weight, kappa, diff, peak_value, loss = 0;
-    int clmax = lmax+1;
-    int cimax = (lmax*(lmax+1))/2+lmax+1;
-
-    // reset arrays
-    for (int j = 0; j < cimax; j++) {
-        dipy_v[j] = 0.0;
-    }
-
-    for (int j = 0; j < cimax; j++) {
-        est_signal[j] = 0.0;
-    }
-
-    for (int j = 0; j < 2; j++) {
-        for (int k = 0; k < clmax; k++) {
-            for (int l = 0; l < clmax; l++) {
-                pysh_v[(j * clmax + k) * clmax + l] = 0.0;
-            }
-        }
-    }
-
-    // compute loss for all distributions
-    for (int i = 0; i < num_of_dir; i++) {
-        weight = abs(x[i*4]);
-        kappa = exp(x[i*4+1]);
-        angles[1] = x[i*4+2];
-        angles[2] = x[i*4+3];
-
-        // reset coefficients for next distribution
-        for (int j = 0; j < cimax; j++) {
-            dipy_v[j] = 0.0;
-        }
-        
-        // set watson coefficients if we want to fit watson, else we only fit the lowrank tensors
-        if (no_spread == 0) {
-            sh_watson_coeffs(kappa, dipy_v, lmax);
-        } else {
-            if (lmax >= 4) {
-                dipy_v[0] = dipy_v[3] = dipy_v[10] = 1;
-                if (lmax >= 6) {
-                    dipy_v[21] = 1;
-                    if (lmax >= 8) {
-                        dipy_v[36] = 1;
-                    }
-                }
-            }
-        }
-
-        // convolution of rank1 tensor in RH with watson in SH
-        if (lmax == 4) {
-            dipy_v[0] *= rank1_rh_o4[0];
-            dipy_v[3] *= rank1_rh_o4[1];
-            dipy_v[10] *= rank1_rh_o4[2];
-        } else if (lmax == 6) {
-            dipy_v[0] *= rank1_rh_o6[0];
-            dipy_v[3] *= rank1_rh_o6[1];
-            dipy_v[10] *= rank1_rh_o6[2];
-            dipy_v[21] *= rank1_rh_o6[3];
-        } else if (lmax == 8) {
-            dipy_v[0] *= rank1_rh_o8[0];
-            dipy_v[3] *= rank1_rh_o8[1];
-            dipy_v[10] *= rank1_rh_o8[2];
-            dipy_v[21] *= rank1_rh_o8[3];
-            dipy_v[36] *= rank1_rh_o8[4];
-        }
-
-        // rotate the distribution
-        if (lmax == 4) {
-            map_dipy_to_pysh_o4(dipy_v, pysh_v);
-            SHRotateRealCoef(rot_pysh_v, pysh_v, lmax, angles, &dj_o4[0][0][0]);
-            map_pysh_to_dipy_o4(rot_pysh_v, dipy_v);
-        } else if (lmax == 6) {
-            map_dipy_to_pysh_o6(dipy_v, pysh_v);
-            SHRotateRealCoef(rot_pysh_v, pysh_v, lmax, angles, &dj_o6[0][0][0]);
-            map_pysh_to_dipy_o6(rot_pysh_v, dipy_v);
-        } else if (lmax == 8) {
-            map_dipy_to_pysh_o8(dipy_v, pysh_v);
-            SHRotateRealCoef(rot_pysh_v, pysh_v, lmax, angles, &dj_o8[0][0][0]);
-            map_pysh_to_dipy_o8(rot_pysh_v, dipy_v);
-        }
-
-        // add to combined signal
-        for (int j = 0; j < cimax; j++) {
-            est_signal[j] += dipy_v[j] * weight;
-        }
-    }
-
-    // compute loss
-    for (int i = 0; i < cimax; i++) {
-        diff = signal[i] - est_signal[i];
-        loss += diff * diff;
-    }
-
-    return loss;
-}
-
-struct WatsonSHApprox {
-    WatsonSHApprox(double* local_signal, double* local_est_signal, double* local_dipy_v, double* local_pysh_v, double* local_rot_pysh_v, double* local_angles_v, double* local_dj, int local_num_of_dir, int local_lmax, int local_no_spread) : 
-                 local_signal(local_signal), local_est_signal(local_est_signal), local_dipy_v(local_dipy_v), local_pysh_v(local_pysh_v), local_rot_pysh_v(local_rot_pysh_v), local_angles_v(local_angles_v), local_dj(local_dj), local_num_of_dir(local_num_of_dir), local_lmax(local_lmax), local_no_spread(local_no_spread) {}
-    
-    bool operator()(const double* parameters, double* cost) const {
-        cost[0] = watson_minimizer(parameters, local_signal, local_est_signal, local_dipy_v, local_pysh_v, local_rot_pysh_v, local_angles_v, local_dj, local_num_of_dir, local_lmax, local_no_spread);
-        return true;
-    }
-    private:
-        double* local_signal;
-        double* local_est_signal;
-        double* local_dipy_v;
-        double* local_pysh_v;
-        double* local_rot_pysh_v;
-        double* local_angles_v;
-        double* local_dj;
-        int local_num_of_dir;
-        int local_lmax;
-        int local_no_spread;
-};
-
-// watson minimization at sh order 4
-void minimize_watson_mult_o4(double* parameters, double* signal_p, double* est_signal_p, double* dipy_v_p, double* pysh_v_p, double* rot_pysh_v_p, double* angles_v_p, double* loss_p, int amount, int num_of_dir_p, int no_spread) {
-    int local_lmax = 4;
-    ProgressBar pg;
-    
-    if (amount != 1) {
-        // set amount of threads
-        int nProcessors = omp_get_max_threads();
-        omp_set_num_threads(nProcessors);
-        
-        // init progressbar
-        pg.start(amount);
-
-        // parallel fitting
-        #pragma omp parallel for schedule(static)
-        for (int i=0; i<amount; i++) {
-            pg.update(i);
-
-            ceres::GradientProblemSolver::Options options;
-            options.minimizer_progress_to_stdout = false;
-            options.logging_type = ceres::SILENT;
-
-            ceres::GradientProblemSolver::Summary summary;
-
-            constexpr int kNumParameters2 = 8;
-            constexpr int kNumParameters3 = 12;
-
-            if (num_of_dir_p == 2) {
-                // initialize ceres optimizer for two distributions
-                ceres::GradientProblem problem(
-                    new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, kNumParameters2>(
-                        new WatsonSHApprox( &signal_p[i * 15], 
-                                            &est_signal_p[i * 15], 
-                                            &dipy_v_p[i * 15], 
-                                            &pysh_v_p[i * 2 * 5 * 5], 
-                                            &rot_pysh_v_p[i * 2 * 5 * 5], 
-                                            &angles_v_p[i * 3], 
-                                            &dj_o4[0][0][0], 
-                                            num_of_dir_p,
-                                            local_lmax,
-                                            no_spread)
-                        )
-                    );
-
-                // run optimization
-                ceres::Solve(options, problem, &parameters[i * 8], &summary);
-            } else {
-                // initialize ceres optimizer for three distributions
-                ceres::GradientProblem problem(
-                    new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, kNumParameters3>(
-                        new WatsonSHApprox( &signal_p[i * 15], 
-                                            &est_signal_p[i * 15], 
-                                            &dipy_v_p[i * 15], 
-                                            &pysh_v_p[i * 2 * 5 * 5], 
-                                            &rot_pysh_v_p[i * 2 * 5 * 5], 
-                                            &angles_v_p[i * 3], 
-                                            &dj_o4[0][0][0], 
-                                            num_of_dir_p,
-                                            local_lmax,
-                                            no_spread)
-                        )
-                    );
-
-                // run optimization
-                ceres::Solve(options, problem, &parameters[i * 12], &summary);
-            }
-
-            loss_p[i] = summary.final_cost;
-        }
-    } else {
-        ceres::GradientProblemSolver::Options options;
-        options.minimizer_progress_to_stdout = false;
-        options.logging_type = ceres::SILENT;
-
-        ceres::GradientProblemSolver::Summary summary;
-
-        constexpr int kNumParameters2 = 8;
-        constexpr int kNumParameters3 = 12;
-        
-        if (num_of_dir_p == 2) {
-            // initialize ceres optimizer for two distributions
-            ceres::GradientProblem problem(
-                new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, kNumParameters2>(
-                    new WatsonSHApprox( &signal_p[0], 
-                                        &est_signal_p[0], 
-                                        &dipy_v_p[0], 
-                                        &pysh_v_p[0], 
-                                        &rot_pysh_v_p[0], 
-                                        &angles_v_p[0], 
-                                        &dj_o4[0][0][0], 
-                                        num_of_dir_p,
-                                        local_lmax,
-                                        no_spread)
-                    )
-                );
-
-            // run optimization
-            ceres::Solve(options, problem, &parameters[0], &summary);
-        } else {
-            // initialize ceres optimizer for three distributions
-            ceres::GradientProblem problem(
-                new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, kNumParameters3>(
-                    new WatsonSHApprox( &signal_p[0], 
-                                        &est_signal_p[0], 
-                                        &dipy_v_p[0], 
-                                        &pysh_v_p[0], 
-                                        &rot_pysh_v_p[0], 
-                                        &angles_v_p[0], 
-                                        &dj_o4[0][0][0], 
-                                        num_of_dir_p,
-                                        local_lmax,
-                                        no_spread)
-                    )
-                );
-
-            // run optimization
-            ceres::Solve(options, problem, &parameters[0], &summary);
-        }
-
-        loss_p[0] = summary.final_cost;
-    }
-}
-
-// watson minimization at sh order 6
-void minimize_watson_mult_o6(double* parameters, double* signal_p, double* est_signal_p, double* dipy_v_p, double* pysh_v_p, double* rot_pysh_v_p, double* angles_v_p, double* loss_p, int amount, int num_of_dir_p, int no_spread) {
-    int local_lmax = 6;
-    ProgressBar pg;
-    
-    if (amount != 1) {
-        // set amount of threads
-        int nProcessors = omp_get_max_threads();
-        omp_set_num_threads(nProcessors);
-
-        pg.start(amount);
-
-        #pragma omp parallel for schedule(static)
-        for (int i=0; i<amount; i++) {
-            pg.update(i);
-
-            ceres::GradientProblemSolver::Options options;
-            options.minimizer_progress_to_stdout = false;
-            options.logging_type = ceres::SILENT;
-
-            ceres::GradientProblemSolver::Summary summary;
-
-            constexpr int kNumParameters2 = 8;
-            constexpr int kNumParameters3 = 12;
-
-            if (num_of_dir_p == 2) {
-                // initialize ceres optimizer for two distributions
-                ceres::GradientProblem problem(
-                    new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, kNumParameters2>(
-                        new WatsonSHApprox( &signal_p[i * 28], 
-                                            &est_signal_p[i * 28], 
-                                            &dipy_v_p[i * 28], 
-                                            &pysh_v_p[i * 2 * 7 * 7], 
-                                            &rot_pysh_v_p[i * 2 * 7 * 7], 
-                                            &angles_v_p[i * 3], 
-                                            &dj_o6[0][0][0], 
-                                            num_of_dir_p,
-                                            local_lmax,
-                                            no_spread)
-                        )
-                    );
-
-                // run optimization
-                ceres::Solve(options, problem, &parameters[i * 8], &summary);
-            } else {
-                // initialize ceres optimizer for three distributions
-                ceres::GradientProblem problem(
-                    new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, kNumParameters3>(
-                        new WatsonSHApprox( &signal_p[i * 28], 
-                                            &est_signal_p[i * 28], 
-                                            &dipy_v_p[i * 28], 
-                                            &pysh_v_p[i * 2 * 7 * 7], 
-                                            &rot_pysh_v_p[i * 2 * 7 * 7], 
-                                            &angles_v_p[i * 3], 
-                                            &dj_o6[0][0][0], 
-                                            num_of_dir_p,
-                                            local_lmax,
-                                            no_spread)
-                        )
-                    );
-
-                // run optimization
-                ceres::Solve(options, problem, &parameters[i * 12], &summary);
-            }
-
-            loss_p[i] = summary.final_cost;
-        }
-    } else {
-        ceres::GradientProblemSolver::Options options;
-        options.minimizer_progress_to_stdout = false;
-        options.logging_type = ceres::SILENT;
-
-        ceres::GradientProblemSolver::Summary summary;
-
-        constexpr int kNumParameters2 = 8;
-        constexpr int kNumParameters3 = 12;
-        
-        if (num_of_dir_p == 2) {
-            // initialize ceres optimizer for two distributions
-            ceres::GradientProblem problem(
-                new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, kNumParameters2>(
-                    new WatsonSHApprox( &signal_p[0], 
-                                        &est_signal_p[0], 
-                                        &dipy_v_p[0], 
-                                        &pysh_v_p[0], 
-                                        &rot_pysh_v_p[0], 
-                                        &angles_v_p[0], 
-                                        &dj_o6[0][0][0], 
-                                        num_of_dir_p,
-                                        local_lmax,
-                                        no_spread)
-                    )
-                );
-
-            // run optimization
-            ceres::Solve(options, problem, &parameters[0], &summary);
-        } else {
-            // initialize ceres optimizer for three distributions
-            ceres::GradientProblem problem(
-                new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, kNumParameters3>(
-                    new WatsonSHApprox( &signal_p[0], 
-                                        &est_signal_p[0], 
-                                        &dipy_v_p[0], 
-                                        &pysh_v_p[0], 
-                                        &rot_pysh_v_p[0], 
-                                        &angles_v_p[0], 
-                                        &dj_o6[0][0][0], 
-                                        num_of_dir_p,
-                                        local_lmax,
-                                        no_spread)
-                    )
-                );
-            
-            // run optimization
-            ceres::Solve(options, problem, &parameters[0], &summary);
-        }
-
-        loss_p[0] = summary.final_cost;
-    }
-}
-
-// watson minimization at sh order 8
-void minimize_watson_mult_o8(double* parameters, double* signal_p, double* est_signal_p, double* dipy_v_p, double* pysh_v_p, double* rot_pysh_v_p, double* angles_v_p, double* loss_p, int amount, int num_of_dir_p, int no_spread) {
-    int local_lmax = 8;
-    ProgressBar pg;
-    
-    if (amount != 1) {
-        // set amount of threads
-        int nProcessors = omp_get_max_threads();
-        omp_set_num_threads(nProcessors);
-
-        pg.start(amount);
-
-        #pragma omp parallel for schedule(static)
-        for (int i=0; i<amount; i++) {
-            pg.update(i);
-
-            ceres::GradientProblemSolver::Options options;
-            options.minimizer_progress_to_stdout = false;
-            options.logging_type = ceres::SILENT;
-
-            ceres::GradientProblemSolver::Summary summary;
-
-            constexpr int kNumParameters2 = 8;
-            constexpr int kNumParameters3 = 12;
-
-            if (num_of_dir_p == 2) {
-                // initialize ceres optimizer for two distributions
-                ceres::GradientProblem problem(
-                    new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, 8>(
-                        new WatsonSHApprox( &signal_p[i * 45], 
-                                            &est_signal_p[i * 45], 
-                                            &dipy_v_p[i * 45], 
-                                            &pysh_v_p[i * 2 * 9 * 9], 
-                                            &rot_pysh_v_p[i * 2 * 9 * 9], 
-                                            &angles_v_p[i * 3], 
-                                            &dj_o8[0][0][0], 
-                                            num_of_dir_p,
-                                            local_lmax,
-                                            no_spread)
-                        )
-                    );
-                
-                // run optimization
-                ceres::Solve(options, problem, &parameters[i * 8], &summary);
-            } else {
-                // initialize ceres optimizer for three distributions
-                ceres::GradientProblem problem(
-                    new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, 12>(
-                        new WatsonSHApprox( &signal_p[i * 45], 
-                                            &est_signal_p[i * 45], 
-                                            &dipy_v_p[i * 45], 
-                                            &pysh_v_p[i * 2 * 9 * 9], 
-                                            &rot_pysh_v_p[i * 2 * 9 * 9], 
-                                            &angles_v_p[i * 3], 
-                                            &dj_o8[0][0][0], 
-                                            num_of_dir_p,
-                                            local_lmax,
-                                            no_spread)
-                        )
-                    );
-
-                // run optimization
-                ceres::Solve(options, problem, &parameters[i * 12], &summary);
-            }
-
-            loss_p[i] = summary.final_cost;
-        }
-    } else {
-        ceres::GradientProblemSolver::Options options;
-        options.minimizer_progress_to_stdout = false;
-        options.logging_type = ceres::SILENT;
-
-        ceres::GradientProblemSolver::Summary summary;
-
-        constexpr int kNumParameters2 = 8;
-        constexpr int kNumParameters3 = 12;
-        
-        if (num_of_dir_p == 2) {
-            // initialize ceres optimizer for two distributions
-            ceres::GradientProblem problem(
-                new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, kNumParameters2>(
-                    new WatsonSHApprox( &signal_p[0], 
-                                        &est_signal_p[0], 
-                                        &dipy_v_p[0], 
-                                        &pysh_v_p[0], 
-                                        &rot_pysh_v_p[0], 
-                                        &angles_v_p[0], 
-                                        &dj_o8[0][0][0], 
-                                        num_of_dir_p,
-                                        local_lmax,
-                                        no_spread)
-                    )
-                );
-            
-            // run optimization
-            ceres::Solve(options, problem, &parameters[0], &summary);
-        } else {
-            // initialize ceres optimizer for three distributions
-            ceres::GradientProblem problem(
-                new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, kNumParameters3>(
-                    new WatsonSHApprox( &signal_p[0], 
-                                        &est_signal_p[0], 
-                                        &dipy_v_p[0], 
-                                        &pysh_v_p[0], 
-                                        &rot_pysh_v_p[0], 
-                                        &angles_v_p[0], 
-                                        &dj_o8[0][0][0], 
-                                        num_of_dir_p,
-                                        local_lmax,
-                                        no_spread)
-                    )
-                );
-
-            // run optimization
-            ceres::Solve(options, problem, &parameters[0], &summary);
-        }
-
-        loss_p[0] = summary.final_cost;
-    }
-}
-
-// iterative optimization at sh order 4 - experimental
-void minimize_watson_mult_iterative_o4(double* parameters, double* signal_p, double* est_signal_p, double* dipy_v_p, double* pysh_v_p, double* rot_pysh_v_p, double* angles_v_p, double* dj_p, double* loss_p, int amount, int lmax_p, int num_of_dir_p) {
-    
-    // set amount of threads
-    int nProcessors = omp_get_max_threads();
-    //std::cout<<nProcessors<<std::endl;
-    omp_set_num_threads(nProcessors);
-
-    #pragma omp parallel for 
-    for (int i=0; i<amount; i++) {
-        ceres::GradientProblemSolver::Options options;
-        options.minimizer_progress_to_stdout = false;//true;
-        options.logging_type = ceres::SILENT;
-
-        ceres::GradientProblemSolver::Summary summary;
-
-        constexpr int kNumParameters = 4;
-
-        ceres::GradientProblem problem(
-            new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, kNumParameters>(
-                new WatsonSHApprox( &signal_p[i * 15], 
-                                    &est_signal_p[i * 15], 
-                                    &dipy_v_p[i * 15], 
-                                    &pysh_v_p[i * 2 * 5 * 5], 
-                                    &rot_pysh_v_p[i * 2 * 5 * 5], 
-                                    &angles_v_p[i * 3], 
-                                    &dj_o4[0][0][0], 
-                                    1,
-                                    4,
-                                    0)
-                )
-            );
-        
-        ceres::Solve(options, problem, &parameters[i * 12], &summary);
-
-        ceres::GradientProblemSolver::Options options2;
-        options2.minimizer_progress_to_stdout = false;//true;
-        options2.logging_type = ceres::SILENT;
-
-        ceres::GradientProblemSolver::Summary summary2;
-
-        constexpr int kNumParameters2 = 12;
-
-        ceres::GradientProblem problem2(
-            new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, kNumParameters2>(
-                new WatsonSHApprox( &signal_p[i * 15], 
-                                    &est_signal_p[i * 15], 
-                                    &dipy_v_p[i * 15], 
-                                    &pysh_v_p[i * 2 * 5 * 5], 
-                                    &rot_pysh_v_p[i * 2 * 5 * 5], 
-                                    &angles_v_p[i * 3], 
-                                    &dj_o4[0][0][0], 
-                                    num_of_dir_p,
-                                    4,
-                                    0)
-                )
-            );
-        
-        ceres::Solve(options2, problem2, &parameters[i * 12], &summary2);
-        
-        if (summary.final_cost > 0.4) {
-            //std::cout << summary.FullReport() << "\n";
-        }
-
-        loss_p[i] = summary2.final_cost;
-    }
-}
-
-void minimize_watson_mult_iterative2_o4(double* parameters, double* signal_p, double* est_signal_p, double* dipy_v_p, double* pysh_v_p, double* rot_pysh_v_p, double* angles_v_p, double* dj_p, double* loss_p, int amount, int lmax_p, int num_of_dir_p) {
-    // adaptive amount of directions depending on the loss
-    
-    // set amount of threads
-    int nProcessors = omp_get_max_threads();
-    //std::cout<<nProcessors<<std::endl;
-    omp_set_num_threads(nProcessors);
-
-    #pragma omp parallel for 
-    for (int i=0; i<amount; i++) {
-        ceres::GradientProblemSolver::Options options;
-        options.minimizer_progress_to_stdout = false;//true;
-        options.logging_type = ceres::SILENT;
-
-        ceres::GradientProblemSolver::Summary summary;
-
-        constexpr int kNumParameters = 4;
-
-        ceres::GradientProblem problem(
-            new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, kNumParameters>(
-                new WatsonSHApprox( &signal_p[i * 15], 
-                                    &est_signal_p[i * 15], 
-                                    &dipy_v_p[i * 15], 
-                                    &pysh_v_p[i * 2 * 5 * 5], 
-                                    &rot_pysh_v_p[i * 2 * 5 * 5], 
-                                    &angles_v_p[i * 3], 
-                                    &dj_o4[0][0][0], 
-                                    1,
-                                    4,
-                                    0)
-                )
-            );
-        
-        ceres::Solve(options, problem, &parameters[i * 12], &summary);
-
-        if (summary.final_cost < 0.01) {
-            // set weight of second and third direction to zero
-            parameters[i * 12 + 4] = 0;
-            parameters[i * 12 + 8] = 0;
-
-            loss_p[i] = summary.final_cost;
-        } else {
-
-            // loss after first direction too high, so continue with second direction
-
-            ceres::GradientProblemSolver::Options options2;
-            options2.minimizer_progress_to_stdout = false;//true;
-            options2.logging_type = ceres::SILENT;
-
-            ceres::GradientProblemSolver::Summary summary2;
-
-            constexpr int kNumParameters2 = 8;
-
-            ceres::GradientProblem problem2(
-                new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, kNumParameters2>(
-                    new WatsonSHApprox( &signal_p[i * 15], 
-                                        &est_signal_p[i * 15], 
-                                        &dipy_v_p[i * 15], 
-                                        &pysh_v_p[i * 2 * 5 * 5], 
-                                        &rot_pysh_v_p[i * 2 * 5 * 5], 
-                                        &angles_v_p[i * 3], 
-                                        &dj_o4[0][0][0], 
-                                        2,
-                                        4,
-                                        0)
-                    )
-                );
-
-            ceres::Solve(options2, problem2, &parameters[i * 12], &summary2);
-
-            if (summary2.final_cost < 0.01) {
-                // set weight of third direction to zero
-                parameters[i * 12 + 8] = 0;
-
-                loss_p[i] = summary2.final_cost;
-            } else {
-
-                // loss after first direction too high, so continue with second direction
-
-                ceres::GradientProblemSolver::Options options3;
-                options3.minimizer_progress_to_stdout = false;//true;
-                options3.logging_type = ceres::SILENT;
-
-                ceres::GradientProblemSolver::Summary summary3;
-
-                constexpr int kNumParameters3 = 12;
-
-                ceres::GradientProblem problem3(
-                    new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, kNumParameters3>(
-                        new WatsonSHApprox( &signal_p[i * 15], 
-                                            &est_signal_p[i * 15], 
-                                            &dipy_v_p[i * 15], 
-                                            &pysh_v_p[i * 2 * 5 * 5], 
-                                            &rot_pysh_v_p[i * 2 * 5 * 5], 
-                                            &angles_v_p[i * 3], 
-                                            &dj_o4[0][0][0], 
-                                            3,
-                                            4,
-                                            0)
-                        )
-                    );
-
-                ceres::Solve(options3, problem3, &parameters[i * 12], &summary3);
-
-                loss_p[i] = summary3.final_cost;
-            }
-        }
-    }
-}
+//
+//double watson_minimizer(const double* x, double* signal, double* est_signal, double* dipy_v, double* pysh_v, double* rot_pysh_v, double* angles, double* dj, int num_of_dir, int lmax, int no_spread) {
+//    double weight, kappa, diff, peak_value, loss = 0;
+//    int clmax = lmax+1;
+//    int cimax = (lmax*(lmax+1))/2+lmax+1;
+//
+//    // reset arrays
+//    for (int j = 0; j < cimax; j++) {
+//        dipy_v[j] = 0.0;
+//    }
+//
+//    for (int j = 0; j < cimax; j++) {
+//        est_signal[j] = 0.0;
+//    }
+//
+//    for (int j = 0; j < 2; j++) {
+//        for (int k = 0; k < clmax; k++) {
+//            for (int l = 0; l < clmax; l++) {
+//                pysh_v[(j * clmax + k) * clmax + l] = 0.0;
+//            }
+//        }
+//    }
+//
+//    // compute loss for all distributions
+//    for (int i = 0; i < num_of_dir; i++) {
+//        weight = abs(x[i*4]);
+//        kappa = exp(x[i*4+1]);
+//        angles[1] = x[i*4+2];
+//        angles[2] = x[i*4+3];
+//
+//        // reset coefficients for next distribution
+//        for (int j = 0; j < cimax; j++) {
+//            dipy_v[j] = 0.0;
+//        }
+//
+//        // set watson coefficients if we want to fit watson, else we only fit the lowrank tensors
+//        if (no_spread == 0) {
+//            sh_watson_coeffs(kappa, dipy_v, lmax);
+//        } else {
+//            if (lmax >= 4) {
+//                dipy_v[0] = dipy_v[3] = dipy_v[10] = 1;
+//                if (lmax >= 6) {
+//                    dipy_v[21] = 1;
+//                    if (lmax >= 8) {
+//                        dipy_v[36] = 1;
+//                    }
+//                }
+//            }
+//        }
+//
+//        // convolution of rank1 tensor in RH with watson in SH
+//        if (lmax == 4) {
+//            dipy_v[0] *= rank1_rh_o4[0];
+//            dipy_v[3] *= rank1_rh_o4[1];
+//            dipy_v[10] *= rank1_rh_o4[2];
+//        } else if (lmax == 6) {
+//            dipy_v[0] *= rank1_rh_o6[0];
+//            dipy_v[3] *= rank1_rh_o6[1];
+//            dipy_v[10] *= rank1_rh_o6[2];
+//            dipy_v[21] *= rank1_rh_o6[3];
+//        } else if (lmax == 8) {
+//            dipy_v[0] *= rank1_rh_o8[0];
+//            dipy_v[3] *= rank1_rh_o8[1];
+//            dipy_v[10] *= rank1_rh_o8[2];
+//            dipy_v[21] *= rank1_rh_o8[3];
+//            dipy_v[36] *= rank1_rh_o8[4];
+//        }
+//
+//        // rotate the distribution
+//        if (lmax == 4) {
+//            map_dipy_to_pysh_o4(dipy_v, pysh_v);
+//            SHRotateRealCoef(rot_pysh_v, pysh_v, lmax, angles, &dj_o4[0][0][0]);
+//            map_pysh_to_dipy_o4(rot_pysh_v, dipy_v);
+//        } else if (lmax == 6) {
+//            map_dipy_to_pysh_o6(dipy_v, pysh_v);
+//            SHRotateRealCoef(rot_pysh_v, pysh_v, lmax, angles, &dj_o6[0][0][0]);
+//            map_pysh_to_dipy_o6(rot_pysh_v, dipy_v);
+//        } else if (lmax == 8) {
+//            map_dipy_to_pysh_o8(dipy_v, pysh_v);
+//            SHRotateRealCoef(rot_pysh_v, pysh_v, lmax, angles, &dj_o8[0][0][0]);
+//            map_pysh_to_dipy_o8(rot_pysh_v, dipy_v);
+//        }
+//
+//        // add to combined signal
+//        for (int j = 0; j < cimax; j++) {
+//            est_signal[j] += dipy_v[j] * weight;
+//        }
+//    }
+//
+//    // compute loss
+//    for (int i = 0; i < cimax; i++) {
+//        diff = signal[i] - est_signal[i];
+//        loss += diff * diff;
+//    }
+//
+//    return loss;
+//}
+//
+//struct WatsonSHApprox {
+//    WatsonSHApprox(double* local_signal, double* local_est_signal, double* local_dipy_v, double* local_pysh_v, double* local_rot_pysh_v, double* local_angles_v, double* local_dj, int local_num_of_dir, int local_lmax, int local_no_spread) :
+//                 local_signal(local_signal), local_est_signal(local_est_signal), local_dipy_v(local_dipy_v), local_pysh_v(local_pysh_v), local_rot_pysh_v(local_rot_pysh_v), local_angles_v(local_angles_v), local_dj(local_dj), local_num_of_dir(local_num_of_dir), local_lmax(local_lmax), local_no_spread(local_no_spread) {}
+//
+//    bool operator()(const double* parameters, double* cost) const {
+//        cost[0] = watson_minimizer(parameters, local_signal, local_est_signal, local_dipy_v, local_pysh_v, local_rot_pysh_v, local_angles_v, local_dj, local_num_of_dir, local_lmax, local_no_spread);
+//        return true;
+//    }
+//    private:
+//        double* local_signal;
+//        double* local_est_signal;
+//        double* local_dipy_v;
+//        double* local_pysh_v;
+//        double* local_rot_pysh_v;
+//        double* local_angles_v;
+//        double* local_dj;
+//        int local_num_of_dir;
+//        int local_lmax;
+//        int local_no_spread;
+//};
+//
+//// watson minimization at sh order 4
+//void minimize_watson_mult_o4(double* parameters, double* signal_p, double* est_signal_p, double* dipy_v_p, double* pysh_v_p, double* rot_pysh_v_p, double* angles_v_p, double* loss_p, int amount, int num_of_dir_p, int no_spread) {
+//    int local_lmax = 4;
+//    ProgressBar pg;
+//
+//    if (amount != 1) {
+//        // set amount of threads
+//        int nProcessors = omp_get_max_threads();
+//        omp_set_num_threads(nProcessors);
+//
+//        // init progressbar
+//        pg.start(amount);
+//
+//        // parallel fitting
+//        #pragma omp parallel for schedule(static)
+//        for (int i=0; i<amount; i++) {
+//            pg.update(i);
+//
+//            ceres::GradientProblemSolver::Options options;
+//            options.minimizer_progress_to_stdout = false;
+//            options.logging_type = ceres::SILENT;
+//
+//            ceres::GradientProblemSolver::Summary summary;
+//
+//            constexpr int kNumParameters2 = 8;
+//            constexpr int kNumParameters3 = 12;
+//
+//            if (num_of_dir_p == 2) {
+//                // initialize ceres optimizer for two distributions
+//                ceres::GradientProblem problem(
+//                    new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, kNumParameters2>(
+//                        new WatsonSHApprox( &signal_p[i * 15],
+//                                            &est_signal_p[i * 15],
+//                                            &dipy_v_p[i * 15],
+//                                            &pysh_v_p[i * 2 * 5 * 5],
+//                                            &rot_pysh_v_p[i * 2 * 5 * 5],
+//                                            &angles_v_p[i * 3],
+//                                            &dj_o4[0][0][0],
+//                                            num_of_dir_p,
+//                                            local_lmax,
+//                                            no_spread)
+//                        )
+//                    );
+//
+//                // run optimization
+//                ceres::Solve(options, problem, &parameters[i * 8], &summary);
+//            } else {
+//                // initialize ceres optimizer for three distributions
+//                ceres::GradientProblem problem(
+//                    new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, kNumParameters3>(
+//                        new WatsonSHApprox( &signal_p[i * 15],
+//                                            &est_signal_p[i * 15],
+//                                            &dipy_v_p[i * 15],
+//                                            &pysh_v_p[i * 2 * 5 * 5],
+//                                            &rot_pysh_v_p[i * 2 * 5 * 5],
+//                                            &angles_v_p[i * 3],
+//                                            &dj_o4[0][0][0],
+//                                            num_of_dir_p,
+//                                            local_lmax,
+//                                            no_spread)
+//                        )
+//                    );
+//
+//                // run optimization
+//                ceres::Solve(options, problem, &parameters[i * 12], &summary);
+//            }
+//
+//            loss_p[i] = summary.final_cost;
+//        }
+//    } else {
+//        ceres::GradientProblemSolver::Options options;
+//        options.minimizer_progress_to_stdout = false;
+//        options.logging_type = ceres::SILENT;
+//
+//        ceres::GradientProblemSolver::Summary summary;
+//
+//        constexpr int kNumParameters2 = 8;
+//        constexpr int kNumParameters3 = 12;
+//
+//        if (num_of_dir_p == 2) {
+//            // initialize ceres optimizer for two distributions
+//            ceres::GradientProblem problem(
+//                new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, kNumParameters2>(
+//                    new WatsonSHApprox( &signal_p[0],
+//                                        &est_signal_p[0],
+//                                        &dipy_v_p[0],
+//                                        &pysh_v_p[0],
+//                                        &rot_pysh_v_p[0],
+//                                        &angles_v_p[0],
+//                                        &dj_o4[0][0][0],
+//                                        num_of_dir_p,
+//                                        local_lmax,
+//                                        no_spread)
+//                    )
+//                );
+//
+//            // run optimization
+//            ceres::Solve(options, problem, &parameters[0], &summary);
+//        } else {
+//            // initialize ceres optimizer for three distributions
+//            ceres::GradientProblem problem(
+//                new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, kNumParameters3>(
+//                    new WatsonSHApprox( &signal_p[0],
+//                                        &est_signal_p[0],
+//                                        &dipy_v_p[0],
+//                                        &pysh_v_p[0],
+//                                        &rot_pysh_v_p[0],
+//                                        &angles_v_p[0],
+//                                        &dj_o4[0][0][0],
+//                                        num_of_dir_p,
+//                                        local_lmax,
+//                                        no_spread)
+//                    )
+//                );
+//
+//            // run optimization
+//            ceres::Solve(options, problem, &parameters[0], &summary);
+//        }
+//
+//        loss_p[0] = summary.final_cost;
+//    }
+//}
+//
+//// watson minimization at sh order 6
+//void minimize_watson_mult_o6(double* parameters, double* signal_p, double* est_signal_p, double* dipy_v_p, double* pysh_v_p, double* rot_pysh_v_p, double* angles_v_p, double* loss_p, int amount, int num_of_dir_p, int no_spread) {
+//    int local_lmax = 6;
+//    ProgressBar pg;
+//
+//    if (amount != 1) {
+//        // set amount of threads
+//        int nProcessors = omp_get_max_threads();
+//        omp_set_num_threads(nProcessors);
+//
+//        pg.start(amount);
+//
+//        #pragma omp parallel for schedule(static)
+//        for (int i=0; i<amount; i++) {
+//            pg.update(i);
+//
+//            ceres::GradientProblemSolver::Options options;
+//            options.minimizer_progress_to_stdout = false;
+//            options.logging_type = ceres::SILENT;
+//
+//            ceres::GradientProblemSolver::Summary summary;
+//
+//            constexpr int kNumParameters2 = 8;
+//            constexpr int kNumParameters3 = 12;
+//
+//            if (num_of_dir_p == 2) {
+//                // initialize ceres optimizer for two distributions
+//                ceres::GradientProblem problem(
+//                    new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, kNumParameters2>(
+//                        new WatsonSHApprox( &signal_p[i * 28],
+//                                            &est_signal_p[i * 28],
+//                                            &dipy_v_p[i * 28],
+//                                            &pysh_v_p[i * 2 * 7 * 7],
+//                                            &rot_pysh_v_p[i * 2 * 7 * 7],
+//                                            &angles_v_p[i * 3],
+//                                            &dj_o6[0][0][0],
+//                                            num_of_dir_p,
+//                                            local_lmax,
+//                                            no_spread)
+//                        )
+//                    );
+//
+//                // run optimization
+//                ceres::Solve(options, problem, &parameters[i * 8], &summary);
+//            } else {
+//                // initialize ceres optimizer for three distributions
+//                ceres::GradientProblem problem(
+//                    new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, kNumParameters3>(
+//                        new WatsonSHApprox( &signal_p[i * 28],
+//                                            &est_signal_p[i * 28],
+//                                            &dipy_v_p[i * 28],
+//                                            &pysh_v_p[i * 2 * 7 * 7],
+//                                            &rot_pysh_v_p[i * 2 * 7 * 7],
+//                                            &angles_v_p[i * 3],
+//                                            &dj_o6[0][0][0],
+//                                            num_of_dir_p,
+//                                            local_lmax,
+//                                            no_spread)
+//                        )
+//                    );
+//
+//                // run optimization
+//                ceres::Solve(options, problem, &parameters[i * 12], &summary);
+//            }
+//
+//            loss_p[i] = summary.final_cost;
+//        }
+//    } else {
+//        ceres::GradientProblemSolver::Options options;
+//        options.minimizer_progress_to_stdout = false;
+//        options.logging_type = ceres::SILENT;
+//
+//        ceres::GradientProblemSolver::Summary summary;
+//
+//        constexpr int kNumParameters2 = 8;
+//        constexpr int kNumParameters3 = 12;
+//
+//        if (num_of_dir_p == 2) {
+//            // initialize ceres optimizer for two distributions
+//            ceres::GradientProblem problem(
+//                new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, kNumParameters2>(
+//                    new WatsonSHApprox( &signal_p[0],
+//                                        &est_signal_p[0],
+//                                        &dipy_v_p[0],
+//                                        &pysh_v_p[0],
+//                                        &rot_pysh_v_p[0],
+//                                        &angles_v_p[0],
+//                                        &dj_o6[0][0][0],
+//                                        num_of_dir_p,
+//                                        local_lmax,
+//                                        no_spread)
+//                    )
+//                );
+//
+//            // run optimization
+//            ceres::Solve(options, problem, &parameters[0], &summary);
+//        } else {
+//            // initialize ceres optimizer for three distributions
+//            ceres::GradientProblem problem(
+//                new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, kNumParameters3>(
+//                    new WatsonSHApprox( &signal_p[0],
+//                                        &est_signal_p[0],
+//                                        &dipy_v_p[0],
+//                                        &pysh_v_p[0],
+//                                        &rot_pysh_v_p[0],
+//                                        &angles_v_p[0],
+//                                        &dj_o6[0][0][0],
+//                                        num_of_dir_p,
+//                                        local_lmax,
+//                                        no_spread)
+//                    )
+//                );
+//
+//            // run optimization
+//            ceres::Solve(options, problem, &parameters[0], &summary);
+//        }
+//
+//        loss_p[0] = summary.final_cost;
+//    }
+//}
+//
+//// watson minimization at sh order 8
+//void minimize_watson_mult_o8(double* parameters, double* signal_p, double* est_signal_p, double* dipy_v_p, double* pysh_v_p, double* rot_pysh_v_p, double* angles_v_p, double* loss_p, int amount, int num_of_dir_p, int no_spread) {
+//    int local_lmax = 8;
+//    ProgressBar pg;
+//
+//    if (amount != 1) {
+//        // set amount of threads
+//        int nProcessors = omp_get_max_threads();
+//        omp_set_num_threads(nProcessors);
+//
+//        pg.start(amount);
+//
+//        #pragma omp parallel for schedule(static)
+//        for (int i=0; i<amount; i++) {
+//            pg.update(i);
+//
+//            ceres::GradientProblemSolver::Options options;
+//            options.minimizer_progress_to_stdout = false;
+//            options.logging_type = ceres::SILENT;
+//
+//            ceres::GradientProblemSolver::Summary summary;
+//
+//            constexpr int kNumParameters2 = 8;
+//            constexpr int kNumParameters3 = 12;
+//
+//            if (num_of_dir_p == 2) {
+//                // initialize ceres optimizer for two distributions
+//                ceres::GradientProblem problem(
+//                    new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, 8>(
+//                        new WatsonSHApprox( &signal_p[i * 45],
+//                                            &est_signal_p[i * 45],
+//                                            &dipy_v_p[i * 45],
+//                                            &pysh_v_p[i * 2 * 9 * 9],
+//                                            &rot_pysh_v_p[i * 2 * 9 * 9],
+//                                            &angles_v_p[i * 3],
+//                                            &dj_o8[0][0][0],
+//                                            num_of_dir_p,
+//                                            local_lmax,
+//                                            no_spread)
+//                        )
+//                    );
+//
+//                // run optimization
+//                ceres::Solve(options, problem, &parameters[i * 8], &summary);
+//            } else {
+//                // initialize ceres optimizer for three distributions
+//                ceres::GradientProblem problem(
+//                    new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, 12>(
+//                        new WatsonSHApprox( &signal_p[i * 45],
+//                                            &est_signal_p[i * 45],
+//                                            &dipy_v_p[i * 45],
+//                                            &pysh_v_p[i * 2 * 9 * 9],
+//                                            &rot_pysh_v_p[i * 2 * 9 * 9],
+//                                            &angles_v_p[i * 3],
+//                                            &dj_o8[0][0][0],
+//                                            num_of_dir_p,
+//                                            local_lmax,
+//                                            no_spread)
+//                        )
+//                    );
+//
+//                // run optimization
+//                ceres::Solve(options, problem, &parameters[i * 12], &summary);
+//            }
+//
+//            loss_p[i] = summary.final_cost;
+//        }
+//    } else {
+//        ceres::GradientProblemSolver::Options options;
+//        options.minimizer_progress_to_stdout = false;
+//        options.logging_type = ceres::SILENT;
+//
+//        ceres::GradientProblemSolver::Summary summary;
+//
+//        constexpr int kNumParameters2 = 8;
+//        constexpr int kNumParameters3 = 12;
+//
+//        if (num_of_dir_p == 2) {
+//            // initialize ceres optimizer for two distributions
+//            ceres::GradientProblem problem(
+//                new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, kNumParameters2>(
+//                    new WatsonSHApprox( &signal_p[0],
+//                                        &est_signal_p[0],
+//                                        &dipy_v_p[0],
+//                                        &pysh_v_p[0],
+//                                        &rot_pysh_v_p[0],
+//                                        &angles_v_p[0],
+//                                        &dj_o8[0][0][0],
+//                                        num_of_dir_p,
+//                                        local_lmax,
+//                                        no_spread)
+//                    )
+//                );
+//
+//            // run optimization
+//            ceres::Solve(options, problem, &parameters[0], &summary);
+//        } else {
+//            // initialize ceres optimizer for three distributions
+//            ceres::GradientProblem problem(
+//                new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, kNumParameters3>(
+//                    new WatsonSHApprox( &signal_p[0],
+//                                        &est_signal_p[0],
+//                                        &dipy_v_p[0],
+//                                        &pysh_v_p[0],
+//                                        &rot_pysh_v_p[0],
+//                                        &angles_v_p[0],
+//                                        &dj_o8[0][0][0],
+//                                        num_of_dir_p,
+//                                        local_lmax,
+//                                        no_spread)
+//                    )
+//                );
+//
+//            // run optimization
+//            ceres::Solve(options, problem, &parameters[0], &summary);
+//        }
+//
+//        loss_p[0] = summary.final_cost;
+//    }
+//}
+//
+//// iterative optimization at sh order 4 - experimental
+//void minimize_watson_mult_iterative_o4(double* parameters, double* signal_p, double* est_signal_p, double* dipy_v_p, double* pysh_v_p, double* rot_pysh_v_p, double* angles_v_p, double* dj_p, double* loss_p, int amount, int lmax_p, int num_of_dir_p) {
+//
+//    // set amount of threads
+//    int nProcessors = omp_get_max_threads();
+//    //std::cout<<nProcessors<<std::endl;
+//    omp_set_num_threads(nProcessors);
+//
+//    #pragma omp parallel for
+//    for (int i=0; i<amount; i++) {
+//        ceres::GradientProblemSolver::Options options;
+//        options.minimizer_progress_to_stdout = false;//true;
+//        options.logging_type = ceres::SILENT;
+//
+//        ceres::GradientProblemSolver::Summary summary;
+//
+//        constexpr int kNumParameters = 4;
+//
+//        ceres::GradientProblem problem(
+//            new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, kNumParameters>(
+//                new WatsonSHApprox( &signal_p[i * 15],
+//                                    &est_signal_p[i * 15],
+//                                    &dipy_v_p[i * 15],
+//                                    &pysh_v_p[i * 2 * 5 * 5],
+//                                    &rot_pysh_v_p[i * 2 * 5 * 5],
+//                                    &angles_v_p[i * 3],
+//                                    &dj_o4[0][0][0],
+//                                    1,
+//                                    4,
+//                                    0)
+//                )
+//            );
+//
+//        ceres::Solve(options, problem, &parameters[i * 12], &summary);
+//
+//        ceres::GradientProblemSolver::Options options2;
+//        options2.minimizer_progress_to_stdout = false;//true;
+//        options2.logging_type = ceres::SILENT;
+//
+//        ceres::GradientProblemSolver::Summary summary2;
+//
+//        constexpr int kNumParameters2 = 12;
+//
+//        ceres::GradientProblem problem2(
+//            new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, kNumParameters2>(
+//                new WatsonSHApprox( &signal_p[i * 15],
+//                                    &est_signal_p[i * 15],
+//                                    &dipy_v_p[i * 15],
+//                                    &pysh_v_p[i * 2 * 5 * 5],
+//                                    &rot_pysh_v_p[i * 2 * 5 * 5],
+//                                    &angles_v_p[i * 3],
+//                                    &dj_o4[0][0][0],
+//                                    num_of_dir_p,
+//                                    4,
+//                                    0)
+//                )
+//            );
+//
+//        ceres::Solve(options2, problem2, &parameters[i * 12], &summary2);
+//
+//        if (summary.final_cost > 0.4) {
+//            //std::cout << summary.FullReport() << "\n";
+//        }
+//
+//        loss_p[i] = summary2.final_cost;
+//    }
+//}
+//
+//void minimize_watson_mult_iterative2_o4(double* parameters, double* signal_p, double* est_signal_p, double* dipy_v_p, double* pysh_v_p, double* rot_pysh_v_p, double* angles_v_p, double* dj_p, double* loss_p, int amount, int lmax_p, int num_of_dir_p) {
+//    // adaptive amount of directions depending on the loss
+//
+//    // set amount of threads
+//    int nProcessors = omp_get_max_threads();
+//    //std::cout<<nProcessors<<std::endl;
+//    omp_set_num_threads(nProcessors);
+//
+//    #pragma omp parallel for
+//    for (int i=0; i<amount; i++) {
+//        ceres::GradientProblemSolver::Options options;
+//        options.minimizer_progress_to_stdout = false;//true;
+//        options.logging_type = ceres::SILENT;
+//
+//        ceres::GradientProblemSolver::Summary summary;
+//
+//        constexpr int kNumParameters = 4;
+//
+//        ceres::GradientProblem problem(
+//            new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, kNumParameters>(
+//                new WatsonSHApprox( &signal_p[i * 15],
+//                                    &est_signal_p[i * 15],
+//                                    &dipy_v_p[i * 15],
+//                                    &pysh_v_p[i * 2 * 5 * 5],
+//                                    &rot_pysh_v_p[i * 2 * 5 * 5],
+//                                    &angles_v_p[i * 3],
+//                                    &dj_o4[0][0][0],
+//                                    1,
+//                                    4,
+//                                    0)
+//                )
+//            );
+//
+//        ceres::Solve(options, problem, &parameters[i * 12], &summary);
+//
+//        if (summary.final_cost < 0.01) {
+//            // set weight of second and third direction to zero
+//            parameters[i * 12 + 4] = 0;
+//            parameters[i * 12 + 8] = 0;
+//
+//            loss_p[i] = summary.final_cost;
+//        } else {
+//
+//            // loss after first direction too high, so continue with second direction
+//
+//            ceres::GradientProblemSolver::Options options2;
+//            options2.minimizer_progress_to_stdout = false;//true;
+//            options2.logging_type = ceres::SILENT;
+//
+//            ceres::GradientProblemSolver::Summary summary2;
+//
+//            constexpr int kNumParameters2 = 8;
+//
+//            ceres::GradientProblem problem2(
+//                new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, kNumParameters2>(
+//                    new WatsonSHApprox( &signal_p[i * 15],
+//                                        &est_signal_p[i * 15],
+//                                        &dipy_v_p[i * 15],
+//                                        &pysh_v_p[i * 2 * 5 * 5],
+//                                        &rot_pysh_v_p[i * 2 * 5 * 5],
+//                                        &angles_v_p[i * 3],
+//                                        &dj_o4[0][0][0],
+//                                        2,
+//                                        4,
+//                                        0)
+//                    )
+//                );
+//
+//            ceres::Solve(options2, problem2, &parameters[i * 12], &summary2);
+//
+//            if (summary2.final_cost < 0.01) {
+//                // set weight of third direction to zero
+//                parameters[i * 12 + 8] = 0;
+//
+//                loss_p[i] = summary2.final_cost;
+//            } else {
+//
+//                // loss after first direction too high, so continue with second direction
+//
+//                ceres::GradientProblemSolver::Options options3;
+//                options3.minimizer_progress_to_stdout = false;//true;
+//                options3.logging_type = ceres::SILENT;
+//
+//                ceres::GradientProblemSolver::Summary summary3;
+//
+//                constexpr int kNumParameters3 = 12;
+//
+//                ceres::GradientProblem problem3(
+//                    new ceres::NumericDiffFirstOrderFunction<WatsonSHApprox, ceres::CENTRAL, kNumParameters3>(
+//                        new WatsonSHApprox( &signal_p[i * 15],
+//                                            &est_signal_p[i * 15],
+//                                            &dipy_v_p[i * 15],
+//                                            &pysh_v_p[i * 2 * 5 * 5],
+//                                            &rot_pysh_v_p[i * 2 * 5 * 5],
+//                                            &angles_v_p[i * 3],
+//                                            &dj_o4[0][0][0],
+//                                            3,
+//                                            4,
+//                                            0)
+//                        )
+//                    );
+//
+//                ceres::Solve(options3, problem3, &parameters[i * 12], &summary3);
+//
+//                loss_p[i] = summary3.final_cost;
+//            }
+//        }
+//    }
+//}
+//

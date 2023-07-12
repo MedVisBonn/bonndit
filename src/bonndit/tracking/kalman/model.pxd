@@ -50,6 +50,7 @@ cdef class BinghamModel(WatsonModel):
 
 cdef class BinghamQuatModel(BinghamModel):
 	cdef double[:,:,:] lookup_table1
+	cdef double[:] sh
 	cdef double[:,:] lookup_kappa_beta_table
 #	cdef int convert_to_index(self, double, double, double) #nogil expcept *
 	#cdef void sh_bingham_coeffs(self, double, double) except * #nogil expcept *

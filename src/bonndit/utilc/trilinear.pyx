@@ -5,12 +5,22 @@
 
 from libc.math cimport fabs, floor, pow
 import numpy as np
+from bonndit.utilc.blas_lapack cimport *
 
-cdef void bilinear(double[:] ret, double[:,:,:] data, double kappa, double beta):
-	cdef double[:,:] vlinear = np.zeros((2, data.shape[-1]))
+cdef void bilinear(double[:] ret, double[:,:,:] data, double x, double y):
+	"""
+		Given a 2D grid with values in 3 dimension (data) and x,y values this function calculates the bilinear interpolation 
+		and saves it in ret
+	"""
+	cdef double[:,:] vlinear = np.zeros((2, data.shape[2]))
 	for i in range(2):
-		vlinear[i] = (kappa - floor(kappa))* data[0, i] +  (1 + floor(kappa) - kappa) * data[1, i, :]
-	ret = (beta - floor(beta))* vlinear[0] +  (1 + floor(beta) - beta) * vlinear[1]
+		cblas_dcopy(data.shape[2], &data[0,i,0], 1, &vlinear[i,0], 1)
+		cblas_dscal(data.shape[2], (x - floor(x)), &vlinear[i,0], 1)
+		cblas_daxpy(data.shape[2], (1 + floor(x) - x), &data[1, i, 0], 1, &vlinear[i, 0], 1)
+	#ret = (y - floor(y))* vlinear[0] +  (1 + floor(y) - y) * vlinear[1]
+	cblas_dcopy(data.shape[2], &vlinear[i,0], 1, &ret[0], 1)
+	cblas_dscal(data.shape[2], (y - floor(y)), &ret[0], 1)
+	cblas_daxpy(data.shape[2], (1 + floor(y) - y), &vlinear[1,0 ], 1, &ret[0], 1)
 
 cdef double linear(double[:] point, double[:] vlinear, double[:, :, :] data) nogil except *:
 		cdef int i, j, k, m,n,o

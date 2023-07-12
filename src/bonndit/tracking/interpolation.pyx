@@ -739,25 +739,25 @@ cdef class UKFWatson(UKF):
 			#self.best_dir[i, 0] *= -1
 			#self.best_dir[i, 2] *= -1
 
-		if self.store_loss:
-			self._kalman.linear(self.point_index[:3], self.y, self.mlinear, self.data)
-			for i in range(self._model.num_tensors):
-				cblas_dscal(self._model1.dipy_v.shape[0], 0, &self._model1.dipy_v[0], 1)
-				c_sh_watson_coeffs(self.kappas[i], &self._model1.dipy_v[0], self._model1.order)
-				self.mean[i*5+2] *= -1
-				self.mean[i*5+4] *= -1
-				cart2sphere(self._model1.angles[1:], self.mean[i*5+2:(i+1)*5])
-				self.mean[i*5+2] *= -1
-				self.mean[i*5+4] *= -1
-				div = self._model1.sh_norm(self._model1.dipy_v)
-				self._model1.dipy_v[0] *= self._model1.rank_1_rh_o4[0]/div
-				self._model1.dipy_v[3] *= self._model1.rank_1_rh_o4[1]/div
-				self._model1.dipy_v[10] *= self._model1.rank_1_rh_o4[2]/div
-				c_map_dipy_to_pysh_o4(&self._model1.dipy_v[0], &self._model1.pysh_v[0])
-				c_sh_rotate_real_coef(&self._model1.rot_pysh_v[0], &self._model1.pysh_v[0], self._model1.order, &self._model1.angles[0], &dj_o4[0][0][0])
-				c_map_pysh_to_dipy_o4(&self._model1.rot_pysh_v[0],&self._model1.dipy_v[0])
-				cblas_daxpy(self.y.shape[0], -self.weights[i], &self._model1.dipy_v[0], 1, &self.y[0], 1)
-			self.loss = cblas_dnrm2(self.y.shape[0], &self.y[0], 1)
+#		if self.store_loss:
+#			self._kalman.linear(self.point_index[:3], self.y, self.mlinear, self.data)
+#			for i in range(self._model.num_tensors):
+#				cblas_dscal(self._model1.dipy_v.shape[0], 0, &self._model1.dipy_v[0], 1)
+#				c_sh_watson_coeffs(self.kappas[i], &self._model1.dipy_v[0], self._model1.order)
+#				self.mean[i*5+2] *= -1
+#				self.mean[i*5+4] *= -1
+#				cart2sphere(self._model1.angles[1:], self.mean[i*5+2:(i+1)*5])
+#				self.mean[i*5+2] *= -1
+#				self.mean[i*5+4] *= -1
+#				div = self._model1.sh_norm(self._model1.dipy_v)
+#				self._model1.dipy_v[0] *= self._model1.rank_1_rh_o4[0]/div
+#				self._model1.dipy_v[3] *= self._model1.rank_1_rh_o4[1]/div
+#				self._model1.dipy_v[10] *= self._model1.rank_1_rh_o4[2]/div
+#				c_map_dipy_to_pysh_o4(&self._model1.dipy_v[0], &self._model1.pysh_v[0])
+#				c_sh_rotate_real_coef(&self._model1.rot_pysh_v[0], &self._model1.pysh_v[0], self._model1.order, &self._model1.angles[0], &dj_o4[0][0][0])
+#				c_map_pysh_to_dipy_o4(&self._model1.rot_pysh_v[0],&self._model1.dipy_v[0])
+#				cblas_daxpy(self.y.shape[0], -self.weights[i], &self._model1.dipy_v[0], 1, &self.y[0], 1)
+#			self.loss = cblas_dnrm2(self.y.shape[0], &self.y[0], 1)
 		#print(self.loss)
 		self.prob.calculate_probabilities_sampled(self.best_dir, self.kappas, self.weights, old_dir, self.point_index[:3])
 		cblas_dcopy(3, &self.prob.best_fit[0], 1, &self.next_dir[0], 1)
@@ -923,19 +923,19 @@ cdef class UKFBingham(UKF):
 			self.l_k_b[i, 1] = exp(self.mean[6 * i + 1])
 			self.l_k_b[i, 2] = exp(self.mean[6 * i + 2])
 		#print(np.array(self.mu), '\n', np.array(self.A), '\n', np.array(self.l_k_b))
-		if self.store_loss:
-			self._kalman.linear(self.point_index[:3], self.y, self.mlinear, self.data)
-			base = cblas_dnrm2(self.y.shape[0], &self.y[0], 1)
-			for i in range(self._model.num_tensors):
-				kappa = exp(self.mean[i*6 + 1])
-				beta = exp(self.mean[i*6 + 2])
-				self._model1.sh_bingham_coeffs(kappa, beta)
-				cblas_dcopy(3, &self.mean[i*6 + 3], 1, &self._model1.angles[0], 1)
-				c_map_dipy_to_pysh_o4(&self._model1.dipy_v[0], &self._model1.pysh_v[0])
-				c_sh_rotate_real_coef(&self._model1.rot_pysh_v[0], &self._model1.pysh_v[0], self._model1.order, &self._model1.angles[0], &dj_o4[0][0][0])
-				c_map_pysh_to_dipy_o4(&self._model1.rot_pysh_v[0],&self._model1.dipy_v[0])
-				cblas_daxpy(self.y.shape[0], -self.mean[i*6], &self._model1.dipy_v[0], 1, &self.y[0], 1)
-			self.loss = cblas_dnrm2(self.y.shape[0], &self.y[0], 1)
+#		if self.store_loss:
+#			self._kalman.linear(self.point_index[:3], self.y, self.mlinear, self.data)
+#			base = cblas_dnrm2(self.y.shape[0], &self.y[0], 1)
+#			for i in range(self._model.num_tensors):
+#				kappa = exp(self.mean[i*6 + 1])
+#				beta = exp(self.mean[i*6 + 2])
+#				self._model1.sh_bingham_coeffs(kappa, beta)
+#				cblas_dcopy(3, &self.mean[i*6 + 3], 1, &self._model1.angles[0], 1)
+#				c_map_dipy_to_pysh_o4(&self._model1.dipy_v[0], &self._model1.pysh_v[0])
+#				c_sh_rotate_real_coef(&self._model1.rot_pysh_v[0], &self._model1.pysh_v[0], self._model1.order, &self._model1.angles[0], &dj_o4[0][0][0])
+#				c_map_pysh_to_dipy_o4(&self._model1.rot_pysh_v[0],&self._model1.dipy_v[0])
+#				cblas_daxpy(self.y.shape[0], -self.mean[i*6], &self._model1.dipy_v[0], 1, &self.y[0], 1)
+#			self.loss = cblas_dnrm2(self.y.shape[0], &self.y[0], 1)
 			#print(self.loss/base)
 		self.prob.calculate_probabilities_sampled_bingham(self.mu, old_dir, self.A, self.l_k_b)
 		cblas_dcopy(3, &self.prob.best_fit[0], 1, &self.next_dir[0], 1)
@@ -1097,25 +1097,9 @@ cdef class UKFBinghamQuatAlt(Interpolation):
 			c_sh_rotate_real_coef_fast(&self.fit_matrix[0,i], self.fit_matrix.shape[1], &self._model.lookup_table1[<int> kappa * 10, <int> beta * 10, 0],
 										   1, self._model.order, &self.angles[0])
 
-		#cblas_dgemm(CblasRowMajor, CblasTrans, CblasNoTrans, 2, 2, self.fit_matrix.shape[0], 1, &self.fit_matrix[0,0],
-		#			2, &self.fit_matrix[0,0], 2, 0, &matrix_mult[0,0], 2)
 		res = nnls(self.fit_matrix, self.y[0])
-		#print(res)
-
-		#matrix_mult_inv[0,0] = matrix_mult[1,1]
-		#matrix_mult_inv[0,1] = -matrix_mult[0,1]
-		#matrix_mult_inv[1,0] = -matrix_mult[1,0]
-		#matrix_mult_inv[1,1] = matrix_mult[1,1]
-		#cblas_dscal(4, 1/(matrix_mult[0,0]*matrix_mult[1,1]-matrix_mult[0,1]*matrix_mult[1,0]), &matrix_mult_inv[0,0], 1)
-		#cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasTrans, 2, self.fit_matrix.shape[0],2, 1, &matrix_mult_inv[0,0], 2,
-		#			&self.fit_matrix[0,0], 2, 0, &self.fit_matrix_rot[0,0], self.fit_matrix.shape[0])
-		#cblas_dgemv(CblasRowMajor, CblasNoTrans, self.fit_matrix_rot.shape[0], self.fit_matrix_rot.shape[1], 1, &self.fit_matrix_rot[0,0,],
-		#			self.fit_matrix_rot.shape[1], &self.y[0,0], 1, 0, &res[0], 1)
-		#print(np.array(self.fit_matrix_rot) @ np.array(self.y[0]))
 		self.mean[0,0] = res[0][0]
 		self.mean[1,0] = res[0][1]
-		#
-		#raise Exception()
 
 	cpdef int interpolate(self, double[:] point, double[:] old_dir, int restart) except *:
 		self.point_world[:3] = point
