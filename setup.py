@@ -35,7 +35,6 @@ ext_modules = [
               sources=['src/bonndit/utilc/watsonfit.cpp'],
               include_dirs=["/usr/lib"],
               language="c++",
-              extra_compile_args=["-shared"],
               ),
     Extension("bonndit.utilc.watsonfitwrapper",
               sources=["src/bonndit/utilc/watsonfitwrapper.pyx",
@@ -156,8 +155,8 @@ ext_modules = [
             ('CYTHON_TRACE', '1')],
         include_dirs=[".", numpy.get_include(), "%s/include" %
                       mklroot, "/usr/include/"],
-        libraries=["mkl_rt", "mkl_sequential", "mkl_core",
-                   "pthread", "m", "dl", "watsonfit"],
+        libraries=["mkl_rt", "mkl_sequential",
+                   "mkl_core", "pthread", "m", "dl"],
         library_dirs=["%s/lib/intel64" % mklroot, "/usr/bin"],
         language='c++',
         extra_compile_args=["-I.", "-O3",
