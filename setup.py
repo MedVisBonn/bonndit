@@ -6,23 +6,11 @@
 from setuptools import setup, find_packages
 from distutils.extension import Extension
 from Cython.Build import cythonize
-from Cython.Compiler.Options import get_directive_defaults
 import numpy
-import os
-from setuptools.command.build_ext import build_ext
-from distutils.errors import CCompilerError, DistutilsExecError, DistutilsPlatformError
 
-
-directive_def = get_directive_defaults()
-directive_def['linetrace'] = True
-directive_def['binding'] = True
-if "MKLROOT" not in os.environ:
-    raise Exception("""MKLROOT has to be a enviroment Variable. Follow the 
-					https://www.intel.com/content/www/us/en/develop/documentation/oneapi-programming-guide/top/oneapi-development-environment-setup.html description to set them correctly""")
-
-mklroot = os.environ["MKLROOT"]
 import sysconfig
 import sys
+import os
 def path_to_build_folder():
     """Returns the name of a distutils build directory"""
     f = "{dirname}.{platform}-cpython-{version[0]}{version[1]}/bonndit"
@@ -31,22 +19,11 @@ def path_to_build_folder():
                     version=sys.version_info)
     return os.path.join('build', dir_name, "bonndit")
 
-
 with open('README.rst') as readme_file:
     readme = readme_file.read()
 
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
-
-class CustomBuildExt(build_ext):
-    def run(self):
-        try:
-            build_ext.run(self)
-        except (CCompilerError, DistutilsExecError, DistutilsPlatformError, IOError):
-            print("Failed to compile the watsonfit library.")
-            print("Make sure you have the necessary dependencies and development tools installed.")
-            print("Refer to the documentation for instructions on compiling the library manually.")
-            raise
 
 
 
@@ -55,11 +32,6 @@ ceres_libs = ['glog', 'gflags']
 watson_libraries = ['m', 'watsonfit']
 
 ext_modules = [
-#   Extension("bonndit.watsonfit",
- #           sources=[],
- #           include_dirs=["/usr/lib"],
- #           language="c++",
- #           ),
     Extension("bonndit.utilc.watsonfitwrapper",
               sources=["src/bonndit/utilc/watsonfitwrapper.pyx",'src/bonndit/utilc/watsonfit.cpp' ],
               define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"), ('CYTHON_TRACE', '1')],
@@ -68,74 +40,57 @@ ext_modules = [
               language="c++",
               extra_compile_args=["-I.", "-O3", "-ffast-math", "-march=native", "-fopenmp"],
               extra_link_args=["-L/usr/local/include", "-fopenmp", "-Wl,--no-as-needed", "-I" + path_to_build_folder()],
-           #  runtime_library_dirs=watson_libraries
               ),
     Extension(
         "bonndit.utilc.blas_lapack",
         ["src/bonndit/utilc/blas_lapack.pyx"],
-        include_dirs=[numpy.get_include(), "%s/include" % mklroot],
-        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
-        library_dirs=["%s/lib/intel64" % mklroot],
+        include_dirs=[numpy.get_include()],
+       # libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
+       # library_dirs=["%s/lib/intel64" % mklroot],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
-        extra_link_args=["-Wl,--no-as-needed"],
-        define_macros = [('CYTHON_TRACE', '1')],
+       # extra_link_args=["-Wl,--no-as-needed"],
+       # define_macros = [('CYTHON_TRACE', '1')],
 ),
     Extension(
         "bonndit.utilc.quaternions",
         ["src/bonndit/utilc/quaternions.pyx"],
-        include_dirs=[numpy.get_include(), "%s/include" % mklroot],
-        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
-        library_dirs=["%s/lib/intel64" % mklroot],
+        include_dirs=[numpy.get_include()],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
         extra_link_args=["-Wl,--no-as-needed"],
-        define_macros = [('CYTHON_TRACE', '1')],
 ),
     Extension(
         "bonndit.utilc.cython_helpers",
         ["src/bonndit/utilc/cython_helpers.pyx"],
-        include_dirs=[numpy.get_include(), "%s/include" % mklroot],
-        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
-        library_dirs=["%s/lib/intel64" % mklroot],
-        define_macros=[('CYTHON_TRACE', '1')],
+        include_dirs=[numpy.get_include()],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
         extra_link_args=["-Wl,--no-as-needed"]
     ),
     Extension(
         "bonndit.utilc.hota",
         ["src/bonndit/utilc/hota.pyx"],
-        include_dirs=[numpy.get_include(), "%s/include" % mklroot],
-        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
-        library_dirs=["%s/lib/intel64" % mklroot],
-        define_macros=[('CYTHON_TRACE', '1')],
+        include_dirs=[numpy.get_include()],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
-        extra_link_args=["-Wl,--no-as-needed"]
     ),
     Extension(
         "bonndit.utilc.trilinear",
         ["src/bonndit/utilc/trilinear.pyx"],
-        include_dirs=[numpy.get_include(), "%s/include" % mklroot],
-        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
-        library_dirs=["%s/lib/intel64" % mklroot],
-        define_macros=[('CYTHON_TRACE', '1')],
+        include_dirs=[numpy.get_include()],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
     ),
     Extension(
         "bonndit.utilc.structures",
         ["src/bonndit/utilc/structures.pyx"],
         extra_compile_args=["-Ofast"],
-        define_macros=[('CYTHON_TRACE', '1')],
     ),
     Extension(
         "bonndit.utilc.penalty_spherical",
         ["src/bonndit/utilc/penalty_spherical.pyx"],
         extra_compile_args=["-Ofast"],
-        define_macros=[('CYTHON_TRACE', '1')],
     ),
     Extension(
         "bonndit.utilc.lowrank",
         ["src/bonndit/utilc/lowrank.pyx"],
         extra_compile_args=["-Ofast"],
-        define_macros=[('CYTHON_TRACE', '1')],
     ),
     Extension(
         "bonndit.directions.fodfapprox",
@@ -149,35 +104,28 @@ ext_modules = [
         "bonndit.tracking.ItoW",
         ["src/bonndit/tracking/ItoW.pyx"],
         extra_compile_args=["-Ofast"],
-        define_macros=[('CYTHON_TRACE', '1')],
     ),
     Extension(
         "bonndit.tracking.alignedDirection",
         ["src/bonndit/tracking/alignedDirection.pyx"],
-        include_dirs=[numpy.get_include(), "%s/include" % mklroot],
-        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
-        library_dirs=["%s/lib/intel64" % mklroot],
+        include_dirs=[numpy.get_include()],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
         extra_link_args=["-Wl,--no-as-needed"],
-        define_macros = [('CYTHON_TRACE', '1')],
 ), Extension(
         "bonndit.tracking.kalman.model",
         ["src/bonndit/tracking/kalman/model.pyx",'src/bonndit/utilc/watsonfit.cpp' ],
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"),('CYTHON_TRACE', '1')],
-        include_dirs=[".", numpy.get_include(), "%s/include" % mklroot,"/usr/include/" ,path_to_build_folder()],
-        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl", 'cerf' ],
-        library_dirs=["%s/lib/intel64" % mklroot, "/usr/bin"],
+        include_dirs=[".", numpy.get_include(),"/usr/include/" ,path_to_build_folder()],
+        libraries=[ "pthread", "m", "dl", 'cerf' ],
         extra_compile_args=["-I.", "-O3", "-ffast-math", "-march=native", "-fopenmp"],
         extra_link_args=["-L/usr/local/include", "-fopenmp", "-Wl,--no-as-needed"],
-     #   runtime_library_dirs=watson_libraries
     ),
     Extension(
         "bonndit.tracking.kalman.kalman",
         ["src/bonndit/tracking/kalman/kalman.pyx"],
-        define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"),('CYTHON_TRACE', '1')],
-        include_dirs=[numpy.get_include(), "%s/include" % mklroot],
-        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
-        library_dirs=["%s/lib/intel64" % mklroot],
+        define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
+        include_dirs=[numpy.get_include()],
+        libraries=["pthread", "m", "dl"],
         extra_compile_args=["-Wall", "-m64", '-Ofast'],
         extra_link_args=["-Wl,--no-as-needed"]
 
@@ -185,44 +133,38 @@ ext_modules = [
     Extension(
         "bonndit.tracking.interpolation",
         ["src/bonndit/tracking/interpolation.pyx"],
-        define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"),('CYTHON_TRACE', '1')],
-        include_dirs=[numpy.get_include(), "%s/include" % mklroot, "/usr/lib"],
-        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
-        library_dirs=["%s/lib/intel64" % mklroot],
+        define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
+        include_dirs=[numpy.get_include()],
+        libraries=[ "pthread", "m", "dl"],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
         extra_link_args=["-Wl,--no-as-needed"]
     ),
     Extension(
         "bonndit.tracking.integration",
         ["src/bonndit/tracking/integration.pyx"],
-        include_dirs=[numpy.get_include(), "%s/include" % mklroot],
-        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
-        library_dirs=["%s/lib/intel64" % mklroot],
+        include_dirs=[numpy.get_include()],
+        libraries=["pthread", "m", "dl"],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
-        define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"),('CYTHON_TRACE', '1')],
         extra_link_args=["-Wl,--no-as-needed"]
     ),
     Extension(
         "bonndit.tracking.stopping",
         ["src/bonndit/tracking/stopping.pyx"],
-        define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"),('CYTHON_TRACE', '1')],
-        include_dirs=[numpy.get_include(), "%s/include" % mklroot],
-        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
-        library_dirs=["%s/lib/intel64" % mklroot],
+        define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
+        include_dirs=[numpy.get_include()],
+        libraries=[ "pthread", "m", "dl"],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
         extra_link_args=["-Wl,--no-as-needed"]
     ),
     Extension(
         "bonndit.tracking.tracking_prob",
         ["src/bonndit/tracking/tracking_prob.pyx"],
-        define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"),('CYTHON_TRACE', '1')],
         extra_compile_args=['-fopenmp', "-Ofast"],
         extra_link_args=['-fopenmp'],
     ),
     Extension(
         "bonndit.pmodels.means",
         ["src/bonndit/pmodels/means.pyx"],
-        define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"),('CYTHON_TRACE', '1')],
         extra_compile_args=["-Ofast"],
     ),
     Extension(
@@ -271,7 +213,7 @@ setup(
         'Programming Language :: Python :: 3.7',
     ],
     description="The bonndit package contains the latest diffusion imaging tools developed at the University of Bonn.",
-    install_requires=requirements,
+  #  install_requires=requirements,
     license="GNU General Public License v3",
     long_description=readme + '\n\n' + history,
     include_package_data=True,
