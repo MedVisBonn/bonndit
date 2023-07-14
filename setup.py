@@ -9,6 +9,9 @@ from Cython.Build import cythonize
 from Cython.Compiler.Options import get_directive_defaults
 import numpy
 import os
+from setuptools.command.build_ext import build_ext
+from distutils.errors import CCompilerError, DistutilsExecError, DistutilsPlatformError
+
 
 directive_def = get_directive_defaults()
 directive_def['linetrace'] = True
@@ -18,6 +21,16 @@ if "MKLROOT" not in os.environ:
 					https://www.intel.com/content/www/us/en/develop/documentation/oneapi-programming-guide/top/oneapi-development-environment-setup.html description to set them correctly""")
 
 mklroot = os.environ["MKLROOT"]
+import sysconfig
+import sys
+def path_to_build_folder():
+    """Returns the name of a distutils build directory"""
+    f = "{dirname}.{platform}-cpython-{version[0]}{version[1]}/bonndit"
+    dir_name = f.format(dirname='lib',
+                    platform=sysconfig.get_platform(),
+                    version=sys.version_info)
+    return os.path.join('build', dir_name, "bonndit")
+
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -25,25 +38,37 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
+class CustomBuildExt(build_ext):
+    def run(self):
+        try:
+            build_ext.run(self)
+        except (CCompilerError, DistutilsExecError, DistutilsPlatformError, IOError):
+            print("Failed to compile the watsonfit library.")
+            print("Make sure you have the necessary dependencies and development tools installed.")
+            print("Refer to the documentation for instructions on compiling the library manually.")
+            raise
+
+
+
 suite_sparse_libs = ['lapack', 'ccolamd', 'spqr', 'cholmod', 'colamd', 'camd', 'amd', 'suitesparseconfig']
 ceres_libs = ['glog', 'gflags']
 watson_libraries = ['m', 'watsonfit']
 
 ext_modules = [
-   Extension("bonndit.utilc.watsonfit",
-            sources=['src/bonndit/utilc/watsonfit.cpp'],
-            include_dirs=["/usr/lib"],
-            language="c++",
-            extra_compile_args=["-shared"],
-            ),
+#   Extension("bonndit.watsonfit",
+ #           sources=[],
+ #           include_dirs=["/usr/lib"],
+ #           language="c++",
+ #           ),
     Extension("bonndit.utilc.watsonfitwrapper",
-              sources=["src/bonndit/utilc/watsonfitwrapper.pyx", 'src/bonndit/utilc/watsonfit.cpp'],
+              sources=["src/bonndit/utilc/watsonfitwrapper.pyx",'src/bonndit/utilc/watsonfit.cpp' ],
               define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"), ('CYTHON_TRACE', '1')],
-              include_dirs=[".", numpy.get_include(), "/usr/lib"],
-              libraries=watson_libraries,
+              include_dirs=[".", numpy.get_include(), "/usr/lib", path_to_build_folder()],
+              libraries=['cerf'],
               language="c++",
               extra_compile_args=["-I.", "-O3", "-ffast-math", "-march=native", "-fopenmp"],
-              extra_link_args=["-L/usr/local/include", "-fopenmp", "-Wl,--no-as-needed"]
+              extra_link_args=["-L/usr/local/include", "-fopenmp", "-Wl,--no-as-needed", "-I" + path_to_build_folder()],
+           #  runtime_library_dirs=watson_libraries
               ),
     Extension(
         "bonndit.utilc.blas_lapack",
@@ -139,13 +164,12 @@ ext_modules = [
         "bonndit.tracking.kalman.model",
         ["src/bonndit/tracking/kalman/model.pyx",'src/bonndit/utilc/watsonfit.cpp' ],
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"),('CYTHON_TRACE', '1')],
-        include_dirs=[".", numpy.get_include(), "%s/include" % mklroot,"/usr/include/" ],
-        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl", "watsonfit"],
+        include_dirs=[".", numpy.get_include(), "%s/include" % mklroot,"/usr/include/" ,path_to_build_folder()],
+        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl", 'cerf' ],
         library_dirs=["%s/lib/intel64" % mklroot, "/usr/bin"],
-        language='c++',
         extra_compile_args=["-I.", "-O3", "-ffast-math", "-march=native", "-fopenmp"],
-        extra_link_args=["-L/usr/local/include", "-fopenmp", "-Wl,--no-as-needed"]
-
+        extra_link_args=["-L/usr/local/include", "-fopenmp", "-Wl,--no-as-needed"],
+     #   runtime_library_dirs=watson_libraries
     ),
     Extension(
         "bonndit.tracking.kalman.kalman",
@@ -253,7 +277,6 @@ setup(
     include_package_data=True,
     keywords='bonndit',
     name='bonndit',
-
     packages=find_packages('src', exclude=('tests',)),
     package_dir={'': 'src'},
     scripts=['scripts/mtdeconv',
@@ -269,8 +292,7 @@ setup(
              'scripts/data2fodf'],
     ext_modules=cythonize(ext_modules, compiler_directives={'boundscheck': False, 'wraparound': False,
                                                             'optimize.unpack_method_calls': False}),
-    # cmdclass={'build_ext': build_ext},
-    package_data={"": ['*.pxd', '*.npz', '*.npy', '*.so']},
+    package_data={"": ['*.pxd', '*.npz', '*.npy', '*.so', '*.h']},
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
