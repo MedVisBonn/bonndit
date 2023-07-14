@@ -15,11 +15,11 @@ import os
 
 def path_to_build_folder():
     """Returns the name of a distutils build directory"""
-    f = "{dirname}.{platform}-cpython-{version[0]}{version[1]}/bonndit"
+    f = "{dirname}.{platform}-cpython-{version[0]}{version[1]}/bonndit/utilc"
     dir_name = f.format(dirname='lib',
                         platform=sysconfig.get_platform(),
                         version=sys.version_info)
-    return os.path.join('build', dir_name, "bonndit")
+    return os.path.join('build', dir_name)
 
 
 with open('README.rst') as readme_file:
@@ -35,6 +35,8 @@ ceres_libs = ['glog', 'gflags']
 watson_libraries = ['m', 'watsonfit']
 
 ext_modules = [
+    # Extension("watsonfit", sources=['src/bonndit/utilc/watsonfit.cpp'],
+    # libraries = ['cerf']),
     Extension("bonndit.utilc.watsonfitwrapper",
               sources=["src/bonndit/utilc/watsonfitwrapper.pyx",
                        'src/bonndit/utilc/watsonfit.cpp'],
@@ -72,6 +74,7 @@ ext_modules = [
         "bonndit.utilc.cython_helpers",
         ["src/bonndit/utilc/cython_helpers.pyx"],
         include_dirs=[numpy.get_include()],
+        libraries=['lapack'],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
         extra_link_args=["-Wl,--no-as-needed"]
     ),
@@ -79,6 +82,7 @@ ext_modules = [
         "bonndit.utilc.hota",
         ["src/bonndit/utilc/hota.pyx"],
         include_dirs=[numpy.get_include()],
+        libraries=['blas'],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
     ),
     Extension(
@@ -119,18 +123,18 @@ ext_modules = [
         "bonndit.tracking.alignedDirection",
         ["src/bonndit/tracking/alignedDirection.pyx"],
         include_dirs=[numpy.get_include()],
+        libraries=['blas'],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
         extra_link_args=["-Wl,--no-as-needed"],
     ), Extension(
         "bonndit.tracking.kalman.model",
-        ["src/bonndit/tracking/kalman/model.pyx",
-            'src/bonndit/utilc/watsonfit.cpp'],
+        ["src/bonndit/tracking/kalman/model.pyx"],
         define_macros=[
             ("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"),
             ('CYTHON_TRACE', '1')],
         include_dirs=[".", numpy.get_include(), "/usr/include/",
                       path_to_build_folder()],
-        libraries=["pthread", "m", "dl", 'cerf'],
+        libraries=["pthread", "m", "dl"],
         extra_compile_args=["-I.", "-O3",
                             "-ffast-math", "-march=native", "-fopenmp"],
         extra_link_args=["-L/usr/local/include",
@@ -150,7 +154,7 @@ ext_modules = [
         "bonndit.tracking.interpolation",
         ["src/bonndit/tracking/interpolation.pyx"],
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
-        include_dirs=[numpy.get_include()],
+        include_dirs=[numpy.get_include(), path_to_build_folder()],
         libraries=["pthread", "m", "dl"],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
         extra_link_args=["-Wl,--no-as-needed"]
@@ -168,6 +172,7 @@ ext_modules = [
         ["src/bonndit/tracking/stopping.pyx"],
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
         include_dirs=[numpy.get_include()],
+        libraries=['blas'],
         libraries=["pthread", "m", "dl"],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
         extra_link_args=["-Wl,--no-as-needed"]
