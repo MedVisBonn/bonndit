@@ -182,7 +182,7 @@ cdef class WatsonModel(AbstractModel):
 		cdef double[:] Pv = np.array([0.01], dtype=DTYPE)
 		ddiagonal(&P[0,0], Pv, P.shape[0], P.shape[1])
 		for i in range(self.vector_field.shape[1]):
-			mean[i*5 : i*5+5]= self.vector_field[:,i, <int> point[0], <int> point[1], <int> point[2]]
+			mean[i*5+1: i*5+5]= self.vector_field[:,i, <int> point[0], <int> point[1], <int> point[2]]
 			mean[i*5] = log(mean[i*5])
 
 
@@ -199,108 +199,12 @@ cdef class WatsonModel(AbstractModel):
 cdef class BinghamModel(WatsonModel):
 	def __cinit__(self, **kwargs):
 		super(BinghamModel, self).__init__(**kwargs)
-		lookup_table = np.load(dirname + '/bingham_coefs_versuch1001.npy')
-		normalize_const = np.load(dirname +'/normalize_const_versuch1000.npy')
-		# Convolution with rank 1 kernel:
-		for i,j in np.ndindex(lookup_table.shape[:2]):
-			if normalize_const[i,j] != 0:
-				lookup_table[i,j] *= 1/normalize_const[i,j]
-			else:
-				lookup_table[i,j] = 0
-		lookup_table[...,0,:] *= 2.51327412
-		lookup_table[...,1,:] *= 1.43615664
-		lookup_table[...,2,:] *= 0.31914592
-		self.num_tensors = <int> (kwargs['dim_model'] / 6)
-		self.lookup_table = lookup_table
-		if kwargs['process noise'] == "":
-			ddiagonal(&self.PROCESS_NOISE[0, 0], np.array([0.01, 0.01,0.01,0.001, 0.001, 0.001]), self.PROCESS_NOISE.shape[0],
-				  self.PROCESS_NOISE.shape[1])
-		if kwargs['measurement noise'] == "":
-			ddiagonal(&self.MEASUREMENT_NOISE[0, 0], np.array([0.04]), self.MEASUREMENT_NOISE.shape[0],
-				  self.MEASUREMENT_NOISE.shape[1])
-
-	cdef void sh_bingham_coeffs(self, double kappa, double beta) except *: # nogil except *:
-		#print(kappa, beta)
-		self.dipy_v[0] = self.lookup_table[<int> kappa*10, <int> beta*10, 0, 0]
-		self.dipy_v[1] = self.lookup_table[<int> kappa*10, <int> beta*10, 1, 2]
-		self.dipy_v[2] = self.lookup_table[<int> kappa*10, <int> beta*10, 1, 1]
-		self.dipy_v[3] = self.lookup_table[<int> kappa*10, <int> beta*10, 1, 0]
-		self.dipy_v[4] = self.lookup_table[<int> kappa*10, <int> beta*10, 1, 8]
-		self.dipy_v[5] = self.lookup_table[<int> kappa*10, <int> beta*10, 1, 7]
-		self.dipy_v[6] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 4]
-		self.dipy_v[7] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 3]
-		self.dipy_v[8] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 2]
-		self.dipy_v[9] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 1]
-		self.dipy_v[10] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 0]
-		self.dipy_v[11] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 8]
-		self.dipy_v[12] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 7]
-		self.dipy_v[13] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 6]
-		self.dipy_v[14] = self.lookup_table[<int> kappa*10, <int> beta*10, 2, 5]
-
-
-
-#	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points) except *: # nogil except *:
-#		cdef int number_of_tensors = int(sigma_points.shape[0]/6)
-#		cdef int i, j
-#		cdef double lam, kappa, beta
-#		cblas_dscal(observations.shape[1] * observations.shape[0], 0, &observations[0, 0], 1)
-#		for i in range(number_of_tensors):
-#			for j in range(sigma_points.shape[1]):
-#				lam = max(sigma_points[i*6, j], 0.01)
-#				kappa = max(min(exp(sigma_points[i*6 + 1, j]), 50), 0.1)
-#				beta = max(min(exp(sigma_points[i*6 + 2, j]), kappa), 0.1)
-#				#print(kappa, beta)
-#				cblas_dcopy(3, &sigma_points[i*6+3, j], sigma_points.shape[1], &self.angles[0], 1)
-#				self.sh_bingham_coeffs(kappa, beta)
-#				#print(np.array(self.dipy_v))
-#				c_map_dipy_to_pysh_o4(&self.dipy_v[0], &self.pysh_v[0])
-#				c_sh_rotate_real_coef(&self.rot_pysh_v[0], &self.pysh_v[0], self.order, &self.angles[0], &dj_o4[0][0][0])
-#				c_map_pysh_to_dipy_o4(&self.rot_pysh_v[0], &self.dipy_v[0])
-#				cblas_daxpy(observations.shape[0], lam ,&self.dipy_v[0], 1, &observations[0,j], observations.shape[1])
-#
-#
-#
-	cdef bint kinit(self, double[:] mean, double[:] point, double[:] init_dir, double[:,:] P, double[:] y) except *:
-		"""
-		Calculates angle between all possible directions and
-		"""
-		cdef int i
-		cdef double[:] dot = np.zeros(self.vector_field.shape[1])
-		cdef double[:] Pv = np.array([0.01,], dtype=DTYPE)
-		cdef double[:] dir = np.zeros((3,))
-		ddiagonal(&P[0,0], Pv, P.shape[0], P.shape[1])
-		for i in range(self.vector_field.shape[1]):
-			self.vector_field[2,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
-			self.vector_field[4,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
-			cart2sphere(dir, self.vector_field[2:, i, <int> point[0], <int> point[1], <int> point[2]])
-			self.vector_field[2,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
-			self.vector_field[4,i, <int> point[0], <int> point[1], <int> point[2]] *= -1
-			mean[i*6 + 0] = self.vector_field[1,i, <int> point[0], <int> point[1], <int> point[2]]
-			# set circle by setting kappa and  beta  = 0
-			#print(self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]])
-			mean[i*6 + 1] = log(45) #min(self.vector_field[0,i, <int> point[0], <int> point[1], <int> point[2]],45))
-			mean[i*6 + 2] = log(40)			# set angles: all needed!
-			mean[i*6 + 3] = 0
-			mean[i*6 + 4] = dir[0]
-			mean[i*6 + 5] = dir[1]
-#
-#
-	cdef void constrain(self, double[:,:] X) except *: # nogil except *:
-		cdef int i, j, n = X.shape[0]//6
-		for i in range(X.shape[1]):
-			for j in range(n):
-				X[j * 6 + 1, i] = min(max(X[j * 6 + 1, i], log(0.2)), log(50))
-				X[j * 6 + 2, i] = min(max(X[j * 6 + 2, i], log(0.1)), X[j * 6 + 1, i])
-				X[j * 6 + 0, i] = max(X[j * 6 + 0, i], self._lambda_min)
-
-cdef class BinghamQuatModel(BinghamModel):
-	def __cinit__(self, **kwargs):
-		super(BinghamQuatModel, self).__init__(**kwargs)
-		self.order= kwargs["order"]
-		self.lookup_table1 = lookup_table = np.load(dirname + '/bingham_normalized_o6_new.npy')
 		self.lookup_kappa_beta_table = np.load(dirname + '/kappa_beta_lookup.npy')
+
 		self.sh = np.zeros((28, ))
-		self.num_tensors = <int> (kwargs['dim_model'] / 7)
+		self.lookup_table1 = lookup_table = np.load(dirname + '/bingham_normalized_o6_new.npy')
+		self.num_parameter = 6
+		self.num_tensors = <int> (kwargs['dim_model'] / 6)
 		if kwargs['process noise'] == "":
 			ddiagonal(&self.PROCESS_NOISE[0, 0], np.array([0.01, 0.01,0.01,0.001, 0.001, 0.001]), self.PROCESS_NOISE.shape[0],
 				  self.PROCESS_NOISE.shape[1])
@@ -308,21 +212,20 @@ cdef class BinghamQuatModel(BinghamModel):
 			ddiagonal(&self.MEASUREMENT_NOISE[0, 0], np.array([0.04]), self.MEASUREMENT_NOISE.shape[0],
 				  self.MEASUREMENT_NOISE.shape[1])
 
-
+	cdef void set_angle_for_prediction(self, double[:] params, int params_cols):
+		cblas_dcopy(3, &params[0], params_cols, &self.angles[0], 1)
 
 
 	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points): # nogil except *:
-		cdef int number_of_tensors = int(sigma_points.shape[0]/7)
 		cdef int i, j
 		cdef double lam, kappa, beta
 		cblas_dscal(observations.shape[1] * observations.shape[0], 0, &observations[0, 0], 1)
-		for i in range(number_of_tensors):
+		for i in range(self.num_tensors):
 			for j in range(sigma_points.shape[1]):
-				lam = max(sigma_points[i*7, j], 0.01)
-				kappa = max(min(exp(sigma_points[i*7 + 1, j]), 89), 0.1)
-				beta = max(min(exp(sigma_points[i*7 + 2, j]), kappa), 0.1)
-
-				quat2ZYZ(self.angles, sigma_points[i*7+3:(i+1)*7,j])
+				lam = max(sigma_points[i*self.num_parameter, j], 0.01)
+				kappa = max(min(exp(sigma_points[i*self.num_parameter + 1, j]), 89), 0.1)
+				beta = max(min(exp(sigma_points[i*self.num_parameter + 2, j]), kappa), 0.1)
+				self.set_angle_for_prediction(sigma_points[i*self.num_parameter+3:(i+1)*self.num_parameter,j], 1)
 				bilinear(self.sh, self.lookup_table1[<int> (kappa * 10) : <int> (kappa * 10) + 2, <int> (beta * 10): <int> (beta * 10) + 2, :], 10*kappa, 10*beta)
 				c_sh_rotate_real_coef_fast(&observations[0,j], observations.shape[1], &self.sh[0], 1, self.order, &self.angles[0])
 				cblas_dscal(observations.shape[0], lam , &observations[0,j], observations.shape[1])
@@ -340,8 +243,12 @@ cdef class BinghamQuatModel(BinghamModel):
 		ret[1] = log(self.lookup_kappa_beta_table[min_idx, 3])
 
 
-#
-#
+	cdef void set_mean(self, double[:] mean, double[:,:] basis, double[:] ev, int i, int z):
+		rot2zyz(mean[i*6+3:(i+1)*6], basis)
+		self.lookup_kappa_beta(mean[1: 3], ev[z], ev[(z+1) % 2])
+
+
+
 	cdef bint kinit(self, double[:] mean, double[:] point, double[:] init_dir, double[:,:] P, double[:] y):
 		"""
 		Calculates angle between all possible directions and
@@ -378,11 +285,42 @@ cdef class BinghamQuatModel(BinghamModel):
 				cblas_dscal(3, 1/scale, &ortho_sys[0,j], 3)
 			cblas_dscal(3, -1, &ortho_sys[0,0], 1)
 			cblas_dscal(3, -1, &ortho_sys[2,0], 1)
-			rot2zyz(dir, ortho_sys)
-			ZYZ2quat(mean[i*7+3:(i+1)*7], dir)
-			self.lookup_kappa_beta(mean[1: 3], t[z], t[(z+1) % 2])
+			self.set_mean(mean, ortho_sys, t, i, z)
 
-#
+	cdef void constrain(self, double[:,:] X) except *: # nogil except *:
+		cdef int i, j, n = X.shape[0]//6
+		for i in range(X.shape[1]):
+			for j in range(n):
+				X[j * 6 + 1, i] = min(max(X[j * 6 + 1, i], log(0.2)), log(50))
+				X[j * 6 + 2, i] = min(max(X[j * 6 + 2, i], log(0.1)), X[j * 6 + 1, i])
+				X[j * 6 + 0, i] = max(X[j * 6 + 0, i], self._lambda_min)
+
+cdef class BinghamQuatModel(BinghamModel):
+	def __cinit__(self, **kwargs):
+		super(BinghamQuatModel, self).__init__(**kwargs)
+		self.order= kwargs["order"]
+		self.num_parameter = 7
+		self.num_tensors = <int> (kwargs['dim_model'] / 7)
+		if kwargs['process noise'] == "":
+			ddiagonal(&self.PROCESS_NOISE[0, 0], np.array([0.01, 0.01,0.01,0.001, 0.001, 0.001]), self.PROCESS_NOISE.shape[0],
+				  self.PROCESS_NOISE.shape[1])
+		if kwargs['measurement noise'] == "":
+			ddiagonal(&self.MEASUREMENT_NOISE[0, 0], np.array([0.04]), self.MEASUREMENT_NOISE.shape[0],
+				  self.MEASUREMENT_NOISE.shape[1])
+
+
+	cdef void set_mean(self, double[:] mean, double[:,:] basis, double[:] ev, int i, int z):
+
+		cdef double[:] dir = np.zeros((3,))
+		rot2zyz(dir, basis)
+		ZYZ2quat(mean[i * self.num_parameter + 3:(i + 1) * self.num_parameter], dir)
+		self.lookup_kappa_beta(mean[1: 3], ev[z], ev[(z + 1) % 2])
+
+	cdef void set_angle_for_prediction(self, double[:] params, int params_cols):
+		quat2ZYZ(self.angles, params)
+
+
+
 #
 	cdef void constrain(self, double[:,:] X): # nogil except *:
 		cdef int i, j, n = X.shape[0]//6
@@ -394,7 +332,6 @@ cdef class BinghamQuatModel(BinghamModel):
 
 
 cdef class MultiTensorModel(AbstractModel):
-
 	def __cinit__(self, **kwargs):
 		super(MultiTensorModel, self).__init__(**kwargs)
 		self.m = np.zeros((3,))

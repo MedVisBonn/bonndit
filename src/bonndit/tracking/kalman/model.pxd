@@ -47,19 +47,21 @@ cdef class WatsonModel(AbstractModel):
 
 cdef class BinghamModel(WatsonModel):
 	cdef double[:,:,:,:] lookup_table
+
+	cdef double[:,:,:] lookup_table1
+	cdef double[:,:] lookup_kappa_beta_table
+	cdef double[:] sh
+	cdef void set_mean(self, double[:] , double[:,:], double[:] , int , int )
+	cdef void set_angle_for_prediction(self, double[:], int)
 #	cdef int convert_to_index(self, double, double, double) #nogil expcept *
-	cdef void sh_bingham_coeffs(self, double, double) except *#nogil expcept *
 	cdef void predict_new_observation(self, double[:,:], double[:,:]) except * #nogil expcept *
 	cdef bint kinit(self, double[:], double[:], double[:], double[:,:], double[:]) except *
+	cdef void lookup_kappa_beta(self, double[:], double, double)
 	cdef void constrain(self, double[:,:]) except * #nogil expcept *
 
 cdef class BinghamQuatModel(BinghamModel):
-	cdef double[:,:,:] lookup_table1
-	cdef double[:] sh
-	cdef double[:,:] lookup_kappa_beta_table
 #	cdef int convert_to_index(self, double, double, double) #nogil expcept *
 	#cdef void sh_bingham_coeffs(self, double, double) except * #nogil expcept *
-	cdef void lookup_kappa_beta(self, double[:], double, double)
 	cdef void predict_new_observation(self, double[:,:], double[:,:]) except * #nogil expcept *
 	cdef bint kinit(self, double[:], double[:], double[:], double[:,:], double[:]) except *
 	cdef void constrain(self, double[:,:]) except * #nogil exp
@@ -79,12 +81,3 @@ cdef class MultiTensorModel(AbstractModel):
 	cdef bint kinit(self, double[:], double[:], double[:], double[:,:], double[:])
 	cdef void constrain(self, double[:,:]) #nogil expcept *
 
-#cdef extern from "watsonfit.h":
-#	void minimize_watson_mult_o4(double* parameters, double* signal_p, double* est_signal_p, double* dipy_v_p, double* pysh_v_p, double* rot_pysh_v_p, double* angles_v_p, double* loss_p, int amount, int num_of_dir_p, int no_spread) nogil
-#	void minimize_watson_mult_o6(double* parameters, double* signal_p, double* est_signal_p, double* dipy_v_p, double* pysh_v_p, double* rot_pysh_v_p, double* angles_v_p, double* loss_p, int amount, int num_of_dir_p, int no_spread) nogil
-#	void minimize_watson_mult_o8(double* parameters, double* signal_p, double* est_signal_p, double* dipy_v_p, double* pysh_v_p, double* rot_pysh_v_p, double* angles_v_p, double* loss_p, int amount, int num_of_dir_p, int no_spread) nogil
-#	void SHRotateRealCoef(double *, double *, int, double *, double *)
-#	void map_dipy_to_pysh_o4(double *, double *)
-#	void map_pysh_to_dipy_o4(double *, double *)
-#	void sh_watson_coeffs(double, double *, int)
-##
