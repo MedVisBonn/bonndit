@@ -47,7 +47,7 @@ ext_modules = [
         "bonndit.utilc.blas_lapack",
         ["src/bonndit/utilc/blas_lapack.pyx"],
         include_dirs=[numpy.get_include()],
-       # libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
+        libraries=["cblas"],
        # library_dirs=["%s/lib/intel64" % mklroot],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
        # extra_link_args=["-Wl,--no-as-needed"],
@@ -57,6 +57,7 @@ ext_modules = [
         "bonndit.utilc.quaternions",
         ["src/bonndit/utilc/quaternions.pyx"],
         include_dirs=[numpy.get_include()],
+        libraries=["cblas"],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
         extra_link_args=["-Wl,--no-as-needed"],
 ),
@@ -72,13 +73,14 @@ ext_modules = [
         "bonndit.utilc.hota",
         ["src/bonndit/utilc/hota.pyx"],
         include_dirs=[numpy.get_include()],
-        libraries=['blas'],
+        libraries=['cblas'],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
     ),
     Extension(
         "bonndit.utilc.trilinear",
         ["src/bonndit/utilc/trilinear.pyx"],
         include_dirs=[numpy.get_include()],
+        libraries=['cblas'],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
     ),
     Extension(
@@ -113,7 +115,7 @@ ext_modules = [
         "bonndit.tracking.alignedDirection",
         ["src/bonndit/tracking/alignedDirection.pyx"],
         include_dirs=[numpy.get_include()],
-        libraries=['blas'],
+        libraries=['cblas'],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
         extra_link_args=["-Wl,--no-as-needed"],
 ), Extension(
@@ -121,7 +123,7 @@ ext_modules = [
         ["src/bonndit/tracking/kalman/model.pyx"],
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"),('CYTHON_TRACE', '1')],
         include_dirs=[".", numpy.get_include(),"/usr/include/" ,path_to_build_folder()],
-        libraries=[ "pthread", "m", "dl"],
+        libraries=['cblas', "pthread", "m", "dl"],
         extra_compile_args=["-I.", "-O3", "-ffast-math", "-march=native", "-fopenmp"],
         extra_link_args=["-L/usr/local/include", "-fopenmp", "-Wl,--no-as-needed"],
     ),
@@ -130,7 +132,7 @@ ext_modules = [
         ["src/bonndit/tracking/kalman/kalman.pyx"],
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
         include_dirs=[numpy.get_include()],
-        libraries=["pthread", "m", "dl"],
+        libraries=["lapack", "cblas", "pthread", "m", "dl"],
         extra_compile_args=["-Wall", "-m64", '-Ofast'],
         extra_link_args=["-Wl,--no-as-needed"]
 
@@ -140,7 +142,7 @@ ext_modules = [
         ["src/bonndit/tracking/interpolation.pyx"],
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
         include_dirs=[numpy.get_include(),path_to_build_folder()],
-        libraries=[ "pthread", "m", "dl"],
+        libraries=["cblas", "pthread", "m", "dl"],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
         extra_link_args=["-Wl,--no-as-needed"]
     ),
@@ -148,7 +150,7 @@ ext_modules = [
         "bonndit.tracking.integration",
         ["src/bonndit/tracking/integration.pyx"],
         include_dirs=[numpy.get_include()],
-        libraries=["pthread", "m", "dl"],
+        libraries=["cblas", "pthread", "m", "dl"],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
         extra_link_args=["-Wl,--no-as-needed"]
     ),
@@ -157,8 +159,7 @@ ext_modules = [
         ["src/bonndit/tracking/stopping.pyx"],
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
         include_dirs=[numpy.get_include()],
-        libraries=['blas'],
-        libraries=[ "pthread", "m", "dl"],
+        libraries=["cblas", "pthread", "m", "dl"],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
         extra_link_args=["-Wl,--no-as-needed"]
     ),
