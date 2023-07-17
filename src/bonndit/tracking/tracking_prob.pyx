@@ -106,6 +106,7 @@ cdef forward_tracking(double[:,:] paths,  Interpolation interpolate,
 		# validate index and wm density.
 		counter+=1
 		if validator.index_checker(paths[k]):
+			#print(1)
 			set_zero_vector(paths[k])
 			break
 
@@ -118,39 +119,48 @@ cdef forward_tracking(double[:,:] paths,  Interpolation interpolate,
 				if con == 0:
 					set_zero_vector(paths[k - l])
 				else:
+			#		print(2)
 					break
 			break
 		elif con > 0:
+			#print(3)
 			return False, k
 
 		# find matching directions
 		if sum_c(integrate.old_dir) == 0:
+			#print(4)
 			set_zero_vector(paths[k])
 			set_zero_vector(features[k ])
 
 			break
 
 		if interpolate.interpolate(paths[k], integrate.old_dir, k) != 0:
+			#print(5)
 			break
-		if k<2:
-			c = angle_deg(integrate.first_dir, interpolate.next_dir)
-			#print(c, np.array(integrate.first_dir), np.array(interpolate.next_dir))
-			if c >= 90:
-				c=180-c
-			if c > 40:
-				set_zero_vector(paths[k])
-				set_zero_vector(features[k])
-				break
+		#if k<2:
+		#	c = angle_deg(integrate.first_dir, interpolate.next_dir)
+		#	#print(c, np.array(integrate.first_dir), np.array(interpolate.next_dir))
+		#	if c >= 90:
+		#		c=180-c
+		#	if c > 40:
+
+		#		print(6)
+		#		set_zero_vector(paths[k])
+		#		set_zero_vector(features[k])
+		#		break
 
 		# Check next step is valid. If it is: Integrate. else break
 		if validator.next_point_checker(interpolate.next_dir):
+			#print(7)
 			set_zero_vector(paths[k])
 			break
 
 		if integrate.integrate(interpolate.next_dir, paths[k - counter%runge_kutta], 1 + counter%runge_kutta)!= 0:
+			#print(8)
 			break
 
 		if sum_c(integrate.next_point) == 0:
+			#print(9)
 			break
 
 		# update old dir
@@ -183,6 +193,8 @@ cdef forward_tracking(double[:,:] paths,  Interpolation interpolate,
 		if validator.Curve.curvature_checker(paths[:k], features[k:k +  1,1]):
 
 			if not validator.WM.sgm_checker(trafo.point_wtoi):
+
+				#print(10)
 				return False, k
 		#integrate.old_dir = interpolate.next_dir
 
@@ -307,7 +319,7 @@ cpdef tracking_all(vector_field, wm_mask, tracking_parameters, postprocessing, u
 		logging.error('FACT, Triliniear or UKF for MultiTensor and low rank approximation are available so far.')
 		return 0
 
-	if tracking_parameters['ukf'] == "MultiTensor":
+	if tracking_parameters['ukf'] == "MultiTensor" or tracking_parameters['integration'] == "EulerUKF":
 		integrate = EulerUKF(tracking_parameters['space directions'], tracking_parameters['space origin'], trafo,
 							 float(tracking_parameters['stepsize']))
 	elif tracking_parameters['integration'] == "Euler":

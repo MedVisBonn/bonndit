@@ -194,6 +194,7 @@ cdef class UKFBinghamQuatAlt(Interpolation):
 	cdef double[:,:,:] best_fit
 	cdef double[:,:] fit_matrix
 	cdef double[:,:] fit_matrix_rot
+	cdef void init_kalman(self)
 
 
 
