@@ -229,7 +229,7 @@ def main():
             'The following arguments are just important if the --ukf flag '
             'is set to MultiTensor or LowRank'
         ),
-        default=argparse.SUPPRESS)
+        default="")
     parser.add_argument(
         '--ukf_data', help='File containing the raw data for ukf.',
         default=argparse.SUPPRESS)

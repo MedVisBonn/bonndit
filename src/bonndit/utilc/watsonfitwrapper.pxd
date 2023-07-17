@@ -2,6 +2,10 @@
 #cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True,
 # warn.unused_results=True
 
+
+# cdef extern from "watsonfit.cpp":
+# pass
+
 cdef extern from "watsonfit.h":
     # void minimize_watson_mult_o4(double* parameters, double* signal_p,
     # double* est_signal_p, double* dipy_v_p, double* pysh_v_p, double*
