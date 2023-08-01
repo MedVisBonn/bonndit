@@ -283,7 +283,7 @@ cdef class BinghamModel(WatsonModel):
 
         self.sh = np.zeros((28,))
         self.lookup_table1 = lookup_table \
-            = np.load(dirname + '/bingham_normalized_o6_new.npy')
+            = np.load(dirname + '/bingham_normalized_o6_new.npz')['arr_0']
         self.num_parameter = 6
         self.num_tensors = <int> (kwargs['dim_model'] / 6)
         if kwargs['process noise'] == "":
