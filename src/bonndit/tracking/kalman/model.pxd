@@ -47,7 +47,7 @@ cdef class WatsonModel(AbstractModel):
 
 cdef class BinghamModel(WatsonModel):
 	cdef double[:,:,:,:] lookup_table
-
+	cdef int num_parameter
 	cdef double[:,:,:] lookup_table1
 	cdef double[:,:] lookup_kappa_beta_table
 	cdef double[:] sh
