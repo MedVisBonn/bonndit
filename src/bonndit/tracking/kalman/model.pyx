@@ -2,13 +2,14 @@
 # warn.unused_results=True, profile=True
 from bonndit.directions.fodfapprox import approx_all_spherical
 from bonndit.utilc.blas_lapack cimport *
-from bonndit.utilc.hota cimport hota_4o3d_sym_eval, hota_6o3d_sym_eval
-from bonndit.utilc.trilinear cimport bilinear
-from bonndit.utilc.hota cimport hota_6o3d_hessian_sh
+
+from bonndit.utilc.hota cimport hota_4o3d_sym_eval, hota_6o3d_sym_eval, hota_6o3d_hessian_sh
 from bonndit.utilc.quaternions cimport *
-from bonndit.utilc.cython_helpers cimport rot2zyz, special_mat_mul, orthonormal_from_sphere, dinit, sphere2world, ddiagonal, world2sphere, sphere2cart, cart2sphere
+from bonndit.utilc.cython_helpers cimport special_mat_mul, rot2zyz, orthonormal_from_sphere, dinit, sphere2world, ddiagonal, world2sphere, sphere2cart, cart2sphere
+
 from bonndit.utilc.watsonfitwrapper cimport *
-from bonndit.utilc.structures cimport dj_o4
+from bonndit.utilc.trilinear cimport bilinear
+
 from scipy.optimize import least_squares
 import numpy as np
 import os
@@ -22,6 +23,10 @@ dirname = os.path.dirname(__file__)
 
 
 cdef class AbstractModel:
+	"""
+	Abstract Model class for a Kalman filter: Needed for prediction of new observation from a given state. As well as
+	initial setting of the state
+	"""
 	def __cinit__(self, **kwargs):
 		self.MEASUREMENT_NOISE =  np.zeros((kwargs['data'].shape[3],kwargs['data'].shape[3]), dtype=np.float64)
 		self.PROCESS_NOISE =  np.zeros((kwargs['dim_model'],kwargs['dim_model']), dtype=np.float64)
@@ -37,8 +42,17 @@ cdef class AbstractModel:
 
 	cdef void normalize(self, double[:] m, double[:] v, int incr): #nogil except *:
 		pass
-	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points) except *: #nogil except *:
+
+	cdef void single_predicton(self, double[:,:] observations, double[:,:] sigma_points, int i, int j) except *:
 		pass
+
+	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points) except *: #nogil except *:
+		cdef int i, j
+		cblas_dscal(observations.shape[1] * observations.shape[0], 0, &observations[0, 0], 1)
+		for i in range(self.num_tensors):
+			for j in range(sigma_points.shape[1]):
+				self.single_predicton(observations, sigma_points, i ,j)
+
 	cdef bint kinit(self, double[:] mean, double[:] point, double[:] init_dir, double[:,:] P, double[:] y) except *:
 		pass
 	cdef void constrain(self, double[:,:] X) except *: #nogil except *:
@@ -48,6 +62,16 @@ cdef class AbstractModel:
 
 
 cdef class fODFModel(AbstractModel):
+	"""
+	Classical Low-rank model, describes a fODF as
+	\[ \mathcal{T} = sum_{i=0}^r \lambda_i v_i^{\otimes l} , \]
+	where r describes the number of fibers and l the tensor order. Only order 4 and 6 is available - could be
+	easily extended.
+	TODO: Should be changed to $\lambda * v$ to remove the constrained - I assume this violates the Gaussian assumptions...
+	State space is
+	\[ X = \left[ \lambda_1 , v_{1_1}, v_{1_2}, v_{1_3}, \cdots ,  \lambda_r , v_{r_1}, v_{r_2}, v_{r_3} \right] , \]
+	where $\lambda$ is length and $v \in \mathbb{S}^2$.
+	"""
 	def __cinit__(self, **kwargs):
 		super(fODFModel, self).__init__(**kwargs)
 		self.m = np.zeros((3,))
@@ -69,22 +93,16 @@ cdef class fODFModel(AbstractModel):
 			cblas_dcopy(3, &v[0], inc, &m[0], 1)
 			cblas_dscal(3, 1/cblas_dnrm2(3, &v[0],inc), &m[0], 1)
 
-	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points) except *: #nogil except *:
-		cdef int number_of_tensors = int(sigma_points.shape[0]/4)
-		cdef int i, j
+	cdef void single_predicton(self, double[:,:] observations, double[:,:] sigma_points, int i, int j) except *: #nogil except *:
 		cdef double lam
-		cblas_dscal(observations.shape[1] * observations.shape[0], 0, &observations[0, 0], 1)
-		for i in range(number_of_tensors):
-			for j in range(sigma_points.shape[1]):
-				self.normalize(self.m, sigma_points[i * 4: i * 4 + 3, j], sigma_points.shape[1])
-				lam = max(sigma_points[i*4 + 3, j], 0.01)
-				if self.order == 4:
-					hota_4o3d_sym_eval(self.res, lam, self.m)
-				else:
-					hota_6o3d_sym_eval(self.res, lam, self.m)
-				cblas_daxpy(observations.shape[0],1,&self.res[0], 1, &observations[0,j], observations.shape[1])
-		#with gil:
-		#	print(np.array(observations))
+		self.normalize(self.m, sigma_points[i * 4: i * 4 + 3, j], sigma_points.shape[1])
+		lam = max(sigma_points[i*4 + 3, j], 0.01)
+		if self.order == 4:
+			hota_4o3d_sym_eval(self.res, lam, self.m)
+		else:
+			hota_6o3d_sym_eval(self.res, lam, self.m)
+		cblas_daxpy(observations.shape[0],1,&self.res[0], 1, &observations[0,j], observations.shape[1])
+
 
 
 	cdef bint kinit(self, double[:] mean, double[:] point, double[:] init_dir, double[:,:] P, double[:] y) except *:
@@ -92,7 +110,6 @@ cdef class fODFModel(AbstractModel):
 		Calculates angle between all possible directions and
 		"""
 		cdef int i
-		cdef double[:] dot = np.zeros(self.vector_field.shape[1])
 		cdef double[:] Pv = np.array([0.01])
 		ddiagonal(&P[0,0], Pv, P.shape[0], P.shape[1])
 		for i in range(self.num_tensors):
@@ -110,6 +127,16 @@ cdef class fODFModel(AbstractModel):
 
 
 cdef class WatsonModel(AbstractModel):
+	"""
+	Uses Wason model, describes a fODF as
+	\[ \mathcal{T} = sum_{i=0}^r \lambda_i W \left( x_i, \kappa_i \right) \star k \]
+	where r describes the number of fibers, $W$ a Watson distribution, with parameters $x_i$ direction and $\kappa_i$
+	concentration parameter. Additionally, we fold with $k$ to account for the CSD model.
+	Only order 4 and 6 is available - could be easily extended.
+	State space is
+	\[ X = \left[ \kappa_1, \lambda_1 , v_{1_1}, v_{1_2}, v_{1_3}, \cdots , \kappa_r, \lambda_r , v_{r_1}, v_{r_2}, v_{r_3} \right] , \]
+	where $\lambda$ is length and $v \in \mathbb{S}^2$.
+	"""
 	def __cinit__(self, **kwargs):
 		super(WatsonModel, self).__init__(**kwargs)
 		self.m = np.zeros((3,))
@@ -150,28 +177,25 @@ cdef class WatsonModel(AbstractModel):
 				v[3] * 1/2 * sqrt(5/pi) * self.rank_1_rh_o4[1] + \
 				v[10] * 3/16 * sqrt(1/pi) * (35-30+3) * self.rank_1_rh_o4[2]
 
-	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points) except *: # nogil except *:
-		cdef int number_of_tensors = int(sigma_points.shape[0]/5)
-		cdef int i, j
-		cdef double lam, kappa, div
-		cblas_dscal(observations.shape[1] * observations.shape[0], 0, &observations[0, 0], 1)
-		for i in range(number_of_tensors):
-			for j in range(sigma_points.shape[1]):
-				self.normalize(self.m, sigma_points[i * 5: i * 5 + 5, j], sigma_points.shape[1])
-				lam = max(sigma_points[i*5 + 1, j], 0.01)
-				kappa = exp(sigma_points[i*5, j])
-				cart2sphere(self.angles[1:], self.m)
-				cblas_dscal(self.dipy_v.shape[0], 0, &self.dipy_v[0], 1)
-				c_sh_watson_coeffs(kappa, &self.dipy_v[0], self.order)
-				self.dipy_v[0] *= self.rank_1_rh_o4[0]
-				self.dipy_v[3] *= self.rank_1_rh_o4[1]
-				self.dipy_v[10] *= self.rank_1_rh_o4[2]
-				if self.order == 6:
-					self.dipy_v[21] *= self.rank_1_rh_o4[3]
 
-				c_sh_rotate_real_coef_fast(&observations[0,j], observations.shape[1], &self.dipy_v[0],
-										   1, self.order, &self.angles[0])
-				cblas_dscal(observations.shape[0], lam , &observations[0,j], observations.shape[1])
+	cdef void single_predicton(self, double[:,:] observations, double[:,:] sigma_points, int i, int j) except *: # nogil except *:
+		print('hello')
+		cdef double lam, kappa, div
+		self.normalize(self.m, sigma_points[i * 5: i * 5 + 5, j], sigma_points.shape[1])
+		lam = max(sigma_points[i*5 + 1, j], 0.01)
+		kappa = exp(sigma_points[i*5, j])
+		cart2sphere(self.angles[1:], self.m)
+		cblas_dscal(self.dipy_v.shape[0], 0, &self.dipy_v[0], 1)
+		c_sh_watson_coeffs(kappa, &self.dipy_v[0], self.order)
+		self.dipy_v[0] *= self.rank_1_rh_o4[0]
+		self.dipy_v[3] *= self.rank_1_rh_o4[1]
+		self.dipy_v[10] *= self.rank_1_rh_o4[2]
+		if self.order == 6:
+			self.dipy_v[21] *= self.rank_1_rh_o4[3]
+
+		c_sh_rotate_real_coef_fast(&observations[0,j], observations.shape[1], &self.dipy_v[0],
+								   1, self.order, &self.angles[0])
+		cblas_dscal(observations.shape[0], lam , &observations[0,j], observations.shape[1])
 
 
 	cdef bint kinit(self, double[:] mean, double[:] point, double[:] init_dir, double[:,:] P, double[:] y) except *:
@@ -182,7 +206,9 @@ cdef class WatsonModel(AbstractModel):
 		cdef double[:] Pv = np.array([0.01], dtype=DTYPE)
 		ddiagonal(&P[0,0], Pv, P.shape[0], P.shape[1])
 		for i in range(self.vector_field.shape[1]):
-			mean[i*5+1: i*5+5]= self.vector_field[:,i, <int> point[0], <int> point[1], <int> point[2]]
+
+			mean[i*5: i*5+5]= self.vector_field[:,i, <int> point[0], <int> point[1], <int> point[2]]
+
 			mean[i*5] = log(mean[i*5])
 
 
@@ -197,13 +223,24 @@ cdef class WatsonModel(AbstractModel):
 
 
 cdef class BinghamModel(WatsonModel):
+	"""
+	Uses Bingham model, describes a fODF as
+	\[ \mathcal{T} = sum_{i=0}^r \lambda_i B \left( x_i, \kappa_i \right) \star k \]
+	where r describes the number of fibers, $B$ a Bingham distribution, with parameters $r_i$ rotation in angle and $\kappa_i$
+	concentration parameter. Additionally, we fold with $k$ to account for the CSD model.
+	Only order 4 and 6 is available - could be easily extended.
+	State space is
+	\[ X = \left[ \kappa_1, \lambda_1 , \omega_{1_1}, v_{1_2}, v_{1_3}, \cdots , \kappa_r, \lambda_r , v_{r_1}, v_{r_2}, v_{r_3} \right] , \]
+	where $\lambda$ is length and $v \in \mathbb{S}^2$.
+	"""
 	def __cinit__(self, **kwargs):
 		super(BinghamModel, self).__init__(**kwargs)
 		self.lookup_kappa_beta_table = np.load(dirname + '/kappa_beta_lookup.npy')
 
-		self.sh = np.zeros((28, ))
-		self.lookup_table1 = lookup_table = np.load(dirname + '/bingham_normalized_o6_new.npz')['arr_0']
-		self.num_parameter = 6
+		lookup_table1 =  np.load(dirname + '/bingham_normalized_o6_new.npz')
+		self.sh = np.zeros((29,))
+		self.lookup_table1 = lookup_table1['arr_0']
+
 		self.num_tensors = <int> (kwargs['dim_model'] / 6)
 		if kwargs['process noise'] == "":
 			ddiagonal(&self.PROCESS_NOISE[0, 0], np.array([0.01, 0.01,0.01,0.001, 0.001, 0.001]), self.PROCESS_NOISE.shape[0],
@@ -216,19 +253,15 @@ cdef class BinghamModel(WatsonModel):
 		cblas_dcopy(3, &params[0], params_cols, &self.angles[0], 1)
 
 
-	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points): # nogil except *:
-		cdef int i, j
+	cdef void single_predicton(self, double[:,:] observations, double[:,:] sigma_points, int i, int j): # nogil except *:
 		cdef double lam, kappa, beta
-		cblas_dscal(observations.shape[1] * observations.shape[0], 0, &observations[0, 0], 1)
-		for i in range(self.num_tensors):
-			for j in range(sigma_points.shape[1]):
-				lam = max(sigma_points[i*self.num_parameter, j], 0.01)
-				kappa = max(min(exp(sigma_points[i*self.num_parameter + 1, j]), 89), 0.1)
-				beta = max(min(exp(sigma_points[i*self.num_parameter + 2, j]), kappa), 0.1)
-				self.set_angle_for_prediction(sigma_points[i*self.num_parameter+3:(i+1)*self.num_parameter,j], 1)
-				bilinear(self.sh, self.lookup_table1[<int> (kappa * 10) : <int> (kappa * 10) + 2, <int> (beta * 10): <int> (beta * 10) + 2, :], 10*kappa, 10*beta)
-				c_sh_rotate_real_coef_fast(&observations[0,j], observations.shape[1], &self.sh[0], 1, self.order, &self.angles[0])
-				cblas_dscal(observations.shape[0], lam , &observations[0,j], observations.shape[1])
+		lam = max(sigma_points[i*self.num_parameter, j], 0.01)
+		kappa = max(min(exp(sigma_points[i*self.num_parameter + 1, j]), 89), 0.1)
+		beta = max(min(exp(sigma_points[i*self.num_parameter + 2, j]), kappa), 0.1)
+		self.set_angle_for_prediction(sigma_points[i*self.num_parameter+3:(i+1)*self.num_parameter,j], sigma_points.shape[1])
+		bilinear(self.sh, self.lookup_table1[<int> (kappa * 10) : <int> (kappa * 10) + 2, <int> (beta * 10): <int> (beta * 10) + 2, :], 10*kappa, 10*beta)
+		c_sh_rotate_real_coef_fast(&observations[0,j], observations.shape[1], &self.sh[0], 1, self.order, &self.angles[0])
+		cblas_dscal(observations.shape[0], lam , &observations[0,j], observations.shape[1])
 
 
 	cdef void lookup_kappa_beta(self, double[:] ret, double e1, double e2):
@@ -254,16 +287,14 @@ cdef class BinghamModel(WatsonModel):
 		Calculates angle between all possible directions and
 		"""
 		cdef int i
-		cdef double[:] dot = np.zeros(self.vector_field.shape[1])
 		cdef double[:] Pv = np.array([0.01,], dtype=DTYPE)
 		cdef double[:] dir = np.zeros((3,))
 		cdef double[:, : ,: ] out = np.zeros((4, self.vector_field.shape[1], 1))
-		cdef double[:] y_copy = np.zeros_like(y)
-		cdef double[:] ten = np.zeros_like(y)
+
 		cdef double[:,:] hessian = np.zeros((2,2)), orth = np.zeros((3,2))
 		cdef double[:,:] ortho_sys = np.zeros((3,3))
 		dir1 = np.zeros((3, ))
-		cdef double[:] res = np.zeros((29))
+
 		ddiagonal(&P[0,0], Pv, P.shape[0], P.shape[1])
 
 		for i in range(self.vector_field.shape[1]):
@@ -291,16 +322,27 @@ cdef class BinghamModel(WatsonModel):
 		cdef int i, j, n = X.shape[0]//6
 		for i in range(X.shape[1]):
 			for j in range(n):
-				X[j * 6 + 1, i] = min(max(X[j * 6 + 1, i], log(0.2)), log(50))
+				X[j * 6 + 1, i] = min(max(X[j * 6 + 1, i], log(0.2)), log(89))
 				X[j * 6 + 2, i] = min(max(X[j * 6 + 2, i], log(0.1)), X[j * 6 + 1, i])
 				X[j * 6 + 0, i] = max(X[j * 6 + 0, i], self._lambda_min)
 
 cdef class BinghamQuatModel(BinghamModel):
+	"""
+	Uses Bingham model, describes a fODF as
+	\[ \mathcal{T} = sum_{i=0}^r \lambda_i B \left( x_i, \kappa_i \right) \star k \]
+	where r describes the number of fibers, $B$ a Bingham distribution, with parameters $r_i$ rotation in angle and $\kappa_i$
+	concentration parameter. Additionally, we fold with $k$ to account for the CSD model.
+	Only order 4 and 6 is available - could be easily extended.
+	State space is
+	\[ X = \left[ \kappa_1, \lambda_1 , \omega_{1_1}, v_{1_2}, v_{1_3}, \cdots , \kappa_r, \lambda_r , v_{r_1}, v_{r_2}, v_{r_3} \right] , \]
+	where $\lambda$ is length and $v \in \mathbb{S}^2$.
+	"""
+
 	def __cinit__(self, **kwargs):
+		self.num_parameter = 6
 		super(BinghamQuatModel, self).__init__(**kwargs)
 		self.order= kwargs["order"]
-		self.num_parameter = 7
-		self.num_tensors = <int> (kwargs['dim_model'] / 7)
+
 		if kwargs['process noise'] == "":
 			ddiagonal(&self.PROCESS_NOISE[0, 0], np.array([0.01, 0.01,0.01,0.001, 0.001, 0.001]), self.PROCESS_NOISE.shape[0],
 				  self.PROCESS_NOISE.shape[1])
@@ -320,15 +362,6 @@ cdef class BinghamQuatModel(BinghamModel):
 		quat2ZYZ(self.angles, params)
 
 
-
-#
-	cdef void constrain(self, double[:,:] X): # nogil except *:
-		cdef int i, j, n = X.shape[0]//6
-		for i in range(X.shape[1]):
-			for j in range(n):
-				X[j * 6 + 1, i] = min(max(X[j * 6 + 1, i], log(0.2)), log(89))
-				X[j * 6 + 2, i] = min(max(X[j * 6 + 2, i], log(0.1)), X[j * 6 + 1, i])
-				X[j * 6 + 0, i] = max(X[j * 6 + 0, i], self._lambda_min)
 
 
 cdef class MultiTensorModel(AbstractModel):
@@ -384,48 +417,19 @@ cdef class MultiTensorModel(AbstractModel):
 		M[2,2] = m[2] * m[2] / (1 + m[0]) - 1
 		special_mat_mul(R, M, lambdas, M, self.GLOBAL_TENSOR_UNPACK_VALUE)
 
-	cdef void predict_new_observation(self, double[:,:] observations, double[:,:] sigma_points, ): #1  nogil except *:
-		r"""
-		Predicts new observation for a given set of sigma points according to the signal model
-		.. math::
-			 s_i \coloneqq
-
-
-		Parameters
-		----------
-		p
-		q
-
-		outer_q
-		outer_p
-		outer_m
-		observations
-		sigma_points
-		u
-		baseline_signal
-		acq_spec_const
-
-		Returns
-		-------
-
-		"""
-		cdef int number_of_tensors = int(sigma_points.shape[0]/5)
-		cblas_dscal(observations.shape[1]*observations.shape[0], 0, &observations[0,0], 1)
-		cdef int  i, j, k
-		for i in range(number_of_tensors):
-			for j in range(sigma_points.shape[1]):
-				self.normalize(self.m, sigma_points[i * 5: i * 5 + 3, j], sigma_points.shape[1])
-				self.lam[0] = max(sigma_points[i * 5 + 3, j], self._lambda_min)
-				self.lam[1] = max(sigma_points[i * 5 + 4, j], self._lambda_min)
-				self.lam[2] = self.lam[1]
-				if self.m[0] < 0:
-					cblas_dscal(3, -1, &self.m[0], 1)
-				self.diffusion(self.D, self.m, self.lam, self.M)
-				#with gil:
-				#	print(np.array(D)
-				for k in range(self.gradients.shape[0]):
-					cblas_dgemv(CblasRowMajor, CblasNoTrans, self.D.shape[0], self.D.shape[1], 1, &self.D[0,0], self.D.shape[1], &self.gradients[k, 0], self.gradients.shape[0], 0, &self.q[0], 1)
-					observations[k,j] += 1/number_of_tensors * exp(- self.baseline_signal[k] * cblas_ddot(self.D.shape[0], &self.q[0], 1, &self.gradients[k,0],  self.gradients.shape[0]))
+	cdef void single_predicton(self, double[:,:] observations, double[:,:] sigma_points, int i, int j): #1  nogil except *:
+		self.normalize(self.m, sigma_points[i * 5: i * 5 + 3, j], sigma_points.shape[1])
+		self.lam[0] = max(sigma_points[i * 5 + 3, j], self._lambda_min)
+		self.lam[1] = max(sigma_points[i * 5 + 4, j], self._lambda_min)
+		self.lam[2] = self.lam[1]
+		if self.m[0] < 0:
+			cblas_dscal(3, -1, &self.m[0], 1)
+		self.diffusion(self.D, self.m, self.lam, self.M)
+		#with gil:
+		#	print(np.array(D)
+		for k in range(self.gradients.shape[0]):
+			cblas_dgemv(CblasRowMajor, CblasNoTrans, self.D.shape[0], self.D.shape[1], 1, &self.D[0,0], self.D.shape[1], &self.gradients[k, 0], self.gradients.shape[0], 0, &self.q[0], 1)
+			observations[k,j] += 1/self.num_tensors * exp(- self.baseline_signal[k] * cblas_ddot(self.D.shape[0], &self.q[0], 1, &self.gradients[k,0],  self.gradients.shape[0]))
 
 
 

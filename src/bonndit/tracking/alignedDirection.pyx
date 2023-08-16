@@ -209,11 +209,7 @@ cdef class Deterministic2(Probabilities):
 					self.probability[i] = 1
 				else:
 					self.probability[i] = 0
-	#	self.probability[min_index] = 1
 		self.random_choice(direction)
-#		mult_with_scalar(self.best_fit, 1, self.test_vectors[min_index])
-#		self.chosen_prob = 0
-#		self.chosen_angle = self.angles[min_index]
 
 cdef class Deterministic(Probabilities):
 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) : # nogil  except *:

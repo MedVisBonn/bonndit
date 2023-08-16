@@ -8,10 +8,24 @@ from distutils.extension import Extension
 from Cython.Build import cythonize
 import numpy
 
+from Cython.Distutils import build_ext
+
+from distutils.command.install import install as DistutilsInstall
+
 import sysconfig
 import sys
 import os
 
+
+WATSON = os.environ.get('WATSON', 'NOT_WATSON')
+print(WATSON)
+if WATSON=='NOT_WATSON':
+    WATSON = False
+else:
+    WATSON = True
+
+
+print(WATSON)
 
 def path_to_build_folder():
     """Returns the name of a distutils build directory"""
@@ -22,6 +36,7 @@ def path_to_build_folder():
     return os.path.join('build', dir_name)
 
 
+
 with open('README.rst') as readme_file:
     readme = readme_file.read()
 
@@ -30,19 +45,25 @@ with open('HISTORY.rst') as history_file:
 
 suite_sparse_libs = ['lapack', 'ccolamd', 'spqr', 'cholmod', 'colamd', 'camd', 'amd', 'suitesparseconfig']
 ceres_libs = ['glog', 'gflags']
-watson_libraries = ['m', 'watsonfit']
+watson_libraries = ceres_libs + suite_sparse_libs + ['pthread', 'fftw3', 'm', 'watsonfit']
+extra_args = ["-I.", "-O3", "-ffast-math", "-march=native", "-fopenmp"]
+extra_args_watsonfit = []
+if WATSON:
+    extra_args_watsonfit.append("-DWATSON")
 
 ext_modules = [
-
-    #  Extension("watsonfit", sources=['src/bonndit/utilc/watsonfit.cpp'],
-    #      libraries = ['cerf']),
+        Extension("bonndit.utilc.watsonfit",
+            sources=["src/bonndit/utilc/watsonfit.cpp"],
+            include_dirs=[".", numpy.get_include(), "/usr/local/include", "/usr/lib", path_to_build_folder()],
+            extra_link_args=extra_args_watsonfit
+            ),
     Extension("bonndit.utilc.watsonfitwrapper",
-              sources=["src/bonndit/utilc/watsonfitwrapper.pyx", 'src/bonndit/utilc/watsonfit.cpp'],
+              sources=["src/bonndit/utilc/watsonfitwrapper.pyx"],
               define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"), ('CYTHON_TRACE', '1')],
-              include_dirs=[".", numpy.get_include(), "/usr/lib", path_to_build_folder()],
-              libraries=['cerf'],
+              include_dirs=[".", numpy.get_include(), "/usr/local/include", "/usr/lib", path_to_build_folder()],
+              libraries= watson_libraries if WATSON else ["m"],
               language="c++",
-              extra_compile_args=["-I.", "-O3", "-ffast-math", "-march=native", "-fopenmp"],
+              extra_compile_args=extra_args,
               extra_link_args=["-L/usr/local/include", "-fopenmp", "-Wl,--no-as-needed", "-I" + path_to_build_folder()],
               ),
     Extension(
@@ -50,10 +71,8 @@ ext_modules = [
         ["src/bonndit/utilc/blas_lapack.pyx"],
         include_dirs=[numpy.get_include()],
         libraries=["cblas"],
-        # library_dirs=["%s/lib/intel64" % mklroot],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
-        # extra_link_args=["-Wl,--no-as-needed"],
-        # define_macros = [('CYTHON_TRACE', '1')],
+
     ),
     Extension(
         "bonndit.utilc.quaternions",
@@ -227,6 +246,7 @@ setup(
     license="GNU General Public License v3",
     long_description=readme + '\n\n' + history,
     include_package_data=True,
+    cmdclass = {'build_ext': build_ext},
     keywords='bonndit',
     name='bonndit',
     packages=find_packages('src', exclude=('tests',)),
@@ -243,7 +263,7 @@ setup(
              'scripts/csd-peaks',
              'scripts/data2fodf'],
     ext_modules=cythonize(ext_modules, compiler_directives={'boundscheck': False, 'wraparound': False,
-                                                            'optimize.unpack_method_calls': False}),
+                                                            'optimize.unpack_method_calls': False}, compile_time_env=dict(WATSON=WATSON)),
     package_data={"": ['*.pxd', '*.npz', '*.npy', '*.so', '*.h']},
     setup_requires=setup_requirements,
     test_suite='tests',

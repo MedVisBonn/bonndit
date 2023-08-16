@@ -1,0 +1,2 @@
+/usr/lib/libwatsonfit.so
+/usr/include/watsonfit.h
