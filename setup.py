@@ -52,18 +52,16 @@ if WATSON:
     extra_args_watsonfit.append("-DWATSON")
 
 ext_modules = [
-        Extension("bonndit.utilc.watsonfit",
-            sources=["src/bonndit/utilc/watsonfit.cpp"],
-            include_dirs=[".", numpy.get_include(), "/usr/local/include", "/usr/lib", path_to_build_folder()],
-            extra_link_args=extra_args_watsonfit
-            ),
+
+    #  Extension("watsonfit", sources=['src/bonndit/utilc/watsonfit.cpp'],
+    #      libraries = ['cerf']),
     Extension("bonndit.utilc.watsonfitwrapper",
-              sources=["src/bonndit/utilc/watsonfitwrapper.pyx"],
+              sources=["src/bonndit/utilc/watsonfitwrapper.pyx", 'src/bonndit/utilc/watsonfit.cpp'],
               define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"), ('CYTHON_TRACE', '1')],
-              include_dirs=[".", numpy.get_include(), "/usr/local/include", "/usr/lib", path_to_build_folder()],
-              libraries= watson_libraries if WATSON else ["m"],
+              include_dirs=[".", numpy.get_include(), "/usr/lib", path_to_build_folder()],
+              libraries=['cerf'],
               language="c++",
-              extra_compile_args=extra_args,
+              extra_compile_args=["-I.", "-O3", "-ffast-math", "-march=native", "-fopenmp"],
               extra_link_args=["-L/usr/local/include", "-fopenmp", "-Wl,--no-as-needed", "-I" + path_to_build_folder()],
               ),
     Extension(
