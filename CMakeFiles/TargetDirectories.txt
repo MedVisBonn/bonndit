@@ -1,0 +1,7 @@
+/home/xderes/bonndit/CMakeFiles/install/strip.dir
+/home/xderes/bonndit/CMakeFiles/install/local.dir
+/home/xderes/bonndit/CMakeFiles/install.dir
+/home/xderes/bonndit/CMakeFiles/list_install_components.dir
+/home/xderes/bonndit/CMakeFiles/rebuild_cache.dir
+/home/xderes/bonndit/CMakeFiles/edit_cache.dir
+/home/xderes/bonndit/CMakeFiles/watsonfit.dir

@@ -1,6 +1,7 @@
 #%%cython --annotate
 #cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, warn.unused_results=True
-from libc.math cimport sqrt, cos, sin
+from libc.math cimport sqrt, sin, cos
+
 import numpy as np
 from bonndit.utilc.blas_lapack cimport *
 from bonndit.utilc.cython_helpers cimport cart2sphere

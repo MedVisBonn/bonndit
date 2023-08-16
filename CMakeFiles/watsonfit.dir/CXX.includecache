@@ -1,0 +1,34 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/xderes/bonndit/src/bonndit/utilc/watsonfit.cpp
+watsonfit.h
+/home/xderes/bonndit/src/bonndit/utilc/watsonfit.h
+ceres/ceres.h
+-
+glog/logging.h
+-
+omp.h
+-
+chrono
+-
+thread
+-
+iomanip
+-
+cerf.h
+/home/xderes/bonndit/src/bonndit/utilc/cerf.h
+math.h
+-
+stdexcept
+-
+iostream
+-
+
+/home/xderes/bonndit/src/bonndit/utilc/watsonfit.h
+
