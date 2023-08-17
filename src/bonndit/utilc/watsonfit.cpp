@@ -813,7 +813,6 @@ class Timer{
   }
 };
 
-#ifdef WATSON
 double watson_minimizer(const double* x, double* signal, double* est_signal, double* dipy_v, double* pysh_v, double* rot_pysh_v, double* angles, double* dj, int num_of_dir, int lmax, int no_spread) {
     double weight, kappa, diff, peak_value, loss = 0;
     int clmax = lmax+1;
@@ -938,6 +937,7 @@ struct WatsonSHApprox {
         int local_no_spread;
 };
 
+#ifdef WATSON
 /// helper class for showing the progressbar
 /// adapted on the basis of https://stackoverflow.com/a/44555438
 class ProgressBar{

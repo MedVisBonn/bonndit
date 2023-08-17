@@ -959,6 +959,7 @@ cdef class UKFBinghamAlt(Interpolation):
 				kappa = min(max(exp(self.mean[j, 1]), 0.2), 89)
 				beta = min(max(exp(self.mean[j, 2]), 0.2), kappa)
 				#print(kappa, beta)
+
 				self._model.sh_bingham_coeffs(kappa, beta)
 
 				cblas_dcopy(3, &self.mean[j, 3], 1, &self._model.angles[0], 1)
