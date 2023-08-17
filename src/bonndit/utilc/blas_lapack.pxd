@@ -36,7 +36,6 @@ cdef extern from 'cblas.h':
         const int n, double * x, const int incx, double * y,
         const int incy) nogil except *
 
-cdef extern from "lapacke.h":
     int LAPACKE_dpotrf(
         int matrix_layout, char uplo, int n, double * a,
         int lda) nogil except *
