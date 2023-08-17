@@ -23,19 +23,19 @@ RUN cd ceres-bin && \
 
 COPY . /bonndit
 
+RUN rm -rf build
 RUN mkdir build
 RUN cd build && \
     cmake .. && \
-   make install
+   make install --debug=j
 
-RUN groupadd -rg 1000 build && useradd -ru 1000 -g build -d /build build
+RUN groupadd -rg 1002 build && useradd -ru 1002 -g build -d /build build
 
 
 RUN WATSON=TRUE pip install .
 
 WORKDIR /
-RUN rm -rf /bonndit
+#RUN rm -rf /bonndit
 
 SHELL ["/bin/bash", "-c", "-l"]
-
 USER build

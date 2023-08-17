@@ -3,7 +3,6 @@ cmake_minimum_required( VERSION 3.0 )
 set(CMAKE_FIND_DEBUG_MODE 1)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-add_compile_definitions(WATSON)
 # project name
 project(watsonfit)
 
@@ -15,7 +14,7 @@ find_package(Eigen3 REQUIRED)
 find_package(Ceres REQUIRED)
 find_package(OpenMP REQUIRED)
 
-target_compile_options(watsonfit PRIVATE -DCYTHON_PEP489_MULTI_PHASE_INIT=0)
+target_compile_options(watsonfit PRIVATE -DCYTHON_PEP489_MULTI_PHASE_INIT=0 -DWATSON=1)
 
 target_include_directories(watsonfit
   PRIVATE

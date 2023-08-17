@@ -38,11 +38,11 @@ cdef class AbstractModel:
         self._lambda_min = 0.01
         self.num_tensors = 0
         self.GLOBAL_TENSOR_UNPACK_VALUE = 0.000001
-        if kwargs['process noise'] != "":
+        if type(kwargs['process noise']).__module__ == np.__name__:
             ddiagonal(&self.PROCESS_NOISE[0, 0], kwargs['process noise'],
                 self.PROCESS_NOISE.shape[0],
                 self.PROCESS_NOISE.shape[1])
-        if kwargs['measurement noise'] != "":
+        if type(kwargs['measurement noise']).__module__ == np.__name__:
             ddiagonal(
                 &self.MEASUREMENT_NOISE[0, 0],
                 kwargs['measurement noise'], self.MEASUREMENT_NOISE.shape[0],
@@ -206,13 +206,13 @@ cdef class WatsonModel(AbstractModel):
         self.pysh_v = np.zeros((2 * 5 * 5,), dtype=DTYPE)
         self.dipy_v = np.zeros((15 if kwargs['order'] == 4 else 28,),
             dtype=DTYPE)
-        if kwargs['process noise'] == "":
+        if type(kwargs['process noise']).__module__ == np.__name__:
             ddiagonal(
                 &self.PROCESS_NOISE[0, 0],
                 np.array([0.5, 0.1, 0.01, 0.01, 0.01]),
                 self.PROCESS_NOISE.shape[0],
                 self.PROCESS_NOISE.shape[1])
-        if kwargs['measurement noise'] == "":
+        if type(kwargs['measurement noise']).__module__ == np.__name__:
             ddiagonal(
                 &self.MEASUREMENT_NOISE[0, 0], np.array([0.06]),
                 self.MEASUREMENT_NOISE.shape[0],
@@ -322,13 +322,13 @@ cdef class BinghamModel(WatsonModel):
         self.lookup_table1 = lookup_table1['arr_0']
 
         self.num_tensors = <int> (kwargs['dim_model'] / 6)
-        if kwargs['process noise'] == "":
+        if type(kwargs['process noise']).__module__ == np.__name__:
             ddiagonal(
                 &self.PROCESS_NOISE[0, 0],
                 np.array([0.01, 0.01, 0.01, 0.001, 0.001, 0.001]),
                 self.PROCESS_NOISE.shape[0],
                 self.PROCESS_NOISE.shape[1])
-        if kwargs['measurement noise'] == "":
+        if type(kwargs['measurement noise']).__module__ == np.__name__:
             ddiagonal(
                 &self.MEASUREMENT_NOISE[0, 0], np.array([0.04]),
                 self.MEASUREMENT_NOISE.shape[0],
@@ -470,13 +470,13 @@ cdef class BinghamQuatModel(BinghamModel):
         super(BinghamQuatModel, self).__init__(**kwargs)
         self.order = kwargs["order"]
 
-        if kwargs['process noise'] == "":
+        if type(kwargs['process noise']).__module__ == np.__name__:
             ddiagonal(
                 &self.PROCESS_NOISE[0, 0],
                 np.array([0.01, 0.01, 0.01, 0.001, 0.001, 0.001]),
                 self.PROCESS_NOISE.shape[0],
                 self.PROCESS_NOISE.shape[1])
-        if kwargs['measurement noise'] == "":
+        if type(kwargs['measurement noise']).__module__ == np.__name__:
             ddiagonal(
                 &self.MEASUREMENT_NOISE[0, 0], np.array([0.04]),
                 self.MEASUREMENT_NOISE.shape[0],
@@ -519,13 +519,13 @@ cdef class MultiTensorModel(AbstractModel):
         self.baseline_signal = kwargs['b']
         self.acq_spec_const = kwargs['b0']
         self._lambda_min = 100
-        if kwargs['process noise'] == "":
+        if type(kwargs['process noise']).__module__ == np.__name__:
             ddiagonal(
                 &self.PROCESS_NOISE[0, 0],
                 np.array([0.003, 0.003, 0.003, 25, 25]),
                 self.PROCESS_NOISE.shape[0],
                 self.PROCESS_NOISE.shape[1])
-        if kwargs['measurement noise'] == "":
+        if type(kwargs['measurement noise']).__module__ == np.__name__:
             ddiagonal(
                 &self.MEASUREMENT_NOISE[0, 0], np.array([0.02]),
                 self.MEASUREMENT_NOISE.shape[0],
