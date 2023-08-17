@@ -3,7 +3,7 @@ cmake_minimum_required( VERSION 3.0 )
 set(CMAKE_FIND_DEBUG_MODE 1)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-
+add_compile_definitions(WATSON)
 # project name
 project(watsonfit)
 

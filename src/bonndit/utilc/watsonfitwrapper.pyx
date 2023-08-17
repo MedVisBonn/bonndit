@@ -1,19 +1,5 @@
 #cython: language_level=3, boundscheck=False, wraparound=False
 
-
-#import numpy as np
-#cimport numpy as np
-#np.import_array()
-
-#cdef extern from "watsonfit.h":
-#        void sh_watson_coeffs(double, double *, int)
-#        void minimize_watson_mult_o4(double* parameters, double* signal_p, double* est_signal_p, double* dipy_v_p, double* pysh_v_p, double* rot_pysh_v_p, double* angles_v_p, double* loss_p, int amount, int num_of_dir_p, int no_spread) nogil
-#        void minimize_watson_mult_o6(double* parameters, double* signal_p, double* est_signal_p, double* dipy_v_p, double* pysh_v_p, double* rot_pysh_v_p, double* angles_v_p, double* loss_p, int amount, int num_of_dir_p, int no_spread) nogil
-#        void minimize_watson_mult_o8(double* parameters, double* signal_p, double* est_signal_p, double* dipy_v_p, double* pysh_v_p, double* rot_pysh_v_p, double* angles_v_p, double* loss_p, int amount, int num_of_dir_p, int no_spread) nogil
-#        void SHRotateRealCoef(double *, double *, int, double *, double *)
-#        void map_dipy_to_pysh_o4(double *, double *)
-#        void map_pysh_to_dipy_o4(double *, double *)
-
 def mw_openmp_mult_p(double[:,:] x, double[:,:] signal, double[:,:] est_signal, double[:,:] dipy_v, double[:,:,:,:] pysh_v, double[:,:,:,:] rot_pysh_v, double[:,:] angles_v, double[:] loss, int amount, int order, int num_of_dir, int no_spread):
         if order == 4:
                 mw_openmp_mult_o4(x,signal,est_signal,dipy_v,pysh_v,rot_pysh_v,angles_v,loss,amount,num_of_dir,no_spread)

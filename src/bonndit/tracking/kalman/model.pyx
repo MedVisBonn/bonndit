@@ -179,7 +179,6 @@ cdef class WatsonModel(AbstractModel):
 
 
 	cdef void single_predicton(self, double[:,:] observations, double[:,:] sigma_points, int i, int j) except *: # nogil except *:
-		print('hello')
 		cdef double lam, kappa, div
 		self.normalize(self.m, sigma_points[i * 5: i * 5 + 5, j], sigma_points.shape[1])
 		lam = max(sigma_points[i*5 + 1, j], 0.01)
