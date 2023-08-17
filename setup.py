@@ -51,7 +51,7 @@ watson_libraries = ceres_libs + suite_sparse_libs + \
 extra_args = ["-I.", "-O3", "-ffast-math", "-march=native",
               "-fopenmp", "-I" + path_to_build_folder()]
 watson_fit_source = ["src/bonndit/utilc/watsonfitwrapper.pyx"]
-if WATSON:
+if not WATSON:
     watson_fit_source.append('src/bonndit/utilc/watsonfit.cpp')
 ext_modules = [
 

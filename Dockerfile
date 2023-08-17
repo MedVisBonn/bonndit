@@ -12,7 +12,7 @@ RUN apt install build-essential cmake libcerf-dev wget python3 python3-pip -y
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir scipy cython pandas dipy cvxopt mpmath psutil pynrrd plyfile
 
-RUN apt-get install libgoogle-glog-dev libgflags-dev libatlas-base-dev libeigen3-dev libfftw3-dev libsuitesparse-dev  libblas-dev liblapack-dev libopenblas-dev  liblapacke-dev gfortran -y
+RUN apt-get install git libgoogle-glog-dev libgflags-dev libatlas-base-dev libeigen3-dev libfftw3-dev libsuitesparse-dev  libblas-dev liblapack-dev libopenblas-dev  liblapacke-dev gfortran -y
 RUN wget http://ceres-solver.org/ceres-solver-2.1.0.tar.gz
 RUN tar zxf ceres-solver-2.1.0.tar.gz
 RUN mkdir ceres-bin
@@ -21,21 +21,23 @@ RUN cd ceres-bin && \
      make -j16 && \
      make install
 
-COPY . /bonndit
-
+RUN git clone --depth 1 https://github.com/MedVisBonn/bonndit.git --branch new-dev && \
+    echo $(ls) && \
+    mv ./bonndit/* ./ && \
+    rm -rf bonndit
+RUN echo $(ls) \ && exit
 RUN rm -rf build
 RUN mkdir build
 RUN cd build && \
     cmake .. && \
-   make install --debug=j
+   make install
 
-RUN groupadd -rg 1002 build && useradd -ru 1002 -g build -d /build build
-
+RUN mkdir data
+RUN groupadd -rg 1002 bonndit && useradd -ru 1002 -g bonndit -d /data tracktograph
 
 RUN WATSON=TRUE pip install .
 
-WORKDIR /
-#RUN rm -rf /bonndit
+RUN rm -rf /bonndit
 
 SHELL ["/bin/bash", "-c", "-l"]
-USER build
+USER tracktograph
