@@ -32,6 +32,11 @@ cdef extern from 'cblas.h':
     double cblas_dnrm2 (
         const int n, const double * x,
         const int incx) nogil except *
+    void cblas_dswap(
+        const int n, double * x, const int incx, double * y,
+        const int incy) nogil except *
+
+cdef extern from "lapacke.h":
     int LAPACKE_dpotrf(
         int matrix_layout, char uplo, int n, double * a,
         int lda) nogil except *
@@ -44,9 +49,7 @@ cdef extern from 'cblas.h':
     int LAPACKE_dgetri_work(
         int matrix_layout, int n, double * a, int lda,
         const int * ipiv, double * WORK, const int LWORK) nogil except *
-    void cblas_dswap(
-        const int n, double * x, const int incx, double * y,
-        const int incy) nogil except *
+
 
 cdef extern from "<math.h>" nogil:
     double exp(double x)
