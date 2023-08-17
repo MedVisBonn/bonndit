@@ -84,7 +84,7 @@ ext_modules = [
         "bonndit.utilc.cython_helpers",
         ["src/bonndit/utilc/cython_helpers.pyx"],
         include_dirs=[numpy.get_include()],
-        libraries=['lapack'],
+        libraries=['lapack', 'cblas'],
         extra_compile_args=["-Wall", "-m64", "-Ofast"],
         extra_link_args=["-Wl,--no-as-needed"]
     ),
