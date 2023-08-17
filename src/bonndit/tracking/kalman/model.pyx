@@ -245,7 +245,6 @@ cdef class WatsonModel(AbstractModel):
         self, double[:, :] observations,
         double[:, :] sigma_points, int i, int j
     ) except *:  # nogil except *:
-        print('hello')
         cdef double lam, kappa, div
         self.normalize(
             self.m, sigma_points[i * 5: i * 5 + 5, j],
