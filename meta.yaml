@@ -1,0 +1,69 @@
+{% set name = "bonndit" %}
+{% set version = "0.3.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  path: ./
+  #url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  #sha256: b1a205ba3b95538562cbd769100ad4955fea8fc940deabaa11d9fca1691b9f1a
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - findblas
+  host:
+    - python
+    - pip
+    - cython >=0.29.33
+    - findblas
+    - openblas-devel
+    - numpy >=1.23
+  run:
+    - python
+    - dipy
+    - nibabel
+    - numpy
+    - tqdm
+    - cvxopt
+    - mpmath
+    - plyfile
+    - pynrrd
+
+test:
+  imports:
+    - bonndit
+    - bonndit.deconv
+    - bonndit.directions
+    - bonndit.filter
+    - bonndit.pmodels
+    - bonndit.tracking
+    - bonndit.tracking.kalman
+    - bonndit.utilc
+    - bonndit.utils
+  requires:
+    - cvxopt
+    - dipy
+    - mpmath
+    - nibabel
+    - numpy
+    - pynrrd
+    - pytest
+    - scipy
+    - tqdm
+
+about:
+  home: "https://github.com/MedVisBonn/bonndit"
+  license: "GNU General Public v3 (GPLv3)"
+  license_family: GPL3
+  license_file: 
+  summary: "The bonndit package contains the latest diffusion imaging tools developed at the University of Bonn."
+  doc_url: 
+  dev_url: 
+

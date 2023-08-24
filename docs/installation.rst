@@ -8,19 +8,17 @@ Installation
 Stable release
 --------------
 
-To install bonndit, run this command in your terminal:
+To install bonndit via pip, run this command in your terminal:
 
 .. code-block:: console
 
     $ pip install bonndit
 
-This is the preferred method to install bonndit, as it will always install the most recent stable release.
+To install bonndit via conda, run this command in your terminal:
 
-If you don't have `pip`_ installed, this `Python installation guide`_ can guide
-you through the process.
+.. code-block:: console
 
-.. _pip: https://pip.pypa.io
-.. _Python installation guide: http://docs.python-guide.org/en/latest/starting/installation/
+    $ conda install bonndit -c xderes -c conda-forge
 
 
 From sources

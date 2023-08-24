@@ -4,6 +4,11 @@ include HISTORY.rst
 include LICENSE
 include README.rst
 
+global-include *.pyx
+global-include *.pxd
+global-exclude *.c
+global-include *.pts
+
 recursive-include tests *
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
