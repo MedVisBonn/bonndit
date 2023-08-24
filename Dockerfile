@@ -1,6 +1,7 @@
 FROM ubuntu:latest
 
-
+ARG watson
+RUN if [ -z "$watson" ] ; then echo "Will build without Watson support. Set --build-arg watson=true for watson support" ; else echo "Build with watson support" ; fi
 
 RUN mkdir /bonndit
 WORKDIR /bonndit
@@ -12,32 +13,45 @@ RUN apt install build-essential cmake libcerf-dev wget python3 python3-pip -y
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir scipy cython pandas dipy cvxopt mpmath psutil pynrrd plyfile
 
-RUN apt-get install git libgoogle-glog-dev libgflags-dev libatlas-base-dev libeigen3-dev libfftw3-dev libsuitesparse-dev  libblas-dev liblapack-dev libopenblas-dev  liblapacke-dev gfortran -y
-RUN wget http://ceres-solver.org/ceres-solver-2.1.0.tar.gz
-RUN tar zxf ceres-solver-2.1.0.tar.gz
-RUN mkdir ceres-bin
-RUN cd ceres-bin && \
-     cmake ../ceres-solver-2.1.0 && \
-     make -j16 && \
-     make install
+RUN if [ -z "$watson" ] ; then \
+    apt-get install git libgoogle-glog-dev libgflags-dev libatlas-base-dev libeigen3-dev libfftw3-dev libsuitesparse-dev  liblapacke-dev -y && \
+    wget http://ceres-solver.org/ceres-solver-2.1.0.tar.gz && \
+    tar zxf ceres-solver-2.1.0.tar.gz && \
+    mkdir ceres-bin && \
+    cd ceres-bin && \
+    cmake ../ceres-solver-2.1.0 && \
+    make -j16 && \
+    make install; \
+    else \
+    apt-get install git libatlas-base-dev liblapacke-dev -y; \
+    fi
 
 RUN git clone --depth 1 https://github.com/MedVisBonn/bonndit.git --branch new-dev && \
     echo $(ls) && \
     mv ./bonndit/* ./ && \
     rm -rf bonndit
-RUN echo $(ls) \ && exit
-RUN rm -rf build
-RUN mkdir build
-RUN cd build && \
+
+RUN if [ -z "$watson" ]; then \
+    rm -rf build && \
+    mkdir build && \
+    cd build && \
     cmake .. && \
-   make install
+    make install; \
+    fi
 
-RUN mkdir data
-RUN groupadd -rg 1002 bonndit && useradd -ru 1002 -g bonndit -d /data tracktograph
+RUN mkdir /data
+RUN groupadd bonndit && useradd -g bonndit -d /data tracktograph && \
+    chown tracktograph:bonndit /data
 
-RUN WATSON=TRUE pip install .
+
+RUN if [ -z "$watson" ]; then \
+    WATSON=TRUE pip install .; \
+    else \
+    pip install .; \
+    fi
 
 RUN rm -rf /bonndit
+WORKDIR /data
 
 SHELL ["/bin/bash", "-c", "-l"]
 USER tracktograph
