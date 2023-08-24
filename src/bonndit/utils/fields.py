@@ -232,7 +232,8 @@ def load_tensor(filename, dtype='d'):
     return tensors, mask, meta
 
 
-def save_tensor(filename, data, mask=None, meta=default_meta, dtype='d'):
+def save_tensor(
+        filename, data, mask=None, meta=default_meta, dtype='d', mrtrix=False):
     assert (len(data.shape) == 4)
     assert (data.shape[-1] in [6, 15, 28, 45, 66, 91])
     if mask is not None:
@@ -258,6 +259,9 @@ def save_tensor(filename, data, mask=None, meta=default_meta, dtype='d'):
                     ))
     else:
         raise Exception("unknown file type: " + filename)
+    if mrtrix:
+        out = np.moveaxis(out, 0, 3)
+        out = (esh.sym_to_esh_matrix(order) @ out[..., 1:, np.newaxis])[..., 0]
 
     save_basic(filename, out, meta._with(AxisType.TENSOR[order]), dtype)
 
