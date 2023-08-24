@@ -1,6 +1,9 @@
 FROM ubuntu:latest
 
 ARG watson
+ARG UID
+ARG GID
+ARG watson
 RUN if [ -z "$watson" ] ; then echo "Will build without Watson support. Set --build-arg watson=true for watson support" ; else echo "Build with watson support" ; fi
 
 RUN mkdir /bonndit
@@ -40,7 +43,7 @@ RUN if [ -z "$watson" ]; then \
     fi
 
 RUN mkdir /data
-RUN groupadd bonndit && useradd -g bonndit -d /data tracktograph && \
+RUN groupadd -rg $GID bonndit && useradd -ru $UID -g bonndit -d /data tracktograph && \
     chown tracktograph:bonndit /data
 
 
