@@ -1,0 +1,57 @@
+# This workflow will upload a Python Package using Twine when a release is created
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python#publishing-to-package-registries
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Upload Python Package
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.x'
+    - name: apt install suite
+      run: |
+        sudo apt-get update -y
+        sudo apt-get install -y libsuitesparse-dev
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install build
+  #  - name: Build package
+  #    run: |
+  #      pip install -r requirements.txt
+  #      python setup.py sdist
+      # bdist_wheel
+  #  - name: Publish package
+  #    uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
+  #    with:
+  #      user: __token__
+  #      password: ${{ secrets.PYPI_API_TOKEN }}
+
+    - name: publish-to-conda
+      uses: JoGruen/publish_conda_package_action@1.0.3
+      with:
+        # CondaDir: locate the directory containing your meta.yml, conda_build_config.yaml (...) files
+        CondaDir: './'
+        # Channels: You can add more channel with a space separator
+        Channels: 'conda-forge xderes'
+        # Platforms: remove one or more of these platforms
+        Platforms: 'linux-64'
+        CondaToken: ${{ secrets.CondaToken }}
