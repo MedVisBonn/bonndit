@@ -232,7 +232,7 @@ def main():
         logging.error("Wrong dimension on first axis. Has to contain 4 values.")
         raise Exception()
     elif vector_field.shape[0] != 5 and (
-            args.ukf == "Watson" or args.ukf == "BinghamQuatAlt" or args.ukf == "Bingham" or args.ukf == "BinghamAlt" or args.ukf == 'WatsonAlt'):
+            args.ukf == "Watson" or args.ukf == "Bingham" or args.ukf == "BinghamAlt" or args.ukf == 'WatsonAlt'):
         logging.error("Wrong dimension on first axis. Has to contain 5 values.")
         raise Exception()
     # if vector_field.shape[1] != 3:
