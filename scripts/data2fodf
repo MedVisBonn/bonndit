@@ -93,4 +93,3 @@ else
 fi
 
 mtdeconv -o "${outfolder}/mtdeconv/ankele" -v True -k rank1 -r 4 -C hpsd "${indir}"
-
