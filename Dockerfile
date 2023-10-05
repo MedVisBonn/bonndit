@@ -53,7 +53,7 @@ RUN if [ -z "$watson" ]; then \
     pip install .; \
     fi
 
-RUN rm -rf /bonndit
+#RUN rm -rf /bonndit
 WORKDIR /data
 
 SHELL ["/bin/bash", "-c", "-l"]
