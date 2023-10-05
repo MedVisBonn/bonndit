@@ -227,7 +227,7 @@ def main():
     trafo_data[:3, :3] = meta['space directions'][-3:]
     trafo_data[:3, 3] = meta['space origin'][-3:]
     trafo_data[3, 3] = 1
-    # print(meta)
+    print(vector_field.shape, args.ukf)
     if vector_field.shape[0] != 4 and args.ukf != "Watson" and args.ukf != "WatsonAlt":
         logging.error("Wrong dimension on first axis. Has to contain 4 values.")
         raise Exception()
