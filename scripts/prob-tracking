@@ -280,6 +280,7 @@ def main():
         seeds = seeds[:3].T
         seed_count = int(args.seed_count)
         args.samples = 1
+
     else:
         raise Exception("For seedpoints only nrrd and pts files allowed")
     logging.info("Seedfile loaded")
