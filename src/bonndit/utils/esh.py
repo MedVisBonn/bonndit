@@ -52,6 +52,8 @@ def int_sphere(i, j, k):
         / ggg((i + j + k + 3) / 2)
 
 
+INDEX_OFFSET = [0, 0, 3, 0, 10, 0, 21, 0, 36, 0, 55, 0, 78]
+
 _sym2esh = [None for i in range(MAX_ORDER + 1)]
 _esh2sym = [None for i in range(MAX_ORDER + 1)]
 
