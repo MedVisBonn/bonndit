@@ -207,7 +207,7 @@ cdef forward_tracking(
             # print('chosen', interpolate.prob.chosen_prob,
             # features[k//save_steps,feature_save.prob_chosen])
         if feature_save.prob_others_0 >= 0:
-            # print('chosen1', interpolate.prob.chosen_prob)
+            print('chosen1', interpolate.prob.chosen_prob)
             features[
                 k,
                 feature_save.prob_others_0] = interpolate.prob.probability[0]
@@ -218,7 +218,7 @@ cdef forward_tracking(
                 k,
                 feature_save.prob_others_2] = interpolate.prob.probability[2]
         if feature_save.fa >= 0:
-            # print('chosen2', interpolate.prob.chosen_prob)
+            print('chosen2', interpolate.prob.chosen_prob)
             features[k, feature_save.fa] = interpolate.prob.old_fa
         if feature_save.loss >= 0:
             # print('chosen3', interpolate.prob.chosen_prob)
