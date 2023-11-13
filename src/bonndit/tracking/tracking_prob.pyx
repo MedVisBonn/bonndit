@@ -64,7 +64,7 @@ cdef void tracking(
             set_zero_vector(validator.ROIIn.inclusion_check)
             if seed.shape[0] == 3:
                 skip = interpolate.main_dir(paths[j, 0, 0])
-                if skip:
+                if not skip:
                     continue
                 integrate.old_dir = interpolate.next_dir
             else:
@@ -80,7 +80,7 @@ cdef void tracking(
 
             if seed.shape[0] == 3:
                 skip = interpolate.main_dir(paths[j, 0, 1])
-                if skip:
+                if not skip:
                     continue
                 mult_with_scalar(integrate.old_dir, -1.0, interpolate.next_dir)
             else:
