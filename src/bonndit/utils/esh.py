@@ -49,7 +49,7 @@ def ggg(a):
 # integral over the sphere of   x^i y^j z^k
 def int_sphere(i, j, k):
     return 2 * ggg((i + 1.0) / 2) * ggg((j + 1.0) / 2) * ggg((k + 1.0) / 2) / ggg((i + j + k + 3) / 2)
-
+INDEX_OFFSET = [0, 0, 3, 0, 10, 0, 21, 0, 36, 0, 55, 0, 78]
 
 _sym2esh = [None for i in range(MAX_ORDER + 1)]
 _esh2sym = [None for i in range(MAX_ORDER + 1)]

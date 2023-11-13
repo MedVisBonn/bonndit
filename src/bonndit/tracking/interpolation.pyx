@@ -65,6 +65,12 @@ cdef class Interpolation:
 		self.prob = probClass
 		self.loss = 0
 
+	cdef bint check_point(self, double[:] point):
+		if self.vector_field.shape[0] > point[0] > 0 and self.vector_field.shape[1] > point[1] > 0 and self.vector_field.shape[2] > point[2] > 0:
+			return True
+		return False
+
+
 
 
 
@@ -120,18 +126,22 @@ cdef class Interpolation:
 
 
 	#@Cython.cdivision(True)
-	cdef void main_dir(self, double[:] point) : # : # : # nogil:
+	cdef bint main_dir(self, double[:] point) : # : # : # nogil:
 			cdef double zero = 0
 			self.point_world[:3] = point
 			self.point_world[3] = 1
 			cblas_dgemv(CblasRowMajor, CblasNoTrans, 4, 4, 1, &self.inv_trafo[0, 0], 4, &self.point_world[0], 1, 0,
 						&self.point_index[0], 1)
+			if self.check_point(self.point_index[:3]):
+				self.nearest_neigh(self.point_index[:3])
+				self.set_vector(self.best_ind, 0)
+				mult_with_scalar(self.next_dir, pow(self.vector_field[0, 0, int(self.floor_point[			                                                                                            self.best_ind, 0]),
+																   int(self.floor_point[ self.best_ind, 1]),
+																  int(self.floor_point[self.best_ind, 2])], 0.25), self.vector)
+				return True
+			return False
 
-			self.nearest_neigh(self.point_index[:3])
-			self.set_vector(self.best_ind, 0)
-			mult_with_scalar(self.next_dir, pow(self.vector_field[0, 0, int(self.floor_point[			                                                                                            self.best_ind, 0]),
-			                                                   int(self.floor_point[ self.best_ind, 1]),
-			                                                  int(self.floor_point[self.best_ind, 2])], 0.25), self.vector)
+
 
 	cpdef int interpolate(self,double[:] point, double[:] old_dir, int r) except *: # : # : # nogil except *:
 		pass
