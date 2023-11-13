@@ -45,6 +45,7 @@ cdef void tracking(double[:,:,:,:] paths, double[:] seed,
 	@param features:
 	"""
 	cdef int k=0, j, l, m, u
+	cdef bint skip = False
 
 	for j in range(samples):
 		k=0
@@ -53,16 +54,23 @@ cdef void tracking(double[:,:,:,:] paths, double[:] seed,
 			# set zero inclusion check
 			set_zero_vector(validator.ROIIn.inclusion_check)
 			if seed.shape[0] == 3:
-				interpolate.main_dir(paths[j, 0, 0])
+				skip = interpolate.main_dir(paths[j, 0, 0])
+				if not skip:
+					break
 				integrate.old_dir = interpolate.next_dir
 			else:
+				skip = interpolate.check_point(seed[:3])
+				if not skip:
+					break
 				integrate.old_dir = seed[3:]
 				integrate.first_dir = seed[3:]
 			status1, m = forward_tracking(paths[j,:,0, :], interpolate, integrate, trafo, validator, max_track_length, save_steps,
 			                 features[j,:,0, :], features_save, runge_kutta)
 
 			if seed.shape[0] == 3:
-				interpolate.main_dir(paths[j, 0, 1])
+				skip = interpolate.main_dir(paths[j, 0, 1])
+				if not skip:
+					break
 				mult_with_scalar(integrate.old_dir, -1.0 ,interpolate.next_dir)
 			else:
 				mult_with_scalar(integrate.old_dir, -1.0 ,seed[3:])

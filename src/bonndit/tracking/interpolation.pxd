@@ -22,7 +22,8 @@ cdef class Interpolation:
 	cdef double loss
 	cdef int best_ind
 	cdef double[:] next_dir, vector
-	cdef void main_dir(self, double[:]) # nogil
+	cdef bint check_point(self, double[:])
+	cdef bint main_dir(self, double[:]) # nogil
 	cdef void calc_cube(self, double[:]) # nogil
 	cdef void nearest_neigh(self, double[:]) # nogil
 	cdef void set_vector(self, int, int) # nogil
