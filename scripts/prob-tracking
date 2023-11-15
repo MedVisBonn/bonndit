@@ -280,7 +280,16 @@ def main():
         seeds = seeds[:3].T
         seed_count = int(args.seed_count)
         args.samples = 1
+    elif args.seedpoints.endswith('.nii.gz'):
+        seeds = load('seedpoints', args, 'seedpoints.pts', args.i, logging, nib.load)
+        seeds, seed_trafo = seeds.get_fdata(), seeds.affine
 
+        seeds = np.array(np.where(seeds > 0.3))
+        seeds = np.vstack((seeds, np.ones(seeds.shape[1])))
+        seeds = seed_trafo @ seeds
+        seeds = seeds[:3].T
+        seed_count = int(args.seed_count)
+        args.samples = 1
     else:
         raise Exception("For seedpoints only nrrd and pts files allowed")
     logging.info("Seedfile loaded")
@@ -457,9 +466,12 @@ def main():
 
     elif args.o.endswith('tck'):
         # paths_len = np.array(paths_len, dtype=int)
-        paths = np.array(paths)[:, :3]
+        paths = np.array(paths)[:, :4]
+        paths[:,3] = 1
+        paths = (np.linalg.inv(trafo_data) @ paths.T).T
+        paths = paths[:,:3]
         streamlines = nib.streamlines.ArraySequence(np.split(paths, paths_len))
-        mytractogram = nib.streamlines.tractogram.Tractogram(streamlines, affine_to_rasmm=np.identity(4))
+        mytractogram = nib.streamlines.tractogram.Tractogram(streamlines, affine_to_rasmm=trafo_data)
         tractogram = nib.streamlines.tck.TckFile(mytractogram)
         tractogram.save(args.o)
     logging.info(f"Output file has been written to {args.o}")
