@@ -448,6 +448,8 @@ def main():
             features[saving['features'][x]] = x
     if args.o.endswith('ply'):
         paths = [tuple(x) for x in paths]
+		for path in paths:
+			print(path)
         tracks = PlyElement.describe(
             np.array(paths, dtype=[('x', 'f4'), ('y', 'f4'), ('z', 'f4')] + [(x, 'f4') for x in features]), 'vertices',
             comments=[])
