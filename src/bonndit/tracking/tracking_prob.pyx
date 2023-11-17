@@ -130,7 +130,6 @@ cdef forward_tracking(
             # print(1)
             set_zero_vector(paths[k])
             break
-
         # check if neigh is wm.
         con = validator.WM.wm_checker(paths[k])
         if con == 0:
@@ -154,6 +153,7 @@ cdef forward_tracking(
             set_zero_vector(features[k])
 
             break
+
 
         if interpolate.interpolate(paths[k], integrate.old_dir, k) != 0:
             # print(5)
@@ -487,12 +487,8 @@ cpdef tracking_all(
                 path = path[~to_exclude]
                 if path.size == 0:
                     continue
-        # print(path)
                 if path.shape[0] > 5:
-                # print(1 , path[::int(tracking_parameters['sw_save'])].shape,
-                # path[len(path)][np.newaxis].shape)
                     path = np.vstack((path[::int(tracking_parameters['sw_save'])], path[len(path) - 1][np.newaxis]))
-                # print(2, path)
                 # Work on disk or ram. Ram might be faster but for large files
                 # disk is preferable.
                     if saving['file']:
