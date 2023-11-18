@@ -203,7 +203,7 @@ cdef forward_tracking(double[:,:] paths,  Interpolation interpolate,
 	#	paths[k//save_steps] = trafo.point_itow
 	return True, k
 
-cpdef tracking_all(vector_field, wm_mask, tracking_parameters, postprocessing, ukf_parameters, trilinear_parameters, logging, saving):
+cpdef tracking_all(vector_field, wm_mask, tracking_parameters, postprocessing, ukf_parameters, trilinear_parameters, logging, saving, tck):
 	"""
 	@param vector_field: Array (4,3,x,y,z)
 		Where the first dimension contains the length and direction, the second
@@ -374,12 +374,8 @@ cpdef tracking_all(vector_field, wm_mask, tracking_parameters, postprocessing, u
 		# delete all zero arrays.
 
 		for j in range(tracking_parameters['samples']):
-			path = np.concatenate((np.asarray(paths[k,j]),np.asarray(features[k,j])), axis=-1)
-			path = path[::tracking_parameters['runge_kutta']]
-		# seedpoint would be twice if first index is not skipped.
-
+			path = paths[::tracking_parameters['runge_kutta']]
 			path = np.concatenate((path[1:,0][::-1], path[:,1]))
-
 			try:
 				to_exclude = np.all(path[:,:3] == 0, axis=1)
 				path = path[~to_exclude]
@@ -387,16 +383,7 @@ cpdef tracking_all(vector_field, wm_mask, tracking_parameters, postprocessing, u
 					continue
 				if path.shape[0]>5:
 					path = np.vstack((path[::int(tracking_parameters['sw_save'])], path[len(path)-1][np.newaxis]))
-				# Work on disk or ram. Ram might be faster but for large files disk is preferable.
-					if saving['file']:
-						with open(saving['file'] + 'len', 'a') as f:
-							f.write(str(path.shape[0]) +'\n')
-						with open(saving['file'], 'a') as f:
-							for l in range(path.shape[0]):
-								f.write(' '.join(map(str, path[l])) + "\n")
-					else:
-						tracks_len.append(path.shape[0])
-						tracks += [tuple(x) for x in path]
+					tck.append(path)
 			except:
 				pass
 

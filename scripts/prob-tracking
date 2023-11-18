@@ -10,13 +10,12 @@ import pandas as pd
 from dipy.core.gradients import gradient_table
 
 from bonndit.tracking.tracking_prob import tracking_all
+from bonndit.utils.tck_io import Tck
 import argparse
 import nrrd
 import nibabel as nib
 import os
 import numpy as np
-from plyfile import PlyElement, PlyData
-
 from bonndit.utils.io import fsl_gtab_to_worldspace, fsl_flip_sign
 import time
 
@@ -430,39 +429,12 @@ def main():
         'file': args.disk_file if args.disk else "",
     }
 
-    paths, paths_len = tracking_all(np.float64(vector_field), np.float64(wm_mask),
+    tck = Tck(args.o)
+    tck.write(tracking_parameters)
+    tracking_all(np.float64(vector_field), np.float64(wm_mask),
                                     tracking_parameters, postprocessing, ukf_parameter, trilinear_parameters, logging,
-                                    saving)
-    del tracking_parameters, postprocessing, ukf_parameter, trilinear_parameters, vector_field, wm_mask, seeds, act
-    if 'disk' in args:
-        paths_len = pd.read_csv(args.disk_file + 'len', header=None, dtype=int).values.flatten()
-        paths = pd.read_csv(args.disk_file, header=None, delimiter=" ").values
-
-        if args.disk_delete:
-            os.remove(args.disk_file)
-            os.remove(args.disk_file + 'len')
-    paths_len = np.cumsum(paths_len)
-    features = [0] * saving['features']['len']
-    for x in saving['features']:
-        if saving['features'][x] >= 0 and x != 'len':
-            features[saving['features'][x]] = x
-    if args.o.endswith('ply'):
-        paths = [tuple(x) for x in paths]
-		for path in paths:
-			print(path)
-        tracks = PlyElement.describe(
-            np.array(paths, dtype=[('x', 'f4'), ('y', 'f4'), ('z', 'f4')] + [(x, 'f4') for x in features]), 'vertices',
-            comments=[])
-        endindex = PlyElement.describe(np.array(paths_len, dtype=[('endindex', 'i4')]), 'fiber')
-        PlyData([tracks, endindex]).write(args.o)
-
-    elif args.o.endswith('tck'):
-        # paths_len = np.array(paths_len, dtype=int)
-        paths = np.array(paths)[:, :3]
-        streamlines = nib.streamlines.ArraySequence(np.split(paths, paths_len))
-        mytractogram = nib.streamlines.tractogram.Tractogram(streamlines, affine_to_rasmm=np.identity(4))
-        tractogram = nib.streamlines.tck.TckFile(mytractogram)
-        tractogram.save(args.o)
+                                    saving, tck)
+    tck.close()
     logging.info(f"Output file has been written to {args.o}")
 
 
