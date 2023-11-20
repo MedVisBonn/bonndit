@@ -376,8 +376,8 @@ cpdef tracking_all(vector_field, wm_mask, tracking_parameters, postprocessing, u
 		for j in range(tracking_parameters['samples']):
 			feature =  features[::tracking_parameters['runge_kutta']]
 			path = paths[::tracking_parameters['runge_kutta']]
-			path = np.concatenate((path[1:,0][::-1], path[:,1]))
-			feature = np.concatenate((feature[1:, 0][::-1], feature[:, 1]))
+			path = np.concatenate((path[0,j, 1:,0][::-1], path[0,j, :,1]))
+			feature = np.concatenate((feature[0,j, 1:, 0][::-1], feature[0,j,:, 1]))
 			#try:
 			to_exclude = np.all(path[:,:] == 0, axis=1)
 			path = path[~to_exclude]
