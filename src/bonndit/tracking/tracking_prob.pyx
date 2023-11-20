@@ -484,12 +484,13 @@ cpdef tracking_all(
             to_exclude = np.all(path[:, :] == 0, axis=1)
             path = path[~to_exclude]
             feature = feature[~to_exclude]
+            print(feature.shape, path.shape)
             if path.size == 0:
                 continue
             if path.shape[0] > 5:
                 path = np.vstack((path[::int(tracking_parameters['sw_save'])], path[len(path) - 1][np.newaxis]))
                 feature \
-                    = np.vstack((feature[::int(tracking_parameters['sw_save'])], feature[len(path) - 1][np.newaxis]))
+                    = np.vstack((feature[::int(tracking_parameters['sw_save'])], feature[len(features) - 1][np.newaxis]))
                 feature_to_add = {}
                 counter = 0
                 for key in saving.keys():
