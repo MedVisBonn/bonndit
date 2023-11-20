@@ -65,6 +65,7 @@ class Tck:
 
     def append(self, path, feature=None):
         v = np.linalg.norm(path)
+        print(v, path, feature)
         if np.isnan(v) or np.isinf(v):
             return
         path = np.ascontiguousarray(
