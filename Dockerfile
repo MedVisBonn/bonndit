@@ -29,7 +29,7 @@ RUN if [ -z "$watson" ] ; then \
     apt-get install git libatlas-base-dev liblapacke-dev -y; \
     fi
 
-RUN git clone --depth 1 https://github.com/MedVisBonn/bonndit.git --branch new-dev && \
+RUN git clone --depth 1 https://github.com/MedVisBonn/bonndit.git --branch running-time-ply && \
     echo $(ls) && \
     mv ./bonndit/* ./ && \
     rm -rf bonndit
