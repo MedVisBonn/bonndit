@@ -223,11 +223,11 @@ def main():
 
     vector_field, meta, = load('infile', args, 'rank3.nrrd', args.i, logging, nrrd.read)
     trafo_data = np.zeros((4, 4))
-    trafo_data[:3, :3] = meta['space directions'][-3:]
+    trafo_data[:3, :3] = meta['space directions'][-3:].T
     trafo_data[:3, 3] = meta['space origin'][-3:]
     trafo_data[3, 3] = 1
-    # print(meta)
-    if vector_field.shape[0] != 4 and args.ukf != "Watson"  and args.ukf != "Bingham" and args.ukf != "BinghamAlt" and args.ukf != "WatsonAlt":
+ #   print(vector_field.shape, args.ukf)
+    if vector_field.shape[0] != 4 and args.ukf != "Watson" and args.ukf != "WatsonAlt":
         logging.error("Wrong dimension on first axis. Has to contain 4 values.")
         raise Exception()
     elif vector_field.shape[0] != 5 and (
@@ -241,16 +241,10 @@ def main():
         logging.error("The input multivector field has to have 5 dimensions.")
         raise Exception()
     logging.info("Multivectorfield loaded")
-    if 'wmvolume' not in args:
+    if 'wmvolume' not in args or args.wmvolume.endswith('nrrd'):
         wm_mask, trafo = load('wmvolume', args, 'wmvolume.nrrd', args.i, logging, nrrd.read)
         trafo_mask = np.zeros((4, 4))
-        trafo_mask[:3, :3] = trafo['space directions']
-        trafo_mask[:3, 3] = trafo['space origin']
-        trafo_mask[3, 3] = 1
-    elif args.wmvolume.endswith('nrrd'):
-        wm_mask, trafo = load('wmvolume', args, 'wmvolume.nrrd', args.i, logging, nrrd.read)
-        trafo_mask = np.zeros((4, 4))
-        trafo_mask[:3, :3] = trafo['space directions']
+        trafo_mask[:3, :3] = trafo['space directions'].T
         trafo_mask[:3, 3] = trafo['space origin']
         trafo_mask[3, 3] = 1
     elif args.wmvolume.endswith('nii.gz'):
@@ -273,8 +267,18 @@ def main():
         seeds = np.array(np.where(seeds > 0.3))
         seeds = np.vstack((seeds, np.ones(seeds.shape[1])))
         seed_trafo = np.eye(4)
-        seed_trafo[:3, :3] = meta_seeds['space directions']
+        seed_trafo[:3, :3] = meta_seeds['space directions'].T
         seed_trafo[:3, 3] = meta_seeds['space origin']
+        seeds = seed_trafo @ seeds
+        seeds = seeds[:3].T
+        seed_count = int(args.seed_count)
+        args.samples = 1
+    elif args.seedpoints.endswith('.nii.gz'):
+        seeds = load('seedpoints', args, 'seedpoints.pts', args.i, logging, nib.load)
+        seeds, seed_trafo = seeds.get_fdata(), seeds.affine
+
+        seeds = np.array(np.where(seeds > 0.3))
+        seeds = np.vstack((seeds, np.ones(seeds.shape[1])))
         seeds = seed_trafo @ seeds
         seeds = seeds[:3].T
         seed_count = int(args.seed_count)
@@ -295,7 +299,7 @@ def main():
             # Load bvals and bvecs and initialize a GradientTable object
 
             #	print(bvecs, bvals.shape)
-            bvecs = fsl_flip_sign(bvecs.T, meta2['space directions'][-3:, -3:]).T
+            bvecs = fsl_flip_sign(bvecs.T, meta2['space directions'][-3:, -3:].T).T
 
             #	print(bvecs, bvals.shape)
             logging.info("bvecs loaded")
@@ -342,7 +346,7 @@ def main():
         'prob': args.prob,
         'trafo_data': trafo_data,
         'min_len': int(args.min_len),
-        'space directions': meta['space directions'][-3:],
+        'space directions': meta['space directions'][-3:].T,
         'space origin': meta['space origin'],
         'trafo_fsl': trafo_fsl,
         'ukf': args.ukf if 'ukf' in args else False,
@@ -383,7 +387,7 @@ def main():
             'trafo_data': trafo_data,
             'sigma_1': float(args.sigma_1),
             'sigma_2': float(args.sigma_2),
-            'trafo': meta['space directions'][-3:],
+            'trafo': meta['space directions'][-3:].T,
             'r': float(args.dist),
             'rank': int(args.rank)
         }
