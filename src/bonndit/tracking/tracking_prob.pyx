@@ -388,9 +388,8 @@ cpdef tracking_all(vector_field, wm_mask, tracking_parameters, postprocessing, u
 				path = np.vstack((path[::int(tracking_parameters['sw_save'])], path[len(path)-1][np.newaxis]))
 				feature = np.vstack((feature[::int(tracking_parameters['sw_save'])], feature[len(features) - 1][np.newaxis]))
 				feature_to_add = {}
-				print(saving['features'], feature.shape)
 				for key in saving['features'].keys():
-					if saving['features'][key] >= 0 and saving['features'][key] != 'len':
+					if saving['features'][key] >= 0 and key != 'len':
 						feature_to_add[key] = feature[..., saving['features'][key]]
 
 				tck.append(path, feature_to_add)
