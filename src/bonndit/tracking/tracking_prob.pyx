@@ -392,7 +392,7 @@ cpdef tracking_all(vector_field, wm_mask, tracking_parameters, postprocessing, u
 
 				for key in saving['features'].keys():
 					if saving['features'][key] >= 0:
-						feature_to_add[key] = feature[:, counter]
+						feature_to_add[key] = feature[..., counter]
 						counter += 1
 				tck.append(path, feature_to_add)
 			#except:
