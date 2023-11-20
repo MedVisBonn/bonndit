@@ -378,24 +378,24 @@ cpdef tracking_all(vector_field, wm_mask, tracking_parameters, postprocessing, u
 			path = paths[::tracking_parameters['runge_kutta']]
 			path = np.concatenate((path[1:,0][::-1], path[:,1]))
 			feature = np.concatenate((feature[1:, 0][::-1], feature[:, 1]))
-			try:
-				to_exclude = np.all(path[:,:3] == 0, axis=1)
-				path = path[~to_exclude]
-				feature = feature[~to_exclude]
-				if path.size == 0:
-					continue
-				if path.shape[0]>5:
-					path = np.vstack((path[::int(tracking_parameters['sw_save'])], path[len(path)-1][np.newaxis]))
-					feature = np.vstack((feature[::int(tracking_parameters['sw_save'])], feature[len(path) - 1][np.newaxis]))
-					feature_to_add = {}
-					counter = 0
-					for key in saving.keys():
-						if saving[key] >= 0:
-							feature_to_add[key] = feature[:, counter]
-							counter += 1
-					tck.append(path, feature_to_add)
-			except:
-				pass
+			#try:
+			to_exclude = np.all(path[:,:] == 0, axis=1)
+			path = path[~to_exclude]
+			feature = feature[~to_exclude]
+			if path.size == 0:
+				continue
+			if path.shape[0]>5:
+				path = np.vstack((path[::int(tracking_parameters['sw_save'])], path[len(path)-1][np.newaxis]))
+				feature = np.vstack((feature[::int(tracking_parameters['sw_save'])], feature[len(path) - 1][np.newaxis]))
+				feature_to_add = {}
+				counter = 0
+				for key in saving.keys():
+					if saving[key] >= 0:
+						feature_to_add[key] = feature[:, counter]
+						counter += 1
+				tck.append(path, feature_to_add)
+			#except:
+			#	pass
 
 	return tracks, tracks_len
 
