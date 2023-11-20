@@ -30,7 +30,7 @@ class Tck:
         header.append(b'start: %s\n' % bytes(str(datetime.now()), encoding='utf-8'))
         header.append(b'end: %s\n' % bytes(str(datetime.now()), encoding='utf-8'))
         for p in self.parameters.keys():
-            header.append(b'%s: %s\n' % (p, self.parameters[p]))
+            header.append(b'%s: %s\n' % (bytes(p, encoding="utf-8"), bytes(self.parameters[p], encoding="utf-8")))
         header.append(b'END\n')
         len_header = len(b''.join(header))
         header[3] = header[3].replace(b'offset', bytes(str(len_header - 6 + len(str(len_header))), encoding='utf-8'))
