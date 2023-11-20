@@ -490,7 +490,8 @@ cpdef tracking_all(
                 feature_to_add = {}
                 print(saving['features'], feature.shape)
                 for key in saving['features'].keys():
-                    if saving['features'][key] >= 0:
+                    if saving['features'][key] \
+                        >= 0 and saving['features'][key] != 'len':
                         feature_to_add[key] = feature[
                             ...,
                             saving['features'][key]]
