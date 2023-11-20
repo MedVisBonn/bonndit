@@ -430,7 +430,7 @@ def main():
     }
 
     tck = Tck(args.o)
-    tck.write(tracking_parameters)
+    tck.write({})
     for feat in saving['features'].keys():
         if saving['features'][feat] >= 0:
             tck.add_feature_path(feat, args.o.replace('.tck', '_%s.tsf' % feat))
