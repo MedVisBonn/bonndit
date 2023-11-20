@@ -495,7 +495,7 @@ cpdef tracking_all(
 
                 for key in saving['features'].keys():
                     if saving['features'][key] >= 0:
-                        feature_to_add[key] = feature[:, counter]
+                        feature_to_add[key] = feature[..., counter]
                         counter += 1
                 tck.append(path, feature_to_add)
             # except:
