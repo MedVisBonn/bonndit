@@ -430,10 +430,10 @@ def main():
     }
 
     tck = Tck(args.o)
-    tck.write({})
     for feat in saving['features'].keys():
-        if saving['features'][feat] >= 0:
+        if saving['features'][feat] >= 0 and feat != 'len':
             tck.add_feature_path(feat, args.o.replace('.tck', '_%s.tsf' % feat))
+    tck.write({})
     tracking_all(np.float64(vector_field), np.float64(wm_mask),
                                     tracking_parameters, postprocessing, ukf_parameter, trilinear_parameters, logging,
                                     saving, tck)
