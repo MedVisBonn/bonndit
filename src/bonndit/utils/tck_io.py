@@ -74,7 +74,7 @@ class Tck:
                     f.write(b'0' * (10 - len(str(self.length))) + bytes(str(self.length), encoding='utf-8'))
 
         with open(self.file_path, 'ab') as f:
-            f.write(np.ndarray.tobytes(np.array([np.inf, np.inf, np.inf])))
+            f.write(np.ndarray.tobytes(np.array([np.inf, np.inf, np.inf]), dtype='<f4'))
             print('File with %s streamlines saved in %s' % (self.length, self.file_path))
         if self.feature:
             for feat in self.feature.keys():
