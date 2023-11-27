@@ -72,7 +72,7 @@ cdef class Validator:
 		@param point: given direction
 		@return:
 		"""
-		if sum_c(point) == 0 or sum_c(point) != sum_c(point):
+		if sum_c(point) == 0 or sum_c(point) != sum_c(point) or np.isinf(sum_c(point)):
 			return True
 		else:
 			return False
