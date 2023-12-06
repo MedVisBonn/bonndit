@@ -817,6 +817,7 @@ double watson_minimizer(const double* x, double* signal, double* est_signal, dou
     double weight, kappa, diff, peak_value, loss = 0;
     int clmax = lmax+1;
     int cimax = (lmax*(lmax+1))/2+lmax+1;
+    double dipy_o[cimax];
 
     // reset arrays
     for (int j = 0; j < cimax; j++) {
@@ -881,19 +882,23 @@ double watson_minimizer(const double* x, double* signal, double* est_signal, dou
         }
 
         // rotate the distribution
-        if (lmax == 4) {
-            map_dipy_to_pysh_o4(dipy_v, pysh_v);
-            SHRotateRealCoef(rot_pysh_v, pysh_v, lmax, angles, &dj_o4[0][0][0]);
-            map_pysh_to_dipy_o4(rot_pysh_v, dipy_v);
-        } else if (lmax == 6) {
-            map_dipy_to_pysh_o6(dipy_v, pysh_v);
-            SHRotateRealCoef(rot_pysh_v, pysh_v, lmax, angles, &dj_o6[0][0][0]);
-            map_pysh_to_dipy_o6(rot_pysh_v, dipy_v);
-        } else if (lmax == 8) {
-            map_dipy_to_pysh_o8(dipy_v, pysh_v);
-            SHRotateRealCoef(rot_pysh_v, pysh_v, lmax, angles, &dj_o8[0][0][0]);
-            map_pysh_to_dipy_o8(rot_pysh_v, dipy_v);
+        SHRotateRealCoefFast(dipy_o, 1, dipy_v, 1, lmax, angles);
+        for (int j = 0; j < cimax; j++) {
+             dipy_v[j] = dipy_o[j];
         }
+       // if (lmax == 4) {
+       //     map_dipy_to_pysh_o4(dipy_v, pysh_v);
+       //     SHRotateRealCoef(rot_pysh_v, pysh_v, lmax, angles, &dj_o4[0][0][0]);
+       //     map_pysh_to_dipy_o4(rot_pysh_v, dipy_v);
+       // } else if (lmax == 6) {
+       //     map_dipy_to_pysh_o6(dipy_v, pysh_v);
+       //     SHRotateRealCoef(rot_pysh_v, pysh_v, lmax, angles, &dj_o6[0][0][0]);
+       //     map_pysh_to_dipy_o6(rot_pysh_v, dipy_v);
+       // } else if (lmax == 8) {
+       //     map_dipy_to_pysh_o8(dipy_v, pysh_v);
+       //     SHRotateRealCoef(rot_pysh_v, pysh_v, lmax, angles, &dj_o8[0][0][0]);
+       //     map_pysh_to_dipy_o8(rot_pysh_v, dipy_v);
+       // }
 
         // add to combined signal
         for (int j = 0; j < cimax; j++) {

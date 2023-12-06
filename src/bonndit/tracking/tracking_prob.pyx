@@ -131,6 +131,7 @@ cdef forward_tracking(
     interpolate.prob.old_fa = 1
     validator.WM.reset()
     cdef double c = 0
+    print("init dir", np.array(integrate.old_dir))
     for k in range((max_track_length - 1)):
         # validate index and wm density.
         counter += 1
@@ -166,6 +167,7 @@ cdef forward_tracking(
         if interpolate.interpolate(paths[k], integrate.old_dir, k) != 0:
             # print(5)
             break
+        print(np.array(interpolate.next_dir))
         #if k<2:
         # c = angle_deg(integrate.first_dir, interpolate.next_dir)
         # #print(c, np.array(integrate.first_dir),
@@ -491,7 +493,7 @@ cpdef tracking_all(
             feature = feature[~to_exclude]
             if path.size == 0:
                 continue
-            if path.shape[0] > 5:
+            if path.shape[0] > 0:
                 path = np.vstack((path[::int(tracking_parameters['sw_save'])], path[len(path) - 1][np.newaxis]))
                 feature \
                     = np.vstack((feature[::int(tracking_parameters['sw_save'])], feature[len(features) - 1][np.newaxis]))
