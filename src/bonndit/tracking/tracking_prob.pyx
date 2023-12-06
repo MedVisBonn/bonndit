@@ -110,7 +110,7 @@ cdef forward_tracking(double[:,:] paths,  Interpolation interpolate,
 	interpolate.prob.old_fa = 1
 	validator.WM.reset()
 	cdef double c = 0
-	print("init dir", np.array(integrate.old_dir))
+	#print("init dir", np.array(integrate.old_dir))
 	for k in range((max_track_length-1)):
 		# validate index and wm density.
 		counter+=1
@@ -146,7 +146,7 @@ cdef forward_tracking(double[:,:] paths,  Interpolation interpolate,
 		if interpolate.interpolate(paths[k], integrate.old_dir, k) != 0:
 			#print(5)
 			break
-		print(np.array(interpolate.next_dir))
+		#print(np.array(interpolate.next_dir))
 		#if k<2:
 		#	c = angle_deg(integrate.first_dir, interpolate.next_dir)
 		#	#print(c, np.array(integrate.first_dir), np.array(interpolate.next_dir))
@@ -188,12 +188,12 @@ cdef forward_tracking(double[:,:] paths,  Interpolation interpolate,
 			features[k,feature_save.prob_chosen] = interpolate.prob.chosen_prob
 			#print('chosen', interpolate.prob.chosen_prob, features[k//save_steps,feature_save.prob_chosen])
 		if feature_save.prob_others_0 >= 0:
-			print('chosen1', interpolate.prob.chosen_prob)
+			#print('chosen1', interpolate.prob.chosen_prob)
 			features[k,feature_save.prob_others_0] = interpolate.prob.probability[0]
 			features[k,feature_save.prob_others_1] = interpolate.prob.probability[1]
 			features[k,feature_save.prob_others_2] = interpolate.prob.probability[2]
 		if feature_save.fa >= 0:
-			print('chosen2', interpolate.prob.chosen_prob)
+			#print('chosen2', interpolate.prob.chosen_prob)
 			features[k,feature_save.fa] = interpolate.prob.old_fa
 		if feature_save.loss >= 0:
 			#print('chosen3', interpolate.prob.chosen_prob)
