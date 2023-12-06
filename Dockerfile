@@ -3,7 +3,6 @@ FROM ubuntu:latest
 ARG watson
 ARG UID
 ARG GID
-ARG watson
 RUN if [ -z "$watson" ] ; then echo "Will build without Watson support. Set --build-arg watson=true for watson support" ; else echo "Build with watson support" ; fi
 
 RUN mkdir /bonndit
@@ -16,7 +15,7 @@ RUN apt install build-essential cmake libcerf-dev wget python3 python3-pip -y
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir scipy cython pandas dipy cvxopt mpmath psutil pynrrd plyfile
 
-RUN if [ -z "$watson" ] ; then \
+RUN if [ -n "$watson" ]; then \
     apt-get install git libgoogle-glog-dev libgflags-dev libatlas-base-dev libeigen3-dev libfftw3-dev libsuitesparse-dev  liblapacke-dev -y && \
     wget http://ceres-solver.org/ceres-solver-2.1.0.tar.gz && \
     tar zxf ceres-solver-2.1.0.tar.gz && \
@@ -33,12 +32,13 @@ RUN if [ -z "$watson" ] ; then \
 ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
 
 
-RUN git clone --depth 1 https://github.com/MedVisBonn/bonndit.git --branch running-time-ply && \
-    echo $(ls) && \
-    mv ./bonndit/* ./ && \
-    rm -rf bonndit
+#RUN git clone --depth 1 https://github.com/MedVisBonn/bonndit.git --branch running-time-ply && \
+#    echo $(ls) && \
+#    mv ./bonndit/* ./ && \
+ #   rm -rf bonndit
+COPY ./ ./
 
-RUN if [ -z "$watson" ]; then \
+RUN if [ -n "$watson" ]; then \
     rm -rf build && \
     mkdir build && \
     cd build && \
@@ -51,7 +51,7 @@ RUN groupadd -rg $GID bonndit && useradd -ru $UID -g bonndit -d /data tracktogra
     chown tracktograph:bonndit /data
 
 
-RUN if [ -z "$watson" ]; then \
+RUN if [ -n "$watson" ]; then \
     WATSON=TRUE pip install .; \
     else \
     pip install .; \

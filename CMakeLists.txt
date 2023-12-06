@@ -14,7 +14,7 @@ find_package(Eigen3 REQUIRED)
 find_package(Ceres REQUIRED)
 find_package(OpenMP REQUIRED)
 
-target_compile_options(watsonfit PRIVATE -DCYTHON_PEP489_MULTI_PHASE_INIT=0 -DWATSON=1)
+target_compile_options(watsonfit PRIVATE -DCYTHON_PEP489_MULTI_PHASE_INIT=0 -DWATSON)
 
 target_include_directories(watsonfit
   PRIVATE

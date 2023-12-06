@@ -1,0 +1,42 @@
+import argparse
+
+import numpy as np
+import nrrd
+import nibabel as nib
+from collections import OrderedDict
+
+header = OrderedDict([('type', 'double'),
+             ('dimension', 4),
+             ('space', 'right-anterior-superior'),
+             ('sizes', ""),
+             ('space directions',""),
+             ('kinds', ['???', 'space', 'space', 'space']),
+             ('endian', 'little'),
+             ('encoding', 'gzip'),
+             ('labels', ['3D-masked-symmetric-matrix', '', '', '']),
+             ('space origin',"")])
+
+def main():
+    parser = argparse.ArgumentParser(
+        description='Helper script to convert between fst dtifit tensor results and vvi nrrd file format to vis results in vvi', )
+
+    parser.add_argument('-i', help='Input filename')
+    parser.add_argument('-b', help='b val')
+    parser.add_argument('-o', help='Output filename')
+    args = parser.parse_args()
+    img = nib.load(args.i)
+    affine = img.affine
+    img = np.rollaxis(img.get_fdata(),3,0)
+    header['space directions'] = np.vstack((np.array([np.nan, np.nan, np.nan]), affine[:3,:3].T))
+    header['space origin'] = affine[:3, 3]
+    padding = np.ones((1, *img.shape[1:]))
+    img = np.vstack((padding, img))
+    img[[2,3,5]] *= -1
+    img *= float(args.b)
+    header['sizes'] = img.shape
+    nrrd.write(args.o, img, header)
+
+
+
+if __name__=="__main__":
+    main()

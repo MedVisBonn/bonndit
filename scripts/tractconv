@@ -1,0 +1,131 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
+
+from dipy.io.streamline import load_tck, load_vtk, load_vtp, save_tck, save_vtk, save_vtp, save_fib, load_fib
+import nibabel as nib
+from plyfile import PlyElement, PlyData
+import argparse
+import numpy as np
+from pathlib import Path
+import vtk
+import dipy
+from dipy.io.stateful_tractogram import Space
+
+# Converter Class
+# TODO: Map .ply to dipy streamlines and vice versa
+# TODO: format tck to ply with tck.io
+class TractFileConverter():
+    """
+    A class to convert between various 3D data file formats including .vtp, .vtk, .ply, .fib, and .tck.
+
+    This converter class is used for converting 3D data files used in applications like 
+    computational geometry, 3D modeling, and neuroimaging. It supports a range of file formats 
+    that are commonly used for storing 3D mesh data and tractography imaging data.
+
+    Attributes:
+        infile (str): The path to the input file that needs to be converted. The file format 
+                      can be .vtp, .vtk, .ply, .fib, or .tck.
+        reffile (str): The path to a reference file that provides additional information 
+                       required for the conversion process. The specifics of this file depend 
+                       on the input and output formats.
+
+    Methods:
+        convert_to(outfile: str) -> None:
+            Converts the 'infile' to the format of 'outfile'. The path to the output file is 
+            provided as an argument. The method handles the conversion process and writes the 
+            converted data to 'outfile'.
+
+    Example:
+        converter = FileConverter("ukft_tracts_1.tck", "wm.nii.gz")
+        converter.convert_to("ukft_tracts_1.vtp")
+    """
+    def __init__(self, infile, reffile=None):
+        """
+        Initializes the TractFileConverter with specified input and reference files.
+
+        Parameters:
+            infile (str): The file path to the input file.
+            reffile (str): The file path to the reference file.
+        """
+        self.infile = infile
+        self.ref = reffile
+        if self.infile.endswith('tck'):
+            assert self.ref != None, 'Reference file that sepcifies the spatial attribute not given!' 
+            # TODO: Load with nibabel and bring to standard format
+            self.data = load_tck(self.infile, self.ref)
+        elif self.infile.endswith('.vtp'):
+            assert self.ref != None, 'Reference file that sepcifies the spatial attribute not given!' 
+            self.data = load_vtp(self.infile, self.ref)
+        elif self.infile.endswith('.vtk'):
+            self.data = load_vtk(self.infile, self.ref)
+        elif self.infile.endswith('.fib'):
+            self.data = load_fib(self.infile, self.ref)
+        elif self.infile.endswith('.ply'):
+            with open(self.infile, 'rb') as f:
+                plydata = PlyData.read(f)
+                num_verts = plydata['vertices'].count
+                num_fiber = plydata['fiber'].count
+                vertices = np.zeros(shape=[num_verts, 3], dtype=np.float64)
+                endindex = np.zeros(shape=[num_fiber], dtype=int)
+                vertices[:, 0] = plydata['vertices'].data['x']
+                vertices[:, 1] = plydata['vertices'].data['y']
+                vertices[:, 2] = plydata['vertices'].data['z']
+                endindex[:] = plydata['fiber'].data['endindex']
+            streamlines = nib.streamlines.ArraySequence(np.split(vertices, endindex))
+            self.data = dipy.io.streamline.StatefulTractogram(streamlines, self.ref, Space.RASMM)
+        else: 
+            raise NotImplementedError("Infile format unknown, please specify one of the following file formats: .tck, .vtp, .vtk, .ply, or .fib!")
+
+    def convert_to(self, outfile):
+        """
+        Converts the input file to the format of the specified output file.
+
+        The conversion process depends on the formats of the input and output files. This 
+        method reads the 'self.infile', processes it according to the requirements of the 
+        output format, and writes the result to 'outfile'.
+
+        Parameters:
+            outfile (str): The file path to where the converted file will be saved.
+
+        Raises:
+            NotImplementedError: If the conversion between the specified formats is not supported.
+        """
+        self.outfile = outfile
+        if self.outfile.endswith('tck'):
+            save_tck(self.data, self.outfile)
+        elif self.outfile.endswith('vtp'):
+            save_vtp(self.data, self.outfile)
+        elif self.outfile.endswith('vtk'):
+            save_vtk(self.data, self.outfile)
+        elif self.outfile.endswith('fib'):
+            save_fib(self.data, self.outfile)
+        elif self.outfile.endswith('ply'):
+            # TODO: Map dipy streamlines (data) to .ply array
+            vertices = np.vstack(self.data.streamlines)
+            vertex_array = np.array([tuple(vertex) for vertex in vertices], dtype=[('x', 'f4'), ('y', 'f4'), ('z', 'f4')])
+            vertex_element = PlyElement.describe(vertex_array, 'vertices')
+            end_indices = [len(vertex) for vertex in self.data.streamlines]
+            cumulative_end_indices = np.cumsum(end_indices)
+            endindex_array = np.array(cumulative_end_indices, dtype=[('endindex', 'i4')])
+            endindex_element = PlyElement.describe(endindex_array, 'fiber')
+             
+            # Write .ply file
+            PlyData([vertex_element, endindex_element]).write(self.outfile)
+        else:
+            raise NotImplementedError("Outfile format unknown, please specify one of the following file formats: .tck, .vtp, .vtk, .ply, or .fib!")
+
+        
+        
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', help='Input')
+    parser.add_argument('-ref', help='Reference')
+    parser.add_argument('-o', help='Output')
+    args = parser.parse_args()
+
+    converter = TractFileConverter(args.i, args.ref)
+    converter.convert_to(args.o)
+
+if __name__ == '__main__':
+    main()

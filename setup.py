@@ -43,6 +43,8 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
+fast =[] #['-0fast']
+
 suite_sparse_libs = ['lapack', 'ccolamd', 'spqr', 'cholmod', 'colamd', 'camd', 'amd', 'suitesparseconfig']
 ceres_libs = ['glog', 'gflags']
 watson_libraries = ceres_libs + suite_sparse_libs + ['pthread', 'fftw3', 'm', 'watsonfit' ]
@@ -60,7 +62,7 @@ ext_modules = [
               include_dirs=[".", numpy.get_include(), "/usr/lib", path_to_build_folder()],
               libraries=watson_libraries if WATSON else ['m'],
               language="c++",
-              extra_compile_args=extra_args,
+              extra_compile_args=extra_args + fast,
               embedsignature=True,
               ),
     Extension(
@@ -68,7 +70,7 @@ ext_modules = [
         ["src/bonndit/utilc/blas_lapack.pyx"],
         include_dirs=[numpy.get_include()],
         libraries=["cblas"],
-        extra_compile_args=["-Wall", "-m64", "-Ofast"],
+        extra_compile_args=["-Wall", "-m64"] + fast,
         embedsignature=True,
 
     ),
@@ -77,7 +79,7 @@ ext_modules = [
         ["src/bonndit/utilc/quaternions.pyx"],
         include_dirs=[numpy.get_include()],
         libraries=["cblas"],
-        extra_compile_args=["-Wall", "-m64", "-Ofast"],
+        extra_compile_args=["-Wall", "-m64"] + fast ,
         extra_link_args=["-Wl,--no-as-needed"],
         embedsignature=True,
     ),
@@ -86,7 +88,7 @@ ext_modules = [
         ["src/bonndit/utilc/cython_helpers.pyx"],
         include_dirs=[numpy.get_include()],
         libraries=['lapacke'],
-        extra_compile_args=["-Wall", "-m64", "-Ofast"],
+        extra_compile_args=["-Wall", "-m64"] + fast,
         extra_link_args=["-Wl,--no-as-needed"],
     embedsignature = True,
 ),
@@ -95,7 +97,7 @@ ext_modules = [
         ["src/bonndit/utilc/hota.pyx"],
         include_dirs=[numpy.get_include()],
         libraries=['cblas'],
-        extra_compile_args=["-Wall", "-m64", "-Ofast"],
+        extra_compile_args=["-Wall", "-m64"] + fast,
         embedsignature=True,
     ),
     Extension(
@@ -103,25 +105,25 @@ ext_modules = [
         ["src/bonndit/utilc/trilinear.pyx"],
         include_dirs=[numpy.get_include()],
         libraries=['cblas'],
-        extra_compile_args=["-Wall", "-m64", "-Ofast"],
+        extra_compile_args=["-Wall", "-m64"] + fast,
         embedsignature=True,
     ),
     Extension(
         "bonndit.utilc.structures",
         ["src/bonndit/utilc/structures.pyx"],
-        extra_compile_args=["-Ofast"],
+        extra_compile_args=[] + fast,
         embedsignature=True,
     ),
     Extension(
         "bonndit.utilc.penalty_spherical",
         ["src/bonndit/utilc/penalty_spherical.pyx"],
-        extra_compile_args=["-Ofast"],
+        extra_compile_args=[] + fast,
         embedsignature=True,
     ),
     Extension(
         "bonndit.utilc.lowrank",
         ["src/bonndit/utilc/lowrank.pyx"],
-        extra_compile_args=["-Ofast"],
+        extra_compile_args=[] + fast,
         embedsignature=True,
     ),
     Extension(
@@ -129,22 +131,22 @@ ext_modules = [
         ["src/bonndit/directions/fodfapprox.pyx"],
         include_dirs=[numpy.get_include(), '.'],
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
-        extra_compile_args=['-fopenmp', '-Ofast'],
+        extra_compile_args=['-fopenmp'] + fast,
         extra_link_args=['-fopenmp'],
         embedsignature=True,
     ),
     Extension(
         "bonndit.tracking.ItoW",
         ["src/bonndit/tracking/ItoW.pyx"],
-        extra_compile_args=["-Ofast"],
+        extra_compile_args=[] + fast,
         embedsignature=True,
     ),
     Extension(
         "bonndit.tracking.alignedDirection",
         ["src/bonndit/tracking/alignedDirection.pyx"],
         include_dirs=[numpy.get_include()],
-        libraries=['cblas'],
-        extra_compile_args=["-Wall", "-m64", "-Ofast"],
+        libraries=['cblas', 'lapacke'],
+        extra_compile_args=["-Wall", "-m64"] + fast,
         extra_link_args=["-Wl,--no-as-needed"],
         embedsignature=True,
     ), Extension(
@@ -154,7 +156,7 @@ ext_modules = [
 
         include_dirs=[".", numpy.get_include(), "/usr/include/", path_to_build_folder()],
         libraries=['cblas', "pthread", "m", "dl"],
-        extra_compile_args=["-I.", "-O3", "-ffast-math", "-march=native", "-fopenmp"],
+        extra_compile_args=["-I.", "-march=native", "-fopenmp"]  + fast,
         extra_link_args=["-L/usr/local/include", "-fopenmp", "-Wl,--no-as-needed"],
         embedsignature=True,
     ),
@@ -164,7 +166,7 @@ ext_modules = [
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
         include_dirs=[numpy.get_include()],
         libraries=["lapacke", "cblas", "pthread", "m", "dl"],
-        extra_compile_args=["-Wall", "-m64", '-Ofast'],
+        extra_compile_args=["-Wall", "-m64"] + fast,
         extra_link_args=["-Wl,--no-as-needed"],
         embedsignature=True,
 
@@ -175,7 +177,7 @@ ext_modules = [
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
         include_dirs=[numpy.get_include(), path_to_build_folder()],
         libraries=["cblas", "pthread", "m", "dl"],
-        extra_compile_args=["-Wall", "-m64", "-Ofast"],
+        extra_compile_args=["-Wall", "-m64"] + fast,
         extra_link_args=["-Wl,--no-as-needed"],
         embedsignature=True,
     ),
@@ -184,7 +186,7 @@ ext_modules = [
         ["src/bonndit/tracking/integration.pyx"],
         include_dirs=[numpy.get_include()],
         libraries=["cblas", "pthread", "m", "dl"],
-        extra_compile_args=["-Wall", "-m64", "-Ofast"],
+        extra_compile_args=["-Wall", "-m64"] + fast,
         extra_link_args=["-Wl,--no-as-needed"],
         embedsignature=True,
     ),
@@ -194,39 +196,39 @@ ext_modules = [
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
         include_dirs=[numpy.get_include()],
         libraries=["cblas", "pthread", "m", "dl"],
-        extra_compile_args=["-Wall", "-m64", "-Ofast"],
+        extra_compile_args=["-Wall", "-m64"] + fast,
         extra_link_args=["-Wl,--no-as-needed"],
     embedsignature = True,
 ),
     Extension(
         "bonndit.tracking.tracking_prob",
         ["src/bonndit/tracking/tracking_prob.pyx"],
-        extra_compile_args=['-fopenmp', "-Ofast"],
+        extra_compile_args=['-fopenmp'] + fast,
         extra_link_args=['-fopenmp'],
         embedsignature=True,
     ),
     Extension(
         "bonndit.pmodels.means",
         ["src/bonndit/pmodels/means.pyx"],
-        extra_compile_args=["-Ofast"],
+        extra_compile_args=[] + fast,
         embedsignature=True,
     ),
     Extension(
         "bonndit.pmodels.model_avg",
         ["src/bonndit/pmodels/model_avg.pyx"],
-        extra_compile_args=["-Ofast"],
+        extra_compile_args=[] + fast,
         embedsignature=True,
     ),
     Extension(
         "bonndit.filter.filter",
         ["src/bonndit/filter/filter.pyx"],
-        extra_compile_args=["-Ofast"],
+        extra_compile_args=[] + fast,
         embedsignature=True,
     ),
     Extension(
         "bonndit.filter.filter",
         ["src/bonndit/filter/filter.pyx"],
-        extra_compile_args=["-Ofast"],
+        extra_compile_args=[] + fast,
         embedsignature=True,
     ),
     Extension(
@@ -234,7 +236,7 @@ ext_modules = [
         ["src/bonndit/directions/csd_peaks.pyx"],
         include_dirs=[numpy.get_include()],
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
-        extra_compile_args=["-Ofast"],
+        extra_compile_args=[] + fast,
         embedsignature=True,
     ),
 ]
@@ -280,7 +282,9 @@ setup(
              'scripts/prob-tracking',
              'scripts/bundle-filtering',
              'scripts/csd-peaks',
-             'scripts/data2fodf'],
+             'scripts/data2fodf',
+             'scripts/dti_fsl2vvi',
+             'scripts/tractconv'],
     ext_modules=cythonize(ext_modules, compiler_directives={'boundscheck': False, 'wraparound': False,
                                                             'optimize.unpack_method_calls': False},
                          ),

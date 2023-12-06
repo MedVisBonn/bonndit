@@ -299,17 +299,21 @@ cdef class BinghamModel(WatsonModel):
 		for i in range(self.vector_field.shape[1]):
 			# calculate hessian:
 			hota_6o3d_hessian_sh(hessian, orth,  y[1:], init_dir)
+			print(np.array(orth))
 
 			t, eig =  np.linalg.eig(hessian)
 			#sort according eigenvalues:
-			z = 1 if  t[1] > t[0] else 0
+			z =  0
 			cblas_dscal(9, 0, &ortho_sys[0,0], 1)
 			ortho_sys[:, 2] = init_dir
 
 			cblas_daxpy(3, eig[0,0], &orth[0,0], 2, &ortho_sys[0,z], 3)
-			cblas_daxpy(3, eig[0,1], &orth[0,1], 2, &ortho_sys[0,z], 3)
-			cblas_daxpy(3, eig[1,0], &orth[0,0], 2, &ortho_sys[0,(z+1)%2], 3)
+			cblas_daxpy(3, eig[1,0], &orth[0,1], 2, &ortho_sys[0,z], 3)
+			cblas_daxpy(3, eig[0,1], &orth[0,0], 2, &ortho_sys[0,(z+1)%2], 3)
 			cblas_daxpy(3, eig[1,1], &orth[0,1], 2, &ortho_sys[0,(z+1)%2], 3)
+			print('ortho', np.array(eig))
+			print('ortho', np.array(orth))
+			print('ortho sys', np.array(ortho_sys))
 			for j in range(3):
 				scale = cblas_dnrm2(3, &ortho_sys[0,j], 3)
 				cblas_dscal(3, 1/scale, &ortho_sys[0,j], 3)

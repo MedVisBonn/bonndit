@@ -1139,6 +1139,7 @@ cdef class UKFBinghamQuatAlt(Interpolation):
 		cblas_dscal(3, 0, &self._kalman1.c_mean[3], 1)
 		cblas_dcopy(3, &self.mean[1, 0], 1, &self._kalman2.c_mean[0], 1)
 		cblas_dscal(3, 0, &self._kalman2.c_mean[3], 1)
+		print(np.array(self._kalman1.c_quat))
 
 	cpdef int interpolate(self, double[:] point, double[:] old_dir, int restart) except *:
 		self.point_world[:3] = point
@@ -1172,6 +1173,8 @@ cdef class UKFBinghamQuatAlt(Interpolation):
 			else:
 				info = self._kalman2.update_kalman_parameters(self.mean[i], self.P[i], self.y[i])
 
+		print("mean", np.array(self.mean))
+
 		for i in range(self.num_kalman):
 			self.mean[i, 0] = max(self.mean[i, 0], _lambda_min)
 			self.mean[i, 1] = min(max(self.mean[i, 1], log(0.2)), log(89))
@@ -1192,8 +1195,14 @@ cdef class UKFBinghamQuatAlt(Interpolation):
 
 			print(np.array(self.R))
 
+		print('mu', np.array(self.mu))
+		print('old_dir', np.array(old_dir))
+		print('A', np.array(self.A))
+		print('l_k_b', np.array(self.l_k_b))
 		self.prob.calculate_probabilities_sampled_bingham(self.mu, old_dir, self.A, self.l_k_b)
+		print('best fit', np.array(self.prob.best_fit))
 		cblas_dcopy(3, &self.prob.best_fit[0], 1, &self.next_dir[0], 1)
+
 
 
 		return info
