@@ -64,6 +64,9 @@ cdef class Interpolation:
 		self.best_ind = 0
 		self.prob = probClass
 		self.loss = 0
+		self.u = 0
+		if vector_field.shape[0] == 5:
+			u = 1
 
 	cdef bint check_point(self, double[:] point):
 		if self.vector_field.shape[2] > point[0] > 0 and self.vector_field.shape[3] > point[1] > 0 and self.vector_field.shape[4] > point[2] > 0:
@@ -121,7 +124,7 @@ cdef class Interpolation:
 	cdef void set_vector(self, int index, int j) : # : # : # nogil:
 		cdef int i
 		for i in range(3):
-			self.vector[i] = self.vector_field[i + 1, j, int(self.floor_point[index, 0]),
+			self.vector[i] = self.vector_field[i + 1 + self.u, j, int(self.floor_point[index, 0]),
 		                  int(self.floor_point[index, 1]), int(self.floor_point[index, 2])]
 
 
@@ -132,10 +135,12 @@ cdef class Interpolation:
 			self.point_world[3] = 1
 			cblas_dgemv(CblasRowMajor, CblasNoTrans, 4, 4, 1, &self.inv_trafo[0, 0], 4, &self.point_world[0], 1, 0,
 						&self.point_index[0], 1)
+
+
 			if self.check_point(self.point_index[:3]):
 				self.nearest_neigh(self.point_index[:3])
 				self.set_vector(self.best_ind, 0)
-				mult_with_scalar(self.next_dir, pow(self.vector_field[0, 0, int(self.floor_point[			                                                                                            self.best_ind, 0]),
+				mult_with_scalar(self.next_dir, pow(self.vector_field[0, self.best_ind, int(self.floor_point[			                                                                                            self.best_ind, 0]),
 																   int(self.floor_point[ self.best_ind, 1]),
 																  int(self.floor_point[self.best_ind, 2])], 0.25), self.vector)
 				return True

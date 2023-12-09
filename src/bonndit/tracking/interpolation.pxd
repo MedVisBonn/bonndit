@@ -16,6 +16,7 @@ cdef class Interpolation:
 	cdef double[:] point_index
 	cdef double[:] point_world
 	cdef double[:,:] best_dir
+	cdef int u
 	cdef int[:,:,:,:] cache
 	cdef double chosen_angle
 	cdef Probabilities prob
