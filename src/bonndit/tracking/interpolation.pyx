@@ -140,7 +140,7 @@ cdef class Interpolation:
 			if self.check_point(self.point_index[:3]):
 				self.nearest_neigh(self.point_index[:3])
 				self.set_vector(self.best_ind, 0)
-				mult_with_scalar(self.next_dir, pow(self.vector_field[0, self.best_ind, int(self.floor_point[			                                                                                            self.best_ind, 0]),
+				mult_with_scalar(self.next_dir, pow(self.vector_field[0, 0, int(self.floor_point[			                                                                                            self.best_ind, 0]),
 																   int(self.floor_point[ self.best_ind, 1]),
 																  int(self.floor_point[self.best_ind, 2])], 0.25), self.vector)
 				return True
