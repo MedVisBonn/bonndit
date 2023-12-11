@@ -179,8 +179,7 @@ cdef class Interpolation:
             mult_with_scalar(
                 self.next_dir, pow(
                     self.vector_field[
-                        0, self.best_ind,
-                        int(self.floor_point[self.best_ind, 0]),
+                        0, 0, int(self.floor_point[self.best_ind, 0]),
                         int(self.floor_point[self.best_ind, 1]),
                         int(self.floor_point[self.best_ind, 2])], 0.25),
                 self.vector)
