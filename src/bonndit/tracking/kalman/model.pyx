@@ -78,10 +78,10 @@ cdef class fODFModel(AbstractModel):
 		self.vector_field = kwargs['vector_field']
 		self.res = np.zeros((15 if kwargs['order'] == 4 else 28,))
 		self.order = kwargs['order']
-		if type(kwargs['process noise']).__module__ == np.__name__:
+		if type(kwargs['process noise']).__module__ != np.__name__:
 			ddiagonal(&self.PROCESS_NOISE[0, 0], np.array([0.005,0.005,0.005,0.1]), self.PROCESS_NOISE.shape[0],
 				  self.PROCESS_NOISE.shape[1])
-		if type(kwargs['measurement noise']).__module__ == np.__name__:
+		if type(kwargs['measurement noise']).__module__ != np.__name__:
 			ddiagonal(&self.MEASUREMENT_NOISE[0, 0], np.array([0.006]), self.MEASUREMENT_NOISE.shape[0],
 				  self.MEASUREMENT_NOISE.shape[1])
 		self.num_tensors = <int> (kwargs['dim_model'] / 4)
@@ -346,10 +346,10 @@ cdef class BinghamQuatModel(BinghamModel):
 		super(BinghamQuatModel, self).__init__(**kwargs)
 		self.order= kwargs["order"]
 
-		if type(kwargs['process noise']).__module__ == np.__name__:
+		if type(kwargs['process noise']).__module__ != np.__name__:
 			ddiagonal(&self.PROCESS_NOISE[0, 0], np.array([0.01, 0.01,0.01,0.001, 0.001, 0.001]), self.PROCESS_NOISE.shape[0],
 				  self.PROCESS_NOISE.shape[1])
-		if type(kwargs['measurement noise']).__module__ == np.__name__:
+		if type(kwargs['measurement noise']).__module__ != np.__name__:
 			ddiagonal(&self.MEASUREMENT_NOISE[0, 0], np.array([0.04]), self.MEASUREMENT_NOISE.shape[0],
 				  self.MEASUREMENT_NOISE.shape[1])
 
@@ -381,10 +381,10 @@ cdef class MultiTensorModel(AbstractModel):
 		self.baseline_signal = kwargs['b']
 		self.acq_spec_const = kwargs['b0']
 		self._lambda_min = 100
-		if type(kwargs['process noise']).__module__ == np.__name__:
+		if type(kwargs['process noise']).__module__ != np.__name__:
 			ddiagonal(&self.PROCESS_NOISE[0, 0], np.array([0.003,  0.003,0.003,25,25]), self.PROCESS_NOISE.shape[0],
 				  self.PROCESS_NOISE.shape[1])
-		if type(kwargs['measurement noise']).__module__ == np.__name__:
+		if type(kwargs['measurement noise']).__module__ != np.__name__:
 			ddiagonal(&self.MEASUREMENT_NOISE[0, 0], np.array([0.02]), self.MEASUREMENT_NOISE.shape[0],
 				  self.MEASUREMENT_NOISE.shape[1])
 
