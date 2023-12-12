@@ -78,10 +78,10 @@ cdef class fODFModel(AbstractModel):
 		self.vector_field = kwargs['vector_field']
 		self.res = np.zeros((15 if kwargs['order'] == 4 else 28,))
 		self.order = kwargs['order']
-		if kwargs['process noise'] == "":
+		if type(kwargs['process noise']).__module__ == np.__name__:
 			ddiagonal(&self.PROCESS_NOISE[0, 0], np.array([0.005,0.005,0.005,0.1]), self.PROCESS_NOISE.shape[0],
 				  self.PROCESS_NOISE.shape[1])
-		if kwargs['measurement noise'] == "":
+		if type(kwargs['measurement noise']).__module__ == np.__name__:
 			ddiagonal(&self.MEASUREMENT_NOISE[0, 0], np.array([0.006]), self.MEASUREMENT_NOISE.shape[0],
 				  self.MEASUREMENT_NOISE.shape[1])
 		self.num_tensors = <int> (kwargs['dim_model'] / 4)
