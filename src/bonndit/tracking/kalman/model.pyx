@@ -100,13 +100,13 @@ cdef class fODFModel(AbstractModel):
         self.vector_field = kwargs['vector_field']
         self.res = np.zeros((15 if kwargs['order'] == 4 else 28,))
         self.order = kwargs['order']
-        if type(kwargs['process noise']).__module__ != np.__name__:
+        if len(kwargs['process noise']) > 1:
             ddiagonal(
                 &self.PROCESS_NOISE[0, 0],
                 np.array([0.005, 0.005, 0.005, 0.1]),
                 self.PROCESS_NOISE.shape[0],
                 self.PROCESS_NOISE.shape[1])
-        if type(kwargs['measurement noise']).__module__ != np.__name__:
+        if len(kwargs['measurement noise']):
             ddiagonal(
                 &self.MEASUREMENT_NOISE[0, 0], np.array([0.006]),
                 self.MEASUREMENT_NOISE.shape[0],
@@ -206,13 +206,13 @@ cdef class WatsonModel(AbstractModel):
         self.pysh_v = np.zeros((2 * 5 * 5,), dtype=DTYPE)
         self.dipy_v = np.zeros((15 if kwargs['order'] == 4 else 28,),
             dtype=DTYPE)
-        if type(kwargs['process noise']).__module__ == np.__name__:
+        if type(kwargs['process noise']).__module__ != np.__name__:
             ddiagonal(
                 &self.PROCESS_NOISE[0, 0],
                 np.array([0.5, 0.1, 0.01, 0.01, 0.01]),
                 self.PROCESS_NOISE.shape[0],
                 self.PROCESS_NOISE.shape[1])
-        if type(kwargs['measurement noise']).__module__ == np.__name__:
+        if type(kwargs['measurement noise']).__module__ != np.__name__:
             ddiagonal(
                 &self.MEASUREMENT_NOISE[0, 0], np.array([0.06]),
                 self.MEASUREMENT_NOISE.shape[0],
@@ -322,13 +322,13 @@ cdef class BinghamModel(WatsonModel):
         self.lookup_table1 = lookup_table1['arr_0']
 
         self.num_tensors = <int> (kwargs['dim_model'] / 6)
-        if type(kwargs['process noise']).__module__ == np.__name__:
+        if type(kwargs['process noise']).__module__ != np.__name__:
             ddiagonal(
                 &self.PROCESS_NOISE[0, 0],
                 np.array([0.01, 0.01, 0.01, 0.001, 0.001, 0.001]),
                 self.PROCESS_NOISE.shape[0],
                 self.PROCESS_NOISE.shape[1])
-        if type(kwargs['measurement noise']).__module__ == np.__name__:
+        if type(kwargs['measurement noise']).__module__ != np.__name__:
             ddiagonal(
                 &self.MEASUREMENT_NOISE[0, 0], np.array([0.04]),
                 self.MEASUREMENT_NOISE.shape[0],
