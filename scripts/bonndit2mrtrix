@@ -65,13 +65,13 @@ def bonndit2mrtrix(input, output, imag):
 
 
 def main():
-    parser = argparse.ArgumentParser(
+    parser = argparse.ArgumentParser(^
         description='Helper script to convert between spherical harmonics (tournier 2007 basis - readable by dipy and mrtrix) and \
                      tensor basis used by bonndit. Per default m indexing is inverted. ',)
 
     parser.add_argument('-i', help='Input filename')
     parser.add_argument('-o', help='Output filename')
-    parser.add_argument('--midx', help='Invert m indexing', action=argparse.BooleanOptionalAction, default=True)
+    parser.add_argument('--midx', help='Invert m indexing', action=argparse.BooleanOptionalAction, default=False)
     args = parser.parse_args()
     if args.i.endswith('nii.gz'):
         mrtrix2bonndit(args.i, args.o, args.midx)
