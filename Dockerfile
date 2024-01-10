@@ -32,7 +32,7 @@ RUN if [ -n "$watson" ]; then \
 ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
 
 
-#RUN git clone --depth 1 https://github.com/MedVisBonn/bonndit.git --branch running-time-ply && \
+#RUN git clone --depth iüpy1 https://github.com/MedVisBonn/bonndit.git --branch running-time-ply && \
 #    echo $(ls) && \
 #    mv ./bonndit/* ./ && \
  #   rm -rf bonndit

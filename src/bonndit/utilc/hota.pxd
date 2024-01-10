@@ -1,7 +1,3 @@
-#%%cython --annotate
-#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True,
-# warn.unused_results=True
-
 cdef void hota_4o3d_sym_eval(double[:], double, double[:]) nogil
 cdef double hota_4o3d_sym_tsp(double[:], double[:]) nogil
 cdef double hota_4o3d_sym_norm(double[:]) nogil
