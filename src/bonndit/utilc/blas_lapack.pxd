@@ -18,6 +18,8 @@ cdef extern from 'cblas.h':
 	int LAPACKE_dpotrf(int matrix_layout, char uplo, int n, double * a, int lda) nogil except *
 	int LAPACKE_dgetrf(int matrix_layout, int m, int n, double * a, int lda, int * ipiv) nogil except *
 	int LAPACKE_sgesv(int matrix_layout, int n ,int nhs, double * a, int lda, int * ipiv, double *a, int ldb) nogil except *
+	int LAPACKE_dgesv(int matrix_layout, int n ,int nhs, double * a, int lda, int * ipiv, double *a, int ldb) nogil except *
+
 	int LAPACKE_dgetri_work(int matrix_layout, int n, double * a, int lda, const int * ipiv, double * WORK, const int LWORK) nogil except *
 
 

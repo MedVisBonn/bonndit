@@ -1240,30 +1240,30 @@ cdef class UKFMultiTensor(UKF):
 		return info
 
 
-cdef DeepReg(Interpolation):
-
-	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities probClass, **kwargs):
-		super(UKF, self).__init__(vector_field, grid, probClass, **kwargs)
-		self.optimizer = kwargs['optimizer']
-		self.reference = kwargs['reference']
-
-
-	cpdef int interpolate(self, double[:] point, double[:] old_dir, int restart) except *: # : # : # nogil except *:
-		self.point_world[:3] = point
-		self.point_world[3] = 1
-		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4,4,1,&self.inv_trafo[0,0], 4, &self.point_world[0], 1, 0, &self.point_index[0],1)
-		cdef int z, i, info = 0
-		# Interpolate current point
-		trilinear_v(self.point_index[:3], self.y, self.mlinear, self.data)
-		trilinear_v(self.point_index[:3], self.ref_dir, self.mlinear, self.reference)
-		self.optimizer.optimize(self.best_dir, self.y, self.ref_dir, self.point_index[:3])
-		self.next_dir = self.prob.best_fit
-		return info
-
-
-
-
-
+#cdef DeepReg(Interpolation):
+#
+#	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities probClass, **kwargs):
+#		super(UKF, self).__init__(vector_field, grid, probClass, **kwargs)
+#		self.optimizer = kwargs['optimizer']
+#		self.reference = kwargs['reference']
+#
+#
+#	cpdef int interpolate(self, double[:] point, double[:] old_dir, int restart) except *: # : # : # nogil except *:
+#		self.point_world[:3] = point
+#		self.point_world[3] = 1
+#		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4,4,1,&self.inv_trafo[0,0], 4, &self.point_world[0], 1, 0, &self.point_index[0],1)
+#		cdef int z, i, info = 0
+#		# Interpolate current point
+#		trilinear_v(self.point_index[:3], self.y, self.mlinear, self.data)
+#		trilinear_v(self.point_index[:3], self.ref_dir, self.mlinear, self.reference)
+#		self.optimizer.optimize(self.best_dir, self.y, self.ref_dir, self.point_index[:3])
+#		self.next_dir = self.prob.best_fit
+#		return info
+#
+#
+#
+#
+#
 
 
 

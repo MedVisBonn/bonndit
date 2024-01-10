@@ -1,9 +1,13 @@
 from concurrent.futures import ProcessPoolExecutor
 import numpy as np
+cimport numpy as np
+
 from bonndit.utilc.hota cimport *
 from bonndit.utilc.lowrank cimport init_max_3d
+from itertools import repeat
+from numpy cimport ndarray
 
-class TijkRefineRank1Parm:
+cdef class TijkRefineRank1Parm:
     def __init__(self, eps_start=1e-10, eps_impr=1e-8, beta=0.3, gamma=0.9, sigma=0.5, maxTry=100):
         self.eps_start=eps_start
         self.eps_impr=eps_impr
@@ -12,7 +16,7 @@ class TijkRefineRank1Parm:
         self.sigma=sigma
         self.maxTry=maxTry
 
-class TijkRefineRank:
+cdef class TijkRefineRank:
     def __init__(self, eps_res=1e-10, eps_impr=1e-8, pos=1, rank1_parm=TijkRefineRank1Parm()):
         self.eps_res = eps_res
         self.eps_impr = eps_impr
@@ -20,12 +24,12 @@ class TijkRefineRank:
         self.rank1_parm = rank1_parm
 
 
-class RegLowRank:
+cdef class RegLowRank:
     def __init__(self, tensor, ref, mu):
-        self.angles = None
+        self.angles = np.zeros(tensor.shape[1:], dtype= np.int8)
         self.tensor = tensor
         self.ref = ref
-        self.index = None
+        self.index = np.zeros(tensor.shape[1:], dtype= np.int8)
         self.low_rank = np.zeros((4,3, *tensor.shape[1:]))
         self.optimize_parallel(False)
         self.ret = np.zeros((4,3, *tensor.shape[1:]))
@@ -36,12 +40,12 @@ class RegLowRank:
         self.TijkRefineRank = TijkRefineRank()
 
 
-    def create_min_mapping(self):
+    cdef void create_min_mapping(self):
         ### Finds the closest low-rank direction in terms of angle to the refenrence direction for optimization.
         # If no reference direction is set: Set the respective index to -1
-        results = np.zeros((3, self.low_rank.shape[1:]))
+        results = np.zeros((3, self.low_rank.shape[1], self.low_rank.shape[2], self.low_rank.shape[3]))
         for i in range(3):
-            results[i] = np.sum(self.low_rank[1:, i] * self.ref, axis=0)
+            results[i] = np.sum(np.asarray(self.low_rank[1:, i]) * np.asarray(self.ref), axis=0)
 
             results[i] = np.degrees(np.arccos(results[i], -1, 1, where=results[i]!=0))
             results[i] = np.abs((results[i] > 90) * 180 - results[i])
@@ -53,7 +57,10 @@ class RegLowRank:
         self.angles[index_out] = -1
 
 
-    def grad(self, reg, tensor, direction, ref):
+    cdef grad(self,bint reg,
+                    np.ndarray[np.float64_t, ndim=1] tensor,
+                    np.ndarray[np.float64_t, ndim=1] direction,
+                    np.ndarray[np.float64_t, ndim=1] ref):
         ### Calculate Surface gradient on sphere
         res = np.zeros(3)
         hota_4o3d_sym_v_form(res, tensor, direction[1:])
@@ -67,7 +74,7 @@ class RegLowRank:
     cdef int minimize_single_peak(self, np.ndarray[np.float64_t, ndim=1] v,
                                   np.ndarray[np.float64_t, ndim=1] tens,
                                   np.ndarray[np.float64_t, ndim=1] reference,
-                                  reg,
+                                  bint reg,
                                   ):
         """
         Gradient descent with armijo stepsize
@@ -126,15 +133,21 @@ class RegLowRank:
             oldval = val
         return 1
 
-    def optimize_voxel(self, idx, reg):
+    cpdef optimize_voxel(self, np.ndarray[np.int8_t, ndim=3] idx, bint reg):
         # Deactivate regularization
         if reg:
             ref = self.ref
         else:
             ref = np.zeros_like(self.ref) - 1
-        self.optimize_tensor(self.ret[:,:, idx], self.tensor[:, idx], ref[:,idx])
+        cdef int i=idx[0], j=idx[1], k=idx[2]
+        if self.tensor[0, i,j,k] == 0:
+            return
+        self.optimize_tensor(self.ret[:,:, i,j,k], self.tensor[1:, i,j,k], self.index[i,j,k], ref[:, i,j,k])
 
-    def optimize_tensor(self, tensor, low_rank, index, ref):
+    cdef optimize_tensor(self, np.ndarray[np.float64_t, ndim=1] tensor,
+                               np.ndarray[np.float64_t, ndim=2] low_rank,
+                               int index,
+                               np.ndarray[np.float64_t, ndim=1] ref):
         """
         Iterate over each rank and perform gradient descent for each rank.
 
@@ -148,8 +161,8 @@ class RegLowRank:
         while True:
             res_norm = hota_4o3d_sym_norm(tensor) + self.mu * np.linalg.norm(low_rank[1:, index] - ref)
             for i in range(3):
-                if low_rank[0, i] == 0
-                    init_max_3d(low_rank[:1, i], low_rank[1:, i], tensor)Raphael Memmesheimer
+                if low_rank[0, i] == 0:
+                    init_max_3d(low_rank[:1, i], low_rank[1:, i], tensor)
                 else:
                     tensor += ten[i]
                     low_rank[0, i] = hota_4o3d_sym_s_form(tensor[:], low_rank[1:, i])
@@ -165,11 +178,14 @@ class RegLowRank:
             if not new_norm > self.TijkRefineRank.eps_res or abs(new_norm - res_norm) > self.TijkRefineRank.eps_impr:
                 break
 
-    def optimize(self, double[:] ret, double[:] tensor, double[:] reference, double[:] idx):
-        self.optimize_voxel()
+    cpdef optimize(self, np.ndarray[np.float64_t, ndim=2] ret,
+                         np.ndarray[np.float64_t, ndim=1] tensor,
+                         np.ndarray[np.float64_t, ndim=1] reference,
+                         int idx):
+        self.optimize_tensor(tensor, ret, idx, reference)
 
 
-    def optimize_parallel(self, reg):
-        indices = list(np.ndindex(self.tensor.shape[1:]))
+    cpdef optimize_parallel(self, bint reg):
+        indices = list(np.ndindex(self.tensor.shape[1], self.tensor.shape[2], self.tensor.shape[3]))
         with ProcessPoolExecutor() as executor:
-            executor.map(self.optimize_voxel, indices, reg)
+            executor.map(self.optimize_voxel, indices, repeat(reg))
