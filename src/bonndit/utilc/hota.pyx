@@ -1,3 +1,4 @@
+#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, profile=False
 from libc.math cimport sqrt, sin, cos
 import numpy as np
 from bonndit.utilc.blas_lapack cimport cblas_dgemm, CblasRowMajor, CblasTrans, CblasNoTrans
@@ -104,13 +105,13 @@ cdef hota_8o3d_sym_eval_cons(double[:,:] tensors,double[:,:] points):
 
 cdef void hota_8o3d_sym_eval(double[:] res, double s, double[:] points) nogil:
     cdef double v00, v01, v02, v11, v12, v22
-    v00 = points[0]* points[0]
-    v01 = points[0]* points[1]
-    v02 = points[0]* points[2]
+    v00 = points[0] * points[0]
+    v01 = points[0] * points[1]
+    v02 = points[0] * points[2]
 
-    v11 = points[1]* points[1]
-    v12 = points[1]* points[2]
-    v22 = points[2]* points[2]
+    v11 = points[1] * points[1]
+    v12 = points[1] * points[2]
+    v22 = points[2] * points[2]
     res[0] = s * v00 * v00 * v00 * v00
     res[1] = s * v00 * v00 * v00 * v01
     res[2] = s * v00 * v00 * v00 * v02
@@ -174,13 +175,13 @@ cdef void hota_8o3d_sym_eval(double[:] res, double s, double[:] points) nogil:
 
 cdef void hota_6o3d_sym_eval(double[:] res, double s, double[:] points) nogil:
     cdef double v00, v01, v02, v11, v12, v22
-    v00 = points[0]* points[0]
-    v01 = points[0]* points[1]
-    v02 = points[0]* points[2]
+    v00 = points[0] * points[0]
+    v01 = points[0] * points[1]
+    v02 = points[0] * points[2]
 
-    v11 = points[1]* points[1]
-    v12 = points[1]* points[2]
-    v22 = points[2]* points[2]
+    v11 = points[1] * points[1]
+    v12 = points[1] * points[2]
+    v22 = points[2] * points[2]
     res[0] = s * v00 * v00 * v00
     res[1] = s * v00 * v00 * v01
     res[2] = s * v00 * v00 * v02
@@ -223,23 +224,23 @@ cdef void hota_6o3d_sym_eval(double[:] res, double s, double[:] points) nogil:
 cdef void hota_4o3d_sym_eval(double[:] res, double s, double[:] v) nogil:
     cdef double v00,v01, v02, v11, v12, v22
 
-    v00=v[0]*v[0]
-    v01=v[0]*v[1]
-    v02=v[0]*v[2]
-    v11=v[1]*v[1]
-    v12=v[1]*v[2]
-    v22=v[2]*v[2]
+    v00=v[0] * v[0]
+    v01=v[0] * v[1]
+    v02=v[0] * v[2]
+    v11=v[1] * v[1]
+    v12=v[1] * v[2]
+    v22=v[2] * v[2]
 
-    res[0]=s*v00*v00
-    res[1]=s*v00*v01
-    res[2]=s*v00*v02
-    res[3]=s*v00*v11
-    res[4]=s*v00*v12
-    res[5]=s*v00*v22
-    res[6]=s*v01*v11
-    res[7]=s*v01*v12
-    res[8]=s*v01*v22
-    res[9]=s*v02*v22
+    res[0]=s* v00*v00
+    res[1]=s* v00*v01
+    res[2]=s* v00*v02
+    res[3]=s* v00*v11
+    res[4]=s* v00*v12
+    res[5]=s* v00*v22
+    res[6]=s* v01*v11
+    res[7]=s* v01*v12
+    res[8]=s* v01*v22
+    res[9]=s* v02*v22
     res[10]=s*v11*v11
     res[11]=s*v11*v12
     res[12]=s*v11*v22

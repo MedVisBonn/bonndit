@@ -26,7 +26,6 @@ else:
 
 
 print(WATSON)
-
 def path_to_build_folder():
     """Returns the name of a distutils build directory"""
     f = "{dirname}.{platform}-cpython-{version[0]}{version[1]}/bonndit/utilc"
@@ -43,7 +42,7 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-fast =[] #['-0fast']
+fast = ['-Ofast']
 
 suite_sparse_libs = ['lapack', 'ccolamd', 'spqr', 'cholmod', 'colamd', 'camd', 'amd', 'suitesparseconfig']
 ceres_libs = ['glog', 'gflags']
@@ -63,7 +62,7 @@ ext_modules = [
               libraries=watson_libraries if WATSON else ['m'],
               language="c++",
               extra_compile_args=extra_args + fast,
-              embedsignature=True,
+            #  embedsignature=True,
               ),
     Extension(
         "bonndit.utilc.blas_lapack",
@@ -71,7 +70,7 @@ ext_modules = [
         include_dirs=[numpy.get_include()],
         libraries=["cblas", "lapack"],
         extra_compile_args=["-Wall", "-m64"] + fast,
-        embedsignature=True,
+       # embedsignature=True,
 
     ),
     Extension(
@@ -81,7 +80,7 @@ ext_modules = [
         libraries=["cblas"],
         extra_compile_args=["-Wall", "-m64"] + fast ,
         extra_link_args=["-Wl,--no-as-needed"],
-        embedsignature=True,
+        #embedsignature=True,
     ),
     Extension(
         "bonndit.utilc.cython_helpers",
@@ -90,7 +89,7 @@ ext_modules = [
         libraries=['lapack'],
         extra_compile_args=["-Wall", "-m64"] + fast,
         extra_link_args=["-Wl,--no-as-needed"],
-    embedsignature = True,
+  #  embedsignature = True,
 ),
     Extension(
         "bonndit.utilc.hota",
@@ -98,7 +97,7 @@ ext_modules = [
         include_dirs=[numpy.get_include()],
         libraries=['cblas', 'lapack'],
         extra_compile_args=["-Wall", "-m64"] + fast,
-        embedsignature=True,
+     #   embedsignature=True,
     ),
     Extension(
         "bonndit.utilc.trilinear",
@@ -106,25 +105,25 @@ ext_modules = [
         include_dirs=[numpy.get_include()],
         libraries=['cblas'],
         extra_compile_args=["-Wall", "-m64"] + fast,
-        embedsignature=True,
+      #  embedsignature=True,
     ),
     Extension(
         "bonndit.utilc.structures",
         ["src/bonndit/utilc/structures.pyx"],
         extra_compile_args=[] + fast,
-        embedsignature=True,
+      #  embedsignature=True,
     ),
     Extension(
         "bonndit.utilc.penalty_spherical",
         ["src/bonndit/utilc/penalty_spherical.pyx"],
         extra_compile_args=[] + fast,
-        embedsignature=True,
+      #  embedsignature=True,
     ),
     Extension(
         "bonndit.utilc.lowrank",
         ["src/bonndit/utilc/lowrank.pyx"],
         extra_compile_args=[] + fast,
-        embedsignature=True,
+      #  embedsignature=True,
     ),
     Extension(
         "bonndit.directions.fodfapprox",
@@ -133,22 +132,23 @@ ext_modules = [
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
         extra_compile_args=['-fopenmp'] + fast,
         extra_link_args=['-fopenmp'],
-        embedsignature=True,
+      #  embedsignature=True,
     ),
     Extension(
         "bonndit.directions.regLowRank",
         ["src/bonndit/directions/regLowRank.pyx"],
         include_dirs=[numpy.get_include(), '.'],
+        libraries=["cblas", "lapack"],
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
         extra_compile_args=['-fopenmp'] + fast,
         extra_link_args=['-fopenmp'],
-        embedsignature=True,
+      #  embedsignature=True,
     ),
     Extension(
         "bonndit.tracking.ItoW",
         ["src/bonndit/tracking/ItoW.pyx"],
         extra_compile_args=[] + fast,
-        embedsignature=True,
+       # embedsignature=True,
     ),
     Extension(
         "bonndit.tracking.alignedDirection",
@@ -157,7 +157,7 @@ ext_modules = [
         libraries=['cblas', 'lapack'],
         extra_compile_args=["-Wall", "-m64"] + fast,
         extra_link_args=["-Wl,--no-as-needed"],
-        embedsignature=True,
+      #  embedsignature=True,
     ), Extension(
         "bonndit.tracking.kalman.model",
         ["src/bonndit/tracking/kalman/model.pyx"],
@@ -167,7 +167,7 @@ ext_modules = [
         libraries=['cblas', "pthread", "m", "dl"],
         extra_compile_args=["-I.", "-march=native", "-fopenmp"]  + fast,
         extra_link_args=["-L/usr/local/include", "-fopenmp", "-Wl,--no-as-needed"],
-        embedsignature=True,
+      #  embedsignature=True,
     ),
     Extension(
         "bonndit.tracking.kalman.kalman",
@@ -177,7 +177,7 @@ ext_modules = [
         libraries=["lapack", "cblas", "pthread", "m", "dl"],
         extra_compile_args=["-Wall", "-m64"] + fast,
         extra_link_args=["-Wl,--no-as-needed"],
-        embedsignature=True,
+      #  embedsignature=True,
 
     ),
     Extension(
@@ -188,7 +188,7 @@ ext_modules = [
         libraries=["cblas", "pthread", "m", "dl"],
         extra_compile_args=["-Wall", "-m64"] + fast,
         extra_link_args=["-Wl,--no-as-needed"],
-        embedsignature=True,
+      #  embedsignature=True,
     ),
     Extension(
         "bonndit.tracking.integration",
@@ -197,7 +197,7 @@ ext_modules = [
         libraries=["cblas", "pthread", "m", "dl"],
         extra_compile_args=["-Wall", "-m64"] + fast,
         extra_link_args=["-Wl,--no-as-needed"],
-        embedsignature=True,
+       # embedsignature=True,
     ),
     Extension(
         "bonndit.tracking.stopping",
@@ -207,38 +207,38 @@ ext_modules = [
         libraries=["cblas", "pthread", "m", "dl"],
         extra_compile_args=["-Wall", "-m64"] + fast,
         extra_link_args=["-Wl,--no-as-needed"],
-    embedsignature = True,
+   # embedsignature = True,
 ),
     Extension(
         "bonndit.tracking.tracking_prob",
         ["src/bonndit/tracking/tracking_prob.pyx"],
         extra_compile_args=['-fopenmp'] + fast,
         extra_link_args=['-fopenmp'],
-        embedsignature=True,
+      #  embedsignature=True,
     ),
     Extension(
         "bonndit.pmodels.means",
         ["src/bonndit/pmodels/means.pyx"],
         extra_compile_args=[] + fast,
-        embedsignature=True,
+      #  embedsignature=True,
     ),
     Extension(
         "bonndit.pmodels.model_avg",
         ["src/bonndit/pmodels/model_avg.pyx"],
         extra_compile_args=[] + fast,
-        embedsignature=True,
+     #   embedsignature=True,
     ),
     Extension(
         "bonndit.filter.filter",
         ["src/bonndit/filter/filter.pyx"],
         extra_compile_args=[] + fast,
-        embedsignature=True,
+       # embedsignature=True,
     ),
     Extension(
         "bonndit.filter.filter",
         ["src/bonndit/filter/filter.pyx"],
         extra_compile_args=[] + fast,
-        embedsignature=True,
+      #  embedsignature=True,
     ),
     Extension(
         "bonndit.directions.csd_peaks",
@@ -246,7 +246,7 @@ ext_modules = [
         include_dirs=[numpy.get_include()],
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
         extra_compile_args=[] + fast,
-        embedsignature=True,
+       # embedsignature=True,
     ),
 ]
 
@@ -295,7 +295,7 @@ setup(
              'scripts/dti_fsl2vvi',
              'scripts/tractconv'],
     ext_modules=cythonize(ext_modules, compiler_directives={'boundscheck': False, 'wraparound': False,
-                                                            'optimize.unpack_method_calls': False},
+                                                            'optimize.unpack_method_calls': True},
                          ),
     package_data={"": ['*.pxd', '*.npz', '*.npy', '*.so', '*.h']},
     setup_requires=setup_requirements,
