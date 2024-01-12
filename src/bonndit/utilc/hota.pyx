@@ -1,3 +1,4 @@
+#cython: language_level=3, boundscheck=False, wraparound=False, warn.unused=True, warn.unused_args=True, profile=False
 from libc.math cimport sqrt, sin, cos
 import numpy as np
 from bonndit.utilc.blas_lapack cimport cblas_dgemm, CblasRowMajor, \
