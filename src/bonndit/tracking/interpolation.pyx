@@ -272,7 +272,7 @@ cdef class TrilinearFODF(Interpolation):
 			n = <int> point[1] + j
 			o = <int> point[2] + k
 			#check for out of bounds:
-			if m<0 or n<0 or o<0 or m>=self.data.shape[1] or m>=self.data.shape[2] or m>=self.data.shape[3]:
+			if m<0 or n<0 or o<0 or m>=self.data.shape[1] or n>=self.data.shape[2] or o>=self.data.shape[3]:
 				cblas_dscal(self.vlinear.shape[1], 0, &self.vlinear[i,0], 1)
 			else:
 				dm2toc(&self.vlinear[i, 0], self.data[:, m,n,o],  self.vlinear.shape[1])

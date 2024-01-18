@@ -3,7 +3,7 @@
 import sys
 import nrrd
 sys.path.append('.')
-from .alignedDirection cimport  Gaussian, Laplacian, ScalarOld, ScalarNew, Probabilities, Deterministic,Deterministic2, WatsonDirGetter, BinghamDirGetter
+from .alignedDirection cimport  TractSegGetter, Gaussian, Laplacian, ScalarOld, ScalarNew, Probabilities, Deterministic,Deterministic2, WatsonDirGetter, BinghamDirGetter
 from .ItoW cimport Trafo
 from .stopping cimport Validator
 from .integration cimport  Euler, Integration, EulerUKF, RungeKutta
