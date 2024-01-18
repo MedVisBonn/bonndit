@@ -30,7 +30,7 @@ def main():
                         help='Input file for b values')
     parser.add_argument('--thresh_up', default=1500, type=int,
                         help='Upper bound for selected b values')
-    parser.add_argument('--thresh_low', default=1500, type=int,
+    parser.add_argument('--thresh_low', default=0, type=int,
                         help='Lower bound for selected b values')
 
     args = parser.parse_args()
