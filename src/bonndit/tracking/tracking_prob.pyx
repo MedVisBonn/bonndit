@@ -328,7 +328,7 @@ cpdef tracking_all(vector_field, wm_mask, tracking_parameters, postprocessing, u
 	elif tracking_parameters['interpolation'] == "TrilinearFODF":
 		interpolate = TrilinearFODF(vector_field, dim[2:5], directionGetter, **trilinear_parameters)
 	elif tracking_parameters['interpolation'] == "TractSeg":
-		interpolate = DeepReg(vector_field, dim[2:5], directionGetter, **trilinear_parameters)
+		interpolate = DeepReg(vector_field, dim[2:5], directionGetter, **tracking_parameters)
 	else:
 		logging.error('FACT, Triliniear or UKF for MultiTensor and low rank approximation are available so far.')
 		return 0
