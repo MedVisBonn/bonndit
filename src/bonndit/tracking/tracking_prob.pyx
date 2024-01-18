@@ -9,9 +9,9 @@ from .alignedDirection cimport Gaussian, Laplacian, ScalarOld, ScalarNew, \
 from .ItoW cimport Trafo
 from .stopping cimport Validator
 from .integration cimport Euler, Integration, EulerUKF, RungeKutta
-from .interpolation cimport FACT, Trilinear, Interpolation, UKFFodf, \
-    UKFFodfAlt, UKFMultiTensor, UKFBinghamAlt, TrilinearFODF, UKFBingham, \
-    UKFWatson, UKFWatsonAlt, UKFBinghamQuatAlt
+from .interpolation cimport DeepReg, FACT, Trilinear, Interpolation, \
+    UKFFodf, UKFFodfAlt, UKFMultiTensor, UKFBinghamAlt, TrilinearFODF, \
+    UKFBingham, UKFWatson, UKFWatsonAlt, UKFBinghamQuatAlt
 from bonndit.utilc.cython_helpers cimport mult_with_scalar, sum_c, \
     sum_c_int, set_zero_vector, sub_vectors, \
     angle_deg, norm
@@ -315,6 +315,8 @@ cpdef tracking_all(
     elif tracking_parameters['prob'] == "Deterministic2":
         directionGetter = Deterministic2(tracking_parameters['expectation'],
             tracking_parameters['variance'])
+    elif tracking_parameters['prob'] == "TractSeg":
+        directionGetter = TractSegGetter(**tracking_parameters)
     else:
         logging.error('Gaussian or Laplacian or Scalar are available so far. ')
         return 0
@@ -395,6 +397,10 @@ cpdef tracking_all(
             **tracking_parameters)
     elif tracking_parameters['interpolation'] == "TrilinearFODF":
         interpolate = TrilinearFODF(
+            vector_field, dim[2:5], directionGetter,
+            **trilinear_parameters)
+    elif tracking_parameters['interpolation'] == "TractSeg":
+        interpolate = DeepReg(
             vector_field, dim[2:5], directionGetter,
             **trilinear_parameters)
     else:

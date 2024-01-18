@@ -321,6 +321,7 @@ cdef class RegLowRank:
                 &self._low_rank[0, z, i, j, k],
                 self._low_rank.shape[1] * self._low_rank.shape[2]
                 * self._low_rank.shape[3] * self._low_rank.shape[4])
+
     cdef min_mapping_voxel(self, double[:] low_rank, double[:] ref):
         index = 0
         v_max = 0
@@ -375,9 +376,10 @@ cdef class RegLowRank:
                 3, &low_rank[index * 4 + 1], 1, &ref[0],
                 1) < 0 and mu > 0:
                 cblas_dscal(3, -1, &low_rank[index * 4 + 1], 1)
-            #if np.linalg.norm(ref) > 0:
-            # print(cblas_ddot(3, &low_rank[index*4+1], 1, &ref[0], 1))
+
             for i in range(self.rank):
+                # If the direction is 0, i.e. not initalized, do so
+                # else performe update
                 if low_rank[i * 4] == 0:
                     init_max_3d(
                         low_rank[i * 4: i * 4 + 1],
@@ -386,6 +388,7 @@ cdef class RegLowRank:
                         index = self.min_mapping_voxel(low_rank, ref)
                         index_changed = 1
                 else:
+
                     tensor += ten[i]
                     low_rank[i * 4] = hota_4o3d_sym_s_form(
                         tensor[:],
