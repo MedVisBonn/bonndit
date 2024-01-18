@@ -101,7 +101,7 @@ cdef double refine_rankk_3d(double[:] ls, double[:,:] vs, double[:,:] tens, doub
                 ls[i] = hota_sym_s_form(res, vs[:,i])
                     #init_max_3d(ls[i: i+1], vs[:,i], res)
     #        refine_rank1_sum_3d(ls[i:i+1], vs[:, i])
-            refine_rank1_3d(ls[i: i+1], vs[:,i], res, der, testv, anisoten, isoten)
+                refine_rank1_3d(ls[i: i+1], vs[:,i], res, der, testv, anisoten, isoten)
             if not TijkRefineRankkParm.pos==1 or ls[i]>0:
                 hota_4o3d_sym_eval(tens[i, :], ls[i], vs[:,i])
                 sub_vectors(res, res, tens[i,:])
