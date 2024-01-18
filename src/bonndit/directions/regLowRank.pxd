@@ -17,17 +17,15 @@ cdef class TijkRefineRank:
 
 cdef class RegLowRank:
     cdef np.float64_t[:,:,:] angles
-    cdef np.float64_t[:,:,:,:] tensor
-    cdef np.float64_t[:,:,:,:] ref
+    cdef np.float64_t[:,:,:,:] _tensor
+    cdef np.float64_t[:,:,:,:] _ref
     cdef np.int8_t[:,:,:] index
-    cdef np.float64_t[:,:,:,:,:] low_rank
-    cdef np.float64_t[:,:,:,:,:] ret
+    cdef np.float64_t[:,:,:,:,:] _low_rank
     cdef meta
-    cdef double mu
+    cdef double _mu
     cdef np.int8_t rank
     cdef TijkRefineRank1Parm TijkRefineRank1Parm
     cdef TijkRefineRank TijkRefineRank
-    cdef void create_min_mapping(self)
     cdef grad(self,double[:], bint,
                     double[:],
                     double[:],
@@ -37,14 +35,18 @@ cdef class RegLowRank:
                                   double[:],
                                   bint)
     cpdef write(self, outfile)
+    cpdef write_reg(self, outfile)
+    cpdef return_arr(self)
     cdef optimize_tensor(self, np.ndarray[np.float64_t, ndim=1],
-                               np.ndarray[np.float64_t, ndim=2],
+                               np.ndarray[np.float64_t, ndim=1],
                                int,
-                               np.ndarray[np.float64_t, ndim=1])
+                               np.ndarray[np.float64_t, ndim=1], float)
+    cdef min_mapping_voxel(self, double[:], double[:])
 
-    cpdef optimize_voxel(self, np.ndarray[np.int16_t, ndim=1], bint)
+    cpdef optimize_voxel(self, np.ndarray[np.int16_t, ndim=1])
     cpdef optimize(self, np.ndarray[np.float64_t, ndim=2],
                          np.ndarray[np.float64_t, ndim=1],
                          np.ndarray[np.float64_t, ndim=1],
                          int)
-    cpdef optimize_parallel(self,  bint)
+    cpdef optimize_parallel(self)
+    cpdef void create_min_mapping(self)
