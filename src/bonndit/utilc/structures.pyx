@@ -2,7 +2,7 @@ import numpy as np
 
 cdef TijkRefineRank1 TijkRefineRank1Parm = [1e-8,1e-6,0.3,0.9,0.5,50]
 cdef TijkRefineRank TijkRefineRankkParm = [1e-8, 1e-4, 1, [1e-8,1e-6,0.3,0.9,0.5,50]]
-cdef int DIM = 3cd
+cdef int DIM = 3
 
 
 cdef double[:,:,:] dj_o4 = np.array([
