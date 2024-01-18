@@ -109,7 +109,7 @@ cdef double refine_rankk_3d(double[:] ls, double[:,:] vs, double[:,:] tens, doub
             else:
                 ls[i] = 0
         newnorm = hota_sym_norm(res)
-        if newnorm < TijkRefineRankkParm.eps_res or resnorm - newnorm > TijkRefineRankkParm.eps_impr*orignorm):
+        if newnorm < TijkRefineRankkParm.eps_res or fabs(resnorm - newnorm) < TijkRefineRankkParm.eps_impr*orignorm:
             #print([x for x in res], resnorm, newnorm, orignorm)
             break
 

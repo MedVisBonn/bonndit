@@ -393,7 +393,7 @@ def main():
     else:
         trilinear_parameters = {}
 
-    if "ukf" in args:
+    if args.ukf != "":
 
         ukf_parameter = {
             'trafo_data': trafo_data,
