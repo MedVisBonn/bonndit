@@ -28,8 +28,10 @@ def main():
                         help='Input file for b vectors')
     parser.add_argument('--inbvals', default='bvals',
                         help='Input file for b values')
-    parser.add_argument('--thresh', default=1500, type=int,
+    parser.add_argument('--thresh_up', default=1500, type=int,
                         help='Upper bound for selected b values')
+    parser.add_argument('--thresh_low', default=1500, type=int,
+                        help='Lower bound for selected b values')
 
     args = parser.parse_args()
 
@@ -37,7 +39,7 @@ def main():
     bvals, bvecs = read_bvals_bvecs(args.inbvals, args.inbvecs)
 
     # Make and store selection
-    selection = bvals <= args.thresh
+    selection = (bvals <= args.thresh_up) & (bvals > args.thresh_low)
     np.savetxt(args.outbvals,bvals[selection],fmt='%d')
     np.savetxt(args.outbvecs,bvecs[selection,:].T,fmt='%1.6f')
 
