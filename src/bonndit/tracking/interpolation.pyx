@@ -271,8 +271,12 @@ cdef class TrilinearFODF(Interpolation):
 			m = <int> point[0] + i%2
 			n = <int> point[1] + j
 			o = <int> point[2] + k
+			#check for out of bounds:
+			if m<0 or n<0 or o<0 or m>=self.data.shape[1] or m>=self.data.shape[2] or m>=self.data.shape[3]:
+				cblas_dscal(self.vlinear.shape[1], 0, &self.vlinear[i,0], 1)
+			else:
+				dm2toc(&self.vlinear[i, 0], self.data[:, m,n,o],  self.vlinear.shape[1])
 
-			dm2toc(&self.vlinear[i, 0], self.data[:, m,n,o],  self.vlinear.shape[1])
 		for i in range(4):
 			cblas_dscal(self.vlinear.shape[1], (1 + floor(point[2]) - point[2]), &self.vlinear[i, 0], 1)
 			cblas_daxpy(self.vlinear.shape[1], (point[2] - floor(point[2])), &self.vlinear[4+i, 0], 1, &self.vlinear[i,0], 1)
@@ -1240,25 +1244,40 @@ cdef class UKFMultiTensor(UKF):
 		return info
 
 
-#cdef DeepReg(Interpolation):
-#
-#	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities probClass, **kwargs):
-#		super(UKF, self).__init__(vector_field, grid, probClass, **kwargs)
-#		self.optimizer = kwargs['optimizer']
-#		self.reference = kwargs['reference']
-#
-#
-#	cpdef int interpolate(self, double[:] point, double[:] old_dir, int restart) except *: # : # : # nogil except *:
-#		self.point_world[:3] = point
-#		self.point_world[3] = 1
-#		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4,4,1,&self.inv_trafo[0,0], 4, &self.point_world[0], 1, 0, &self.point_index[0],1)
-#		cdef int z, i, info = 0
-#		# Interpolate current point
-#		trilinear_v(self.point_index[:3], self.y, self.mlinear, self.data)
-#		trilinear_v(self.point_index[:3], self.ref_dir, self.mlinear, self.reference)
-#		self.optimizer.optimize(self.best_dir, self.y, self.ref_dir, self.point_index[:3])
-#		self.next_dir = self.prob.best_fit
-#		return info
+cdef class DeepReg(Interpolation):
+
+	def __cinit__(self, double[:,:,:,:,:]  vector_field, int[:] grid, Probabilities probClass, **kwargs):
+		super(UKF, self).__init__(vector_field, grid, probClass, **kwargs)
+		self.optimizer = kwargs['optimizer']
+		self.reference = kwargs['reference']
+		self.ref_dir = np.zeros((3,), dtype=DTYPE)
+		self.low_rank = np.zeros((3, ), dtype=DTYPE)
+		self.y = np.zeros((15,), dtype=DTYPE)
+		self.ylinear  = np.zeros((8,15), dtype=np.float64)
+		self.rlinear = np.zeros((8, 3), dtype=np.float64)
+		self.mu = kwargs['mu']
+		self.data = kwargs['data']
+		self.prob = kwargs['prob']
+
+
+	cpdef int interpolate(self, double[:] point, double[:] old_dir, int restart) except *:
+		self.point_world[:3] = point
+		self.point_world[3] = 1
+		cblas_dgemv(CblasRowMajor, CblasNoTrans, 4,4,1,&self.inv_trafo[0,0], 4, &self.point_world[0], 1, 0, &self.point_index[0],1)
+		cdef int z, i, info = 0
+		# Interpolate current point
+		trilinear_v(self.point_index[:3], self.y, self.ylinear, self.data)
+		trilinear_v(self.point_index[:3], self.ref_dir, self.rlinear, self.reference)
+		self.optimizer.optimize_tensor(self.y, self.low_rank, 0, self.ref_dir, 0)
+		# If we have a reference direction, select the closest to it. Otherwise select closest to last direction:
+		if cblas_dnrm2(3, &self.ref_dir[0], 1) > 0:
+			idx = self.optimizer.min_mapping_voxel(self.low_rank, self.ref_dir)
+			idx = self.optimizer.optimize_tensor(self.y, self.low_rank, idx, self.ref_dir, self.mu)
+		else:
+			idx = self.optimizer.min_mapping_voxel(self.low_rank, old_dir)
+		self.prob.select_next_dir(self.low_rank[4*idx+1: 4*(idx+1)], old_dir)
+		self.next_dir = self.prob.best_fit
+		return info
 #
 #
 #

@@ -108,6 +108,8 @@ cdef class Probabilities:
 	cdef void calculate_probabilities_sampled_bingham(self, double[:,:] vectors, double[:] old_dir, double[:,:, :] A, double[:,:] l_k_b) : # nogil  except *:
 		pass
 
+	cdef void select_next_dir(self, double[:] next_dir, double[:] old_dir):
+		pass
 
 cdef class Gaussian(Probabilities):
 	cdef void calculate_probabilities(self, double[:,:] vectors, double[:] direction) : # nogil except *:
@@ -363,7 +365,6 @@ cdef class BinghamDirGetter(Probabilities):
 			cutoff = (rand() / RAND_MAX) * max_val
 			if val > cutoff:
 				accept = True
-	#	print(l)
 
 	cdef void calculate_probabilities_sampled_bingham(self, double[:,:] vectors, double[:] old_dir, double[:,:, :] A, double[:,:] l_k_b) : # nogil  except *:
 		"""
@@ -421,3 +422,13 @@ cdef class BinghamDirGetter(Probabilities):
 
 #
 #
+cdef class TractSegGetter(WatsonDirGetter):
+	cdef void select_next_dir(self, double[:] next_dir, double[:] old_dir):
+		if cblas_ddot(3, &next_dir[0], 1, &old_dir[0], 1) < 0:
+			cblas_dscal(3, -1, &next_dir[0], 1)
+
+		cblas_dcopy(3, &next_dir[0], 1, &self.best_fit[0], 1)
+		self.mc_random_direction(self.best_fit, next_dir, self.sigma, 1)
+
+		if cblas_ddot(3, &old_dir[0], 1, &self.best_fit[0], 1) < 0:
+			cblas_dscal(3, -1, &self.best_fit[0], 1)

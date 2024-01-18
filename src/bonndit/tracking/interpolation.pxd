@@ -4,9 +4,10 @@
 
 
 from .ItoW cimport Trafo
-from .alignedDirection cimport Probabilities
+from .alignedDirection cimport Probabilities, TractSegGetter
 from .kalman.model cimport AbstractModel, fODFModel, WatsonModel, BinghamModel, BinghamQuatModel
 from .kalman.kalman cimport Kalman, KalmanQuat
+from bonndit.directions.regLowRank cimport RegLowRank
 
 cdef class Interpolation:
 	cdef double[:,:,:,:,:] vector_field
@@ -215,4 +216,13 @@ cdef class UKFMultiTensor(UKF):
 	cdef int select_next_dir(self, int, double[:]) # nogil except *
 
 
-
+cdef class DeepReg(Interpolation):
+	cdef double[:,:,:,:] reference
+	cdef RegLowRank optimizer
+	cdef double[:] ref_dir
+	cdef double[:] low_rank
+	cdef double[:] y
+	cdef double[:,:] ylinear
+	cdef double[:,:] rlinear
+	cdef double mu
+	cdef double[:,:,:,:] data

@@ -285,7 +285,7 @@ def main():
     else:
         raise Exception("For seedpoints only nrrd and pts files allowed")
     logging.info("Seedfile loaded")
-    if 'ukf' in args:
+    if args.ukf != "":
         logging.info("UKF Flag is set. Continue with loading UKF data")
         logging.info("raw data loaded")
         if args.ukf == 'MultiTensor':

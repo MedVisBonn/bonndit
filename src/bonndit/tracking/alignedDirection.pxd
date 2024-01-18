@@ -13,7 +13,7 @@ cdef class Probabilities:
 	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
 	cdef void calculate_probabilities_sampled(self, double[:,:], double[:], double[:], double[:], double[:])
 	cdef void calculate_probabilities_sampled_bingham(self, double[:, :], double[:], double[:, :, :], double[:, :])
-
+	cdef void select_next_dir(self, double[:], double[:])
 
 cdef class Gaussian(Probabilities):
 	cdef void calculate_probabilities(self, double[:,:], double[:]) # nogil except *
@@ -56,3 +56,6 @@ cdef class WatsonDirGetter(Probabilities):
 	cdef double poly_kummer(self, double)
 	cdef double poly_watson(self, double[:], double[:], double, double)
 	cdef void mc_random_direction(self, double[:], double[:], double, double)
+
+cdef class TractSegGetter(WatsonDirGetter):
+	cdef void select_next_dir(self, double[:], double[:])

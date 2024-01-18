@@ -212,6 +212,7 @@ ext_modules = [
     Extension(
         "bonndit.tracking.tracking_prob",
         ["src/bonndit/tracking/tracking_prob.pyx"],
+        include_dirs=[numpy.get_include()],
         extra_compile_args=['-fopenmp'] + fast,
         extra_link_args=['-fopenmp'],
       #  embedsignature=True,
