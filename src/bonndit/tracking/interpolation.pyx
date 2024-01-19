@@ -1759,17 +1759,18 @@ cdef class DeepReg(Interpolation):
         self, double[:, :, :, :, :] vector_field, int[:] grid,
         Probabilities probClass, **kwargs
     ):
-        super(UKF, self).__init__(vector_field, grid, probClass, **kwargs)
-        self.optimizer = kwargs['optimizer']
+        super(DeepReg, self).__init__(vector_field, grid, probClass, **kwargs)
+        self.optimizer = RegLowRank(kwargs['data'], kwargs['reference'],
+            kwargs['mu'], kwargs['meta'])
         self.reference = kwargs['reference']
         self.ref_dir = np.zeros((3,), dtype=DTYPE)
-        self.low_rank = np.zeros((3,), dtype=DTYPE)
+        self.low_rank = np.zeros((12,), dtype=DTYPE)
         self.y = np.zeros((15,), dtype=DTYPE)
         self.ylinear = np.zeros((8, 15), dtype=np.float64)
         self.rlinear = np.zeros((8, 3), dtype=np.float64)
         self.mu = kwargs['mu']
         self.data = kwargs['data']
-        self.prob = kwargs['prob']
+
 
 
     cpdef int interpolate(
@@ -1789,17 +1790,18 @@ cdef class DeepReg(Interpolation):
             self.point_index[:3], self.ref_dir, self.rlinear,
             self.reference)
         self.optimizer.optimize_tensor(
-            self.y, self.low_rank, 0,
-            self.ref_dir, 0)
+            np.asarray(self.y),
+            np.asarray(self.low_rank), 0, np.asarray(self.ref_dir), 0)
         # If we have a reference direction, select the closest to it. Otherwise
         # select closest to last direction:
         if cblas_dnrm2(3, &self.ref_dir[0], 1) > 0:
-            idx = self.optimizer.min_mapping_voxel(self.low_rank, self.ref_dir)
+            idx = self.optimizer.min_mapping_voxel(np.asarray(self.low_rank), np.asarray(self.ref_dir))
             idx = self.optimizer.optimize_tensor(
-                self.y, self.low_rank, idx,
-                self.ref_dir, self.mu)
+                np.asarray(self.y),
+                np.asarray(self.low_rank), idx, np.asarray(self.ref_dir),
+                self.mu)
         else:
-            idx = self.optimizer.min_mapping_voxel(self.low_rank, old_dir)
+            idx = self.optimizer.min_mapping_voxel(np.asarray(self.low_rank), np.asarray(old_dir))
         self.prob.select_next_dir(
             self.low_rank[4 * idx + 1: 4 * (idx + 1)],
             old_dir)
