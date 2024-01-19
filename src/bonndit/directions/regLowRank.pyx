@@ -257,6 +257,9 @@ cdef class RegLowRank:
                         testv) ** 2 + 2 * self._mu * cblas_ddot(
                         3,
                         &testv[0], 1, &reference[0], 1)
+                    print(
+                        val, oldval,
+                        cblas_ddot(3, &testv[0], 1, &reference[0], 1))
                     # print(val, oldval, cblas_ddot(3, &testv[0], 1,
                     # &reference[0], 1))
 
@@ -387,7 +390,6 @@ cdef class RegLowRank:
                         index = self.min_mapping_voxel(low_rank, ref)
                         index_changed = 1
                 else:
-
                     tensor += ten[i]
                     low_rank[i * 4] = hota_4o3d_sym_s_form(
                         tensor[:],

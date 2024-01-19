@@ -9,3 +9,8 @@ cdef void trilinear_v(
     double[:], double[:], double[:, :],
     double[:, :, :, :]
 ) nogil except *
+cdef void trilinear_v_amb(
+    double[:], double[:], double[:, :],
+    double[:, :, :, :]
+) nogil except *
+cdef void trilinear(double[:], double[:], double[:, :]) nogil except *
