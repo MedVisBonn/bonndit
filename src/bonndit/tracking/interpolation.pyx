@@ -29,7 +29,7 @@ from libc.math cimport pow, pi, acos, floor, fabs,fmax, exp, log
 from libc.stdio cimport printf
 from bonndit.utilc.cython_helpers cimport fa, dctov, sphere2cart, r_z_r_y_r_z
 from bonndit.utilc.blas_lapack cimport *
-from bonndit.utilc.trilinear cimport trilinear_v
+from bonndit.utilc.trilinear cimport trilinear_v, trilinear_v_amb
 DTYPE = np.float64
 cdef double _lambda_min = 0.01
 from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
@@ -1267,7 +1267,7 @@ cdef class DeepReg(Interpolation):
 		cdef int z, i, info = 0
 		# Interpolate current point
 		trilinear_v(self.point_index[:3], self.y, self.ylinear, self.data)
-		trilinear_v(self.point_index[:3], self.ref_dir, self.rlinear, self.reference)
+		trilinear_v_amb(self.point_index[:3], self.ref_dir, self.rlinear, self.reference)
 		self.optimizer.optimize_tensor(np.asarray(self.y), np.asarray(self.low_rank), 0, np.asarray(self.ref_dir), 0)
 		# If we have a reference direction, select the closest to it. Otherwise select closest to last direction:
 		if cblas_dnrm2(3, &self.ref_dir[0], 1) > 0:

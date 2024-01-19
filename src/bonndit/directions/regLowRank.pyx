@@ -223,6 +223,7 @@ cdef class RegLowRank:
                 dist = 1 - cblas_ddot(3, &v[1], 1, &testv[0], 1)**2
                 if reg:
                     val = hota_sym_s_form(anisoten, testv)**2 +  2 *self._mu * cblas_ddot(3, &testv[0], 1, &reference[0], 1)
+                    print(val, oldval, cblas_ddot(3, &testv[0], 1, &reference[0], 1))
                     #print(val, oldval, cblas_ddot(3, &testv[0], 1, &reference[0], 1))
 
                 else:
@@ -311,7 +312,6 @@ cdef class RegLowRank:
                         index=self.min_mapping_voxel(low_rank, ref)
                         index_changed = 1
                 else:
-
                     tensor += ten[i]
                     low_rank[i*4] = hota_4o3d_sym_s_form(tensor[:], low_rank[i*4 + 1:i*4 + 4])
                     self.minimize_single_peak(low_rank[i*4: i*4 + 4], tensor, ref, index==i and mu > 0)
