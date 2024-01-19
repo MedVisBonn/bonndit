@@ -192,6 +192,8 @@ def main():
     parser.add_argument('--min_len', default=0)
     parser.add_argument('-ri', '--inclusion', default=argparse.SUPPRESS)
     parser.add_argument('-fsl', default="")
+    parser.add_argument('--mu', default=2)
+    parser.add_argument('--ref')
     parser.add_argument('--features', nargs='+', default="")
     args = parser.parse_args()
     print(args)
@@ -365,9 +367,20 @@ def main():
         'act': act.get_fdata() if act else None,
         'verbose': args.verbose,
         'sw_save': int(args.sw_save),
-        'runge_kutta': int(args.runge_kutta)
+        'runge_kutta': int(args.runge_kutta),
+        'mu': float(args.mu)
     }
-    if args.ukf == "Watson" or args.ukf == "BinghamQuatAlt" or args.ukf == "BinghamAlt" or args.ukf == "Bingham" or args.ukf == "WatsonAlt" or args.interpolation=="DeepReg":
+    if "ref" in args:
+        ref = load('ref', args, 'ref.nrrd', args.ref, logging, nib.load)
+        affine = ref.affine
+        ref = ref.get_fdata()
+        tracking_parameters['reference'] = ref
+        tracking_parameters['meta'] = affine 
+        data = load('data', args, 'fodf.nrrd', args.i, logging, nrrd.read)[0]
+        data = np.moveaxis(data, 0, 3) 
+        tracking_parameters['data'] = data[..., 1:]
+
+    if args.ukf == "Watson" or args.ukf == "BinghamQuatAlt" or args.ukf == "BinghamAlt" or args.ukf == "Bingham" or args.ukf == "WatsonAlt" or args.interpolation=="TractSeg":
         tracking_parameters.update(dict(
             max_sampling_angle=float(args.max_sampling_angle),
             max_kappa=args.max_kappa,

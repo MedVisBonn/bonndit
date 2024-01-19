@@ -223,7 +223,7 @@ cdef class RegLowRank:
                 dist = 1 - cblas_ddot(3, &v[1], 1, &testv[0], 1)**2
                 if reg:
                     val = hota_sym_s_form(anisoten, testv)**2 +  2 *self._mu * cblas_ddot(3, &testv[0], 1, &reference[0], 1)
-                    print(val, oldval, cblas_ddot(3, &testv[0], 1, &reference[0], 1))
+                    #print(val, oldval, cblas_ddot(3, &testv[0], 1, &reference[0], 1))
 
                 else:
                     val = hota_sym_s_form(anisoten, testv)
