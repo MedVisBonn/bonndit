@@ -22,6 +22,7 @@ cdef class Integration:
         self.next_point = np.zeros((3,))
         self.three_vector = np.zeros((3,))
         self.old_dir = np.ndarray((3,))
+        print('old_dir', hex(id(self.old_dir)))
         self.first_dir = np.ndarray((3,))
 
     cdef int integrate(
@@ -39,10 +40,10 @@ cdef class Integration:
 # x = ( act_dir - id )^-1 * ItoW^-1 * origin - coor
 ###
 cdef class FACT(Integration):
-	cdef void integrate(self, direction, coordinate) : # nogil:
-		direction_inv = np.linalg.inv(np.dot(direction, np.identity(3)) - np.identity(3))
-		np.dot(direction_inv, np.dot(np.linalg.inv(self.ItoW), self.origin)) - coordinate, np.linalg.norm(
-			self.stepsize)
+    cdef void integrate(self, direction, coordinate) : # nogil:
+        direction_inv = np.linalg.inv(np.dot(direction, np.identity(3)) - np.identity(3))
+        np.dot(direction_inv, np.dot(np.linalg.inv(self.ItoW), self.origin)) - coordinate, np.linalg.norm(
+            self.stepsize)
 """
 
 # Euler Integration. Transform to world coordinates before integrating.
@@ -54,16 +55,16 @@ cdef class Euler(Integration):
     ) :  # nogil except *:
         """ Euler Integration
 
-		Converts itow and adds the current direction to the current position
+        Converts itow and adds the current direction to the current position
 
-		Parameters
-		----------
-		direction: current direction
-		coordinate: current coordinate
+        Parameters
+        ----------
+        direction: current direction
+        coordinate: current coordinate
 
 
-		"""
-        self.old_dir = direction
+        """
+        cblas_dcopy(3, &direction[0], 1, &self.old_dir[0], 1)
         # Normalize the direction so each Euler step has the requested length.
         mult_with_scalar(
             self.three_vector, self.stepsize / norm(direction),
@@ -78,15 +79,15 @@ cdef class EulerUKF(Integration):
     ) :  # nogil except *:
         """ Euler Integration
 
-		Converts itow and adds the current direction to the current position
+        Converts itow and adds the current direction to the current position
 
-		Parameters
-		----------
-		direction: current direction
-		coordinate: current coordinate
+        Parameters
+        ----------
+        direction: current direction
+        coordinate: current coordinate
 
 
-		"""
+        """
         cblas_dgemv(
             CblasRowMajor, CblasNoTrans, 3, 3, 1,
             &self.trafo.ItoW[0, 0], 3, &direction[0], 1, 0,

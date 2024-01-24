@@ -41,6 +41,7 @@ from bonndit.utilc.cython_helpers cimport fa, dctov, sphere2cart, r_z_r_y_r_z
 from bonndit.utilc.blas_lapack cimport *
 from bonndit.utilc.trilinear cimport trilinear_v, trilinear_v_amb
 DTYPE = np.float64
+cimport numpy as np
 cdef double _lambda_min = 0.01
 from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
 
@@ -111,30 +112,30 @@ cdef class Interpolation:
     cdef void calc_cube(self, double[:] point) :  # : # : # nogil:
         """ This function calculates the cube around a point.
 
-		Parameters
-		----------
-		point 3 dimensional point
+        Parameters
+        ----------
+        point 3 dimensional point
 
 
-		Returns
-		-------
+        Returns
+        -------
 
-		"""
+        """
         add_pointwise(self.floor_point, neigh, point)
         floor_pointwise_matrix(self.floor_point, self.floor_point)
 
     cdef void nearest_neigh(self, double[:] point) :  # : # : # nogil:
         """ Return the nearest neighbour to a given point by l2 norm. Therefore uses the cube around a point and calc
-		the distance to all other points.
+        the distance to all other points.
 
-		Parameters
-		----------
-		point
+        Parameters
+        ----------
+        point
 
-		Returns
-		-------
+        Returns
+        -------
 
-		"""
+        """
         cdef double dist, act_dist
         cdef int index, best_ind
         self.calc_cube(point)
@@ -551,17 +552,17 @@ cdef class Trilinear(Interpolation):
         int r
     ) except *:  # : # : # nogil except *:
         """ This function calculates the interpolation based on https://en.wikipedia.org/wiki/Trilinear_interpolation
-		for each vectorfield. Afterwards the we chose randomly from the 3 vectors.
+        for each vectorfield. Afterwards the we chose randomly from the 3 vectors.
 
-		Parameters
-		----------
-		point   Point in plane
-		old_dir direction in point
+        Parameters
+        ----------
+        point   Point in plane
+        old_dir direction in point
 
-		Returns
-		-------
+        Returns
+        -------
 
-		"""
+        """
         cdef int i, j
         cdef int con = 1
         cdef double test = 0
@@ -660,20 +661,20 @@ cdef class Trilinear(Interpolation):
 # ### TODO is here a better way?
     cdef void permute(self, double[:] point) :  # : # : # nogil except *:
         """ Little anoying... If a cube was already cached, this function uses the cache to set the dir parameter
-		accordingly. We loop through all indices and for each index through the 2 saved vectors. The two saved
-		vectors are set to the first two directions and the remaining is set to the last direction. To get the last
-		one it should be enough to calculate 3-a-b where a and b are the indices of the other two directions.
+        accordingly. We loop through all indices and for each index through the 2 saved vectors. The two saved
+        vectors are set to the first two directions and the remaining is set to the last direction. To get the last
+        one it should be enough to calculate 3-a-b where a and b are the indices of the other two directions.
 
-		Since only the first two are saved
+        Since only the first two are saved
 
-		Parameters
-		----------
-		mapping Vector dimension 16 with entries from 0 to two which define the permutation
+        Parameters
+        ----------
+        mapping Vector dimension 16 with entries from 0 to two which define the permutation
 
-		Returns
-		-------
+        Returns
+        -------
 
-		"""
+        """
         cdef int i, index, k, l, z = 1
         cdef double exponent = 0
         for index in range(8):
@@ -1515,11 +1516,11 @@ cdef class UKFBinghamQuatAlt(Interpolation):
 
     cdef void init_kalman(self):
         """
-		This script first calculates the low-rank approximation for a given fODF. Then it calculates the hessian for the first peak and set initial
-		beta and kappa values based on this. For the second peak first the residual of the bingham distribution is subtracted
-		to reduce the bias in small crossing areas. Then the same fitting procedure is conducted. 
-		The code is not very clean because we have to switch between tensor and SH basis. 
-		"""
+        This script first calculates the low-rank approximation for a given fODF. Then it calculates the hessian for the first peak and set initial
+        beta and kappa values based on this. For the second peak first the residual of the bingham distribution is subtracted
+        to reduce the bias in small crossing areas. Then the same fitting procedure is conducted. 
+        The code is not very clean because we have to switch between tensor and SH basis. 
+        """
         cdef double[:] y_holder = np.zeros((28))
         cdef double[:] res_sh = np.zeros((28))
         mapping = [
@@ -1765,10 +1766,10 @@ cdef class DeepReg(Interpolation):
         self.reference = kwargs['reference']
         self.ref_dir = np.zeros((3,), dtype=DTYPE)
         self.low_rank = np.zeros((12,), dtype=DTYPE)
-        self.y = np.zeros((15,), dtype=DTYPE)
-        self.ylinear = np.zeros((8, 15), dtype=np.float64)
+        self.y = np.zeros((16,), dtype=DTYPE)
+        self.ylinear = np.zeros((8, 16), dtype=np.float64)
         self.rlinear = np.zeros((8, 3), dtype=np.float64)
-        self.mu = kwargs['mu']
+        self.mu = 2  # kwargs['mu']
         self.data = kwargs['data']
 
 
@@ -1777,38 +1778,125 @@ cdef class DeepReg(Interpolation):
         self, double[:] point, double[:] old_dir,
         int restart
     ) except *:
+        if restart == 0:
+            cblas_dscal(12, 0, &self.low_rank[0], 1)
         self.point_world[:3] = point
         self.point_world[3] = 1
+        # print(np.asarray(old_dir))
         cblas_dgemv(
             CblasRowMajor, CblasNoTrans, 4, 4, 1,
             &self.inv_trafo[0, 0], 4, &self.point_world[0], 1, 0,
             &self.point_index[0], 1)
         cdef int z, i, info = 0
         # Interpolate current point
+
         trilinear_v(self.point_index[:3], self.y, self.ylinear, self.data)
+
         trilinear_v_amb(
             self.point_index[:3], self.ref_dir, self.rlinear,
             self.reference)
+        cdef double scale = cblas_dnrm2(3, &self.ref_dir[0], 1)
+        if scale != 0:
+            cblas_dscal(3, 1 / scale, &self.ref_dir[0], 1)
         self.optimizer.optimize_tensor(
-            np.asarray(self.y),
-            np.asarray(self.low_rank), 0, np.asarray(self.ref_dir), 0)
+            np.asarray(self.y[1:]),
+            self.low_rank, 0, np.asarray(self.ref_dir), 0)
+    # 
+        cdef np.ndarray[np.float64_t, ndim = 2] tens = np.zeros(
+            (3, 15),
+            dtype=np.float64)
+        cdef np.ndarray[np.float64_t, ndim = 1] length = np.zeros(
+            3,
+            dtype=np.float64)
+        cdef np.ndarray[
+            np.float64_t,
+            ndim = 2] best_dir_approx = np.zeros((3, 3), dtype=np.float64)
+        if self.y[0] == 0:
+            return -1
+
         # If we have a reference direction, select the closest to it. Otherwise
         # select closest to last direction:
+        # cblas_dcopy(16, &self.data[<int> self.point_index[0], <int>
+        # self.point_index[1], <int> self.point_index[2],0], 1, &self.y[0], 1)
+        trilinear_v(self.point_index[:3], self.y, self.ylinear, self.data)
+        # print(np.asarray(self.y))
         if cblas_dnrm2(3, &self.ref_dir[0], 1) > 0:
             idx = self.optimizer.min_mapping_voxel(np.asarray(self.low_rank), np.asarray(self.ref_dir))
             idx = self.optimizer.optimize_tensor(
-                np.asarray(self.y),
-                np.asarray(self.low_rank), idx, np.asarray(self.ref_dir),
-                self.mu)
+                np.asarray(self.y[1:]),
+                self.low_rank, idx, np.asarray(self.ref_dir), self.mu)
+     # # else:
+     # #     idx = self.optimizer.min_mapping_voxel(np.asarray(self.low_rank),
+     # np.asarray(old_dir))
+
+        # print(np.asarray(old_dir))
+        cdef double min_ang = 0
+        if cblas_dnrm2(3, &self.ref_dir[0], 1) > 0:
+            for i in range(3):
+                if self.low_rank[4 * i] < 0.1:
+                    continue
+                cblas_dscal(3, 0, &self.best_dir[i, 0], 1)
+                ang = fabs(
+                    cblas_ddot(
+                        3, &self.ref_dir[0], 1,
+                        &self.low_rank[4 * i + 1], 1))
+                # print(ang)
+                if ang > min_ang:
+                    min_ang = ang
+                    idx = i
+            # print(idx)
+            cblas_dcopy(
+                3, &self.low_rank[4 * idx + 1], 1,
+                &self.next_dir[0], 1)
+            if cblas_ddot(3, &self.next_dir[0], 1, &old_dir[0], 1) < 0:
+                cblas_dscal(3, -1, &self.next_dir[0], 1)
         else:
-            idx = self.optimizer.min_mapping_voxel(np.asarray(self.low_rank), np.asarray(old_dir))
-        self.prob.select_next_dir(
-            self.low_rank[4 * idx + 1: 4 * (idx + 1)],
-            old_dir)
-        self.next_dir = self.prob.best_fit
+            for i in range(3):
+                if self.low_rank[4 * i] < 0.1:
+                    cblas_dscal(4, 0, &self.low_rank[4 * i], 1)
+
+
+            self.prob.select_next_dir(self.low_rank, old_dir)
+            cblas_dcopy(3, &self.prob.best_fit[0], 1, &self.next_dir[0], 1)
         return info
-# 
-# 
-# 
-# 
-# 
+
+
+
+
+cdef class TomReg(Interpolation):
+
+    def __cinit__(
+        self, double[:, :, :, :, :] vector_field, int[:] grid,
+        Probabilities probClass, **kwargs
+    ):
+        super(TomReg, self).__init__(vector_field, grid, probClass, **kwargs)
+        self.reference = kwargs['reference']
+        self.ref_dir = np.zeros((3,), dtype=DTYPE)
+        self.rlinear = np.zeros((8, 3), dtype=np.float64)
+
+    cpdef int interpolate(
+        self, double[:] point, double[:] old_dir,
+        int restart
+    ) except *:
+        self.point_world[:3] = point
+        self.point_world[3] = 1
+        # print(np.asarray(old_dir))
+        cblas_dgemv(
+            CblasRowMajor, CblasNoTrans, 4, 4, 1,
+            &self.inv_trafo[0, 0], 4, &self.point_world[0], 1, 0,
+            &self.point_index[0], 1)
+        cdef int z, i, info = 0
+        # Interpolate current point
+
+        trilinear_v_amb(
+            self.point_index[:3], self.ref_dir, self.rlinear,
+            self.reference)
+        cdef double scale = cblas_dnrm2(3, &self.ref_dir[0], 1)
+        if scale != 0:
+            cblas_dscal(3, 1 / scale, &self.ref_dir[0], 1)
+        else:
+            return 1
+        if cblas_ddot(3, &self.ref_dir[0], 1, &old_dir[0], 1) < 0:
+            cblas_dscal(3, -1, &self.ref_dir[0], 1)
+        cblas_dcopy(3, &self.ref_dir[0], 1, &self.next_dir[0], 1)
+        return info

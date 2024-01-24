@@ -9,7 +9,7 @@ from .alignedDirection cimport TractSegGetter, Gaussian, Laplacian, \
 from .ItoW cimport Trafo
 from .stopping cimport Validator
 from .integration cimport Euler, Integration, EulerUKF, RungeKutta
-from .interpolation cimport DeepReg, FACT, Trilinear, Interpolation, \
+from .interpolation cimport TomReg, DeepReg, FACT, Trilinear, Interpolation, \
     UKFFodf, UKFFodfAlt, UKFMultiTensor, UKFBinghamAlt, TrilinearFODF, \
     UKFBingham, UKFWatson, UKFWatsonAlt, UKFBinghamQuatAlt
 from bonndit.utilc.cython_helpers cimport mult_with_scalar, sum_c, \
@@ -17,7 +17,7 @@ from bonndit.utilc.cython_helpers cimport mult_with_scalar, sum_c, \
     angle_deg, norm
 import numpy as np
 from tqdm import tqdm
-
+from bonndit.utilc.blas_lapack cimport *
 ctypedef struct possible_features:
     int chosen_angle
     int seedpoint
@@ -66,7 +66,9 @@ cdef void tracking(
                 skip = interpolate.main_dir(paths[j, 0, 0])
                 if not skip:
                     break
-                integrate.old_dir = interpolate.next_dir
+                cblas_dcopy(
+                    3, &interpolate.next_dir[0], 1,
+                    &integrate.old_dir[0], 1)
             else:
                 skip = interpolate.check_point(seed[:3])
                 if not skip:
@@ -401,6 +403,10 @@ cpdef tracking_all(
             **trilinear_parameters)
     elif tracking_parameters['interpolation'] == "TractSeg":
         interpolate = DeepReg(
+            vector_field, dim[2:5], directionGetter,
+            **tracking_parameters)
+    elif tracking_parameters['interpolation'] == "TOM":
+        interpolate = TomReg(
             vector_field, dim[2:5], directionGetter,
             **tracking_parameters)
     else:

@@ -27,7 +27,9 @@ cdef class Probabilities:
         self.probability = np.zeros((3,))
         self.angles = np.zeros((3,))
         self.best_fit = np.zeros((3))
+        print(hex(id(self.best_fit)))
         self.test_vectors = np.zeros((3, 3))
+        print(hex(id(self.test_vectors)))
         self.chosen_angle = 0
         self.old_fa = 1
 
@@ -38,10 +40,10 @@ cdef class Probabilities:
     ) :  # nogil  except *:
         """
 
-		@param vectors:
-		@param direction:
-		@return:
-		"""
+        @param vectors:
+        @param direction:
+        @return:
+        """
         # calculate angle between direction and possibilities. If angle is
         # bigger than 90 use the opposite direction.
         cdef int i, n = vectors.shape[0]
@@ -70,9 +72,9 @@ cdef class Probabilities:
     cdef int random_choice(self, double[:] direction) :  # nogil  except *:
         """
 
-		@param direction:
-		@return:
-		"""
+        @param direction:
+        @return:
+        """
         cdef double best_choice = rand() / RAND_MAX
         cdef int c_ind = 0
     # with gil:
@@ -142,17 +144,20 @@ cdef class Gaussian(Probabilities):
     ) :  # nogil except *:
         """
 
-		@param vectors:
-		@param direction:
-		@return:
-		"""
+        @param vectors:
+        @param direction:
+        @return:
+        """
         cdef int i
         self.aligned_direction(vectors, direction)
         for i in range(3):
-            self.probability[i] \
-                = exp(
-                -1 / 2
-                * ((self.angles[i] - self.expectation) / self.sigma) ** 2)
+            if self.angles[i] < 50:
+                self.probability[i] \
+                    = exp(
+                    -1 / 2
+                    * ((self.angles[i] - self.expectation) / self.sigma) ** 2)
+            else:
+                self.probability[i] = 0
         self.random_choice(direction)
 
 
@@ -163,10 +168,10 @@ cdef class Laplacian(Probabilities):
     ) :  # nogil except *:
         """
 
-		@param vectors:
-		@param direction:
-		@return:
-		"""
+        @param vectors:
+        @param direction:
+        @return:
+        """
         cdef int i
         self.aligned_direction(vectors, direction)
         for i in range(3):
@@ -184,10 +189,10 @@ cdef class ScalarOld(Probabilities):
     ) :  # nogil except *:
         """
 
-		@param vectors:
-		@param direction:
-		@return:
-		"""
+        @param vectors:
+        @param direction:
+        @return:
+        """
         cdef int i
         cdef double s
         self.aligned_direction(vectors, direction)
@@ -228,10 +233,10 @@ cdef class ScalarNew(Probabilities):
     ) :  # nogil  except *:
         """
 
-		@param vectors:
-		@param direction:
-		@return:
-		"""
+        @param vectors:
+        @param direction:
+        @return:
+        """
         cdef int i
         cdef double s
         self.aligned_direction(vectors, direction)
@@ -255,10 +260,10 @@ cdef class Deterministic2(Probabilities):
     ) :  # nogil  except *:
         """
 
-		@param vectors:
-		@param direction:
-		@return:
-		"""
+        @param vectors:
+        @param direction:
+        @return:
+        """
         cdef int i, min_index = 0
         cdef double s, min_angle = 0
         self.aligned_direction(vectors, direction)
@@ -286,10 +291,10 @@ cdef class Deterministic(Probabilities):
     ) :  # nogil  except *:
         """
 
-		@param vectors:
-		@param direction:
-		@return:
-		"""
+        @param vectors:
+        @param direction:
+        @return:
+        """
         cdef int i, min_index = 0
         cdef double s, min_angle = 0
         self.aligned_direction(vectors, direction)
@@ -348,10 +353,10 @@ cdef class WatsonDirGetter(Probabilities):
     ) :  # nogil  except *:
         """
 
-		@param vectors:
-		@param direction:
-		@return:
-		"""
+        @param vectors:
+        @param direction:
+        @return:
+        """
         cdef int i, min_index = 0
         cdef double s, min_angle = 0, norm_of_test, mc_angle = 360
         cdef double kappa_value
@@ -475,10 +480,10 @@ cdef class BinghamDirGetter(Probabilities):
     ) :  # nogil  except *:
         """
 
-		@param vectors:
-		@param direction:
-		@return:
-		"""
+        @param vectors:
+        @param direction:
+        @return:
+        """
         cdef int i, min_index = 0
         cdef double s, min_angle = 0, norm_of_test, mc_angle = 360
         cdef double kappa_value
@@ -537,12 +542,30 @@ cdef class BinghamDirGetter(Probabilities):
 # 
 # 
 cdef class TractSegGetter(WatsonDirGetter):
+    def __cinit__(self, double expectation=0, double sigma=9, **kwargs):
+        super().__init__(expectation, sigma, kwargs)
+
     cdef void select_next_dir(self, double[:] next_dir, double[:] old_dir):
-        if cblas_ddot(3, &next_dir[0], 1, &old_dir[0], 1) < 0:
-            cblas_dscal(3, -1, &next_dir[0], 1)
+        cdef int idx = 0
+        cdef double min_v = 0, v
+        for i in range(3):
+            if next_dir[4 * i] == 0:
+                continue
+            v = abs(cblas_ddot(3, &next_dir[4 * i + 1], 1, &old_dir[0], 1))
+            if v > min_v:
+                idx = i
+                min_v = v
 
-        cblas_dcopy(3, &next_dir[0], 1, &self.best_fit[0], 1)
-        self.mc_random_direction(self.best_fit, next_dir, self.sigma, 1)
 
+        #if cblas_ddot(3, &next_dir[0], 1, &old_dir[0], 1) < 0:
+        # cblas_dscal(3, -1, &next_dir[0], 1)
+
+        # print(2, np.asarray(old_dir),hex(id(old_dir)),
+        # hex(id(self.best_fit)))
+        cblas_dcopy(3, &next_dir[4 * idx + 1], 1, &self.best_fit[0], 1)
+
+        # self.mc_random_direction(self.best_fit, next_dir, self.sigma, 1)
+        # print(3, np.asarray(old_dir), np.asarray(next_dir),
+        # hex(id(old_dir[0])), hex(id(self.best_fit[0])))
         if cblas_ddot(3, &old_dir[0], 1, &self.best_fit[0], 1) < 0:
             cblas_dscal(3, -1, &self.best_fit[0], 1)

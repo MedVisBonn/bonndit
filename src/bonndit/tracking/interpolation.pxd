@@ -242,3 +242,15 @@ cdef class DeepReg(Interpolation):
     cdef double[:, :] rlinear
     cdef double mu
     cdef double[:, :, :, :] data
+
+cdef class TomReg(Interpolation):
+    cdef double[:, :, :, :] reference
+    cdef double[:] ref_dir
+    cdef double[:, :] rlinear
+
+
+# cdef class TomReg(Interpolation):
+   # cdef double[:,:,:,:] reference
+  # cdef double[:,:] rlinear
+  # cdef double[:] ref_dir
+# 
