@@ -13,7 +13,7 @@ from libc.math cimport pow, pi, acos, floor, fabs
 
 
 cdef class TijkRefineRank1Parm:
-    def __init__(self, eps_start=1e-10, eps_impr=1e-6, beta=0.3, gamma=0.9, sigma=0.01, maxTry=200):
+    def __init__(self, eps_start=1e-10, eps_impr=1e-6, beta=0.3, gamma=0.9, sigma=0.5, maxTry=200):
         self.eps_start=eps_start
         self.eps_impr=eps_impr
         self.beta=beta
@@ -223,9 +223,6 @@ cdef class RegLowRank:
                 dist = 1 - cblas_ddot(3, &v[1], 1, &testv[0], 1)**2
                 if reg:
                     val = hota_sym_s_form(anisoten, testv)**2 +  2 *self._mu * cblas_ddot(3, &testv[0], 1, &reference[0], 1)
-                    print(val, oldval, cblas_ddot(3, &testv[0], 1, &reference[0], 1))
-                    #print(val, oldval, cblas_ddot(3, &testv[0], 1, &reference[0], 1))
-
                 else:
                     val = hota_sym_s_form(anisoten, testv)
                 if sign*val >= sign*oldval + self.TijkRefineRank1Parm.sigma*der_len*dist:
@@ -271,14 +268,14 @@ cdef class RegLowRank:
         v_max = 0
         for i in range(self.rank):
             if low_rank[4*i] > 0:
-                v = abs(cblas_ddot(3, &low_rank[4*i + 1], 1, &ref[0], 1))
-                if v > v_max: 
+                v = cblas_ddot(3, &low_rank[4*i + 1], 1, &ref[0], 1)
+                if v > v_max:
                     index = i 
                     v_max = v
         return index
 
     cdef optimize_tensor(self, np.ndarray[np.float64_t, ndim=1] tensor,
-                               np.ndarray[np.float64_t, ndim=1] low_rank,
+                               double[:] low_rank,
                                int index,
                                np.ndarray[np.float64_t, ndim=1] ref, float mu):
         """
@@ -291,15 +288,16 @@ cdef class RegLowRank:
         cdef np.ndarray[np.float64_t, ndim=1] t = np.zeros((15), dtype=np.float64)
         cdef np.ndarray[np.float64_t, ndim=1] v = np.zeros((4), dtype=np.float64)
         cdef float orig_norm = hota_4o3d_sym_norm(tensor) + mu * ( 1- fabs(np.dot(low_rank[index*4+1: index*4 +4],ref)))
+        cdef int i
         for i in range(self.rank):
             hota_4o3d_sym_eval(ten[i], low_rank[i*4], low_rank[index*4+1: index*4 +4])
             tensor -= ten[i]
         cdef int k = 0
         cdef int index_changed=0
-        while True: # and k < 10:
+        while True and (k < 100 or mu==0):
             index_changed=0
             k += 1
-            res_norm = hota_4o3d_sym_norm(tensor) + mu * ( 1- fabs(np.dot(low_rank[index*4+1 : index*4 +4],ref)))
+            res_norm = hota_4o3d_sym_norm(tensor) + mu * ( 1- fabs(cblas_ddot(3,&low_rank[index*4+1], 1,&ref[0],1)))
             if cblas_ddot(3, &low_rank[index*4+1], 1, &ref[0], 1) < 0 and mu>0:
                 cblas_dscal(3, -1, &low_rank[index*4+1], 1)
 
@@ -308,20 +306,22 @@ cdef class RegLowRank:
                 ## else performe update
                 if low_rank[i*4] == 0:
                     init_max_3d(low_rank[i*4: i*4 + 1], low_rank[i*4 + 1: i*4 + 4], tensor)
-                    if (index==i and mu>0):
+                    if index==i and mu>0:
                         index=self.min_mapping_voxel(low_rank, ref)
-                        index_changed = 1
+                   #     index_changed = 1
                 else:
                     tensor += ten[i]
                     low_rank[i*4] = hota_4o3d_sym_s_form(tensor[:], low_rank[i*4 + 1:i*4 + 4])
-                    self.minimize_single_peak(low_rank[i*4: i*4 + 4], tensor, ref, index==i and mu > 0)
+
+                self.minimize_single_peak(low_rank[i*4: i*4 + 4], tensor, ref, index==i and mu > 0)
+
                 if low_rank[i*4] > 0:
                     hota_4o3d_sym_eval(ten[i], low_rank[i*4], low_rank[i*4 +1: i*4 + 4])
                     tensor -= ten[i]
                 else:
                      low_rank[i*4] = 0
             new_norm = hota_4o3d_sym_norm(tensor) + mu * (1- fabs(np.dot(low_rank[index*4+1 : index*4 +4],ref)))
-            if not index_changed==1 and (new_norm <= self.TijkRefineRank.eps_res or res_norm - new_norm < self.TijkRefineRank.eps_impr*orig_norm):
+            if not index_changed==1 and (new_norm <= self.TijkRefineRank.eps_res or abs(res_norm - new_norm) < self.TijkRefineRank.eps_impr*orig_norm):
                 break
         return index
 

@@ -212,9 +212,11 @@ ext_modules = [
     Extension(
         "bonndit.tracking.tracking_prob",
         ["src/bonndit/tracking/tracking_prob.pyx"],
+        define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
         include_dirs=[numpy.get_include()],
-        extra_compile_args=['-fopenmp'] + fast,
-        extra_link_args=['-fopenmp'],
+        libraries=["cblas", "pthread", "m", "dl"],
+        extra_compile_args=["-Wall", "-m64"] + fast,
+        extra_link_args=["-Wl,--no-as-needed"],
       #  embedsignature=True,
     ),
     Extension(

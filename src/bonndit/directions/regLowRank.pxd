@@ -38,7 +38,7 @@ cdef class RegLowRank:
     cpdef write_reg(self, outfile)
     cpdef return_arr(self)
     cdef optimize_tensor(self, np.ndarray[np.float64_t, ndim=1],
-                               np.ndarray[np.float64_t, ndim=1],
+                         double[:],
                                int,
                                np.ndarray[np.float64_t, ndim=1], float)
     cdef min_mapping_voxel(self, double[:], double[:])

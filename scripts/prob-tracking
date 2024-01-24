@@ -378,7 +378,8 @@ def main():
         tracking_parameters['meta'] = affine 
         data = load('data', args, 'fodf.nrrd', args.i, logging, nrrd.read)[0]
         data = np.moveaxis(data, 0, 3) 
-        tracking_parameters['data'] = data[..., 1:]
+        tracking_parameters['data'] = data
+        print(data.shape)
 
     if args.ukf == "Watson" or args.ukf == "BinghamQuatAlt" or args.ukf == "BinghamAlt" or args.ukf == "Bingham" or args.ukf == "WatsonAlt" or args.interpolation=="TractSeg":
         tracking_parameters.update(dict(

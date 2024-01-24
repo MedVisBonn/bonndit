@@ -10,18 +10,19 @@ from .ItoW cimport Trafo
 
 cdef class Integration:
 
-	def __cinit__(self, double[:,:] ItoWMatrix, double[:] origin, Trafo trafo, double stepsize, **kwargs):
-		self.stepsize = stepsize
-		self.trafo = trafo
-		self.ItoW = ItoWMatrix
-		self.origin = origin
-		self.next_point = np.zeros((3,))
-		self.three_vector = np.zeros((3,))
-		self.old_dir = np.ndarray((3,))
-		self.first_dir = np.ndarray((3,))
+    def __cinit__(self, double[:,:] ItoWMatrix, double[:] origin, Trafo trafo, double stepsize, **kwargs):
+        self.stepsize = stepsize
+        self.trafo = trafo
+        self.ItoW = ItoWMatrix
+        self.origin = origin
+        self.next_point = np.zeros((3,))
+        self.three_vector = np.zeros((3,))
+        self.old_dir = np.ndarray((3,))
+        print('old_dir', hex(id(self.old_dir)))
+        self.first_dir = np.ndarray((3,))
 
-	cdef int integrate(self, double[:] direction, double[:] coordinate, int div) : # nogil except *:
-		pass
+    cdef int integrate(self, double[:] direction, double[:] coordinate, int div) : # nogil except *:
+        pass
 
 
 
@@ -32,72 +33,72 @@ cdef class Integration:
 # x = ( act_dir - id )^-1 * ItoW^-1 * origin - coor
 ###
 cdef class FACT(Integration):
-	cdef void integrate(self, direction, coordinate) : # nogil:
-		direction_inv = np.linalg.inv(np.dot(direction, np.identity(3)) - np.identity(3))
-		np.dot(direction_inv, np.dot(np.linalg.inv(self.ItoW), self.origin)) - coordinate, np.linalg.norm(
-			self.stepsize)
+    cdef void integrate(self, direction, coordinate) : # nogil:
+        direction_inv = np.linalg.inv(np.dot(direction, np.identity(3)) - np.identity(3))
+        np.dot(direction_inv, np.dot(np.linalg.inv(self.ItoW), self.origin)) - coordinate, np.linalg.norm(
+            self.stepsize)
 """
 
 # Euler Integration. Transform to world coordinates before integrating. Transform back afterwards.
 cdef class Euler(Integration):
-	cdef int integrate(self, double[:] direction, double[:] coordinate, int div) : # nogil except *:
-		""" Euler Integration
+    cdef int integrate(self, double[:] direction, double[:] coordinate, int div) : # nogil except *:
+        """ Euler Integration
 
-		Converts itow and adds the current direction to the current position
+        Converts itow and adds the current direction to the current position
 
-		Parameters
-		----------
-		direction: current direction
-		coordinate: current coordinate
+        Parameters
+        ----------
+        direction: current direction
+        coordinate: current coordinate
 
 
-		"""
-		self.old_dir = direction
-		mult_with_scalar(self.three_vector, self.stepsize/norm(direction), direction)
-		add_vectors(self.next_point, coordinate, self.three_vector)
-		return 0
+        """
+        cblas_dcopy(3, &direction[0], 1, &self.old_dir[0], 1)
+        mult_with_scalar(self.three_vector, self.stepsize/norm(direction), direction)
+        add_vectors(self.next_point, coordinate, self.three_vector)
+        return 0
 
 cdef class EulerUKF(Integration):
-	cdef int integrate(self, double[:] direction, double[:] coordinate, int div) : # nogil except *:
-		""" Euler Integration
+    cdef int integrate(self, double[:] direction, double[:] coordinate, int div) : # nogil except *:
+        """ Euler Integration
 
-		Converts itow and adds the current direction to the current position
+        Converts itow and adds the current direction to the current position
 
-		Parameters
-		----------
-		direction: current direction
-		coordinate: current coordinate
+        Parameters
+        ----------
+        direction: current direction
+        coordinate: current coordinate
 
 
-		"""
-		cblas_dgemv(CblasRowMajor, CblasNoTrans, 3,3, 1, &self.trafo.ItoW[0,0], 3, &direction[0], 1, 0, &self.next_point[0],1)
-		mult_with_scalar(self.three_vector, self.stepsize/norm(direction), self.next_point)
-		self.old_dir = direction
-		add_vectors(self.next_point, coordinate, self.three_vector)
-		return 0
+        """
+        cblas_dgemv(CblasRowMajor, CblasNoTrans, 3,3, 1, &self.trafo.ItoW[0,0], 3, &direction[0], 1, 0, &self.next_point[0],1)
+        mult_with_scalar(self.three_vector, self.stepsize/norm(direction), self.next_point)
+        self.old_dir = direction
+        add_vectors(self.next_point, coordinate, self.three_vector)
+        return 0
 
 
 # Calculate next steps according to Wikipedia https://de.wikipedia.org/wiki/Runge-Kutta-Verfahren for constant time?
 # best fit to current coordinate. Branching prohibited
 cdef class RungeKutta(Integration):
-	def __cinit__(self, double[:,:] ItoWMatrix, double[:] origin, Trafo trafo, double stepsize, **kwargs):
-		super().__init__(ItoWMatrix, origin, trafo, stepsize)
-		self.interpolate = kwargs['interpolate']
-		self.k1 =np.zeros((3,))
-		self.k2 =np.zeros((3,))
-		self.k2_x =np.zeros((3,))
+    def __cinit__(self, double[:,:] ItoWMatrix, double[:] origin, Trafo trafo, double stepsize, **kwargs):
+        super().__init__(ItoWMatrix, origin, trafo, stepsize)
+        self.interpolate = kwargs['interpolate']
+        self.k1 =np.zeros((3,))
+        self.k2 =np.zeros((3,))
+        self.k2_x =np.zeros((3,))
 
-	cdef int integrate(self, double[:] direction, double[:] coordinate, int div) : # nogil except *:
-		mult_with_scalar(self.three_vector, self.stepsize/(2*norm(direction)), direction)
-		add_vectors(self.k2_x, coordinate, self.three_vector)
-		if self.interpolate.interpolate(self.k2_x, direction, 1) != 0:
-			return 1
-		self.k2 = self.interpolate.next_dir
-		self.old_dir = self.k1
-		if sum_c(self.k2) == 0 or sum_c(self.k2) != sum_c(self.k2):
-			return 1
-		mult_with_scalar(self.k1, self.stepsize/norm(self.k2), self.k2)
-		add_vectors(self.next_point, coordinate, self.k1)
-		return 0
+    cdef int integrate(self, double[:] direction, double[:] coordinate, int div) : # nogil except *:
+        mult_with_scalar(self.three_vector, self.stepsize/(2*norm(direction)), direction)
+        add_vectors(self.k2_x, coordinate, self.three_vector)
+        if self.interpolate.interpolate(self.k2_x, direction, 1) != 0:
+            return 1
+        self.k2 = self.interpolate.next_dir
+        self.old_dir = self.k1
+        if sum_c(self.k2) == 0 or sum_c(self.k2) != sum_c(self.k2):
+            return 1
+        mult_with_scalar(self.k1, self.stepsize/norm(self.k2), self.k2)
+        add_vectors(self.next_point, coordinate, self.k1)
+        return 0
 
 
