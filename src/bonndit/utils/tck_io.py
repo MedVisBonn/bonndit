@@ -26,28 +26,30 @@ class Tck:
             parameters = {}
         if not self.force and os.path.isfile(self.file_path):
             raise Exception('%s exists and shouldnt be overwritten' % self.file_path)
+        
         self.parameters = parameters
-        header.append(b'start: %s\n' % bytes(str(datetime.now()), encoding='utf-8'))
-        header.append(b'end: %s\n' % bytes(str(datetime.now()), encoding='utf-8'))
+        self.header = header.copy()
+        self.header.append(b'start: %s\n' % bytes(str(datetime.now()), encoding='utf-8'))
+        self.header.append(b'end: %s\n' % bytes(str(datetime.now()), encoding='utf-8'))
         for p in self.parameters.keys():
-            header.append(b'%s: %s\n' % (bytes(p, encoding="utf-8"), bytes(self.parameters[p], encoding="utf-8")))
-        header.append(b'END\n')
-        len_header = len(b''.join(header))
-        header[3] = header[3].replace(b'offset', bytes(str(len_header - 6 + len(str(len_header))), encoding='utf-8'))
+            self.header.append(b'%s: %s\n' % (bytes(p, encoding="utf-8"), bytes(self.parameters[p], encoding="utf-8")))
+        self.header.append(b'END\n')
+        len_header = len(b''.join(self.header))
+        self.header[3] = self.header[3].replace(b'offset', bytes(str(len_header - 6 + len(str(len_header))), encoding='utf-8'))
         with open(self.file_path, 'wb') as f:
-            for h in header:
+            for h in self.header:
                 f.write(h)
 
         for feat in self.feature.keys():
             with open(self.feature[feat]['path'], 'wb') as f:
-                for h in header:
+                for h in self.header:
                     f.write(h)
-        self.header = header
         if self.data is not None:
             for i in range(self.data.shape[0]):
                 self.append(self.data[i], {feat: self.feature[feat]['data'][i] for feat in self.feature.keys()})
 
     def append(self, path, feature=None):
+        #print(path)
         v = np.linalg.norm(path)
         if np.isnan(v) or np.isinf(v):
             return
@@ -95,7 +97,7 @@ class Tck:
 
         if self.feature:
             for feat in self.feature:
-                with open(self.feature[feat], 'rb') as f:
+                with open(self.feature[feat]['path'], 'rb') as f:
                     g = f.readlines()
                     g = b''.join(g)
                     offset = g.find(b'END') + 4
