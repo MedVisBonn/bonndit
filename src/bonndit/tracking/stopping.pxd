@@ -14,6 +14,7 @@ cdef class Validator:
 		ROIInNotValidator ROIIn
 		ROIExNotValidator ROIEx
 		WMChecker WM
+		ROIEndNotValidator ROIEnd
 
 	cdef bint index_checker(self, double[:]) except * # nogil except *
 	cdef bint next_point_checker(self, double[:]) # nogil except *
@@ -31,7 +32,7 @@ cdef class WMChecker:
 
 	cdef void reset(self)
 	cdef bint sgm_checker(self, double[:])
-	cdef bint wm_checker(self, double[:])
+	cdef float wm_checker(self, double[:])
 	cdef bint wm_checker_ex(self, double[:])
 
 
@@ -45,7 +46,25 @@ cdef class WMChecker:
 #	cdef bint wm_checker(self, double[:] )
 #	cdef bint sgm_checker(self, double[:])
 
+cdef class ROIEndNotValidator:
+	cdef:
+		double[:,:,:,:] start_end
+		double[:,:] inv_trafo
+		double[:] point_world
+		double[:] point_index
+		double[:] y
+		double[:] checker
+		double[:,:,:] mask
+		int this_run
+	
+	cdef int end_checker(self, double[:], int )
+	cdef checker_reset(self)
+	cdef check(self)
+	cdef int end_checker_mask(self, double[:])
 
+cdef class ROIEndValidator(ROIEndNotValidator):
+	cdef int end_checker(self, double[:], int)
+	cdef int end_checker_mask(self, double[:])
 
 cdef class CurvatureNotValidator:
 	cdef:
@@ -65,6 +84,7 @@ cdef class ROIInNotValidator:
 		double[:,:] inclusion
 		double[:] inclusion_check
 		int inclusion_num
+	
 	cdef int included(self, double[:]) # nogil except *
 	cdef bint included_checker(self) # nogil except *
 

@@ -39,13 +39,14 @@ def main():
     bvals, bvecs = read_bvals_bvecs(args.inbvals, args.inbvecs)
 
     # Make and store selection
-    selection = (bvals <= args.thresh_up) & (bvals > args.thresh_low)
+    selection = ((bvals <= args.thresh_up) & (bvals > args.thresh_low)) | (bvals < 50)
     np.savetxt(args.outbvals,bvals[selection],fmt='%d')
     np.savetxt(args.outbvecs,bvecs[selection,:].T,fmt='%1.6f')
 
     # Load data and save selection
     data, _, meta = dwmri.load(args.indata)
-    fields.save_basic(args.outdata, data[:, :, :, selection], meta)
+    data = data[:, :, :, selection]
+    fields.save_basic(args.outdata, data, meta)
 
 if __name__ == "__main__":
     main()

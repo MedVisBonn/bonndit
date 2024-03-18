@@ -441,15 +441,18 @@ cdef class TractSegGetter(WatsonDirGetter):
             if v > min_v:
                 idx = i
                 min_v = v
+        if min_v < 0.7:
+            cblas_dscal(3, 0, &self.best_fit[0], 1)
+        else:
 
 
-        #if cblas_ddot(3, &next_dir[0], 1, &old_dir[0], 1) < 0:
-        #cblas_dscal(3, -1, &next_dir[0], 1)
+            #if cblas_ddot(3, &next_dir[0], 1, &old_dir[0], 1) < 0:
+            #cblas_dscal(3, -1, &next_dir[0], 1)
 
-        #print(2, np.asarray(old_dir),hex(id(old_dir)), hex(id(self.best_fit)))
-        cblas_dcopy(3, &next_dir[4*idx+1], 1, &self.best_fit[0], 1)
+            #print(2, np.asarray(old_dir),hex(id(old_dir)), hex(id(self.best_fit)))
+            cblas_dcopy(3, &next_dir[4*idx+1], 1, &self.best_fit[0], 1)
 
-        #self.mc_random_direction(self.best_fit, next_dir, self.sigma, 1)
-        #print(3, np.asarray(old_dir), np.asarray(next_dir), hex(id(old_dir[0])), hex(id(self.best_fit[0])))
-        if cblas_ddot(3, &old_dir[0], 1, &self.best_fit[0], 1) < 0:
-            cblas_dscal(3, -1, &self.best_fit[0], 1)
+            #self.mc_random_direction(self.best_fit, next_dir, self.sigma, 1)
+            #print(3, np.asarray(old_dir), np.asarray(next_dir), hex(id(old_dir[0])), hex(id(self.best_fit[0])))
+            if cblas_ddot(3, &old_dir[0], 1, &self.best_fit[0], 1) < 0:
+                cblas_dscal(3, -1, &self.best_fit[0], 1)

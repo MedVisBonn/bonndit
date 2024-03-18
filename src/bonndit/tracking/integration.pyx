@@ -18,7 +18,6 @@ cdef class Integration:
         self.next_point = np.zeros((3,))
         self.three_vector = np.zeros((3,))
         self.old_dir = np.ndarray((3,))
-        print('old_dir', hex(id(self.old_dir)))
         self.first_dir = np.ndarray((3,))
 
     cdef int integrate(self, double[:] direction, double[:] coordinate, int div) : # nogil except *:
@@ -53,6 +52,8 @@ cdef class Euler(Integration):
 
 
         """
+        if cblas_ddot(3, &direction[0], 1, &self.old_dir[0], 1) < 0:
+            cblas_dscal(3, -1, &direction[0], 1)
         cblas_dcopy(3, &direction[0], 1, &self.old_dir[0], 1)
         mult_with_scalar(self.three_vector, self.stepsize/norm(direction), direction)
         add_vectors(self.next_point, coordinate, self.three_vector)

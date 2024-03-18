@@ -70,6 +70,7 @@ cdef class Interpolation:
             u = 1
 
     cdef bint check_point(self, double[:] point):
+        print(np.array(self.vector_field.shape), np.array(point))
         if self.vector_field.shape[2] > point[0] > 0 and self.vector_field.shape[3] > point[1] > 0 and self.vector_field.shape[4] > point[2] > 0:
             return True
         return False
@@ -1251,14 +1252,22 @@ cdef class DeepReg(Interpolation):
         super(DeepReg, self).__init__(vector_field, grid, probClass, **kwargs)
         self.optimizer = RegLowRank(kwargs['data'], kwargs['reference'], kwargs['mu'], kwargs['meta'])
         self.reference = kwargs['reference']
+        print('ref', self.reference.shape)
         self.ref_dir = np.zeros((3,), dtype=DTYPE)
         self.low_rank = np.zeros((12, ), dtype=DTYPE)
         self.y = np.zeros((16,), dtype=DTYPE)
         self.ylinear  = np.zeros((8,16), dtype=np.float64)
         self.rlinear = np.zeros((8, 3), dtype=np.float64)
-        self.mu = 2#kwargs['mu']
+        self.mu = kwargs['mu']
         self.data = kwargs['data']
-        
+        self.reg = np.zeros(3)
+        self.low = np.zeros(3)
+        self.opt = np.zeros(3)
+        self.angle = 0
+        self.selected_lambda = 0
+        print("mu", self.mu)
+        print(self.data.shape)
+    
 
 
     cpdef int interpolate(self, double[:] point, double[:] old_dir, int restart) except *:
@@ -1268,34 +1277,24 @@ cdef class DeepReg(Interpolation):
         self.point_world[3] = 1
         #print(np.asarray(old_dir))
         cblas_dgemv(CblasRowMajor, CblasNoTrans, 4,4,1,&self.inv_trafo[0,0], 4, &self.point_world[0], 1, 0, &self.point_index[0],1)
+
+     #   print(np.array(self.point_index))
         cdef int z, i, info = 0
+        cdef int idx = 0
         # Interpolate current point
 
         trilinear_v(self.point_index[:3], self.y, self.ylinear, self.data)
 
+ #       cblas_dcopy(16, &self.data[<int> self.point_index[0], <int> self.point_index[1], <int> self.point_index[2],0], 1, &self.y[0], 1)
         trilinear_v_amb(self.point_index[:3], self.ref_dir, self.rlinear, self.reference)
+        #print(np.array(self.ref_dir))
+        #self.ref_dir = self.reference[<int> self.point_index[0], <int> self.point_index[1], <int> self.point_index[2],:]
+        #print(np.array(self.ref_dir), np.array(self.reference[<int> self.point_index[0] ,  <int> self.point_index[1], <int> self.point_index[2],:]))
         cdef double scale = cblas_dnrm2(3, &self.ref_dir[0], 1)
         if scale != 0:
             cblas_dscal(3, 1/scale, &self.ref_dir[0], 1)
-        self.optimizer.optimize_tensor(np.asarray(self.y[1:]), self.low_rank, 0, np.asarray(self.ref_dir), 0)
-    #
-        cdef np.ndarray[np.float64_t, ndim=2] tens = np.zeros((3,15), dtype=np.float64)
-        cdef np.ndarray[np.float64_t, ndim=1] length = np.zeros(3, dtype=np.float64)
-        cdef np.ndarray[np.float64_t, ndim=2] best_dir_approx = np.zeros((3,3), dtype=np.float64)
-        if self.y[0] == 0:
-            return -1
+        self.optimizer.optimize_tensor(np.array(self.y[1:]), self.low_rank, 0, np.array(self.ref_dir), 0)
 
-        # If we have a reference direction, select the closest to it. Otherwise select closest to last direction:
-        #cblas_dcopy(16, &self.data[<int> self.point_index[0], <int> self.point_index[1], <int> self.point_index[2],0], 1, &self.y[0], 1)
-        trilinear_v(self.point_index[:3], self.y, self.ylinear, self.data)
-        #print(np.asarray(self.y))
-        if cblas_dnrm2(3, &self.ref_dir[0], 1) > 0:
-            idx = self.optimizer.min_mapping_voxel(np.asarray(self.low_rank), np.asarray(self.ref_dir))
-            idx = self.optimizer.optimize_tensor(np.asarray(self.y[1:]), self.low_rank, idx, np.asarray(self.ref_dir), self.mu)
-     #  # else:
-     #  #     idx = self.optimizer.min_mapping_voxel(np.asarray(self.low_rank), np.asarray(old_dir))
-
-        #print(np.asarray(old_dir))
         cdef double min_ang = 0
         if cblas_dnrm2(3, &self.ref_dir[0], 1) > 0:
             for i in range(3):
@@ -1308,9 +1307,64 @@ cdef class DeepReg(Interpolation):
                     min_ang = ang
                     idx = i
             #print(idx)
-            cblas_dcopy(3, &self.low_rank[4*idx+1], 1, &self.next_dir[0], 1)
+            cblas_dcopy(3, &self.low_rank[4*idx+1], 1, &self.low[0], 1)
+        cdef np.ndarray[np.float64_t, ndim=2] tens = np.zeros((3,15), dtype=np.float64)
+        cdef np.ndarray[np.float64_t, ndim=1] length = np.zeros(3, dtype=np.float64)
+        cdef np.ndarray[np.float64_t, ndim=2] best_dir_approx = np.zeros((3,3), dtype=np.float64)
+        if self.y[0] == 0:
+            return -1
+
+        # If we have a reference direction, select the closest to it. Otherwise select closest to last direction:
+        #cblas_dcopy(16, &self.data[<int> self.point_index[0], <int> self.point_index[1], <int> self.point_index[2],0], 1, &self.y[0], 1)
+        trilinear_v(self.point_index[:3], self.y, self.ylinear, self.data)
+        #print(np.asarray(self.y)) 
+        if cblas_dnrm2(3, &self.ref_dir[0], 1) > 0 and self.mu > 0:
+            idx = self.optimizer.min_mapping_voxel(np.asarray(self.low_rank), np.asarray(self.ref_dir))
+            idx = self.optimizer.optimize_tensor(np.asarray(self.y[1:]), self.low_rank, idx, np.asarray(self.ref_dir), self.mu)
+     #  # else:
+     #  #     idx = self.optimizer.min_mapping_voxel(np.asarray(self.low_rank), np.asarray(old_dir))
+        min_ang = 0
+        if cblas_dnrm2(3, &self.ref_dir[0], 1) > 0:
+            for i in range(3):
+                if self.low_rank[4*i] < 0.1:
+                    continue
+                cblas_dscal(3, 0, &self.best_dir[i,0], 1)
+                ang = fabs(cblas_ddot(3, &self.ref_dir[0], 1, &self.low_rank[4*i + 1], 1))
+                #print(ang)
+                if ang > min_ang:
+                    min_ang = ang
+                    idx = i
+            #print(idx)
+            cblas_dcopy(3, &self.low_rank[4*idx+1], 1, &self.opt[0], 1)
+        cblas_dcopy(3, &self.ref_dir[0], 1, &self.reg[0], 1)
+        #print(np.asarray(old_dir))
+        min_ang = 0
+        if cblas_dnrm2(3, &self.ref_dir[0], 1) > 0:
+            for i in range(3):
+                if self.low_rank[4*i] < 0.1:
+                    continue
+                cblas_dscal(3, 0, &self.best_dir[i,0], 1)
+                ang = fabs(cblas_ddot(3, &self.ref_dir[0], 1, &self.low_rank[4*i + 1], 1))
+                #print(ang)
+                if ang > min_ang:
+                    min_ang = ang
+                    idx = i
+            ang = fabs(cblas_ddot(3, &old_dir[0], 1, &self.low_rank[4*idx + 1], 1))
+            #print(idx)
+            if min_ang < 0.5 or ang < 0.5:
+                cblas_dscal(3, 0, &self.next_dir[0], 1)
+                return info 
+            else:
+                self.selected_lambda= self.low_rank[4*idx]
+                self.angle = np.arccos(min_ang)/np.pi*180
+                
+                cblas_dcopy(3, &self.low_rank[4*idx+1], 1, &self.next_dir[0], 1)
             if cblas_ddot(3, &self.next_dir[0], 1, &old_dir[0], 1) < 0:
                 cblas_dscal(3, -1, &self.next_dir[0], 1)
+            #length = np.random.normal(0, 0.1, 3)
+           # cblas_daxpy(3, 1, &length[0], 1, &self.next_dir[0], 1)
+           # cblas_dscal(3, 1/cblas_dnrm2(3, &self.next_dir[0], 1), &self.next_dir[0], 1)
+               
         else:
           for i in range(3):
               if self.low_rank[4*i] < 0.1:
@@ -1333,10 +1387,12 @@ cdef class TomReg(Interpolation):
         self.rlinear = np.zeros((8, 3), dtype=np.float64)
 
     cpdef int interpolate(self, double[:] point, double[:] old_dir, int restart) except *:
+        #print("HELLO")
         self.point_world[:3] = point
         self.point_world[3] = 1
         #print(np.asarray(old_dir))
         cblas_dgemv(CblasRowMajor, CblasNoTrans, 4,4,1,&self.inv_trafo[0,0], 4, &self.point_world[0], 1, 0, &self.point_index[0],1)
+#        Nprint(np.array(self.point_index))
         cdef int z, i, info = 0
         # Interpolate current point
 

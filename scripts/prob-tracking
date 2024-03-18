@@ -6,7 +6,6 @@ import cython
 import random
 import logging
 
-import pandas as pd
 from dipy.core.gradients import gradient_table
 
 from bonndit.tracking.tracking_prob import tracking_all
@@ -87,11 +86,7 @@ def main():
                                     '		If the file is named differently, use the --ukf_data argument. \n'
                                     '	- baseline.nrrd \n'
                                     '		File with b0 measurements.'
-                                    '		If the file is named differently, use the --ukf_baseline argument'
-                                    'If the -disk flag is set and we want to append to a file, the inputfolder should contain \n'
-                                    '	- output.txt \n'
-                                    '		A textfile with the streamlines generated so far. \n'
-                                    '		If the file is named differently, use the --disk_append argument.',
+                                    '		If the file is named differently, use the --ukf_baseline argument',
                         default=argparse.SUPPRESS)
 
     parser.add_argument('--infile',
@@ -111,11 +106,13 @@ def main():
     parser.add_argument('--sw_save',
                         help="Only each x step is saved. Default everystep is saved. Reduces memoryconsumption greatly",
                         default=1)
-    parser.add_argument('-sw', help='Stepwidth for Euler integration', default=0.9)
-    parser.add_argument('-o', help='Filename for output file in ply format.', required=True, default=argparse.SUPPRESS)
-    parser.add_argument('-mtlength', help='Maximum track steps.', default=300)
+    parser.add_argument('--sw', help='Stepwidth for Euler integration', default=0.9)
+    parser.add_argument('--start_stop', nargs='+', help='Start stop region ', default="")
+    parser.add_argument('--mask', help='Tracking Mask', default="")
+    parser.add_argument('--o', help='Filename for output file in ply format.', required=True, default=argparse.SUPPRESS)
+    parser.add_argument('--mtlength', help='Maximum track steps.', default=300)
     parser.add_argument('--samples', help='Samples per seed.', default=1)
-    parser.add_argument('-max_angle', help='Max angle over the last 30 mm of the streamline', default=130)
+    parser.add_argument('--max_angle', help='Max angle over the last 30 mm of the streamline', default=130)
     parser.add_argument('--var', help='Variance for probabilistic direction selection..', default=1)
     parser.add_argument('--exp', help='Expectation for probabilistic direction selection.', default=0)
 
@@ -144,17 +141,6 @@ def main():
     parser.add_argument('-prob', '--prob',
                         help='Decide between Laplacian, Gaussian, Scalar, ScalarNew, Deterministic and Deterministic2 '
                         , default='Gaussian')
-
-    # Arguments for saving each streamline on disk
-    parser.add_argument('--disk', help='Write streamlines to file instead of using ram', action='store_false')
-    parser.add_argument('--disk_file', help='Name of disk file. If not set a random filename is chosen',
-                        default='/tmp/.stream' + ''.join(
-                            random.choice([chr(i) for i in range(ord('a'), ord('z'))]) for _ in
-                            range(10)))
-    parser.add_argument('--disk_delete',
-                        help='Delete file after finish. Otherwise further Streamlines can be appended if \n'
-                             'more streamlines are needed.', action='store_false')
-
 
     # Arguments for ukf
     parser.add_argument('--ukf',
@@ -235,9 +221,7 @@ def main():
             args.ukf == "Watson" or args.ukf == "Bingham" or args.ukf == "BinghamAlt" or args.ukf == 'WatsonAlt'):
         logging.error("Wrong dimension on first axis. Has to contain 5 values.")
         raise Exception()
-    # if vector_field.shape[1] != 3:
-    #	logging.error("Wrong dimension on second axis. Has to contain 3 values.")
-    #	raise Exception()
+
     if len(vector_field.shape) != 5:
         logging.error("The input multivector field has to have 5 dimensions.")
         raise Exception()
@@ -328,10 +312,6 @@ def main():
         # data = ""
         else:
             logging.error('Only LowRank and MultiTensor are possible options for the ukf flag.')
-    if args.disk:
-        logging.info(
-            'Streamlines are temporarily written to {} which is {} after creating streamines'.format(args.disk_file,
-                                                                                                     'kept' if not args.disk_delete else 'deleted'))
     if os.path.exists(args.fsl):
         trafo_fsl = np.loadtxt(args.fsl)
     else:
@@ -368,7 +348,9 @@ def main():
         'verbose': args.verbose,
         'sw_save': int(args.sw_save),
         'runge_kutta': int(args.runge_kutta),
-        'mu': float(args.mu)
+        'mu': float(args.mu),
+        'start_stop': args.start_stop,
+        'mask': args.mask,
     }
     if "ref" in args:
         ref = load('ref', args, 'ref.nrrd', args.ref, logging, nib.load)
@@ -381,7 +363,7 @@ def main():
         tracking_parameters['data'] = data
         print(data.shape)
 
-    if args.ukf == "Watson" or args.ukf == "BinghamQuatAlt" or args.ukf == "BinghamAlt" or args.ukf == "Bingham" or args.ukf == "WatsonAlt" or args.interpolation=="TractSeg":
+    if args.ukf == "Watson" or args.ukf == "BinghamQuatAlt" or args.ukf == "BinghamAlt" or args.ukf == "Bingham" or args.ukf == "WatsonAlt" or args.interpolation=="TractSeg" or args.interpolation=="TOM":
         tracking_parameters.update(dict(
             max_sampling_angle=float(args.max_sampling_angle),
             max_kappa=args.max_kappa,
@@ -433,17 +415,9 @@ def main():
                 raise Exception()
     saving = {
         'features': {
-            'chosen_angle': args.features.index('angle') if 'angle' in args.features else -2,
-            'seedpoint': args.features.index('seedpoint') if 'seedpoint' in args.features else -2,
-            'prob_chosen': args.features.index('prob_chosen') if 'prob_chosen' in args.features else -2,
-            'fa': args.features.index('fa') if 'fa' in args.features else -2,
-            'prob_others_0': args.features.index('prob_others') if 'prob_others' in args.features else -2,
-            'prob_others_1': args.features.index('prob_others') + 1 if 'prob_others' in args.features else -2,
-            'prob_others_2': args.features.index('prob_others') + 2 if 'prob_others' in args.features else -2,
-            'loss': args.features.index('loss') if 'loss' in args.features else -2,
-            'len': len(args.features) + 2 if 'prob_others' in args.features else len(args.features)
+            x: i for i, x in enumerate(args.features)
         },
-        'file': args.disk_file if args.disk else "",
+        'file': "",
     }
 
     tck = Tck(args.o)

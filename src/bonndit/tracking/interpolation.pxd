@@ -21,6 +21,8 @@ cdef class Interpolation:
     cdef int[:,:,:,:] cache
     cdef double chosen_angle
     cdef Probabilities prob
+    cdef double selected_lambda
+    cdef double angle
     cdef double loss
     cdef int best_ind
     cdef double[:] next_dir, vector
@@ -226,6 +228,11 @@ cdef class DeepReg(Interpolation):
     cdef double[:,:] rlinear
     cdef double mu
     cdef double[:,:,:,:] data
+    cdef double[:] reg
+    cdef double[:] opt
+
+    cdef double[:] low
+
 
 cdef class TomReg(Interpolation):
     cdef double[:,:,:,:] reference

@@ -143,7 +143,7 @@ cdef class RegLowRank:
         cblas_dscal(3, 4*direction[0], &res[0], 1)
         if reg:
             # res += self._mu * ref
-            cblas_daxpy(3, self._mu, &ref[0], 1, &res[0], 1)
+            cblas_daxpy(3, self._mu, &ref[0], 1 if cblas_ddot(3, &res[0], 1, &direction[0], 1) > 0 else -1, &res[0], 1)
 
         #res -= np.dot(res, direction[1:]) * direction[1:]
         #print(np.array(res) - np.dot(res, direction[1:]) * np.array(direction[1:]))
@@ -173,7 +173,8 @@ cdef class RegLowRank:
 
         cdef int sign = 1 if v[0]>0 else -1
         if reg:
-            sign = 1 if  v[0]**2  + 2 *self._mu * cblas_ddot(3, &v[1], 1, &reference[0], 1) > 0 else -1
+            sign = -1 
+        #print(sign)
         cdef double iso = hota_mean(tens)
 
         cdef int i, armijoct,  k=tens.shape[0]
@@ -198,7 +199,8 @@ cdef class RegLowRank:
             anisonorminv = 1/anisonorm
         alpha = beta = self.TijkRefineRank1Parm.beta*anisonorminv
         if reg:
-            oldval =  v[0]**2 + 2 *self._mu * cblas_ddot(3, &v[1], 1, &reference[0], 1)
+            oldval =  -v[0]**2 - 2 *self._mu * fabs(cblas_ddot(3, &v[1], 1, &reference[0], 1))
+           # print(oldval)
         else:
             oldval = v[0]
         self.grad(der, reg, anisoten, v, reference)
@@ -222,10 +224,14 @@ cdef class RegLowRank:
                 # dist = 1 - np.linalg.norm(v[1:]*testv)
                 dist = 1 - cblas_ddot(3, &v[1], 1, &testv[0], 1)**2
                 if reg:
-                    val = hota_sym_s_form(anisoten, testv)**2 +  2 *self._mu * cblas_ddot(3, &testv[0], 1, &reference[0], 1)
+                    val = -hota_sym_s_form(anisoten, testv)**2 -  2 *self._mu * fabs(cblas_ddot(3, &testv[0], 1, &reference[0], 1))
+                #    print("val_test", fabs(cblas_ddot(3, &testv[0], 1, &reference[0], 1)))   
                 else:
                     val = hota_sym_s_form(anisoten, testv)
                 if sign*val >= sign*oldval + self.TijkRefineRank1Parm.sigma*der_len*dist:
+                 #   if reg:
+                  #      print("val", val)
+                   #     print("angle", cblas_ddot(3, &testv[0], 1, &reference[0], 1))
                     cblas_dcopy(3, &testv[0], 1, &v[1], 1)
                     v[0] = hota_sym_s_form(anisoten, testv)
                     self.grad(der, reg, anisoten, v, reference)
@@ -267,8 +273,8 @@ cdef class RegLowRank:
         index = 0
         v_max = 0
         for i in range(self.rank):
-            if low_rank[4*i] > 0:
-                v = cblas_ddot(3, &low_rank[4*i + 1], 1, &ref[0], 1)
+            if low_rank[4*i] >= 0:
+                v = fabs(cblas_ddot(3, &low_rank[4*i + 1], 1, &ref[0], 1))
                 if v > v_max:
                     index = i 
                     v_max = v
@@ -287,28 +293,29 @@ cdef class RegLowRank:
         cdef np.ndarray[np.float64_t, ndim=2] ten = np.zeros((self.rank, 15), dtype=np.float64)
         cdef np.ndarray[np.float64_t, ndim=1] t = np.zeros((15), dtype=np.float64)
         cdef np.ndarray[np.float64_t, ndim=1] v = np.zeros((4), dtype=np.float64)
-        cdef float orig_norm = hota_4o3d_sym_norm(tensor) + mu * ( 1- fabs(np.dot(low_rank[index*4+1: index*4 +4],ref)))
+        cdef float orig_norm = hota_4o3d_sym_norm(tensor) #+ mu * ( 1- fabs(np.dot(low_rank[index*4+1: index*4 +4],ref)))
         cdef int i
         for i in range(self.rank):
             hota_4o3d_sym_eval(ten[i], low_rank[i*4], low_rank[index*4+1: index*4 +4])
             tensor -= ten[i]
-        cdef int k = 0
-        cdef int index_changed=0
-        while True and (k < 100 or mu==0):
-            index_changed=0
+        cdef int k = 0, new_idx=-1
+        cdef int index_changed=0, counter=0
+        while True and k<100:
             k += 1
+            index_changed=0
             res_norm = hota_4o3d_sym_norm(tensor) + mu * ( 1- fabs(cblas_ddot(3,&low_rank[index*4+1], 1,&ref[0],1)))
-            if cblas_ddot(3, &low_rank[index*4+1], 1, &ref[0], 1) < 0 and mu>0:
-                cblas_dscal(3, -1, &low_rank[index*4+1], 1)
+            if ref[0] > 0:
+                new_idx=self.min_mapping_voxel(low_rank, ref)
+                if new_idx != index:
+                    index = new_idx
+                    index_changed = 1
+                    counter += 1
 
             for i in range(self.rank):
                 ## If the direction is 0, i.e. not initalized, do so
                 ## else performe update
                 if low_rank[i*4] == 0:
                     init_max_3d(low_rank[i*4: i*4 + 1], low_rank[i*4 + 1: i*4 + 4], tensor)
-                    if index==i and mu>0:
-                        index=self.min_mapping_voxel(low_rank, ref)
-                   #     index_changed = 1
                 else:
                     tensor += ten[i]
                     low_rank[i*4] = hota_4o3d_sym_s_form(tensor[:], low_rank[i*4 + 1:i*4 + 4])
@@ -318,10 +325,17 @@ cdef class RegLowRank:
                 if low_rank[i*4] > 0:
                     hota_4o3d_sym_eval(ten[i], low_rank[i*4], low_rank[i*4 +1: i*4 + 4])
                     tensor -= ten[i]
+                elif index == i and mu > 0:
+                    low_rank[i*4] = 0
                 else:
-                     low_rank[i*4] = 0
+                     cblas_dscal(4, 0, &low_rank[i*4], 1)
             new_norm = hota_4o3d_sym_norm(tensor) + mu * (1- fabs(np.dot(low_rank[index*4+1 : index*4 +4],ref)))
-            if not index_changed==1 and (new_norm <= self.TijkRefineRank.eps_res or abs(res_norm - new_norm) < self.TijkRefineRank.eps_impr*orig_norm):
+          #  print('new_norm', new_norm)
+           # print( abs(res_norm - new_norm))
+    
+            if counter > 10:
+                break
+            if index_changed == 0 and (new_norm <= self.TijkRefineRank.eps_res or abs(res_norm - new_norm) < self.TijkRefineRank.eps_impr * orig_norm):
                 break
         return index
 

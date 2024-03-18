@@ -72,21 +72,19 @@ cdef void trilinear(double[:] point, double[:] y, double[:,:] vlinear) nogil exc
 
 
 cdef void trilinear_v_amb(double[:] point, double[:] y, double[:,:] vlinear, double[:, :, :, :] data) nogil except *:
-	cdef int i, j, k, m,n,o, xx=0,yy=0,zz=0
+	cdef int i, j, k, m,n,o, base= -1
 	for i in range(8):
 		j = <int> floor(i / 2) % 2
 		k = <int> floor(i / 4) % 2
 		m = <int> point[0] + i%2
 		n = <int> point[1] + j
 		o = <int> point[2] + k
-		if xx+yy+zz != 0:
-			if cblas_ddot(3, &data[m,n,o,0], 1, &data[xx,yy,zz,0], 1) < 0:
-				cblas_dscal(3, -1, &data[m,n,o,0], 1)
-		if cblas_dnrm2(3, &data[m,n,o,0], 1) != 0 and xx+yy+zz == 0:
-			xx=m
-			yy=n
-			zz=o
 		dm2toc(&vlinear[i, 0], data[m,n,o,:],  vlinear.shape[1])
+		if base != -1:
+			if cblas_ddot(3, &vlinear[i,0], 1, &vlinear[base,0], 1) < 0:
+				cblas_dscal(3, -1, &vlinear[i,0], 1)
+		if cblas_dnrm2(3, &vlinear[i, 0], 1) != 0 and base == -1:
+			base = i
 	trilinear(point, y, vlinear)
 
 cpdef double linear_p(double[:] point, double[:] vlinear, double[:, :, :] data):
