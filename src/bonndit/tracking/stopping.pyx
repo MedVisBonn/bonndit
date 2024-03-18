@@ -3,14 +3,17 @@
 # warn.unused_results=True
 import os
 from scipy.interpolate import RegularGridInterpolator
-from bonndit.utilc.blas_lapack cimport cblas_dgemv, CblasRowMajor, CblasNoTrans
+from bonndit.utilc.blas_lapack cimport cblas_dgemv, CblasRowMajor, \
+    CblasNoTrans, cblas_dscal
 
 from bonndit.utilc.cython_helpers cimport sub_vectors, angle_deg, sum_c, \
     set_zero_matrix, bigger, smaller, mult_with_scalar, norm
 import numpy as np
 from bonndit.tracking.ItoW cimport Trafo
-from bonndit.utilc.trilinear cimport linear
+from bonndit.utilc.trilinear cimport linear, linear_p
+from bonndit.utils.esh import zero
 DTYPE = np.float64
+import nibabel as nib
 
 cdef double[:] y = np.zeros((8,))
 
@@ -23,9 +26,9 @@ cdef class Validator:
         self.point = np.zeros((4,), dtype=DTYPE)
         self.point_world = np.zeros((4,), dtype=DTYPE)
         self.shape = shape
-    #	if kwargs['act'] is not None:
+    #   if kwargs['act'] is not None:
     # self.WM = ACT(kwargs)
-    #	else:
+    #   else:
         self.WM = WMChecker(kwargs)
         if isinstance(inclusion, np.ndarray):
             self.ROIIn = ROIInValidator(inclusion)
@@ -41,6 +44,25 @@ cdef class Validator:
         else:
             self.Curve = CurvatureNotValidator(kwargs['max_angle'], trafo,
                 kwargs['stepsize'])
+        print(kwargs['start_stop'])
+        if kwargs['start_stop'] != "":
+            start_end = [nib.load(x) for x in kwargs['start_stop']]
+            affine = start_end[0].affine
+            start_end = np.array(
+                [
+                    x.get_fdata() for i,
+                    x in enumerate(start_end) if np.linalg.norm(x.get_fdata()) > 5])
+            mask = nib.load(kwargs['mask']).get_fdata()
+            if len(start_end) > 0:
+                self.ROIEnd = ROIEndValidator(start_end, mask, affine)
+            else:
+                self.ROIEnd = ROIEndNotValidator(
+                    np.zeros((3, 3, 3, 3)),
+                    np.zeros((3, 3, 3)), np.zeros((4, 4)))
+        else:
+            self.ROIEnd = ROIEndNotValidator(
+                np.zeros((3, 3, 3, 3)),
+                np.zeros((3, 3, 3)), np.zeros((4, 4)))
 
 
 
@@ -48,17 +70,17 @@ cdef class Validator:
     # """ Checks if the wm density is at a given point below a threshold.
     # @param point: 3 dimensional point
     # """
-    #	if self.wm_mask[int(point[0]), int(point[1]), int(point[2])] < self.min_wm:
+    #   if self.wm_mask[int(point[0]), int(point[1]), int(point[2])] < self.min_wm:
     # return True
-    #	else:
+    #   else:
     # return False
 
     cdef bint index_checker(self, double[:] point) except *:  # nogil except *:
         """
-		Checks if the index is within the array.
-		@param point: 3 dimensional point
-		@return: True if the point is not valid.
-		"""
+        Checks if the index is within the array.
+        @param point: 3 dimensional point
+        @return: True if the point is not valid.
+        """
         self.point_world[:3] = point
         self.point_world[3] = 1
         cblas_dgemv(
@@ -77,10 +99,10 @@ cdef class Validator:
 
     cdef bint next_point_checker(self, double[:] point) :  # nogil except *:
         """
-		Check if a given direction is valid e.g. not zero and not infinity
-		@param point: given direction
-		@return:
-		"""
+        Check if a given direction is valid e.g. not zero and not infinity
+        @param point: given direction
+        @return:
+        """
         if sum_c(point) == 0 or sum_c(point) \
             != sum_c(point) or np.isinf(sum_c(point)):
             return True
@@ -118,10 +140,10 @@ cdef class WMChecker:
     cdef bint sgm_checker(self, double[:] point):
         return 0
 
-    cdef bint wm_checker(self, double[:] point) :  # nogil except *:
+    cdef float wm_checker(self, double[:] point) :  # nogil except *:
         """ Checks if the wm density is at a given point below a threshold.
-			@param point: 3 dimensional point
-			"""
+            @param point: 3 dimensional point
+            """
         cdef int i = 0, j = 0, k = 0
         self.point_world[:3] = point
         self.point_world[3] = 1
@@ -129,15 +151,17 @@ cdef class WMChecker:
             CblasRowMajor, CblasNoTrans, 4, 4, 1,
             &self.inv_trafo[0, 0], 4, &self.point_world[0], 1, 0,
             &self.point[0], 1)
-        if linear(self.point[:3], self.y, self.wm_mask) > self.min_wm:
-            return -1
+        cdef float v = linear(self.point[:3], self.y, self.wm_mask)
+        if v > self.min_wm:
+        # print(v)
+            return v
         else:
             return 0
 
     cdef bint wm_checker_ex(self, double[:] point) :  # nogil except *:
         """ Checks if the wm density is at a given point below a threshold.
-				@param point: 3 dimensional point
-				"""
+                @param point: 3 dimensional point
+                """
         self.point_world[:3] = point
         self.point_world[3] = 1
         cblas_dgemv(
@@ -159,7 +183,7 @@ cdef class WMChecker:
 # 4: Pathological tissue
 # """
 # def __cinit__(self, kwargs):
-# #       super().__init__(kwargs)
+# #   super().__init__(kwargs)
 # x = np.linspace(0, kwargs['act'].shape[0] - 1, kwargs['act'].shape[0])
 # y = np.linspace(0, kwargs['act'].shape[1] - 1, kwargs['act'].shape[1])
 # z = np.linspace(0, kwargs['act'].shape[2] - 1, kwargs['act'].shape[2])
@@ -183,26 +207,26 @@ cdef class WMChecker:
 # sgm = self.sgm(self.point[:3])
 # wm = self.wm(self.point[:3])
 # #check case 6:
-#		if self.entered_sgm:
-#			if sgm<0.5:
+#       if self.entered_sgm:
+#           if sgm<0.5:
 # return 0
-#			else:
+#           else:
 # return  -1
 # # continue
-#		if wm > 0.5:
+#       if wm > 0.5:
 # return -1
 # 
 # # ACT cases 1 => accept
-#		if cgm > 0.5:
+#       if cgm > 0.5:
 # return 0
 # # case 2 => reject
-#		if csf > 0.5:
+#       if csf > 0.5:
 # return 2
 # # case 3 => accept
-#		if cgm + csf + sgm + wm < 0.3:
+#       if cgm + csf + sgm + wm < 0.3:
 # return 0
 # #case 6
-#		if sgm>0.5:
+#       if sgm>0.5:
 # self.entered_sgm = 1
 # return -1
 # return 0
@@ -217,9 +241,9 @@ cdef class WMChecker:
 # &self.point_world[0], 1, 0,&self.point[0], 1)
 # 
 # sgm = self.sgm(self.point[:3])
-#		if sgm>0.5:
+#       if sgm>0.5:
 # return 1
-#		else:
+#       else:
 # return 0
 
 
@@ -246,11 +270,11 @@ cdef class CurvatureValidator(CurvatureNotValidator):
         double[:] features
     ) :  # nogil except *:
         """
-			Checks the angles between the current direction and the directions anlong the polygon. If a angle is to large returns True
-			@param path: polygon to check
-			@param features: save the angle between the current direction and the direction k points ago into the features.
-			@return:
-			"""
+            Checks the angles between the current direction and the directions anlong the polygon. If a angle is to large returns True
+            @param path: polygon to check
+            @param features: save the angle between the current direction and the direction k points ago into the features.
+            @return:
+            """
         cdef int l = 1, k = path.shape[0]
         cdef double length = 0
         self.trafo.itow(path[k])
@@ -270,6 +294,81 @@ cdef class CurvatureValidator(CurvatureNotValidator):
         else:
             features[0] = self.angle
             return False
+
+cdef class ROIEndNotValidator:
+    def __cinit__(
+        self, double[:, :, :, :] start_end, double[:, :, :] mask,
+        double[:, :] trafo
+    ):
+        self.point_index = np.zeros(4)
+        self.point_world = np.zeros(4)
+        self.y = np.zeros(8)
+        self.inv_trafo = np.zeros([4, 4])
+        self.checker = np.zeros(0)
+        self.mask = np.zeros([3, 3, 3])
+
+    cdef int end_checker(self, double[:] point, int checker):
+        return 0
+
+    cdef checker_reset(self):
+        cblas_dscal(len(self.checker), 0, &self.checker[0], 1)
+
+    cdef check(self):
+        return sum_c(self.checker) == len(self.checker)
+
+    cdef int end_checker_mask(self, double[:] point):
+        return 0
+
+cdef class ROIEndValidator(ROIEndNotValidator):
+    def __cinit__(
+        self, double[:, :, :, :] start_end, double[:, :, :] mask,
+        double[:, :] trafo
+    ):
+        self.start_end = start_end
+        self.inv_trafo = np.linalg.inv(trafo)
+        self.checker = np.zeros(len(start_end))
+        self.this_run = -1
+        self.mask = mask
+
+    cdef int end_checker(self, double[:] point, int checker):
+        self.point_world[:3] = point
+        self.point_world[3] = 1
+        # print(np.asarray(old_dir))
+        cblas_dgemv(
+            CblasRowMajor, CblasNoTrans, 4, 4, 1,
+            &self.inv_trafo[0, 0], 4, &self.point_world[0], 1, 0,
+            &self.point_index[0], 1)
+      # print(self.this_run)
+    #    if self.this_run > -1:
+    #        if linear(self.point_index, self.y, self.start_end[self.this_run]) < 0.1:
+    # return 1
+        for i in range(len(self.start_end)):
+            if linear(self.point_index, self.y, self.start_end[i]) > 0.5:
+                if checker == 1:
+                    self.this_run = i
+                    self.checker[i] = 1
+                return 0
+        else:
+            return 0
+
+    cdef int end_checker_mask(self, double[:] point):
+        self.point_world[:3] = point
+        self.point_world[3] = 1
+        # print(np.asarray(old_dir))
+        cblas_dgemv(
+            CblasRowMajor, CblasNoTrans, 4, 4, 1,
+            &self.inv_trafo[0, 0], 4, &self.point_world[0], 1, 0,
+            &self.point_index[0], 1)
+
+        if self.end_checker(point, 0) == 1:
+            if linear(self.point_index, self.y, self.mask) < 0.3:
+                return 1
+
+
+        return 0
+
+
+
 
 cdef class ROIInNotValidator:
     def __cinit__(self, double[:, :] inclusion):
