@@ -24,7 +24,7 @@ if WATSON=='TRUE':
 else:
     WATSON = False
 
-
+mklroot=os.environ['MKLROOT']
 print(WATSON)
 def path_to_build_folder():
     """Returns the name of a distutils build directory"""
@@ -42,7 +42,7 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-fast = ['-Ofast']
+fast = [] #['-Ofast']
 
 suite_sparse_libs = ['lapack', 'ccolamd', 'spqr', 'cholmod', 'colamd', 'camd', 'amd', 'suitesparseconfig']
 ceres_libs = ['glog', 'gflags']
@@ -67,8 +67,9 @@ ext_modules = [
     Extension(
         "bonndit.utilc.blas_lapack",
         ["src/bonndit/utilc/blas_lapack.pyx"],
-        include_dirs=[numpy.get_include()],
-        libraries=["cblas", "lapacke", 'atlas'],
+        include_dirs=[numpy.get_include(), "%s/include" % mklroot],
+        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
+        library_dirs=["%s/lib/intel64" % mklroot],
         extra_compile_args=["-Wall", "-m64"] + fast,
        # embedsignature=True,
 
@@ -76,8 +77,9 @@ ext_modules = [
     Extension(
         "bonndit.utilc.quaternions",
         ["src/bonndit/utilc/quaternions.pyx"],
-        include_dirs=[numpy.get_include()],
-        libraries=["cblas"],
+        include_dirs=[numpy.get_include(), "%s/include" % mklroot],
+        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
+        library_dirs=["%s/lib/intel64" % mklroot],
         extra_compile_args=["-Wall", "-m64"] + fast ,
         extra_link_args=["-Wl,--no-as-needed"],
         #embedsignature=True,
@@ -85,27 +87,28 @@ ext_modules = [
     Extension(
         "bonndit.utilc.cython_helpers",
         ["src/bonndit/utilc/cython_helpers.pyx"],
-        include_dirs=[numpy.get_include()],
-        libraries=['lapacke', 'atlas', 'cblas'],
-        libs_dir=['/usr/lib/x86_64-linux-gnu/'],
+        include_dirs=[numpy.get_include(), "%s/include" % mklroot],
+        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
+        library_dirs=["%s/lib/intel64" % mklroot],
         extra_compile_args=["-Wall", "-m64"] + fast,
-       # extra_link_args=["-Wl,--no-as-needed, -llapacke -latlas -lcblas"],
+        #extra_link_args=["-Wl,--no-as-needed, -llapacke, -latlas, -lcblas"],
   #  embedsignature = True,
 ),
     Extension(
         "bonndit.utilc.hota",
         ["src/bonndit/utilc/hota.pyx"],
-        include_dirs=[numpy.get_include()],
-        libraries=['cblas',  'lapacke' ],
-        libs_dir=['/usr/lib/x86_64-linux-gnu/'],
+        include_dirs=[numpy.get_include(), "%s/include" % mklroot],
+        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
+        library_dirs=["%s/lib/intel64" % mklroot],
         extra_compile_args=["-Wall", "-m64"] + fast,
      #   embedsignature=True,
     ),
     Extension(
         "bonndit.utilc.trilinear",
         ["src/bonndit/utilc/trilinear.pyx"],
-        include_dirs=[numpy.get_include()],
-        libraries=['cblas'],
+        include_dirs=[numpy.get_include(), "%s/include" % mklroot],
+        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
+        library_dirs=["%s/lib/intel64" % mklroot],
         extra_compile_args=["-Wall", "-m64"] + fast,
       #  embedsignature=True,
     ),
@@ -139,8 +142,9 @@ ext_modules = [
     Extension(
         "bonndit.directions.regLowRank",
         ["src/bonndit/directions/regLowRank.pyx"],
-        include_dirs=[numpy.get_include(), '.'],
-        libraries=["cblas", "lapacke", 'atlas'],
+        include_dirs=[numpy.get_include(), '.', "%s/include" % mklroot],
+        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
+        library_dirs=["%s/lib/intel64" % mklroot],
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
         extra_compile_args=['-fopenmp'] + fast,
         extra_link_args=['-fopenmp'],
@@ -155,8 +159,9 @@ ext_modules = [
     Extension(
         "bonndit.tracking.alignedDirection",
         ["src/bonndit/tracking/alignedDirection.pyx"],
-        include_dirs=[numpy.get_include()],
-        libraries=['cblas', 'lapacke', 'atlas'],
+        include_dirs=[numpy.get_include(), "%s/include" % mklroot],
+        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
+        library_dirs=["%s/lib/intel64" % mklroot],
         extra_compile_args=["-Wall", "-m64"] + fast,
         extra_link_args=["-Wl,--no-as-needed"],
       #  embedsignature=True,
@@ -165,8 +170,9 @@ ext_modules = [
         ["src/bonndit/tracking/kalman/model.pyx"],
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"), ('CYTHON_TRACE', '1')],
 
-        include_dirs=[".", numpy.get_include(), "/usr/include/", path_to_build_folder()],
-        libraries=['cblas', "pthread", "m", "dl"],
+        include_dirs=[".", numpy.get_include(), "/usr/include/", path_to_build_folder(), "%s/include" % mklroot],
+        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
+        library_dirs=["%s/lib/intel64" % mklroot],
         extra_compile_args=["-I.", "-march=native", "-fopenmp"]  + fast,
         extra_link_args=["-L/usr/local/include", "-fopenmp", "-Wl,--no-as-needed"],
       #  embedsignature=True,
@@ -175,8 +181,9 @@ ext_modules = [
         "bonndit.tracking.kalman.kalman",
         ["src/bonndit/tracking/kalman/kalman.pyx"],
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
-        include_dirs=[numpy.get_include()],
-        libraries=["lapacke", 'atlas', "cblas", "pthread", "m", "dl"],
+        include_dirs=[numpy.get_include(), "%s/include" % mklroot],
+        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
+        library_dirs=["%s/lib/intel64" % mklroot],
         extra_compile_args=["-Wall", "-m64"] + fast,
         extra_link_args=["-Wl,--no-as-needed"],
       #  embedsignature=True,
@@ -186,8 +193,9 @@ ext_modules = [
         "bonndit.tracking.interpolation",
         ["src/bonndit/tracking/interpolation.pyx"],
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
-        include_dirs=[numpy.get_include(), path_to_build_folder()],
-        libraries=["cblas", "pthread", "m", "dl"],
+        include_dirs=[numpy.get_include(), path_to_build_folder(), "%s/include" % mklroot],
+        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
+        library_dirs=["%s/lib/intel64" % mklroot],
         extra_compile_args=["-Wall", "-m64"] + fast,
         extra_link_args=["-Wl,--no-as-needed"],
       #  embedsignature=True,
@@ -195,8 +203,9 @@ ext_modules = [
     Extension(
         "bonndit.tracking.integration",
         ["src/bonndit/tracking/integration.pyx"],
-        include_dirs=[numpy.get_include()],
-        libraries=["cblas", "pthread", "m", "dl"],
+        include_dirs=[numpy.get_include(), "%s/include" % mklroot],
+        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
+        library_dirs=["%s/lib/intel64" % mklroot],
         extra_compile_args=["-Wall", "-m64"] + fast,
         extra_link_args=["-Wl,--no-as-needed"],
        # embedsignature=True,
@@ -205,8 +214,9 @@ ext_modules = [
         "bonndit.tracking.stopping",
         ["src/bonndit/tracking/stopping.pyx"],
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
-        include_dirs=[numpy.get_include()],
-        libraries=["cblas", "pthread", "m", "dl"],
+        include_dirs=[numpy.get_include(), "%s/include" % mklroot],
+        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
+        library_dirs=["%s/lib/intel64" % mklroot],
         extra_compile_args=["-Wall", "-m64"] + fast,
         extra_link_args=["-Wl,--no-as-needed"],
    # embedsignature = True,
@@ -215,8 +225,9 @@ ext_modules = [
         "bonndit.tracking.tracking_prob",
         ["src/bonndit/tracking/tracking_prob.pyx"],
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
-        include_dirs=[numpy.get_include()],
-        libraries=["cblas", "pthread", "m", "dl"],
+        include_dirs=[numpy.get_include(), "%s/include" % mklroot],
+        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m", "dl"],
+        library_dirs=["%s/lib/intel64" % mklroot],
         extra_compile_args=["-Wall", "-m64"] + fast,
         extra_link_args=["-Wl,--no-as-needed"],
       #  embedsignature=True,
@@ -299,7 +310,8 @@ setup(
              'scripts/data2fodf',
              'scripts/dti_fsl2vvi',
              'scripts/bonndit2mrtrix',
-             'scripts/tractconv'],
+             'scripts/tractconv', 
+             'scripts/fast-track',],
     ext_modules=cythonize(ext_modules, compiler_directives={'boundscheck': False, 'wraparound': False,
                                                             'optimize.unpack_method_calls': True},
                          ),

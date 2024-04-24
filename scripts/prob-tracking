@@ -14,6 +14,8 @@ import argparse
 import nrrd
 import nibabel as nib
 import os
+import torch as T
+from bonndit.models.LowRank import LowRankModel
 import numpy as np
 from bonndit.utils.io import fsl_gtab_to_worldspace, fsl_flip_sign
 import time
@@ -180,6 +182,8 @@ def main():
     parser.add_argument('-fsl', default="")
     parser.add_argument('--mu', default=2)
     parser.add_argument('--ref')
+    parser.add_argument('--lr_model', default=argparse.SUPPRESS)
+    parser.add_argument('--lr_model_reg', default=argparse.SUPPRESS)
     parser.add_argument('--features', nargs='+', default="")
     args = parser.parse_args()
     print(args)
@@ -362,8 +366,18 @@ def main():
         data = np.moveaxis(data, 0, 3) 
         tracking_parameters['data'] = data
         print(data.shape)
+    if "lr_model" in args:
+        lr_model = LowRankModel([15, 100, 200, 200, 100, 9], 0.01)
+        lr_model.load_state_dict(T.load(args.lr_model))
+        lr_model.eval()
+        lr_model_reg = LowRankModel([18, 100, 200, 200, 100, 9], 0.01) 
+        lr_model_reg.load_state_dict(T.load(args.lr_model_reg))
+        lr_model_reg.eval()
+        tracking_parameters['lr_model'] = lr_model
+        tracking_parameters['lr_model_reg'] = lr_model_reg
+        
 
-    if args.ukf == "Watson" or args.ukf == "BinghamQuatAlt" or args.ukf == "BinghamAlt" or args.ukf == "Bingham" or args.ukf == "WatsonAlt" or args.interpolation=="TractSeg" or args.interpolation=="TOM":
+    if args.ukf == "Watson" or args.ukf == "BinghamQuatAlt" or args.ukf == "BinghamAlt" or args.ukf == "Bingham" or args.ukf == "WatsonAlt" or args.interpolation=="Learned" or args.interpolation=="TractSeg" or args.interpolation=="TOM":
         tracking_parameters.update(dict(
             max_sampling_angle=float(args.max_sampling_angle),
             max_kappa=args.max_kappa,

@@ -132,9 +132,9 @@ def s_form(t, v):
     vv = power(v, o - 1)
     w = np.zeros(3)
     for i, I in enumerate(CINDEX[o - 1]):
-        ix = CINDEX[order].index([I[0] + 1, I[1], I[2]])
-        iy = CINDEX[order].index([I[0], I[1] + 1, I[2]])
-        iz = CINDEX[order].index([I[0], I[1], I[2] + 1])
+        ix = CINDEX[o].index([I[0] + 1, I[1], I[2]])
+        iy = CINDEX[o].index([I[0], I[1] + 1, I[2]])
+        iz = CINDEX[o].index([I[0], I[1], I[2] + 1])
         m = MULTIPLIER[o - 1][i]
         w[0] += t[ix] * vv[i] * m
         w[1] += t[iy] * vv[i] * m

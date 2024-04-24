@@ -3,7 +3,7 @@
 # warn.unused_results=True, cython: profile=True
 import Cython
 import cython
-
+import torch
 from bonndit.directions.fodfapprox cimport approx_all_spherical
 from tqdm import tqdm
 from scipy.optimize import nnls
@@ -1374,6 +1374,63 @@ cdef class DeepReg(Interpolation):
           self.prob.select_next_dir(self.low_rank, old_dir)
           cblas_dcopy(3, &self.prob.best_fit[0], 1, &self.next_dir[0],1)
         return info
+
+
+cdef class DeepRegLearned(DeepReg):
+    def __cinit__(self, double[:,:,:,:,:] vector_field, int[:] grid, Probabilities probClass, **kwargs):
+        super(DeepRegLearned, self).__init__(vector_field, grid, probClass, **kwargs)
+        self.lrs = tuple(( kwargs['lr_model'], kwargs['lr_model_reg'] ))
+        self.lrs[0].eval()
+        self.lrs[1].eval()
+
+
+
+    cpdef int interpolate(self, double[:] point, double[:] old_dir, int restart) except *:
+        if restart==0:
+            cblas_dscal(12, 0, &self.low_rank[0], 1)
+        self.point_world[:3] = point
+        self.point_world[3] = 1
+        cblas_dgemv(CblasRowMajor, CblasNoTrans, 4,4,1,&self.inv_trafo[0,0], 4, &self.point_world[0], 1, 0, &self.point_index[0],1)
+
+        cdef int z, i, info = 0
+        cdef int idx = 0
+        # Interpolate current point
+
+        trilinear_v(self.point_index[:3], self.y, self.ylinear, self.data)
+
+ #       cblas_dcopy(16, &self.data[<int> self.point_index[0], <int> self.point_index[1], <int> self.point_index[2],0], 1, &self.y[0], 1)
+        trilinear_v_amb(self.point_index[:3], self.ref_dir, self.rlinear, self.reference)
+        cdef double scale = cblas_dnrm2(3, &self.ref_dir[0], 1)
+        if scale != 0:
+            cblas_dscal(3, 1/scale, &self.ref_dir[0], 1)
+            output = self.lrs[1](torch.cat((torch.tensor(self.y[1:]), torch.tensor(self.ref_dir))).float()[None])
+            min_ang = 0
+            for i in range(3):
+                ang  = fabs(np.dot(self.ref_dir, output[0, 3*i:3*(i+1)].cpu().detach().numpy()/np.linalg.norm(output[0, 3*i:3*(i+1)].cpu().detach().numpy())))
+                if ang > min_ang:
+                    min_ang = ang
+                    idx = i
+
+            self.next_dir = output[0, 3*idx:3*(idx+1)].detach().numpy().astype(np.float64)
+            if cblas_ddot(3, &self.next_dir[0], 1, &old_dir[0], 1) < 0:
+                cblas_dscal(3, -1, &self.next_dir[0], 1)
+     #       print(np.array(self.next_dir))
+        else:
+            output = self.lrs[0](torch.tensor(self.y[1:]).float()[None])
+            output = output[0].cpu().detach().numpy()
+            for i in range(3):
+                self.low_rank[4*i] = np.linalg.norm(output[3*i:3*(i+1)]).astype(np.float64)
+                for j in range(3):
+                    self.low_rank[4*i + j + 1] = output[3*i + j].astype(np.float64)/self.low_rank[4*i]
+                if self.low_rank[4*i] < 0.1:
+                    cblas_dscal(4, 0, &self.low_rank[4*i], 1)
+
+
+            self.prob.select_next_dir(self.low_rank, old_dir)
+            cblas_dcopy(3, &self.prob.best_fit[0], 1, &self.next_dir[0],1)
+        return info
+
+
 
 
 

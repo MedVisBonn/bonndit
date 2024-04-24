@@ -8,6 +8,7 @@ from .alignedDirection cimport Probabilities, TractSegGetter
 from .kalman.model cimport AbstractModel, fODFModel, WatsonModel, BinghamModel, BinghamQuatModel
 from .kalman.kalman cimport Kalman, KalmanQuat
 from bonndit.directions.regLowRank cimport RegLowRank
+from bonndit.models.LowRank import LowRankModel
 
 cdef class Interpolation:
     cdef double[:,:,:,:,:] vector_field
@@ -232,6 +233,10 @@ cdef class DeepReg(Interpolation):
     cdef double[:] opt
 
     cdef double[:] low
+
+cdef class DeepRegLearned(DeepReg):
+    
+    cdef tuple lrs 
 
 
 cdef class TomReg(Interpolation):

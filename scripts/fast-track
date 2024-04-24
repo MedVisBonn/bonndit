@@ -1,0 +1,63 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
+
+import argparse
+import nrrd
+import nibabel as nib
+import numpy as np
+from bonndit.tracking2 import  Tracking, Validator, DirectionGetterLowRank, DirectionGetterLowRankReg, DirectionSelector, DirectionSelectorRegularized, StoppingTractSegValidator, DirectionValidator, dirSelector
+import torch as T
+import cupy as cp
+def load_nrrd(filename):
+    data, meta = nrrd.read(filename)
+    return data, meta
+
+def load_nibabel(filename):
+    img = nib.load(filename)
+    return img.get_fdata()
+
+def load_numpy(filename):
+    return np.loadtxt(filename)
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--fodf_field', type=load_nrrd, required=True, help='FODF field file (NRRD format)')
+    parser.add_argument('--reference_direction_field', type=load_nibabel, required=True, help='Reference direction field file (NIfTI format)')
+    parser.add_argument('--seedfile', type=load_numpy, required=True, help='Seed file (NumPy text format)')
+    parser.add_argument('--end_region_files', type=load_nibabel, nargs='+', required=True, help='End region files (NIfTI format)')
+
+    parser.add_argument('--model', required=True, help='Weights of the model pth file')
+    parser.add_argument('--regularized_model', required=True, help='Regularized model pth file')
+    parser.add_argument('-o', required=True, help='output path')
+    args = parser.parse_args()
+
+    # Now you can access the loaded data like this:
+    fodfs, meta = args.fodf_field
+    fodfs = fodfs.astype(np.float32)
+    fodfs = np.rollaxis(fodfs, 0, 4)
+    fodfs = cp.array(fodfs[..., 1:])
+    refDirs = args.reference_direction_field.astype(np.float32)
+    refDirs = cp.array(np.divide(refDirs, np.linalg.norm(refDirs, axis=-1)[..., None], where=np.linalg.norm(refDirs, axis=-1)[...,None]!=0))
+    seeds = args.seedfile
+    endRegions = cp.array(args.end_region_files, dtype=cp.float32)
+    
+
+    affine = T.zeros((4, 4))   
+    affine[:3, :3] = T.tensor(meta['space directions'][-3:, -3:].T)
+    affine[:3, 3] = T.tensor(meta['space origin'])
+    affine[3, 3] = 1
+    dirGetter = DirectionGetterLowRankReg(args.regularized_model, refDirs, args.model, fodfs)
+    dirSelector = DirectionSelectorRegularized(0, refDirs)
+    trackingStopper = Validator(seeds, **dict(DirValidator=True, TractSegValidator=True, 
+                                            StoppingRegions=endRegions))
+    tracker = Tracking(dirGetter, dirSelector, trackingStopper, fodfs, affine, seeds, args.o)
+    tracker.create_tractogram()
+    tracker.save()
+    
+    
+    
+
+
+if __name__=="__main__":
+    main()
