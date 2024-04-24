@@ -1,4 +1,4 @@
-cdef extern from 'cblas.h':
+cdef extern from 'mkl.h':
     enum CBLAS_LAYOUT:
         CblasRowMajor = 101
         CblasColMajor = 102
@@ -35,8 +35,6 @@ cdef extern from 'cblas.h':
     void cblas_dswap(
         const int n, double * x, const int incx, double * y,
         const int incy) nogil except *
-
-cdef extern from 'lapacke.h':
     int LAPACKE_dpotrf(
         int matrix_layout, char uplo, int n, double * a,
         int lda) nogil except *
