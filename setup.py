@@ -48,8 +48,8 @@ fast = []  # ['-Ofast']
 suite_sparse_libs = ['lapack', 'ccolamd', 'spqr',
                      'cholmod', 'colamd', 'camd', 'amd', 'suitesparseconfig']
 ceres_libs = ['glog', 'gflags']
-watson_libraries = ceres_libs + suite_sparse_libs + \
-    ['pthread', 'fftw3', 'm', 'watsonfit']
+watson_libraries = ceres_libs + suite_sparse_libs + [
+    'pthread', 'fftw3', 'm', 'watsonfit']
 extra_args = ["-I.", "-O3", "-ffast-math", "-march=native",
               "-fopenmp", "-I" + path_to_build_folder()]
 watson_fit_source = ["src/bonndit/utilc/watsonfitwrapper.pyx"]
@@ -64,8 +64,9 @@ ext_modules = [
               define_macros=[
                   ("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"),
                   ('CYTHON_TRACE', '1')],
-              include_dirs=[".", numpy.get_include(), "/usr/lib",
-                            path_to_build_folder()],
+              include_dirs=[
+                  ".", numpy.get_include(),
+                  "/usr/lib", path_to_build_folder()],
               libraries=watson_libraries if WATSON else ['m'],
               language="c++",
               extra_compile_args=extra_args + fast,
@@ -186,8 +187,10 @@ ext_modules = [
             ("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"),
             ('CYTHON_TRACE', '1')],
 
-        include_dirs=[".", numpy.get_include(), "/usr/include/",
-                      path_to_build_folder(), "%s/include" % mklroot],
+        include_dirs=[
+            ".", numpy.get_include(),
+            "/usr/include/", path_to_build_folder(),
+            "%s/include" % mklroot],
         libraries=["mkl_rt", "mkl_sequential",
                    "mkl_core", "pthread", "m", "dl"],
         library_dirs=["%s/lib/intel64" % mklroot],
@@ -201,8 +204,8 @@ ext_modules = [
         ["src/bonndit/tracking/kalman/kalman.pyx"],
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
         include_dirs=[numpy.get_include(), "%s/include" % mklroot],
-        libraries=["mkl_rt", "mkl_sequential",
-                   "mkl_core", "pthread", "m", "dl"],
+        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m",
+                   "dl"],
         library_dirs=["%s/lib/intel64" % mklroot],
         extra_compile_args=["-Wall", "-m64"] + fast,
         extra_link_args=["-Wl,--no-as-needed"],
@@ -216,8 +219,8 @@ ext_modules = [
         include_dirs=[
             numpy.get_include(), path_to_build_folder(),
             "%s/include" % mklroot],
-        libraries=["mkl_rt", "mkl_sequential",
-                   "mkl_core", "pthread", "m", "dl"],
+        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m",
+                   "dl"],
         library_dirs=["%s/lib/intel64" % mklroot],
         extra_compile_args=["-Wall", "-m64"] + fast,
         extra_link_args=["-Wl,--no-as-needed"],
@@ -227,8 +230,8 @@ ext_modules = [
         "bonndit.tracking.integration",
         ["src/bonndit/tracking/integration.pyx"],
         include_dirs=[numpy.get_include(), "%s/include" % mklroot],
-        libraries=["mkl_rt", "mkl_sequential",
-                   "mkl_core", "pthread", "m", "dl"],
+        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m",
+                   "dl"],
         library_dirs=["%s/lib/intel64" % mklroot],
         extra_compile_args=["-Wall", "-m64"] + fast,
         extra_link_args=["-Wl,--no-as-needed"],
@@ -239,8 +242,8 @@ ext_modules = [
         ["src/bonndit/tracking/stopping.pyx"],
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
         include_dirs=[numpy.get_include(), "%s/include" % mklroot],
-        libraries=["mkl_rt", "mkl_sequential",
-                   "mkl_core", "pthread", "m", "dl"],
+        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m",
+                   "dl"],
         library_dirs=["%s/lib/intel64" % mklroot],
         extra_compile_args=["-Wall", "-m64"] + fast,
         extra_link_args=["-Wl,--no-as-needed"],
@@ -251,8 +254,8 @@ ext_modules = [
         ["src/bonndit/tracking/tracking_prob.pyx"],
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
         include_dirs=[numpy.get_include(), "%s/include" % mklroot],
-        libraries=["mkl_rt", "mkl_sequential",
-                   "mkl_core", "pthread", "m", "dl"],
+        libraries=["mkl_rt", "mkl_sequential", "mkl_core", "pthread", "m",
+                   "dl"],
         library_dirs=["%s/lib/intel64" % mklroot],
         extra_compile_args=["-Wall", "-m64"] + fast,
         extra_link_args=["-Wl,--no-as-needed"],
@@ -292,8 +295,9 @@ ext_modules = [
     ),
 ]
 
-requirements = ['nibabel', 'numpy', 'pandas', 'dipy', 'scipy', 'tqdm',
-                'cvxopt', 'mpmath', 'plyfile', 'Cython', 'pynrrd', 'pyshtools']
+requirements = [
+    'nibabel', 'numpy', 'pandas', 'dipy', 'scipy', 'tqdm', 'cvxopt', 'mpmath',
+    'plyfile', 'Cython', 'pynrrd', 'pyshtools', 'torch', 'cupy-cuda11x']
 
 setup_requirements = ['pytest-runner', 'cython', 'findblas']
 
@@ -301,56 +305,41 @@ test_requirements = ['pytest', 'nibabel', 'numpy', 'dipy', 'scipy', 'tqdm',
                      'cvxopt', 'mpmath', 'pynrrd']
 print(find_packages('src'))
 setup(
-    author="Johannes Gruen",
-    author_email='jgruen@uni-bonn.de',
-    classifiers=[
-        'Topic :: Scientific/Engineering',
-        'Development Status :: 3 - Alpha',
-        'Intended Audience :: Science/Research',
-        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
-        'Natural Language :: English',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-    ],
+    author="Johannes Gruen", author_email='jgruen@uni-bonn.de',
+    classifiers=['Topic :: Scientific/Engineering',
+                 'Development Status :: 3 - Alpha',
+                 'Intended Audience :: Science/Research',
+                 (
+                     'License :: OSI Approved :: GNU General Public License '
+                     'v3 (GPLv3)'
+                 ),
+                 'Natural Language :: English',
+                 'Programming Language :: Python :: 3.5',
+                 'Programming Language :: Python :: 3.6',
+                 'Programming Language :: Python :: 3.7',],
     description=(
         'The bonndit package contains the latest diffusion imaging tools '
         'developed at the University of Bonn.'
     ),
-    # install_requires=requirements,
-    license="GNU General Public License v3",
-    long_description=readme + '\n\n' + history,
-    include_package_data=True,
+    install_requires=requirements, license="GNU General Public License v3",
+    long_description=readme + '\n\n' + history, include_package_data=True,
     cmdclass={'build_ext': build_ext},
-    keywords='bonndit',
-    name='bonndit',
+    keywords='bonndit', name='bonndit',
     packages=find_packages('src', exclude=('tests',)),
     package_dir={'': 'src'},
-    scripts=['scripts/mtdeconv',
-             'scripts/stdeconv',
-             'scripts/watson-fitting',
-             'scripts/kurtosis',
-             'scripts/dtiselectvols',
-             'scripts/low-rank-k-approx',
-             'scripts/peak-modelling',
-             'scripts/prob-tracking',
-             'scripts/bundle-filtering',
-             'scripts/csd-peaks',
-             'scripts/data2fodf',
-             'scripts/dti_fsl2vvi',
-             'scripts/bonndit2mrtrix',
-             'scripts/tractconv',
+    scripts=['scripts/mtdeconv', 'scripts/stdeconv', 'scripts/watson-fitting',
+             'scripts/kurtosis', 'scripts/dtiselectvols',
+             'scripts/low-rank-k-approx', 'scripts/peak-modelling',
+             'scripts/prob-tracking', 'scripts/bundle-filtering',
+             'scripts/csd-peaks', 'scripts/data2fodf', 'scripts/dti_fsl2vvi',
+             'scripts/bonndit2mrtrix', 'scripts/tractconv',
              'scripts/fast-track',],
     ext_modules=cythonize(
         ext_modules,
         compiler_directives={'boundscheck': False, 'wraparound': False,
-                             'optimize.unpack_method_calls': True},
-    ),
+                             'optimize.unpack_method_calls': True},),
     package_data={"": ['*.pxd', '*.npz', '*.npy', '*.so', '*.h']},
-    setup_requires=setup_requirements,
-    test_suite='tests',
+    setup_requires=setup_requirements, test_suite='tests',
     tests_require=test_requirements,
-    url='https://github.com/MedVisBonn/bonndit',
-    version='0.2.0',
-    zip_safe=False,
-)
+    url='https://github.com/MedVisBonn/bonndit', version='0.2.0',
+    zip_safe=False,)

@@ -11,7 +11,7 @@ from .stopping cimport Validator
 from .integration cimport Euler, Integration, EulerUKF, RungeKutta
 from .interpolation cimport TomReg, DeepReg, FACT, Trilinear, Interpolation, \
     UKFFodf, UKFFodfAlt, UKFMultiTensor, UKFBinghamAlt, TrilinearFODF, \
-    UKFBingham, UKFWatson, UKFWatsonAlt, UKFBinghamQuatAlt, DeepRegLearned
+    UKFBingham, UKFWatson, UKFWatsonAlt, UKFBinghamQuatAlt, DeepLearned
 from bonndit.utilc.cython_helpers cimport mult_with_scalar, sum_c, \
     sum_c_int, set_zero_vector, sub_vectors, \
     angle_deg, norm
@@ -377,9 +377,9 @@ cpdef tracking_all(
             vector_field, dim[2:5], directionGetter,
             **tracking_parameters)
     elif tracking_parameters['interpolation'] == "Learned":
-        interpolate = DeepRegLearned(
-            vector_field, dim[2:5],
-            directionGetter, **tracking_parameters)
+        interpolate = DeepLearned(
+            vector_field, dim[2:5], directionGetter,
+            **tracking_parameters)
     else:
         logging.error('FACT, Triliniear or UKF for MultiTensor and low rank approximation are available so far.')
         return 0

@@ -3,7 +3,7 @@
 
 
 from dipy.io.streamline import load_tck, load_vtk, load_vtp, save_tck, \
-    save_vtk, save_vtp, save_fib, load_fib
+    save_vtk, save_vtp, save_fib, load_fib, load_trk
 import nibabel as nib
 from plyfile import PlyElement, PlyData
 import argparse
@@ -67,6 +67,8 @@ class TractFileConverter():
                 'given!'
             )
             self.data = load_vtp(self.infile, self.ref)
+        elif self.infile.endswith('.trk'):
+            self.data = load_trk(self.infile, "same", bbox_valid_check=False)
         elif self.infile.endswith('.vtk'):
             self.data = load_vtk(self.infile, self.ref)
         elif self.infile.endswith('.fib'):
@@ -110,7 +112,7 @@ class TractFileConverter():
         """
         self.outfile = outfile
         if self.outfile.endswith('tck'):
-            save_tck(self.data, self.outfile)
+            save_tck(self.data, self.outfile, bbox_valid_check=False)
         elif self.outfile.endswith('vtp'):
             save_vtp(self.data, self.outfile)
         elif self.outfile.endswith('vtk'):
