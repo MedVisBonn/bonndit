@@ -6,6 +6,7 @@
     "configurations": [
         
         
+        
 
 
 
@@ -16,7 +17,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": false,
-            "args": "--fodf_field /data/BIDS/derivatives/ukft-results/sub-00012/ses-20110815/dwi/odf.nrrd --reference_direction_field /data/BIDS/derivatives/ukft-results/sub-00012/ses-20110815/dwi/tractseg/TOM/AF_right.nii.gz --seedfile /data/BIDS/derivatives/ukft-results/sub-00012/ses-20110815/dwi/seedsAF_right.pts --end_region_files /data/BIDS/derivatives/ukft-results/sub-00012/ses-20110815/dwi/tractseg/endings_segmentations/AF_right_* --model ../PycharmProjects/fodf/fodf-approx-johannes/low-rank-learned/best_lr3.pth --regularized_model ../PycharmProjects/fodf/fodf-approx-johannes/low-rank-learned/model0.01.pth -o test.tck"
+            "args": "--fodf_field /data/BIDS/derivatives/ukft-results/sub-00012/ses-20110815/dwi/odf.nrrd  --seedfile seeds.pts   --model /home/xderes/PycharmProjects/fodf/fodf-approx-johannes/low-rank-learned/final_nu001.pth -o test.tck --wmregion /data/BIDS/derivatives/ukft-preproc/sub-00012/ses-20110815/dwi/fast_pve_2.nii.gz"
         }
     ]
 }

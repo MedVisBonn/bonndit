@@ -356,7 +356,7 @@ def main():
         'start_stop': args.start_stop,
         'mask': args.mask,
     }
-    if "ref" in args:
+    if args.ref:
         ref = load('ref', args, 'ref.nrrd', args.ref, logging, nib.load)
         affine = ref.affine
         ref = ref.get_fdata()
@@ -367,14 +367,17 @@ def main():
         tracking_parameters['data'] = data
         print(data.shape)
     if "lr_model" in args:
-        lr_model = LowRankModel([15, 100, 200, 200, 100, 9], 0.01)
+        lr_model = LowRankModel([15, 1000, 1000, 1000, 9], 0.01)
         lr_model.load_state_dict(T.load(args.lr_model))
         lr_model.eval()
-        lr_model_reg = LowRankModel([18, 100, 200, 200, 100, 9], 0.01) 
-        lr_model_reg.load_state_dict(T.load(args.lr_model_reg))
-        lr_model_reg.eval()
+     #   lr_model_reg = LowRankModel([18, 100, 200, 200, 100, 9], 0.01) 
+     #   lr_model_reg.load_state_dict(T.load(args.lr_model_reg))
+     #   lr_model_reg.eval()
         tracking_parameters['lr_model'] = lr_model
-        tracking_parameters['lr_model_reg'] = lr_model_reg
+        data = load('data', args, 'fodf.nrrd', args.i, logging, nrrd.read)[0]
+        data = np.moveaxis(data, 0, 3) 
+        tracking_parameters['data'] = data
+      #  tracking_parameters['lr_model_reg'] = lr_model_reg
         
 
     if args.ukf == "Watson" or args.ukf == "BinghamQuatAlt" or args.ukf == "BinghamAlt" or args.ukf == "Bingham" or args.ukf == "WatsonAlt" or args.interpolation=="Learned" or args.interpolation=="TractSeg" or args.interpolation=="TOM":

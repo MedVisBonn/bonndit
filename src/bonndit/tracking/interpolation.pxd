@@ -234,8 +234,19 @@ cdef class DeepReg(Interpolation):
 
     cdef double[:] low
 
-cdef class DeepRegLearned(DeepReg):
-    
+cdef class DeepLearned(Interpolation):
+    cdef RegLowRank optimizer
+    cdef double[:] ref_dir
+    cdef double[:,:] low_rank
+    cdef double[:] y
+    cdef double[:,:] ylinear
+    cdef double[:,:] rlinear
+    cdef double mu
+    cdef double[:,:,:,:] data
+    cdef double[:] reg
+    cdef double[:] opt
+
+    cdef double[:] low
     cdef tuple lrs 
 
 

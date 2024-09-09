@@ -48,12 +48,16 @@ class Tck:
             for i in range(self.data.shape[0]):
                 self.append(self.data[i], {feat: self.feature[feat]['data'][i] for feat in self.feature.keys()})
 
-    def append(self, path, feature=None):
+    def append(self, path, feature=None, replace=None):
         #print(path)
         v = np.linalg.norm(path)
-        if np.isnan(v) or np.isinf(v):
+        if (np.isnan(v) or np.isinf(v)) and not replace:
             return
-        path = np.ascontiguousarray(np.concatenate([path, [[np.nan, np.nan, np.nan]]]), dtype='<f4')
+        if replace:
+            path = np.ascontiguousarray(path, dtype='<f4')
+        else:
+            path = np.ascontiguousarray(np.concatenate([path, [[np.nan, np.nan, np.nan]]]), dtype='<f4')
+
         # write x,y,z
         with open(self.file_path, 'ab') as f:
             f.write(np.ndarray.tobytes(path))
@@ -63,8 +67,10 @@ class Tck:
                 path = np.ascontiguousarray(np.concatenate([feature[feat], [np.nan]]), dtype='<f4')
                 with open(self.feature[feat]['path'], 'ab') as f:
                     f.write(np.ndarray.tobytes(path))
-        self.length += 1
+        self.length += (np.isnan(path)).sum()//3
 
+
+                        
     def close(self):
         with open(self.file_path, "r+b") as f:
             f.seek(21)
