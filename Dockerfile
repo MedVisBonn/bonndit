@@ -13,7 +13,7 @@ WORKDIR $RDBASE
 RUN apt-get update
 RUN apt install build-essential cmake libcerf-dev wget python3 python3-pip -y
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir scipy cython pandas dipy cvxopt mpmath psutil pynrrd plyfile
+    pip install --no-cache-dir scipy cython dipy cvxopt mpmath psutil pynrrd plyfile
 
 RUN if [ -n "$watson" ]; then \
     apt-get install git libgoogle-glog-dev libgflags-dev libatlas-base-dev libeigen3-dev libfftw3-dev libsuitesparse-dev  liblapacke-dev -y && \
