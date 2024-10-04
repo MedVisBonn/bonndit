@@ -266,7 +266,7 @@ ext_modules = [
     ),
 ]
 
-requirements = ['nibabel', 'numpy', 'pandas', 'dipy', 'scipy', 'tqdm',
+requirements = ['nibabel', 'numpy', 'dipy', 'scipy', 'tqdm',
                 'cvxopt', 'mpmath', 'plyfile', 'Cython', 'pynrrd', 'pyshtools', 'torch', 'cupy-cuda11x']
 
 setup_requirements = ['pytest-runner', 'cython', 'findblas']
