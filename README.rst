@@ -65,6 +65,9 @@ The regularized tractography methods (joint low-rank and low-rank UKF) were firs
 
 .. [Gruen23] Johannes Grün, Samuel Gröschel, Thomas Schultz: Spatially Regularized Low-Rank Tensor Approximation for Accurate and Fast Tractography. In NeuroImage 271:120004, 2023
 
+The learned low-rank approximation method was first implemented in :code:`fast-track` and introduced in
+
+.. [Gruen24] Johannes Grün, Thomas Schultz: Learning Low-Rank Tensor Approximation for GPU-based Tractography. In proceedings: CDMRI, 2024
 
 The use of quadratic cone programming to make the kurtosis fit more stable which is implemented in :code:`kurtosis` has been explained in the methods section of
 
