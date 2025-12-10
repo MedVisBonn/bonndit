@@ -107,3 +107,34 @@ we first perform a tentative step with half the step size and redo the trilinear
 This is done until a stopping criteria is reached. By default, it is set to a minimum white matter density of 0.3 and a maximum curvature of 130 degrees over the last 30mm. More details about various options can be found under :ref:`prob-tracking`.
 
 Streamlines can be visualized using MRtrix' `mrview`, under tools -> tractography the data can be read and will be displayed.
+
+Tractography with TOM references
+---------------------------------
+
+First you have to install TractSeg (https://github.com/MIC-DKFZ/TractSeg) via
+
+.. code-block:: console
+    pip install TractSeg
+
+To generate reference TOMs you have to run 
+
+.. code-block:: console
+    TractSeg -i my/path/my_diffusion_image.nii.gz
+         -o my/output/directory
+         --bvals my/other/path/my.bvals
+         --bvecs yet/another/path/my.bvec
+         --raw_diffusion_input
+          --output_type TOM
+
+Alternatively, you can use any other reference peaks but we assume the TOM format in the following. To reconstruct the AF you have to run the following command:
+
+.. code-block:: console
+    prob-tracking \
+      --infile ./preproc/rank-3.nrrd --data ./preproc/odf.nrrd  --seedpoints ./preproc/wm.nrrd \
+      --seed_count 30000 \
+      --o ./test.tck \
+      --interpolation TOM \
+      --wmvolume ./preproc/wm.nrrd \
+      --ref tractseg/TOM/AF_right.nii.gz
+
+Results can again be displayed using MRtrix. 
