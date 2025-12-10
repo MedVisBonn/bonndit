@@ -69,6 +69,10 @@ The learned low-rank approximation method was first implemented in :code:`fast-t
 
 .. [Gruen24] Johannes Grün, Thomas Schultz: Learning Low-Rank Tensor Approximation for GPU-based Tractography. In proceedings: CDMRI, 2024
 
+The regularized low-rank approximation using TractSeg references was first implemented in :code:`prob-tracking` and introduced in 
+
+.. [Gruen25] Johannes Grün  Tobias Bauer, Theodor Rüber, Thomas Schultz: Deep learning based tractography with TractSeg in patients with hemispherotomy: Evaluation and refinement
+
 The use of quadratic cone programming to make the kurtosis fit more stable which is implemented in :code:`kurtosis` has been explained in the methods section of
 
 .. [Groeschel16] Samuel Groeschel, G. E. Hagberg, T. Schultz, D. Z. Balla, U. Klose, T.-K. Hauser, T. Nägele, O. Bieri, T. Prasloski, A. MacKay, I. Krägeloh-Mann, K. Scheffler: Assessing white matter microstructure in brain regions with different myelin architecture using MRI. In: PLOS ONE 11(11):e0167274, 2016
