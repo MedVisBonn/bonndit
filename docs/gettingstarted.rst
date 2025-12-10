@@ -114,11 +114,13 @@ Tractography with TOM references
 First you have to install TractSeg (https://github.com/MIC-DKFZ/TractSeg) via
 
 .. code-block:: console
+
     pip install TractSeg
 
 To generate reference TOMs you have to run 
 
 .. code-block:: console
+
     TractSeg -i my/path/my_diffusion_image.nii.gz
          -o my/output/directory
          --bvals my/other/path/my.bvals
@@ -129,6 +131,7 @@ To generate reference TOMs you have to run
 Alternatively, you can use any other reference peaks but we assume the TOM format in the following. To reconstruct the AF you have to run the following command:
 
 .. code-block:: console
+
     prob-tracking \
       --infile ./preproc/rank-3.nrrd --data ./preproc/odf.nrrd  --seedpoints ./preproc/wm.nrrd \
       --seed_count 30000 \
