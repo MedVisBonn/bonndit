@@ -165,12 +165,11 @@ cdef class RegLowRank:
         # res *= 4
         cblas_dscal(3, 4 * direction[0], &res[0], 1)
         if reg:
-            # res += self._mu * ref
-            cblas_daxpy(
-                3, self._mu, &ref[0],
-                1 if cblas_ddot(
-                    3, &res[0], 1, &direction[0],
-                    1) > 0 else -1, &res[0], 1)
+            # res += sign(v . ref) * mu * ref
+            if cblas_ddot(3, &direction[1], 1, &ref[0], 1) > 0:
+                cblas_daxpy(3, self._mu, &ref[0], 1, &res[0], 1)
+            else:
+                cblas_daxpy(3, -self._mu, &ref[0], 1, &res[0], 1)
 
         # res -= np.dot(res, direction[1:]) * direction[1:]
         # print(np.array(res) - np.dot(res, direction[1:]) *
@@ -202,7 +201,8 @@ cdef class RegLowRank:
 
         cdef int sign = 1 if v[0] > 0 else -1
         if reg:
-            sign = -1
+            # maximise s^2 + 2 mu |v . ref|
+            sign = 1
         # print(sign)
         cdef double iso = hota_mean(tens)
 
@@ -228,7 +228,7 @@ cdef class RegLowRank:
             anisonorminv = 1 / anisonorm
         alpha = beta = self.TijkRefineRank1Parm.beta * anisonorminv
         if reg:
-            oldval = -v[0] ** 2 - 2 * self._mu * fabs(
+            oldval = v[0] ** 2 + 2 * self._mu * fabs(
                 cblas_ddot(
                     3, &v[1],
                     1, &reference[0], 1))
@@ -257,9 +257,9 @@ cdef class RegLowRank:
                 # dist = 1 - np.linalg.norm(v[1:]*testv)
                 dist = 1 - cblas_ddot(3, &v[1], 1, &testv[0], 1) ** 2
                 if reg:
-                    val = -hota_sym_s_form(
+                    val = hota_sym_s_form(
                         anisoten,
-                        testv) ** 2 - 2 * self._mu * fabs(
+                        testv) ** 2 + 2 * self._mu * fabs(
                         cblas_ddot(
                             3,
                             &testv[0], 1, &reference[0], 1))
@@ -368,7 +368,7 @@ cdef class RegLowRank:
         for i in range(self.rank):
             hota_4o3d_sym_eval(
                 ten[i], low_rank[i * 4],
-                low_rank[index * 4 + 1: index * 4 + 4])
+                low_rank[i * 4 + 1: i * 4 + 4])
             tensor -= ten[i]
         cdef int k = 0, new_idx = -1
         cdef int index_changed = 0, counter = 0
@@ -381,7 +381,7 @@ cdef class RegLowRank:
                     cblas_ddot(
                         3, &low_rank[index * 4 + 1], 1,
                         &ref[0], 1)))
-            if ref[0] > 0:
+            if cblas_dnrm2(3, &ref[0], 1) > 0:
                 new_idx = self.min_mapping_voxel(low_rank, ref)
                 if new_idx != index:
                     index = new_idx
